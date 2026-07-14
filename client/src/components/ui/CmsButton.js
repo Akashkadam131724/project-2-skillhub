@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import {
   resolveButtonAction,
   resolveButtonIcon,
@@ -128,6 +129,35 @@ function ButtonLabel({ icon, children }) {
       <span>{children}</span>
     </>
   );
+}
+
+function wantsNewTab(button) {
+  const v = button?.open_in_new_tab;
+  return v === true || v === "true" || v === 1 || v === "1";
+}
+
+/**
+ * Normalize CMS button href into { mode: "internal"|"external"|"anchor", href }.
+ */
+function resolveNavHref(href) {
+  const raw = String(href || "").trim();
+  if (!raw) return null;
+
+  if (raw.startsWith("#")) {
+    return { mode: "anchor", href: raw };
+  }
+
+  if (raw.startsWith("/") && !raw.startsWith("//")) {
+    return { mode: "internal", href: raw };
+  }
+
+  // Absolute http(s), mailto:, tel:, //cdn… → external <a>
+  if (/^([a-z][a-z0-9+.-]*:|\/\/)/i.test(raw)) {
+    return { mode: "external", href: raw };
+  }
+
+  // Slash-less app path: "course-catalog" → "/course-catalog"
+  return { mode: "internal", href: `/${raw.replace(/^\.\//, "")}` };
 }
 
 function YoutubeModal({ open, title, embedSrc, watchHref, onClose }) {
@@ -264,19 +294,40 @@ export default function CmsButton({
 
   if (!action.href) return null;
 
-  const isExternal =
-    action.kind === "url" &&
-    (button.open_in_new_tab || /^https?:\/\//i.test(action.href));
+  const openInNewTab = wantsNewTab(button);
+  const label = <ButtonLabel icon={icon}>{button.label}</ButtonLabel>;
+
+  if (action.kind === "anchor") {
+    return (
+      <a href={action.href} className={classes}>
+        {label}
+      </a>
+    );
+  }
+
+  const nav = resolveNavHref(action.href);
+  if (!nav) return null;
+
+  // Soft client navigation for in-app routes (unless "open in new tab")
+  if (nav.mode === "internal" && !openInNewTab) {
+    return (
+      <Link href={nav.href} className={classes}>
+        {label}
+      </Link>
+    );
+  }
 
   return (
     <a
-      href={action.href}
+      href={nav.href}
       className={classes}
-      {...(isExternal
+      {...(openInNewTab
         ? { target: "_blank", rel: "noopener noreferrer" }
-        : {})}
+        : nav.mode === "external"
+          ? { rel: "noopener noreferrer" }
+          : {})}
     >
-      <ButtonLabel icon={icon}>{button.label}</ButtonLabel>
+      {label}
     </a>
   );
 }
