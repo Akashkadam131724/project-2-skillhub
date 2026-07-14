@@ -1,0 +1,263 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Brand theme tokens — ThemeSwitcher sets data-theme + inline vars */
+:root,
+[data-theme="blue"] {
+  --brand: #1b4de4;
+  --brand-hover: #153fc0;
+  --ink: #0b1f4d;
+  --brand-soft: color-mix(in srgb, var(--brand) 14%, white);
+  --brand-muted: color-mix(in srgb, var(--brand) 22%, transparent);
+}
+
+[data-theme="teal"] {
+  --brand: #0f766e;
+  --brand-hover: #0c5f59;
+  --ink: #134e4a;
+}
+
+[data-theme="indigo"] {
+  --brand: #4f46e5;
+  --brand-hover: #4338ca;
+  --ink: #1e1b4b;
+}
+
+[data-theme="cyan"] {
+  --brand: #0891b2;
+  --brand-hover: #0e7490;
+  --ink: #164e63;
+}
+
+[data-theme="emerald"] {
+  --brand: #059669;
+  --brand-hover: #047857;
+  --ink: #064e3b;
+}
+
+[data-theme="violet"] {
+  --brand: #7c3aed;
+  --brand-hover: #6d28d9;
+  --ink: #4c1d95;
+}
+
+[data-theme="navy"] {
+  --brand: #1e3a8a;
+  --brand-hover: #1e40af;
+  --ink: #0f172a;
+}
+
+[data-theme="sky"] {
+  --brand: #0284c7;
+  --brand-hover: #0369a1;
+  --ink: #0c4a6e;
+}
+
+[data-theme="slate"] {
+  --brand: #475569;
+  --brand-hover: #334155;
+  --ink: #0f172a;
+}
+
+@theme inline {
+  --font-sans: var(--font-sans);
+  --font-display: var(--font-display);
+  --color-brand: var(--brand);
+  --color-brand-hover: var(--brand-hover);
+  --color-ink: var(--ink);
+  --color-brand-soft: var(--brand-soft);
+  --color-brand-muted: var(--brand-muted);
+}
+
+body {
+  @apply m-0 min-h-full bg-white text-slate-800 antialiased;
+  font-family: var(--font-sans), system-ui, sans-serif;
+}
+
+@keyframes partner-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+/* CMS rich text — editor + public section bodies */
+.cms-rich-body {
+  line-height: 1.65;
+  word-break: break-word;
+}
+
+.cms-rich-body > *:first-child {
+  margin-top: 0;
+}
+
+.cms-rich-body > *:last-child {
+  margin-bottom: 0;
+}
+
+.cms-rich-body p {
+  margin: 0 0 0.85em;
+}
+
+.cms-rich-body h2,
+.cms-rich-body h3,
+.cms-rich-body h4 {
+  margin: 0 0 0.5em;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+.cms-rich-body h2 {
+  font-size: 1.35rem;
+}
+
+.cms-rich-body h3 {
+  font-size: 1.15rem;
+}
+
+.cms-rich-body h4 {
+  font-size: 1.05rem;
+}
+
+/*
+  Custom list markers — Tailwind Preflight clears native list-style, and
+  `list-style-position: inside` wraps long lines under the bullet.
+  Absolute ::before keeps the marker fixed; text stays in a clean column.
+*/
+.cms-rich-body ul,
+.ProseMirror ul,
+.cms-rich-body.ProseMirror ul {
+  list-style: none !important;
+  margin: 0 0 0.85em;
+  padding-left: 0.5rem;
+}
+
+.cms-rich-body ol,
+.ProseMirror ol,
+.cms-rich-body.ProseMirror ol {
+  list-style: none !important;
+  margin: 0 0 0.85em;
+  padding-left: 0.5rem;
+  counter-reset: cms-ol;
+}
+
+.cms-rich-body ul > li,
+.ProseMirror ul > li {
+  position: relative;
+  display: block;
+  margin: 0.35em 0.5rem;
+  padding-left: 1.5rem;
+}
+
+.cms-rich-body ul > li::before,
+.ProseMirror ul > li::before {
+  content: "";
+  position: absolute;
+  left: 0.2rem;
+  top: 0.55em;
+  width: 0.35rem;
+  height: 0.35rem;
+  border-radius: 9999px;
+  background: currentColor;
+  opacity: 0.85;
+}
+
+.cms-rich-body ol > li,
+.ProseMirror ol > li {
+  position: relative;
+  display: block;
+  margin: 0.35em 0;
+  padding-left: 1.5rem;
+  counter-increment: cms-ol;
+}
+
+.cms-rich-body ol > li::before,
+.ProseMirror ol > li::before {
+  content: counter(cms-ol) ".";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1.4rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  line-height: inherit;
+  text-align: right;
+  color: inherit;
+}
+
+.cms-rich-body ul ul > li::before,
+.ProseMirror ul ul > li::before {
+  background: transparent;
+  box-sizing: border-box;
+  border: 1.5px solid currentColor;
+  opacity: 0.75;
+}
+
+.cms-rich-body li > p,
+.ProseMirror li > p {
+  display: block;
+  margin: 0;
+}
+
+.cms-rich-body a,
+.cms-rich-body .cms-rich-link {
+  color: var(--brand);
+  font-weight: 600;
+  text-underline-offset: 3px;
+}
+
+.cms-rich-body a:hover {
+  text-decoration: underline;
+  color: var(--brand-hover);
+}
+
+.cms-rich-body img,
+.cms-rich-body .cms-rich-img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 0.75em 0;
+  border-radius: 0.75rem;
+}
+
+.cms-rich-body blockquote {
+  margin: 0 0 0.85em;
+  padding-left: 0.9rem;
+  border-left: 3px solid #cbd5e1;
+  color: #475569;
+}
+
+.cms-rich-body .ProseMirror-focused {
+  outline: none;
+}
+
+.cms-rich-body p.is-editor-empty:first-child::before,
+.cms-rich-body .is-empty::before {
+  color: #94a3b8;
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+
+/* Themed interactive surfaces used across sections / CMS */
+.theme-btn-primary {
+  background-color: var(--brand);
+  color: #fff;
+}
+
+.theme-btn-primary:hover {
+  background-color: var(--brand-hover);
+}
+
+.theme-link {
+  color: var(--brand);
+}
+
+.theme-link:hover {
+  color: var(--brand-hover);
+}

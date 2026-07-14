@@ -1,0 +1,24 @@
+export { default as SectionWrapper } from "./SectionWrapper";
+export { default as SectionFrame, SectionInner } from "./SectionFrame";
+export { default as OverviewSection } from "./OverviewSection";
+export { default as KeyBenefitsSection } from "./KeyBenefitsSection";
+export { default as WhyChooseSection } from "./WhyChooseSection";
+export { default as StatsSection } from "./StatsSection";
+export { default as RelatedCoursesSection } from "./RelatedCoursesSection";
+export { default as CurriculumSection } from "./CurriculumSection";
+export { default as PartnersSection } from "./PartnersSection";
+export * from "./partners";
+export * from "./cards";
+export * from "./testimonials";
+export * from "./text-media";
+export { default as TestimonialsSection } from "./TestimonialsSection";
+export { default as CustomerTestimonialsSection } from "./CustomerTestimonialsSection";
+export { default as FaqSection } from "./FaqSection";
+export { default as ResourcesSection } from "./ResourcesSection";
+export { default as ProductsSection } from "./ProductsSection";
+export { default as CatalogSection } from "./CatalogSection";
+export { default as FallbackSection } from "./FallbackSection";
+export { default as InPageNav } from "./InPageNav";
+export { default as InPageNavSection } from "./InPageNavSection";
+export * from "./hero";
+

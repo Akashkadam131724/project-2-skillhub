@@ -1,0 +1,40 @@
+{
+  "name": "skillhub-client",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev -p 3001",
+    "build": "next build",
+    "build:webpack": "next build --webpack",
+    "build:sizes": "next build --webpack && node scripts/report-route-sizes.mjs",
+    "sizes": "node scripts/report-route-sizes.mjs",
+    "analyze": "next experimental-analyze --port 4000",
+    "analyze:webpack": "ANALYZE=true next build --webpack",
+    "analyze:open": "open .next/analyze/client.html",
+    "start": "next start -p 3001",
+    "lint": "eslint"
+  },
+  "dependencies": {
+    "@tiptap/extension-color": "^3.27.4",
+    "@tiptap/extension-image": "^3.27.4",
+    "@tiptap/extension-link": "^3.27.4",
+    "@tiptap/extension-placeholder": "^3.27.4",
+    "@tiptap/extension-text-align": "^3.27.4",
+    "@tiptap/extension-text-style": "^3.27.4",
+    "@tiptap/extension-underline": "^3.27.4",
+    "@tiptap/pm": "^3.27.4",
+    "@tiptap/react": "^3.27.4",
+    "@tiptap/starter-kit": "^3.27.4",
+    "isomorphic-dompurify": "^3.18.0",
+    "next": "16.2.10",
+    "react": "19.2.4",
+    "react-dom": "19.2.4"
+  },
+  "devDependencies": {
+    "@next/bundle-analyzer": "^16.2.10",
+    "@tailwindcss/postcss": "^4",
+    "eslint": "^9",
+    "eslint-config-next": "16.2.10",
+    "tailwindcss": "^4"
+  }
+}

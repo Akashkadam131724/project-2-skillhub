@@ -1,0 +1,40 @@
+{
+  "name": "skillhub-server",
+  "version": "1.0.0",
+  "description": "SkillHub API",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "node --watch --env-file=.env index.js",
+    "seed": "node --env-file=.env src/seed/vendor.seed.js",
+    "seed:vendors": "node --env-file=.env src/seed/vendor.seed.js",
+    "seed:products": "node --env-file=.env src/seed/product.seed.js",
+    "seed:courses": "node --env-file=.env src/seed/course.seed.js",
+    "seed:skilling-areas": "node --env-file=.env src/seed/skilling-area.seed.js",
+    "seed:skill-levels": "node --env-file=.env src/seed/skill-level.seed.js",
+    "seed:industries": "node --env-file=.env src/seed/industry.seed.js",
+    "seed:contents": "node --env-file=.env src/seed/content.seed.js",
+    "seed:heroes": "node --env-file=.env src/seed/hero.seed.js",
+    "seed:partners": "node --env-file=.env src/seed/partners.seed.js",
+    "seed:cards": "node --env-file=.env src/seed/cards.seed.js",
+    "seed:in-page-nav": "node --env-file=.env src/seed/in-page-nav.seed.js",
+    "seed:testimonials": "node --env-file=.env src/seed/testimonials.seed.js",
+    "seed:stats": "node --env-file=.env src/seed/stats.seed.js",
+    "seed:why-choose": "node --env-file=.env src/seed/why-choose.seed.js",
+    "seed:text-media": "node --env-file=.env src/seed/text-media.seed.js",
+    "seed:pages": "node --env-file=.env src/seed/page-section.seed.js",
+    "seed:cms-content": "node --env-file=.env src/seed/cms-content.seed.js",
+    "seed:all": "npm run seed:vendors && npm run seed:products && npm run seed:skilling-areas && npm run seed:skill-levels && npm run seed:industries && npm run seed:courses && npm run seed:contents && npm run seed:pages && npm run seed:heroes && npm run seed:partners && npm run seed:cards && npm run seed:in-page-nav && npm run seed:testimonials && npm run seed:stats && npm run seed:why-choose && npm run seed:text-media && npm run seed:cms-content",
+    "seed:1m": "TOTAL=1000000 BATCH_SIZE=5000 node --env-file=.env --max-old-space-size=4096 src/seed/vendor.seed.js",
+    "migrate:remove-product-sku-price-stock": "node --env-file=.env src/migrations/2026-07-12-remove-product-sku-price-stock.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "mongoose": "^9.7.4"
+  }
+}
