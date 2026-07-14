@@ -1,0 +1,105 @@
+/pages:
+  get:
+    tags: [Pages]
+    summary: List page templates
+    parameters:
+      - in: query
+        name: status
+        schema: { type: boolean }
+    responses:
+      "200":
+        description: Pages
+  post:
+    tags: [Pages]
+    summary: Create page template
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Page"
+    responses:
+      "201":
+        description: Created
+      "400":
+        description: Validation failed
+
+/pages/{key}/sections:
+  get:
+    tags: [Pages]
+    summary: Resolve sections for a page
+    description: |
+      Returns resolved section placements for a page template,
+      optionally scoped to an entity via query params.
+    parameters:
+      - in: path
+        name: key
+        required: true
+        schema: { type: string }
+      - in: query
+        name: entity_id
+        schema: { type: string }
+        description: Entity ObjectId for per-entity overrides
+    responses:
+      "200":
+        description: Resolved sections
+      "404":
+        description: Page not found
+
+/pages/{key}:
+  parameters:
+    - in: path
+      name: key
+      required: true
+      schema: { type: string }
+  get:
+    tags: [Pages]
+    summary: Get page by key
+    responses:
+      "200":
+        description: Page
+      "404":
+        description: Not found
+  put:
+    tags: [Pages]
+    summary: Update page by key
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Page"
+    responses:
+      "200":
+        description: Updated
+      "404":
+        description: Not found
+  delete:
+    tags: [Pages]
+    summary: Delete page by key
+    responses:
+      "200":
+        description: Deleted
+      "404":
+        description: Not found
+
+/pages/{key}/status:
+  patch:
+    tags: [Pages]
+    summary: Set page status
+    parameters:
+      - in: path
+        name: key
+        required: true
+        schema: { type: string }
+    requestBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status: { type: boolean }
+    responses:
+      "200":
+        description: Updated
+      "404":
+        description: Not found

@@ -1,0 +1,70 @@
+/contents:
+  get:
+    tags: [Contents]
+    summary: List content entities
+    parameters:
+      - in: query
+        name: page
+        schema: { type: integer, default: 1 }
+      - in: query
+        name: limit
+        schema: { type: integer, default: 50 }
+      - in: query
+        name: status
+        schema: { type: string, enum: [active, inactive] }
+      - in: query
+        name: q
+        schema: { type: string }
+    responses:
+      "200":
+        description: Paginated contents
+  post:
+    tags: [Contents]
+    summary: Create content
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Content"
+    responses:
+      "201":
+        description: Created
+      "400":
+        description: Validation failed
+
+/contents/{slug}:
+  parameters:
+    - in: path
+      name: slug
+      required: true
+      schema: { type: string }
+  get:
+    tags: [Contents]
+    summary: Get content by slug
+    responses:
+      "200":
+        description: Content
+      "404":
+        description: Not found
+  put:
+    tags: [Contents]
+    summary: Update content by slug
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Content"
+    responses:
+      "200":
+        description: Updated
+      "404":
+        description: Not found
+  delete:
+    tags: [Contents]
+    summary: Delete content by slug
+    responses:
+      "200":
+        description: Deleted
+      "404":
+        description: Not found

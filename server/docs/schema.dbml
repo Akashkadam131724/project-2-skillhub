@@ -1,0 +1,304 @@
+// SkillHub — database structure (from Mongoose models)
+// Paste into https://dbdiagram.io
+// Docs: https://dbml.dbdiagram.io/docs
+//
+// Note: This is MongoDB. ObjectId → varchar. Arrays & embeds shown as related
+// tables for clarity; in Mongo they live inside parent documents.
+
+// ═══════════════════════════════════════════════
+// Catalog domain
+// ═══════════════════════════════════════════════
+
+Table vendors {
+  id varchar [primary key, note: 'ObjectId']
+  name varchar [not null, note: '2–120 chars']
+  slug varchar [unique, not null]
+  description text [default: '']
+  email varchar [unique, not null]
+  phone varchar [note: '10-digit IN mobile']
+  status varchar [default: 'pending', note: 'active | inactive | pending']
+  logoUrl varchar
+  partnerLogo varchar
+  colorLogo varchar
+  whiteLogo varchar
+  vendorCatalogueLogo varchar
+  overview text
+  overviewTitle varchar
+  subHeading varchar
+  shortDescription text
+  redirectUrl varchar
+  productCount integer [default: 0]
+  courseCount integer [default: 0]
+  certificationCount integer [default: 0]
+  learnersCount integer [default: 0]
+  // address (embedded)
+  address_line1 varchar
+  address_city varchar
+  address_state varchar
+  address_country varchar [default: 'India']
+  address_pincode varchar
+  categories varchar [note: 'string[] max 10']
+  isVerified boolean [default: false]
+  createdAt timestamp
+  updatedAt timestamp
+
+  Note: 'Vendor 1→N Products (virtual populate)'
+}
+
+Table products {
+  id varchar [primary key, note: 'ObjectId']
+  name varchar [not null]
+  slug varchar [unique, not null]
+  description text [default: '']
+  category varchar [default: 'general']
+  images varchar [note: 'string[] max 8']
+  status varchar [default: 'draft', note: 'active | inactive | draft']
+  vendor varchar [not null, note: 'ObjectId → vendors']
+  createdAt timestamp
+  updatedAt timestamp
+
+  Note: 'Product → ONE Vendor; Product 1→N Courses'
+}
+
+Table courses {
+  id varchar [primary key, note: 'ObjectId']
+  name varchar [not null]
+  slug varchar [unique, not null]
+  description text [default: '']
+  product varchar [not null, note: 'ObjectId → products']
+  skillLevel varchar [note: 'ObjectId → skill_levels (optional)']
+  skillingAreas varchar [note: 'ObjectId[] → skilling_areas (M:N)']
+  industries varchar [note: 'ObjectId[] → industries (M:N)']
+  createdAt timestamp
+  updatedAt timestamp
+
+  Note: 'Course → ONE Product + ONE SkillLevel; M:N SkillingArea & Industry'
+}
+
+Table skill_levels {
+  id varchar [primary key, note: 'ObjectId']
+  name varchar [unique, not null]
+  slug varchar [unique, not null]
+  description text [default: '']
+  status varchar [default: 'active', note: 'active | inactive']
+  sortOrder integer [default: 0]
+  createdAt timestamp
+  updatedAt timestamp
+}
+
+Table skilling_areas {
+  id varchar [primary key, note: 'ObjectId']
+  name varchar [unique, not null]
+  slug varchar [unique, not null]
+  description text [default: '']
+  status varchar [default: 'active', note: 'active | inactive']
+  sortOrder integer [default: 0]
+  createdAt timestamp
+  updatedAt timestamp
+}
+
+Table industries {
+  id varchar [primary key, note: 'ObjectId']
+  name varchar [unique, not null]
+  slug varchar [unique, not null]
+  description text [default: '']
+  status varchar [default: 'active', note: 'active | inactive']
+  sortOrder integer [default: 0]
+  createdAt timestamp
+  updatedAt timestamp
+}
+
+Table contents {
+  id varchar [primary key, note: 'ObjectId']
+  name varchar [unique, not null]
+  slug varchar [unique, not null]
+  description text [default: '']
+  status varchar [default: 'active', note: 'active | inactive']
+  sortOrder integer [default: 0]
+  createdAt timestamp
+  updatedAt timestamp
+
+  Note: 'Generic content pages (e.g. homepage) as CMS catalog entities'
+}
+
+// ── Catalog refs ──
+
+Ref vendor_products: products.vendor > vendors.id // many-to-one
+Ref product_courses: courses.product > products.id // many-to-one
+Ref course_skill_level: courses.skillLevel > skill_levels.id // many-to-one (optional)
+
+// M:N stored as ObjectId arrays on courses (not junction collections)
+Ref: courses.skillingAreas <> skilling_areas.id // M:N via courses.skillingAreas[]
+Ref: courses.industries <> industries.id // M:N via courses.industries[]
+
+// ═══════════════════════════════════════════════
+// CMS domain
+// ═══════════════════════════════════════════════
+
+Table pages {
+  id varchar [primary key, note: 'ObjectId']
+  key varchar [unique, not null, note: 'snake_case page key']
+  name varchar [not null]
+  description text [default: '']
+  entity_type varchar [note: 'null | product | course | vendor | industry | skilling_area | content']
+  status boolean [default: true]
+  is_sort_disabled boolean [default: true, note: 'true → template sort only; false → entity can reorder']
+  createdAt timestamp
+  updatedAt timestamp
+
+  Note: 'Page templates (product, course, vendor, home, …)'
+}
+
+Table sections {
+  id varchar [primary key, note: 'ObjectId']
+  key varchar [unique, not null, note: 'snake_case section key']
+  name varchar [not null]
+  description text [default: '']
+  section_title varchar
+  sub_title varchar
+  in_page_nav_title varchar
+  button_title varchar [note: 'deprecated → buttons[]']
+  target_url varchar [note: 'deprecated → buttons[]']
+  section_bg_img varchar
+  section_img_url varchar
+  section_preview_img varchar
+  data jsonb [note: 'Mixed / freeform section data']
+  content_scope varchar [default: 'page', note: 'global | template | page | cascading']
+  status boolean [default: true]
+  createdAt timestamp
+  updatedAt timestamp
+
+  Note: 'Global section catalog. pages[] embeds page tags (placements). buttons[] + items[] embedded.'
+}
+
+// Embedded on Section.pages[] — shown as table for diagram clarity
+Table section_page_tags {
+  id varchar [primary key, note: 'subdoc ObjectId']
+  section_id varchar [not null, note: 'parent Section']
+  page varchar [not null, note: 'ObjectId → pages']
+  page_key varchar [not null]
+  sort_order integer [not null, default: 0]
+  section_title varchar
+  sub_title varchar
+  in_page_nav_title varchar
+  section_bg_img varchar
+  section_img_url varchar
+  section_preview_img varchar
+  data jsonb
+  status boolean [default: true]
+
+  Note: 'EMBEDDED in Section.pages[] — placement of a section on a page template. Own buttons[] + items[].'
+}
+
+Table entity_page_sections {
+  id varchar [primary key, note: 'ObjectId']
+  page_key varchar [not null]
+  entity_id varchar [not null, note: 'ObjectId of vendor|product|course|…']
+  page_tag_id varchar [note: 'Section.pages[]._id — null = entity-only extra']
+  section varchar [not null, note: 'ObjectId → sections']
+  section_key varchar [not null]
+  sort_order integer
+  section_title varchar
+  sub_title varchar
+  in_page_nav_title varchar
+  section_bg_img varchar
+  section_img_url varchar
+  data jsonb
+  status boolean [note: 'null = inherit template; true/false = override']
+  createdAt timestamp
+  updatedAt timestamp
+
+  Note: 'Per-entity placement. Template override (page_tag_id set) OR entity-only extra (page_tag_id null). Own buttons[] + items[].'
+}
+
+// Embedded CTAs (section / page-tag / entity / item)
+Table cms_buttons {
+  id varchar [primary key, note: 'subdoc ObjectId']
+  parent_type varchar [note: 'section | page_tag | entity_page_section | item']
+  parent_id varchar
+  label varchar [not null]
+  variant varchar [default: 'primary', note: 'primary|secondary|outline|ghost|link|inverse']
+  action_type varchar [default: 'url', note: 'url|anchor|form|youtube']
+  target_url varchar
+  target_id varchar
+  form_key varchar
+  open_in_new_tab boolean [default: false]
+  sort_order integer [default: 0]
+  status boolean [default: true]
+
+  Note: 'EMBEDDED schema — reused on Section, page tags, EntityPageSection, and CmsItems'
+}
+
+// Embedded list items (FAQ, cards, hero slides, …)
+Table cms_items {
+  id varchar [primary key, note: 'subdoc ObjectId']
+  parent_type varchar [note: 'section | page_tag | entity_page_section']
+  parent_id varchar
+  title varchar
+  subtitle varchar
+  body text
+  label varchar
+  value varchar
+  image_url varchar
+  bg_color varchar
+  icon varchar
+  href varchar
+  sort_order integer [default: 0]
+  status boolean [default: true]
+
+  Note: 'EMBEDDED schema — each item can nest its own buttons[]'
+}
+
+// ── CMS refs ──
+
+Ref section_tags: section_page_tags.section_id > sections.id
+Ref tag_page: section_page_tags.page > pages.id
+Ref eps_section: entity_page_sections.section > sections.id
+Ref eps_tag: entity_page_sections.page_tag_id > section_page_tags.id // optional override
+
+// ═══════════════════════════════════════════════
+// Sample records (illustrative)
+// ═══════════════════════════════════════════════
+
+Records vendors(id, name, slug, status) {
+  'v1', 'Microsoft', 'microsoft', 'active'
+  'v2', 'AWS', 'aws', 'active'
+}
+
+Records products(id, name, slug, vendor, status) {
+  'p1', 'Azure Fundamentals', 'azure-fundamentals', 'v1', 'active'
+  'p2', 'AWS Cloud Practitioner', 'aws-cloud-practitioner', 'v2', 'active'
+}
+
+Records skill_levels(id, name, slug) {
+  'sl1', 'Beginner', 'beginner'
+  'sl2', 'Intermediate', 'intermediate'
+}
+
+Records skilling_areas(id, name, slug) {
+  'sa1', 'Cloud', 'cloud'
+  'sa2', 'Security', 'security'
+}
+
+Records industries(id, name, slug) {
+  'i1', 'IT', 'it'
+  'i2', 'Finance', 'finance'
+}
+
+Records courses(id, name, slug, product, skillLevel) {
+  'c1', 'AZ-900 Crash Course', 'az-900-crash-course', 'p1', 'sl1'
+  'c2', 'AWS CCP Prep', 'aws-ccp-prep', 'p2', 'sl1'
+}
+
+Records pages(id, key, name, entity_type) {
+  'pg1', 'home', 'Home', null
+  'pg2', 'vendor', 'Vendor Detail', 'vendor'
+  'pg3', 'product', 'Product Detail', 'product'
+  'pg4', 'course', 'Course Detail', 'course'
+}
+
+Records sections(id, key, name, content_scope) {
+  's1', 'overview', 'Overview', 'page'
+  's2', 'hero_media', 'Hero Media', 'page'
+  's3', 'faq', 'FAQ', 'template'
+}

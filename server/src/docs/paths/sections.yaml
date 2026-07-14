@@ -1,0 +1,196 @@
+/sections:
+  get:
+    tags: [Sections]
+    summary: List sections
+    parameters:
+      - in: query
+        name: status
+        schema: { type: boolean }
+      - in: query
+        name: page_key
+        schema: { type: string }
+        description: Only sections tagged to this page
+    responses:
+      "200":
+        description: Sections
+  post:
+    tags: [Sections]
+    summary: Create section
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Section"
+    responses:
+      "201":
+        description: Created
+      "400":
+        description: Validation failed
+
+/sections/{key}/pages:
+  put:
+    tags: [Sections]
+    summary: Replace all page tags on a section
+    parameters:
+      - in: path
+        name: key
+        required: true
+        schema: { type: string }
+    requestBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              pages:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SectionPageTag"
+    responses:
+      "200":
+        description: Updated
+      "404":
+        description: Not found
+
+/sections/{key}/pages/{pageKey}:
+  post:
+    tags: [Sections]
+    summary: Add a page placement (allows duplicates)
+    parameters:
+      - in: path
+        name: key
+        required: true
+        schema: { type: string }
+      - in: path
+        name: pageKey
+        required: true
+        schema: { type: string }
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/SectionPageTag"
+    responses:
+      "200":
+        description: Tagged
+      "404":
+        description: Not found
+
+/sections/{key}/pages/tag/{tagId}:
+  put:
+    tags: [Sections]
+    summary: Update one page placement by tag id
+    parameters:
+      - in: path
+        name: key
+        required: true
+        schema: { type: string }
+      - in: path
+        name: tagId
+        required: true
+        schema: { type: string }
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/SectionPageTag"
+    responses:
+      "200":
+        description: Updated
+      "404":
+        description: Not found
+  delete:
+    tags: [Sections]
+    summary: Remove one page placement by tag id
+    parameters:
+      - in: path
+        name: key
+        required: true
+        schema: { type: string }
+      - in: path
+        name: tagId
+        required: true
+        schema: { type: string }
+    responses:
+      "200":
+        description: Untagged
+      "404":
+        description: Not found
+
+/sections/{key}/pages/by-page/{pageKey}:
+  delete:
+    tags: [Sections]
+    summary: Remove all placements for a page_key
+    parameters:
+      - in: path
+        name: key
+        required: true
+        schema: { type: string }
+      - in: path
+        name: pageKey
+        required: true
+        schema: { type: string }
+    responses:
+      "200":
+        description: Untagged
+      "404":
+        description: Not found
+
+/sections/{key}:
+  parameters:
+    - in: path
+      name: key
+      required: true
+      schema: { type: string }
+  get:
+    tags: [Sections]
+    summary: Get section by key
+    responses:
+      "200":
+        description: Section
+      "404":
+        description: Not found
+  put:
+    tags: [Sections]
+    summary: Update section by key
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Section"
+    responses:
+      "200":
+        description: Updated
+      "404":
+        description: Not found
+  delete:
+    tags: [Sections]
+    summary: Delete section by key
+    responses:
+      "200":
+        description: Deleted
+      "404":
+        description: Not found
+
+/sections/{key}/status:
+  patch:
+    tags: [Sections]
+    summary: Set section global status
+    parameters:
+      - in: path
+        name: key
+        required: true
+        schema: { type: string }
+    requestBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status: { type: boolean }
+    responses:
+      "200":
+        description: Updated
+      "404":
+        description: Not found

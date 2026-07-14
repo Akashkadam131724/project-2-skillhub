@@ -1,0 +1,485 @@
+# Shared OpenAPI components for SkillHub API
+
+Error:
+  type: object
+  properties:
+    success:
+      type: boolean
+      example: false
+    message:
+      type: string
+    fields:
+      type: object
+      additionalProperties:
+        type: string
+
+PaginationMeta:
+  type: object
+  properties:
+    success:
+      type: boolean
+      example: true
+    total:
+      type: integer
+    page:
+      type: integer
+    limit:
+      type: integer
+    totalPages:
+      type: integer
+    count:
+      type: integer
+
+CmsButton:
+  type: object
+  required: [label]
+  properties:
+    label:
+      type: string
+    variant:
+      type: string
+      enum: [primary, secondary, outline, ghost, link, inverse]
+    action_type:
+      type: string
+      enum: [url, anchor, form, youtube]
+    target_url:
+      type: string
+    target_id:
+      type: string
+    form_key:
+      type: string
+    open_in_new_tab:
+      type: boolean
+    sort_order:
+      type: integer
+    status:
+      type: boolean
+
+CmsItem:
+  type: object
+  properties:
+    title:
+      type: string
+    subtitle:
+      type: string
+    body:
+      type: string
+    label:
+      type: string
+    value:
+      type: string
+    image_url:
+      type: string
+    bg_color:
+      type: string
+    icon:
+      type: string
+    href:
+      type: string
+    buttons:
+      type: array
+      items:
+        $ref: "#/components/schemas/CmsButton"
+    sort_order:
+      type: integer
+    status:
+      type: boolean
+
+Vendor:
+  type: object
+  required: [name, email]
+  properties:
+    _id:
+      type: string
+    name:
+      type: string
+    slug:
+      type: string
+    description:
+      type: string
+    email:
+      type: string
+      format: email
+    phone:
+      type: string
+    status:
+      type: string
+      enum: [active, inactive, pending]
+    logoUrl:
+      type: string
+      nullable: true
+    partnerLogo:
+      type: string
+      nullable: true
+    colorLogo:
+      type: string
+      nullable: true
+    whiteLogo:
+      type: string
+      nullable: true
+    vendorCatalogueLogo:
+      type: string
+      nullable: true
+    overview:
+      type: string
+    overviewTitle:
+      type: string
+    subHeading:
+      type: string
+    shortDescription:
+      type: string
+    redirectUrl:
+      type: string
+    productCount:
+      type: integer
+    courseCount:
+      type: integer
+    certificationCount:
+      type: integer
+    learnersCount:
+      type: integer
+    categories:
+      type: array
+      items:
+        type: string
+    isVerified:
+      type: boolean
+    address:
+      type: object
+      properties:
+        line1:
+          type: string
+        city:
+          type: string
+        state:
+          type: string
+        country:
+          type: string
+        pincode:
+          type: string
+
+Product:
+  type: object
+  required: [name, vendor]
+  properties:
+    _id:
+      type: string
+    name:
+      type: string
+    slug:
+      type: string
+    description:
+      type: string
+    category:
+      type: string
+    images:
+      type: array
+      items:
+        type: string
+    status:
+      type: string
+      enum: [active, inactive, draft]
+    vendor:
+      oneOf:
+        - type: string
+        - $ref: "#/components/schemas/Vendor"
+
+Course:
+  type: object
+  required: [name, product]
+  properties:
+    _id:
+      type: string
+    name:
+      type: string
+    slug:
+      type: string
+    description:
+      type: string
+    product:
+      oneOf:
+        - type: string
+        - $ref: "#/components/schemas/Product"
+    skillLevel:
+      oneOf:
+        - type: string
+        - $ref: "#/components/schemas/SkillLevel"
+      nullable: true
+    skillingAreas:
+      type: array
+      items:
+        oneOf:
+          - type: string
+          - $ref: "#/components/schemas/SkillingArea"
+    industries:
+      type: array
+      items:
+        oneOf:
+          - type: string
+          - $ref: "#/components/schemas/Industry"
+
+SkillLevel:
+  type: object
+  required: [name]
+  properties:
+    _id:
+      type: string
+    name:
+      type: string
+    slug:
+      type: string
+    description:
+      type: string
+    status:
+      type: string
+      enum: [active, inactive]
+    sortOrder:
+      type: integer
+
+SkillingArea:
+  type: object
+  required: [name]
+  properties:
+    _id:
+      type: string
+    name:
+      type: string
+    slug:
+      type: string
+    description:
+      type: string
+    status:
+      type: string
+      enum: [active, inactive]
+    sortOrder:
+      type: integer
+
+Industry:
+  type: object
+  required: [name]
+  properties:
+    _id:
+      type: string
+    name:
+      type: string
+    slug:
+      type: string
+    description:
+      type: string
+    status:
+      type: string
+      enum: [active, inactive]
+    sortOrder:
+      type: integer
+
+Content:
+  type: object
+  required: [name]
+  properties:
+    _id:
+      type: string
+    name:
+      type: string
+    slug:
+      type: string
+    description:
+      type: string
+    status:
+      type: string
+      enum: [active, inactive]
+    sortOrder:
+      type: integer
+
+Page:
+  type: object
+  required: [key, name]
+  properties:
+    _id:
+      type: string
+    key:
+      type: string
+    name:
+      type: string
+    description:
+      type: string
+    entity_type:
+      type: string
+      nullable: true
+      enum: [null, product, course, vendor, industry, skilling_area, content]
+    status:
+      type: boolean
+    is_sort_disabled:
+      type: boolean
+
+SectionPageTag:
+  type: object
+  properties:
+    _id:
+      type: string
+    page:
+      type: string
+    page_key:
+      type: string
+    sort_order:
+      type: integer
+    section_title:
+      type: string
+      nullable: true
+    sub_title:
+      type: string
+      nullable: true
+    in_page_nav_title:
+      type: string
+      nullable: true
+    section_bg_img:
+      type: string
+      nullable: true
+    section_img_url:
+      type: string
+      nullable: true
+    data:
+      type: object
+      nullable: true
+    buttons:
+      type: array
+      items:
+        $ref: "#/components/schemas/CmsButton"
+    items:
+      type: array
+      items:
+        $ref: "#/components/schemas/CmsItem"
+    status:
+      type: boolean
+
+Section:
+  type: object
+  required: [key, name]
+  properties:
+    _id:
+      type: string
+    key:
+      type: string
+    name:
+      type: string
+    description:
+      type: string
+    section_title:
+      type: string
+    sub_title:
+      type: string
+    in_page_nav_title:
+      type: string
+    button_title:
+      type: string
+    target_url:
+      type: string
+    section_bg_img:
+      type: string
+    section_img_url:
+      type: string
+    section_preview_img:
+      type: string
+    data:
+      type: object
+    buttons:
+      type: array
+      items:
+        $ref: "#/components/schemas/CmsButton"
+    items:
+      type: array
+      items:
+        $ref: "#/components/schemas/CmsItem"
+    content_scope:
+      type: string
+      enum: [global, template, page, cascading]
+    pages:
+      type: array
+      items:
+        $ref: "#/components/schemas/SectionPageTag"
+    status:
+      type: boolean
+
+EntityPageSection:
+  type: object
+  required: [page_key, entity_id, section, section_key]
+  properties:
+    _id:
+      type: string
+    page_key:
+      type: string
+    entity_id:
+      type: string
+    page_tag_id:
+      type: string
+      nullable: true
+    section:
+      type: string
+    section_key:
+      type: string
+    sort_order:
+      type: integer
+      nullable: true
+    section_title:
+      type: string
+      nullable: true
+    sub_title:
+      type: string
+      nullable: true
+    in_page_nav_title:
+      type: string
+      nullable: true
+    section_bg_img:
+      type: string
+      nullable: true
+    section_img_url:
+      type: string
+      nullable: true
+    data:
+      type: object
+      nullable: true
+    buttons:
+      type: array
+      items:
+        $ref: "#/components/schemas/CmsButton"
+    items:
+      type: array
+      items:
+        $ref: "#/components/schemas/CmsItem"
+    status:
+      type: boolean
+      nullable: true
+
+SearchGroup:
+  type: object
+  properties:
+    type:
+      type: string
+    label:
+      type: string
+    filterKey:
+      type: string
+    count:
+      type: integer
+    items:
+      type: array
+      items:
+        type: object
+        properties:
+          id:
+            type: string
+          name:
+            type: string
+          slug:
+            type: string
+          href:
+            type: string
+          type:
+            type: string
+          logo:
+            type: string
+            nullable: true
+          description:
+            type: string
+          vendorName:
+            type: string
+            nullable: true

@@ -1,0 +1,157 @@
+/courses:
+  get:
+    tags: [Courses]
+    summary: List courses
+    parameters:
+      - in: query
+        name: page
+        schema: { type: integer, default: 1 }
+      - in: query
+        name: limit
+        schema: { type: integer, default: 20 }
+      - in: query
+        name: product
+        schema: { type: string }
+      - in: query
+        name: q
+        schema: { type: string }
+    responses:
+      "200":
+        description: Paginated courses
+  post:
+    tags: [Courses]
+    summary: Create course
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Course"
+    responses:
+      "201":
+        description: Created
+      "400":
+        description: Validation failed
+      "404":
+        description: Product not found
+
+/courses/catalog:
+  get:
+    tags: [Courses]
+    summary: Course catalog (faceted filter query)
+    description: |
+      Filter courses by vendor, product, skillingArea, skillLevel, industry, q.
+      Multi-select values are comma-separated ObjectIds.
+    parameters:
+      - in: query
+        name: page
+        schema: { type: integer, default: 1 }
+      - in: query
+        name: limit
+        schema: { type: integer, default: 20 }
+      - in: query
+        name: vendor
+        schema: { type: string }
+      - in: query
+        name: product
+        schema: { type: string }
+      - in: query
+        name: skillingArea
+        schema: { type: string }
+      - in: query
+        name: skillLevel
+        schema: { type: string }
+      - in: query
+        name: industry
+        schema: { type: string }
+      - in: query
+        name: q
+        schema: { type: string }
+    responses:
+      "200":
+        description: Filtered catalog courses
+
+/courses/catalog/filters:
+  get:
+    tags: [Courses]
+    summary: Catalog filter facets
+    description: Schema-driven filter groups with option counts for the current query.
+    parameters:
+      - in: query
+        name: vendor
+        schema: { type: string }
+      - in: query
+        name: product
+        schema: { type: string }
+      - in: query
+        name: skillingArea
+        schema: { type: string }
+      - in: query
+        name: skillLevel
+        schema: { type: string }
+      - in: query
+        name: industry
+        schema: { type: string }
+      - in: query
+        name: q
+        schema: { type: string }
+    responses:
+      "200":
+        description: Filter groups
+
+/courses/product/{productId}:
+  get:
+    tags: [Courses]
+    summary: List courses by product id
+    parameters:
+      - in: path
+        name: productId
+        required: true
+        schema: { type: string }
+      - in: query
+        name: page
+        schema: { type: integer }
+      - in: query
+        name: limit
+        schema: { type: integer }
+    responses:
+      "200":
+        description: Courses for product
+      "404":
+        description: Product not found
+
+/courses/{slug}:
+  parameters:
+    - in: path
+      name: slug
+      required: true
+      schema: { type: string }
+  get:
+    tags: [Courses]
+    summary: Get course by slug
+    responses:
+      "200":
+        description: Course (product, vendor, taxonomies populated)
+      "404":
+        description: Not found
+  put:
+    tags: [Courses]
+    summary: Update course by slug
+    requestBody:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Course"
+    responses:
+      "200":
+        description: Updated
+      "404":
+        description: Not found
+  delete:
+    tags: [Courses]
+    summary: Delete course by slug
+    responses:
+      "200":
+        description: Deleted
+      "404":
+        description: Not found

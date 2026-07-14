@@ -1,0 +1,151 @@
+/page-sections:
+  get:
+    tags: [Page Sections]
+    summary: List page-section mappings / template tags
+    parameters:
+      - in: query
+        name: page_key
+        schema: { type: string }
+    responses:
+      "200":
+        description: Page sections
+  post:
+    tags: [Page Sections]
+    summary: Tag a section onto a page template
+    requestBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              page_key: { type: string }
+              section_key: { type: string }
+              sort_order: { type: integer }
+    responses:
+      "200":
+        description: Tagged
+      "201":
+        description: Created
+
+/page-sections/reorder:
+  put:
+    tags: [Page Sections]
+    summary: Reorder page section placements
+    requestBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              page_key: { type: string }
+              order:
+                type: array
+                items: { type: string }
+                description: Ordered placement ids
+    responses:
+      "200":
+        description: Reordered
+
+/page-sections/entity:
+  get:
+    tags: [Page Sections]
+    summary: List entity page section overrides / extras
+    parameters:
+      - in: query
+        name: page_key
+        required: true
+        schema: { type: string }
+      - in: query
+        name: entity_id
+        required: true
+        schema: { type: string }
+    responses:
+      "200":
+        description: Entity page sections
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                success: { type: boolean }
+                data:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/EntityPageSection"
+  put:
+    tags: [Page Sections]
+    summary: Upsert entity page section override or extra
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/EntityPageSection"
+    responses:
+      "200":
+        description: Upserted
+
+/page-sections/entity/{id}:
+  delete:
+    tags: [Page Sections]
+    summary: Delete entity page section by id
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema: { type: string }
+    responses:
+      "200":
+        description: Deleted
+      "404":
+        description: Not found
+
+/page-sections/{id}:
+  parameters:
+    - in: path
+      name: id
+      required: true
+      schema: { type: string }
+  put:
+    tags: [Page Sections]
+    summary: Update page section placement
+    requestBody:
+      content:
+        application/json:
+          schema:
+            type: object
+    responses:
+      "200":
+        description: Updated
+      "404":
+        description: Not found
+  delete:
+    tags: [Page Sections]
+    summary: Delete page section placement
+    responses:
+      "200":
+        description: Deleted
+      "404":
+        description: Not found
+
+/page-sections/{id}/status:
+  patch:
+    tags: [Page Sections]
+    summary: Set page section status
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema: { type: string }
+    requestBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              status: { type: boolean }
+    responses:
+      "200":
+        description: Updated
+      "404":
+        description: Not found

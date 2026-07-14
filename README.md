@@ -21,10 +21,15 @@ Default ports: API **3000**, client **3001**. MongoDB: `mongodb://localhost:2701
 
 ## How models connect
 
+### Schema diagram
+
+![SkillHub database ER diagram](./Untitled%20(1).png)
+
+Source DBML: [`server/docs/schema.dbml`](./server/docs/schema.dbml)
+
 ### Catalog graph
 
-```
-┌──────────┐         ┌──────────┐         ┌──────────┐
+```┌──────────┐         ┌──────────┐         ┌──────────┐
 │  Vendor  │────1:*──│ Product  │────1:*──│  Course  │
 └──────────┘         └──────────┘         └────┬─────┘
                                                │

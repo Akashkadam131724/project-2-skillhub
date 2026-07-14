@@ -1,0 +1,34 @@
+/search:
+  get:
+    tags: [Search]
+    summary: Global search
+    description: |
+      Search vendors, products, courses, skilling areas, and industries.
+      Requires at least 2 characters in `q`.
+    parameters:
+      - in: query
+        name: q
+        required: true
+        schema: { type: string, minLength: 2 }
+      - in: query
+        name: limit
+        schema: { type: integer, default: 6, maximum: 20 }
+        description: Max results per group
+    responses:
+      "200":
+        description: Grouped search results
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                success: { type: boolean }
+                q: { type: string }
+                total: { type: integer }
+                groups:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/SearchGroup"
+                message:
+                  type: string
+                  description: Present when q is too short

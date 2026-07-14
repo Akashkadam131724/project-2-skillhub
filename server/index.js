@@ -17,6 +17,7 @@ import pageSectionRoutes from "./src/modules/cms/page-section.routes.js";
 import uploadRoutes, {
   UPLOADS_ROOT,
 } from "./src/modules/uploads/upload.routes.js";
+import { mountSwagger } from "./src/docs/openapi.js";
 
 const app = express();
 app.use(cors());
@@ -27,6 +28,7 @@ app.get("/", (req, res) => {
   res.send({ message: "hello world" });
 });
 
+mountSwagger(app);
 app.use("/uploads", express.static(UPLOADS_ROOT));
 app.use("/api/uploads", uploadRoutes);
 
