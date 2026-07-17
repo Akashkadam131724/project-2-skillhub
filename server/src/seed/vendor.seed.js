@@ -6,7 +6,8 @@ import connectDB from "../config/db.js";
 import Vendor from "../modules/vendor/vendor.model.js";
 
 /**
- * Seeds filtered vendors only (no fake bulk vendors).
+ * Seeds curated vendors with public web logos (Google favicon CDN by domain).
+ * Replaces prior NetCom enterprise dump with realistic training-vendor data.
  *
  * Usage:
  *   npm run seed:vendors
@@ -39,34 +40,48 @@ function truncate(text, max) {
   return `${value.slice(0, max - 1).trim()}…`;
 }
 
+function logoFor(raw, fallbackDomain) {
+  const domain = String(raw.domain || fallbackDomain || "").trim();
+  const fromWeb = domain
+    ? `https://www.google.com/s2/favicons?domain=${encodeURIComponent(domain)}&sz=128`
+    : null;
+  return (
+    raw.logo ||
+    raw.color_logo ||
+    raw.vendor_catalogue_logo ||
+    fromWeb
+  );
+}
+
 function mapVendor(raw, index) {
   const slug = toSlug(raw.slug || raw.name);
   const shortDescription = truncate(
     stripHtml(raw.short_description || raw.overview || ""),
     2000
   );
+  const logo = logoFor(raw, raw.domain);
 
   return {
     name: String(raw.name).trim(),
     slug,
-    email: `vendor.${slug || index}@netcom.local`,
+    email: `vendor.${slug || index}@skillhub.local`,
     description: shortDescription,
     shortDescription,
     overview: stripHtml(raw.overview || ""),
     overviewTitle: raw.overview_title || "",
     subHeading: raw.sub_heading || "",
     redirectUrl: raw.redirect_url || "",
-    logoUrl: raw.logo || null,
-    partnerLogo: raw.partner_logo || null,
-    colorLogo: raw.color_logo || null,
+    logoUrl: logo,
+    partnerLogo: raw.partner_logo || logo,
+    colorLogo: raw.color_logo || logo,
     whiteLogo: raw.white_logo || null,
-    vendorCatalogueLogo: raw.vendor_catalogue_logo || null,
+    vendorCatalogueLogo: raw.vendor_catalogue_logo || logo,
     productCount: Number(raw.product_count) || 0,
     courseCount: Number(raw.course_count) || 0,
     certificationCount: Number(raw.certification_count) || 0,
     learnersCount: Number(raw.learners_count) || 0,
     status: "active",
-    isVerified: Boolean(raw.logo || raw.partner_logo || raw.color_logo),
+    isVerified: true,
     categories: ["training", "certification"],
   };
 }

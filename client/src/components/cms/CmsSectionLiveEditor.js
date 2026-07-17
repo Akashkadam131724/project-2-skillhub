@@ -22,7 +22,10 @@ import {
 } from "@/lib/section-registry";
 import { FallbackSection } from "@/components/sections";
 import { mediaUrl, uploadCmsImage } from "@/lib/cms-api";
+import { mediaAlt } from "@/lib/media-alt";
 import { normalizeContentScope } from "@/lib/content-scope";
+import CmsSectionToolbar from "@/components/cms/CmsSectionToolbar";
+import SectionSurface from "@/components/sections/SectionSurface";
 import CmsBgColorPicker from "@/components/cms/CmsBgColorPicker";
 import CmsRichTextEditor from "@/components/cms/CmsRichTextEditor";
 import { sanitizeRichHtml } from "@/lib/rich-text";
@@ -58,10 +61,10 @@ export const CMS_FIELD_META = {
     input: "richtext",
     hint: "Rich text — lists, links, images, color, alignment (stored in section data)",
   },
-  bg_color: {
-    label: "Background",
+  section_bg_color: {
+    label: "Background color",
     input: "bg_color",
-    hint: "Solid color or gradient (stored in data.bg_color)",
+    hint: "Solid color or gradient for this section band",
   },
   buttons: {
     label: "Buttons",
@@ -80,7 +83,9 @@ const inputClass =
 
 function fieldValue(section, field) {
   if (field === "body") return section?.data?.body || "";
-  if (field === "bg_color") return section?.data?.bg_color || "";
+  if (field === "section_bg_color") {
+    return section?.section_bg_color || section?.data?.bg_color || "";
+  }
   return section?.[field] || "";
 }
 
@@ -198,11 +203,9 @@ export default function CmsSectionLiveEditor({
         patch = {
           data: { ...(section.data || {}), body: value || null },
         };
-      } else if (editingField === "bg_color") {
+      } else if (editingField === "section_bg_color") {
         const value = fieldValueState.trim();
-        patch = {
-          data: { ...(section.data || {}), bg_color: value || null },
-        };
+        patch = { section_bg_color: value || null };
       } else {
         const value = fieldValueState.trim();
         patch = { [editingField]: value || null };
@@ -227,98 +230,51 @@ export default function CmsSectionLiveEditor({
       {toolbarExtra}
 
       <div
-        className={`relative overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-950 ${
+        className={`overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-950 ${
           hidden ? "opacity-50" : ""
         }`}
       >
-        <div className="absolute top-3 right-3 z-10 flex flex-wrap items-center justify-end gap-1.5">
-          <SectionPreviewThumb
-            src={section.section_preview_img}
-            alt={key}
-            className="size-9 border border-white/80 shadow"
-          />
-          <span className="rounded bg-slate-900/80 px-2 py-0.5 text-[10px] font-semibold tracking-wide text-white uppercase">
-            {key}
-          </span>
-          <span className="rounded bg-brand px-2 py-0.5 text-[10px] font-semibold text-white">
-            {layerLabel}
-          </span>
-          {contentLocked ? (
-            <span className="rounded bg-amber-600 px-2 py-0.5 text-[10px] font-semibold text-white">
-              Locked
-            </span>
-          ) : null}
-          {hidden ? (
-            <span className="rounded bg-rose-600 px-2 py-0.5 text-[10px] font-semibold text-white">
-              Hidden
-            </span>
-          ) : null}
-          <button
-            type="button"
-            onClick={() => openFieldEdit("in_page_nav_title")}
-            className="inline-flex h-8 items-center rounded-lg border-0 bg-white px-2.5 text-[11px] font-semibold text-slate-700 shadow hover:bg-slate-50 dark:bg-slate-900 dark:text-slate-100"
-            title="Edit in-page nav title"
-          >
-            Nav
-          </button>
-          {sectionUsesImage(key) ? (
-            <button
-              type="button"
-              onClick={() => openFieldEdit("section_img_url")}
-              className="inline-flex h-8 items-center rounded-lg border-0 bg-white px-2.5 text-[11px] font-semibold text-slate-700 shadow hover:bg-slate-50 dark:bg-slate-900 dark:text-slate-100"
-              title="Edit section image"
-            >
-              Img
-            </button>
-          ) : null}
-          {sectionUsesBg(key) ? (
-            <button
-              type="button"
-              onClick={() => openFieldEdit("section_bg_img")}
-              className="inline-flex h-8 items-center rounded-lg border-0 bg-white px-2.5 text-[11px] font-semibold text-slate-700 shadow hover:bg-slate-50 dark:bg-slate-900 dark:text-slate-100"
-              title="Edit background image"
-            >
-              BG
-            </button>
-          ) : null}
-          {sectionUsesBgColor(key) ? (
-            <button
-              type="button"
-              onClick={() => openFieldEdit("bg_color")}
-              className="inline-flex h-8 items-center rounded-lg border-0 bg-white px-2.5 text-[11px] font-semibold text-slate-700 shadow hover:bg-slate-50 dark:bg-slate-900 dark:text-slate-100"
-              title="Edit background color / gradient"
-            >
-              Color
-            </button>
-          ) : null}
-          <button
-            type="button"
-            onClick={() => openFieldEdit("buttons")}
-            className="inline-flex h-8 items-center rounded-lg border-0 bg-white px-2.5 text-[11px] font-semibold text-slate-700 shadow hover:bg-slate-50 dark:bg-slate-900 dark:text-slate-100"
-            title="Edit buttons"
-          >
-            Btns
-          </button>
-          {showVisibilityToggle && onToggleStatus ? (
-            <button
-              type="button"
-              onClick={() => onToggleStatus(!hidden)}
-              className="inline-flex h-8 items-center rounded-lg border-0 bg-white px-2.5 text-[11px] font-semibold text-slate-700 shadow hover:bg-slate-50 dark:bg-slate-900 dark:text-slate-100"
-              title={hidden ? "Show section" : "Hide section"}
-            >
-              {hidden ? "Show" : "Hide"}
-            </button>
-          ) : null}
-        </div>
-
-        <Comp
-          {...sectionProps}
-          section_key={key || _catalogKey}
-          cmsMode
-          onEditField={openFieldEdit}
-          surfaceTone="white"
-          pageContext={pageContext}
+        <CmsSectionToolbar
+          section={section}
+          preview={section.section_preview_img}
+          hidden={hidden}
+          layerLabel={layerLabel}
+          contentLocked={contentLocked}
+          onEditField={(_section, field) => openFieldEdit(field)}
+          onToggleVisibility={
+            showVisibilityToggle && onToggleStatus
+              ? () => onToggleStatus(!hidden)
+              : undefined
+          }
         />
+
+        {String(key || "").toLowerCase() === "in_page_nav" ? (
+          <Comp
+            {...sectionProps}
+            section_key={key || _catalogKey}
+            cmsMode
+            onEditField={openFieldEdit}
+            surfaceTone="white"
+            pageContext={pageContext}
+          />
+        ) : (
+          <SectionSurface
+            sectionKey={key || _catalogKey}
+            section_bg_color={section.section_bg_color}
+            section_bg_img={section.section_bg_img}
+            legacy_bg_color={section.data?.bg_color}
+            surfaceTone="white"
+          >
+            <Comp
+              {...sectionProps}
+              section_key={key || _catalogKey}
+              cmsMode
+              onEditField={openFieldEdit}
+              surfaceTone="white"
+              pageContext={pageContext}
+            />
+          </SectionSurface>
+        )}
       </div>
 
       <Drawer
@@ -396,8 +352,8 @@ export default function CmsSectionLiveEditor({
                       <CmsBgColorPicker
                         value={fieldValueState}
                         onChange={setFieldValueState}
-                        variant={key === "stats" ? "band" : "banner"}
-                        defaultLabel="Cyan default"
+                        variant="theme"
+                        defaultLabel="Default"
                       />
                     </div>
                     <div className="flex gap-2">
@@ -419,7 +375,7 @@ export default function CmsSectionLiveEditor({
                   </form>
                 ) : (
                   <form onSubmit={saveField} className="space-y-3">
-                    <label className="block text-sm">
+                    <div className="block text-sm">
                       <span className="mb-1 block font-medium text-slate-700 dark:text-slate-200">
                         {meta.label}
                       </span>
@@ -442,7 +398,7 @@ export default function CmsSectionLiveEditor({
                             // eslint-disable-next-line @next/next/no-img-element
                             <img
                               src={mediaUrl(fieldValueState)}
-                              alt=""
+                              alt={mediaAlt(meta.label, "Image preview")}
                               className="h-28 w-full rounded-lg object-cover"
                             />
                           ) : null}
@@ -504,7 +460,7 @@ export default function CmsSectionLiveEditor({
                           autoFocus
                         />
                       )}
-                    </label>
+                    </div>
                     <button
                       type="submit"
                       disabled={saving}
@@ -595,6 +551,7 @@ export function templatePlacementToLiveProps(tag, sectionDoc) {
     sub_title: pick("sub_title"),
     in_page_nav_title: pick("in_page_nav_title"),
     section_bg_img: pick("section_bg_img"),
+    section_bg_color: pick("section_bg_color"),
     section_img_url: pick("section_img_url"),
     section_preview_img:
       tag.section_preview_img || base.section_preview_img || "",

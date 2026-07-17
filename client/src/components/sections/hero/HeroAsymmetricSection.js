@@ -31,7 +31,7 @@ export default function HeroAsymmetricSection({
   }
 
   return (
-    <section className="overflow-hidden border-b border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-950">
+    <section className="overflow-hidden border-b border-slate-200 dark:border-slate-800">
       <SectionWrapper className="py-12 sm:py-14 lg:py-16">
         <div className="grid gap-8 lg:grid-cols-[minmax(0,1.6fr)_minmax(14rem,0.8fr)] lg:gap-10">
           <div className="min-w-0">

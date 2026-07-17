@@ -142,3 +142,22 @@ export async function fetchContentBySlug(slug, options = {}) {
     ...options,
   });
 }
+
+/** Lookup by public path (`about-us` or `company/careers`). */
+export async function fetchContentByPath(path, options = {}) {
+  return apiGet(`/contents${toQuery({ path })}`, {
+    notFoundMessage: "Content not found",
+    ...options,
+  });
+}
+
+export async function fetchBlogs(params = {}) {
+  return apiGet(`/blogs${toQuery(params)}`);
+}
+
+export async function fetchBlogBySlug(slug, options = {}) {
+  return apiGet(`/blogs/${encodeURIComponent(slug)}`, {
+    notFoundMessage: "Blog not found",
+    ...options,
+  });
+}

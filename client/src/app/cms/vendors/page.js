@@ -92,7 +92,7 @@ export default function CmsVendorsPage() {
       setForm(emptyForm);
       setShowForm(false);
       await load();
-      window.location.href = `/cms/vendors/${res.data.slug}`;
+      window.location.href = `/cms/vendor/${res.data.slug}`;
     } catch (err) {
       setError(err);
     } finally {
@@ -230,15 +230,15 @@ export default function CmsVendorsPage() {
                     <StatusBadge active={vendor.status === "active"} />
                   </div>
                   <p className="mt-0.5 mb-0 truncate text-xs text-slate-500">
-                    {vendor.email} · /vendors/{vendor.slug}
+                    {vendor.email} · /vendor/{vendor.slug}
                   </p>
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  <Link href={`/cms/vendors/${vendor.slug}`} className={btnSecondary}>
+                  <Link href={`/cms/vendor/${vendor.slug}`} className={btnSecondary}>
                     Edit
                   </Link>
                   <Link
-                    href={`/vendors/${vendor.slug}?cms=true`}
+                    href={`/vendor/${vendor.slug}?cms=true`}
                     className={btnPrimary}
                   >
                     Edit live

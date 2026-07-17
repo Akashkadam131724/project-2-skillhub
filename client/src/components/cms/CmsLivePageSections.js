@@ -4,10 +4,32 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import SectionWrapper from "@/components/sections/SectionWrapper";
-import { SECTION_COMPONENTS, sectionUsesAltSurface, sectionUsesImage, sectionUsesBg, sectionUsesBgColor, sectionUsesItems, getSectionItemsConfig } from "@/lib/section-registry";
+import { SECTION_COMPONENTS, sectionUsesAltSurface, sectionUsesImage, sectionUsesBg, sectionUsesItems, getSectionItemsConfig } from "@/lib/section-registry";
 import { FallbackSection } from "@/components/sections";
 import Drawer from "@/components/ui/Drawer";
-import { SectionPreviewThumb } from "@/components/cms/CmsUi";
+import {
+  EmptyState,
+  SectionPreviewThumb,
+  inputClass,
+} from "@/components/cms/CmsUi";
+import CmsPagePreviewStack from "@/components/cms/CmsPagePreviewStack";
+import {
+  FilterGroup,
+  FilterChipRow,
+  buildCategoryOptions,
+  sectionCategory,
+  sectionKind,
+} from "@/components/cms/CmsSectionFilters";
+import CmsSectionToolbar from "@/components/cms/CmsSectionToolbar";
+import SectionSurface from "@/components/sections/SectionSurface";
+import PageThemeShell from "@/components/cms/PageThemeShell";
+import {
+  defaultSiteTheme,
+  emptyPageTheme,
+  mergeTheme,
+  normalizePageTheme,
+  surfaceToneForMode,
+} from "@/lib/theme";
 import CmsBgColorPicker from "@/components/cms/CmsBgColorPicker";
 import CmsButtonsEditor, {
   normalizeButtonsDraft,
@@ -20,13 +42,17 @@ import CmsItemsEditor, {
 import { shouldRenderPlacement } from "@/lib/item-types";
 import {
   deleteEntityPageSection,
+  deleteEntityPageTheme,
   getEntityPageSections,
+  getEntityPageTheme,
   getPage,
+  getSiteTheme,
   listPageSections,
   listSections,
   mediaUrl,
   uploadCmsImage,
   upsertEntityPageSection,
+  upsertEntityPageTheme,
 } from "@/lib/cms-api";
 import {
   contentLockedAtLayer,
@@ -36,6 +62,7 @@ import {
 } from "@/lib/content-scope";
 import CmsModeToggle from "@/components/CmsModeToggle";
 import CmsRichTextEditor from "@/components/cms/CmsRichTextEditor";
+import CmsThemeEditor from "@/components/cms/CmsThemeEditor";
 import { sanitizeRichHtml } from "@/lib/rich-text";
 
 const FIELD_META = {
@@ -69,10 +96,10 @@ const FIELD_META = {
     input: "richtext",
     hint: "Rich text — lists, links, images, color, alignment (stored in section data)",
   },
-  bg_color: {
-    label: "Background",
+  section_bg_color: {
+    label: "Background color",
     input: "bg_color",
-    hint: "Solid color or gradient for this section band (stored in data.bg_color)",
+    hint: "Solid color or gradient for this section band",
   },
   buttons: {
     label: "Buttons",
@@ -98,7 +125,11 @@ function previewSrc(section, catalog = []) {
 
 function fieldValue(section, field) {
   if (field === "body") return section?.data?.body || "";
-  if (field === "bg_color") return section?.data?.bg_color || "";
+  if (field === "section_bg_color") {
+    return (
+      section?.section_bg_color || section?.data?.bg_color || ""
+    );
+  }
   return section?.[field] || "";
 }
 
@@ -193,6 +224,7 @@ function mergePlacements(tags, overrides, entityId, catalog = [], sortDisabled =
       sub_title: pick("sub_title"),
       in_page_nav_title: pick("in_page_nav_title"),
       section_bg_img: pick("section_bg_img"),
+      section_bg_color: pick("section_bg_color"),
       section_img_url: pick("section_img_url"),
       section_preview_img:
         pick("section_preview_img") ||
@@ -247,6 +279,15 @@ function mergePlacements(tags, overrides, entityId, catalog = [], sortDisabled =
         content_scope === "global"
           ? catalogSection?.section_bg_img || ""
           : extra.section_bg_img || catalogSection?.section_bg_img || "",
+      section_bg_color:
+        content_scope === "global"
+          ? catalogSection?.section_bg_color ||
+            catalogSection?.data?.bg_color ||
+            ""
+          : extra.section_bg_color ||
+            catalogSection?.section_bg_color ||
+            catalogSection?.data?.bg_color ||
+            "",
       section_img_url:
         content_scope === "global"
           ? catalogSection?.section_img_url || ""
@@ -282,9 +323,12 @@ function mergePlacements(tags, overrides, entityId, catalog = [], sortDisabled =
   );
 }
 
+const SHOW_SECTION_PREVIEWS_KEY = "cms-show-section-previews";
+
 function SectionRender({
   section,
   cmsMode,
+  showSectionPreviews = false,
   surfaceTone,
   pageContext,
   catalog = [],
@@ -300,6 +344,7 @@ function SectionRender({
   const key = section.section_key;
   const pid = placementKey(section);
   const preview = previewSrc(section, catalog);
+  const previewUrl = mediaUrl(preview);
   const cmsProps = cmsMode
     ? {
         cmsMode: true,
@@ -311,133 +356,62 @@ function SectionRender({
     SECTION_COMPONENTS[String(key || "").toLowerCase()] || FallbackSection;
   // Section catalog docs use `key` — must not spread into JSX (React reserved)
   const { key: _catalogKey, ...sectionProps } = section;
-  const body = (
-    <Comp
-      {...sectionProps}
-      section_key={key || _catalogKey}
-      {...cmsProps}
-      surfaceTone={surfaceTone}
-      pageContext={pageContext}
-      {...(key === "in_page_nav" ? { navSections: navSections || [] } : {})}
-    />
-  );
+  const compProps = {
+    ...sectionProps,
+    section_key: key || _catalogKey,
+    ...cmsProps,
+    surfaceTone,
+    pageContext,
+    ...(key === "in_page_nav" ? { navSections: navSections || [] } : {}),
+  };
+
+  // Sticky nav must NOT sit inside SectionSurface (or any short wrapper) —
+  // position:sticky is limited to its parent's height, so a nav-tall parent
+  // makes sticky appear broken.
+  let body;
+  if (cmsMode && showSectionPreviews) {
+    body = previewUrl ? (
+      <div className="w-full bg-slate-100 dark:bg-slate-900">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={previewUrl}
+          alt={`${section.section_title || key || "Section"} preview`}
+          className="block h-auto w-full"
+        />
+      </div>
+    ) : (
+      <div className="border-y border-dashed border-slate-300 bg-slate-50 px-4 py-10 text-center text-sm text-slate-500 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-400">
+        No preview image for{" "}
+        <span className="font-mono text-xs">{key || "section"}</span>
+      </div>
+    );
+  } else if (key === "in_page_nav") {
+    body = <Comp {...compProps} />;
+  } else {
+    body = (
+      <SectionSurface
+        sectionKey={key || _catalogKey}
+        section_bg_color={section.section_bg_color}
+        section_bg_img={section.section_bg_img}
+        legacy_bg_color={section.data?.bg_color}
+        surfaceTone={surfaceTone}
+      >
+        <Comp {...compProps} />
+      </SectionSurface>
+    );
+  }
 
   const cmsToolbar = cmsMode ? (
-    <div className="absolute top-3 right-3 z-10 flex items-center gap-1.5">
-      <SectionPreviewThumb
-        src={preview}
-        alt={section.section_key}
-        className="size-9 border border-white/80 shadow"
-      />
-      <span className="rounded bg-slate-900/80 px-2 py-0.5 text-[10px] font-semibold tracking-wide text-white uppercase">
-        {section.section_key}
-      </span>
-      {section.is_entity_extra ? (
-        <span className="rounded bg-emerald-700 px-2 py-0.5 text-[10px] font-semibold text-white">
-          This page only
-        </span>
-      ) : null}
-      {hidden ? (
-        <span className="rounded bg-rose-600 px-2 py-0.5 text-[10px] font-semibold text-white">
-          Hidden
-        </span>
-      ) : null}
-      <button
-        type="button"
-        onClick={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          onEditField?.(section, "in_page_nav_title");
-        }}
-        className="inline-flex h-8 items-center rounded-lg border-0 bg-white px-2.5 text-[11px] font-semibold text-slate-700 shadow hover:bg-slate-50 dark:bg-slate-900 dark:text-slate-100 dark:hover:bg-slate-800"
-        title="Edit in-page nav title"
-      >
-        Nav
-      </button>
-      {sectionUsesImage(section.section_key) ? (
-        <button
-          type="button"
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            onEditField?.(section, "section_img_url");
-          }}
-          className="inline-flex h-8 items-center rounded-lg border-0 bg-white px-2.5 text-[11px] font-semibold text-slate-700 shadow hover:bg-slate-50 dark:bg-slate-900 dark:text-slate-100 dark:hover:bg-slate-800"
-          title="Edit section image (used by this section’s layout)"
-        >
-          Img
-        </button>
-      ) : null}
-      {sectionUsesBg(section.section_key) ? (
-        <button
-          type="button"
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            onEditField?.(section, "section_bg_img");
-          }}
-          className="inline-flex h-8 items-center rounded-lg border-0 bg-white px-2.5 text-[11px] font-semibold text-slate-700 shadow hover:bg-slate-50 dark:bg-slate-900 dark:text-slate-100 dark:hover:bg-slate-800"
-          title="Edit background image"
-        >
-          BG
-        </button>
-      ) : null}
-      {sectionUsesBgColor(section.section_key) ? (
-        <button
-          type="button"
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            onEditField?.(section, "bg_color");
-          }}
-          className="inline-flex h-8 items-center rounded-lg border-0 bg-white px-2.5 text-[11px] font-semibold text-slate-700 shadow hover:bg-slate-50 dark:bg-slate-900 dark:text-slate-100 dark:hover:bg-slate-800"
-          title="Edit background color / gradient"
-        >
-          Color
-        </button>
-      ) : null}
-      <button
-        type="button"
-        onClick={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          onEditField?.(section, "buttons");
-        }}
-        className="inline-flex h-8 items-center rounded-lg border-0 bg-white px-2.5 text-[11px] font-semibold text-slate-700 shadow hover:bg-slate-50 dark:bg-slate-900 dark:text-slate-100 dark:hover:bg-slate-800"
-        title="Edit section buttons"
-      >
-        Btns
-      </button>
-      <button
-        type="button"
-        onClick={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          onToggleVisibility?.(section);
-        }}
-        className="inline-flex h-8 items-center rounded-lg border-0 bg-white px-2.5 text-[11px] font-semibold text-slate-700 shadow hover:bg-slate-50 dark:bg-slate-900 dark:text-slate-100 dark:hover:bg-slate-800"
-        title={hidden ? "Show section" : "Hide section"}
-      >
-        {hidden ? "Show" : "Hide"}
-      </button>
-      {section.is_entity_extra ? (
-        <button
-          type="button"
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            onRemoveExtra?.(section);
-          }}
-          className="inline-flex h-8 items-center rounded-lg border-0 bg-white px-2.5 text-[11px] font-semibold text-rose-700 shadow hover:bg-rose-50 dark:bg-slate-900 dark:text-rose-300"
-          title="Remove from this page"
-        >
-          Remove
-        </button>
-      ) : null}
-    </div>
+    <CmsSectionToolbar
+      section={section}
+      preview={preview}
+      hidden={hidden}
+      onEditField={onEditField}
+      onToggleVisibility={onToggleVisibility}
+      onRemoveExtra={onRemoveExtra}
+    />
   ) : null;
 
-  // Sticky nav must NOT sit inside a short wrapper — sticky is clipped to its parent height.
   if (key === "in_page_nav") {
     return (
       <>
@@ -447,11 +421,7 @@ function SectionRender({
           aria-hidden
         />
         {cmsMode ? (
-          <div
-            className={`relative z-[45] transition ${
-              hidden ? "opacity-40" : ""
-            }`}
-          >
+          <div className={`transition ${hidden ? "opacity-40" : ""}`}>
             {cmsToolbar}
           </div>
         ) : null}
@@ -463,7 +433,7 @@ function SectionRender({
   return (
     <div
       id={`cms-section-${pid}`}
-      className={`relative scroll-mt-[120px] transition ${
+      className={`scroll-mt-[120px] transition ${
         cmsMode && hidden ? "opacity-40" : ""
       }`}
     >
@@ -473,14 +443,12 @@ function SectionRender({
   );
 }
 
-const inputClass =
-  "w-full rounded-lg border border-slate-300 bg-white px-2.5 py-2 text-sm outline-none focus:border-brand dark:border-slate-700 dark:bg-slate-900";
-
 export default function CmsLivePageSections({
   pageKey,
   entityId,
   entityLabel,
   initialSections = [],
+  initialTheme = null,
   cmsMode: cmsModeProp = false,
   exitHref: exitHrefProp,
   pageContext = null,
@@ -509,8 +477,25 @@ export default function CmsLivePageSections({
       is_entity_extra: Boolean(s.is_entity_extra),
     }))
   );
+  const [pageTheme, setPageTheme] = useState(
+    () => initialTheme || defaultSiteTheme()
+  );
+  const [entityThemeDraft, setEntityThemeDraft] = useState(emptyPageTheme());
+  const [templateTheme, setTemplateTheme] = useState(null);
+  const [siteThemeDoc, setSiteThemeDoc] = useState(null);
+
+  useEffect(() => {
+    if (initialTheme) setPageTheme(initialTheme);
+  }, [initialTheme]);
+
   const [catalog, setCatalog] = useState([]);
   const [addKey, setAddKey] = useState("");
+  const [addSearch, setAddSearch] = useState("");
+  const [addScopeFilter, setAddScopeFilter] = useState("all");
+  const [addKindFilter, setAddKindFilter] = useState("all");
+  const [addPlacedFilter, setAddPlacedFilter] = useState("all");
+  const [addCategoryFilter, setAddCategoryFilter] = useState("all");
+  const [addCategorySearch, setAddCategorySearch] = useState("");
   const [editing, setEditing] = useState(null);
   const [fieldValueState, setFieldValueState] = useState("");
   const [buttonsDraft, setButtonsDraft] = useState([]);
@@ -523,7 +508,48 @@ export default function CmsLivePageSections({
   const [error, setError] = useState(null);
   const [saving, setSaving] = useState(false);
   const [panelOpen, setPanelOpen] = useState(false);
+  const [panelTab, setPanelTab] = useState("mapped");
   const [sortDisabled, setSortDisabled] = useState(true);
+  const [showSectionPreviews, setShowSectionPreviews] = useState(false);
+
+  useEffect(() => {
+    try {
+      setShowSectionPreviews(
+        localStorage.getItem(SHOW_SECTION_PREVIEWS_KEY) === "1"
+      );
+    } catch {
+      /* ignore */
+    }
+  }, []);
+
+  function toggleShowSectionPreviews() {
+    setShowSectionPreviews((prev) => {
+      const next = !prev;
+      try {
+        localStorage.setItem(SHOW_SECTION_PREVIEWS_KEY, next ? "1" : "0");
+      } catch {
+        /* ignore */
+      }
+      return next;
+    });
+  }
+
+  async function loadThemes(pageDoc) {
+    const [siteRes, entityRes] = await Promise.all([
+      getSiteTheme().catch(() => null),
+      entityId
+        ? getEntityPageTheme({ page_key: pageKey, entity_id: entityId }).catch(
+            () => null
+          )
+        : Promise.resolve(null),
+    ]);
+    const site = siteRes?.data || null;
+    const entityTheme = normalizePageTheme(entityRes?.data?.theme);
+    setSiteThemeDoc(site);
+    setTemplateTheme(normalizePageTheme(pageDoc?.theme));
+    setEntityThemeDraft(entityTheme);
+    setPageTheme(mergeTheme(site, pageDoc?.theme, entityTheme));
+  }
 
   useEffect(() => {
     if (!cmsMode || !entityId) return;
@@ -539,6 +565,7 @@ export default function CmsLivePageSections({
         if (!alive) return;
         const disabled = pageRes?.data?.is_sort_disabled !== false;
         setSortDisabled(disabled);
+        await loadThemes(pageRes?.data);
         setCatalog(sectionsRes.data || []);
         setSections(
           mergePlacements(
@@ -579,6 +606,7 @@ export default function CmsLivePageSections({
       const nextCatalog = sectionsRes.data || [];
       const disabled = pageRes?.data?.is_sort_disabled !== false;
       setSortDisabled(disabled);
+      await loadThemes(pageRes?.data);
       setCatalog(nextCatalog);
       const merged = mergePlacements(
         tagsRes.data || [],
@@ -616,19 +644,34 @@ export default function CmsLivePageSections({
 
   const visibleWithSurface = useMemo(() => {
     let altIndex = 0;
+    const mode = pageTheme?.surface_mode || "alternating";
+    const isTransparent =
+      String(mode).toLowerCase() === "transparent" ||
+      String(mode).toLowerCase() === "none";
     return visible.map((section) => {
-      const hasBgImg = Boolean(section.section_bg_img);
-      // Fixed surfaces + sections with a bg image skip white/grey alternation
+      const hasCustomBg = Boolean(
+        section.section_bg_img ||
+          section.section_bg_color ||
+          section.data?.bg_color
+      );
+      // Fixed surfaces + sections with custom bg skip white/grey alternation
       const usesAlt =
-        !hasBgImg && sectionUsesAltSurface(section.section_key);
+        !hasCustomBg &&
+        !isTransparent &&
+        sectionUsesAltSurface(section.section_key);
       let surfaceTone;
-      if (usesAlt) {
-        surfaceTone = altIndex % 2 === 0 ? "white" : "muted";
+      if (isTransparent && !hasCustomBg) {
+        surfaceTone = null; // clear — page bg shows through
+      } else if (usesAlt) {
+        surfaceTone = surfaceToneForMode(mode, altIndex);
         altIndex += 1;
       }
-      return { section, surfaceTone: hasBgImg ? undefined : surfaceTone };
+      return {
+        section,
+        surfaceTone: hasCustomBg ? undefined : surfaceTone,
+      };
     });
-  }, [visible]);
+  }, [visible, pageTheme?.surface_mode]);
 
   function openFieldEdit(section, field) {
     if (!FIELD_META[field]) return;
@@ -789,10 +832,10 @@ export default function CmsLivePageSections({
         await savePlacement(section, {
           data: { ...(section.data || {}), body: value || null },
         });
-      } else if (field === "bg_color") {
+      } else if (field === "section_bg_color") {
         const value = fieldValueState.trim();
         await savePlacement(section, {
-          data: { ...(section.data || {}), bg_color: value || null },
+          section_bg_color: value || null,
         });
       } else {
         const value = fieldValueState.trim();
@@ -866,6 +909,93 @@ export default function CmsLivePageSections({
     }
   }
 
+  const sectionOptions = useMemo(
+    () => (catalog || []).filter((s) => s.status !== false),
+    [catalog]
+  );
+
+  const placedKeys = useMemo(
+    () => new Set((sections || []).map((s) => s.section_key)),
+    [sections]
+  );
+
+  const filteredAddOptions = useMemo(() => {
+    const q = addSearch.trim().toLowerCase();
+    return sectionOptions.filter((s) => {
+      const scope = normalizeContentScope(s.content_scope);
+      if (addScopeFilter !== "all" && scope !== addScopeFilter) return false;
+      if (addKindFilter !== "all" && sectionKind(s.key) !== addKindFilter) {
+        return false;
+      }
+      if (
+        addCategoryFilter !== "all" &&
+        sectionCategory(s) !== addCategoryFilter
+      ) {
+        return false;
+      }
+      const onPage = placedKeys.has(s.key);
+      if (addPlacedFilter === "available" && onPage) return false;
+      if (addPlacedFilter === "placed" && !onPage) return false;
+      if (!q) return true;
+      return (
+        String(s.name || "")
+          .toLowerCase()
+          .includes(q) ||
+        String(s.key || "")
+          .toLowerCase()
+          .includes(q) ||
+        String(s.section_title || "")
+          .toLowerCase()
+          .includes(q)
+      );
+    });
+  }, [
+    sectionOptions,
+    addScopeFilter,
+    addKindFilter,
+    addCategoryFilter,
+    addPlacedFilter,
+    addSearch,
+    placedKeys,
+  ]);
+
+  const categoryOptions = useMemo(
+    () => buildCategoryOptions(sectionOptions),
+    [sectionOptions]
+  );
+
+  const addFilterCounts = useMemo(() => {
+    const scope = {
+      all: sectionOptions.length,
+      global: 0,
+      template: 0,
+      page: 0,
+    };
+    const kind = {
+      all: sectionOptions.length,
+      hero: 0,
+      cards: 0,
+      content: 0,
+      nav: 0,
+      other: 0,
+    };
+    let placed = 0;
+    for (const s of sectionOptions) {
+      scope[normalizeContentScope(s.content_scope)] += 1;
+      kind[sectionKind(s.key)] += 1;
+      if (placedKeys.has(s.key)) placed += 1;
+    }
+    return {
+      scope,
+      kind,
+      placed: {
+        all: sectionOptions.length,
+        available: sectionOptions.length - placed,
+        placed,
+      },
+    };
+  }, [sectionOptions, placedKeys]);
+
   const meta = editing ? FIELD_META[editing.field] : null;
   const itemsConfig =
     editing?.field === "items"
@@ -897,6 +1027,23 @@ export default function CmsLivePageSections({
               </p>
             </div>
             <div className="flex shrink-0 items-center gap-2">
+              <button
+                type="button"
+                onClick={toggleShowSectionPreviews}
+                aria-pressed={showSectionPreviews}
+                title={
+                  showSectionPreviews
+                    ? "Showing section preview images — click for live sections"
+                    : "Show section preview images instead of live sections"
+                }
+                className={`rounded-lg px-3 py-2 text-xs font-semibold transition ${
+                  showSectionPreviews
+                    ? "bg-emerald-700 text-white hover:bg-emerald-800"
+                    : "bg-white text-emerald-900 ring-1 ring-emerald-200 hover:bg-emerald-100 dark:bg-emerald-900/40 dark:text-emerald-50 dark:ring-emerald-800 dark:hover:bg-emerald-900/70"
+                }`}
+              >
+                {showSectionPreviews ? "Previews on" : "Previews off"}
+              </button>
               <CmsModeToggle variant="bar" />
               <button
                 type="button"
@@ -936,7 +1083,7 @@ export default function CmsLivePageSections({
         </div>
       ) : null}
 
-      <div className="bg-white dark:bg-slate-950">
+      <PageThemeShell theme={pageTheme}>
         {!visibleWithSurface.length ? (
           <SectionWrapper className="py-8 text-sm text-slate-500">
             No CMS sections yet.{" "}
@@ -962,6 +1109,7 @@ export default function CmsLivePageSections({
                   key={placementKey(section)}
                   section={section}
                   cmsMode={cmsMode}
+                  showSectionPreviews={showSectionPreviews}
                   surfaceTone={surfaceTone}
                   pageContext={pageContext}
                   catalog={catalog}
@@ -974,7 +1122,7 @@ export default function CmsLivePageSections({
             })}
           </>
         )}
-      </div>
+      </PageThemeShell>
 
       {cmsMode ? (
         <>
@@ -1004,44 +1152,253 @@ export default function CmsLivePageSections({
                 </div>
               ) : null}
 
-              <form onSubmit={addOnThisPage} className="space-y-2">
+              <div className="flex gap-1 rounded-lg border border-slate-200 bg-slate-50 p-1 dark:border-slate-800 dark:bg-slate-900">
+                {[
+                  {
+                    key: "mapped",
+                    label: `Mapped Sections (${sections.length})`,
+                  },
+                  { key: "add", label: "Add new Sections" },
+                  { key: "preview", label: "Preview" },
+                  { key: "theme", label: "Theme" },
+                ].map((tab) => (
+                  <button
+                    key={tab.key}
+                    type="button"
+                    onClick={() => setPanelTab(tab.key)}
+                    className={`flex-1 rounded-md px-2 py-2 text-[11px] font-semibold transition sm:px-3 sm:text-xs ${
+                      panelTab === tab.key
+                        ? "bg-white text-brand shadow-sm dark:bg-slate-950 dark:text-white"
+                        : "text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-100"
+                    }`}
+                  >
+                    {tab.label}
+                  </button>
+                ))}
+              </div>
+
+              {panelTab === "theme" ? (
+              <div className="rounded-xl border border-slate-200 p-3 dark:border-slate-800">
+                <div className="mb-3 flex flex-wrap items-start justify-between gap-2">
+                  <div>
+                    <p className="m-0 text-[11px] font-semibold tracking-wide text-slate-500 uppercase">
+                      This page theme
+                    </p>
+                    <p className="mt-0.5 mb-0 text-xs text-slate-500">
+                      Overrides for{" "}
+                      <span className="font-semibold text-slate-700 dark:text-slate-200">
+                        {entityLabel || "this page"}
+                      </span>{" "}
+                      only. Empty fields use the template theme (then site).
+                    </p>
+                  </div>
+                  <div className="flex flex-wrap gap-1.5">
+                    <Link
+                      href="/cms/site-theme"
+                      className="rounded-md border border-slate-200 px-2 py-1 text-[11px] font-semibold text-slate-600 no-underline hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300"
+                    >
+                      Site theme
+                    </Link>
+                    <Link
+                      href={`/cms/pages/${pageKey}`}
+                      className="rounded-md border border-slate-200 px-2 py-1 text-[11px] font-semibold text-slate-600 no-underline hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300"
+                    >
+                      Template theme
+                    </Link>
+                  </div>
+                </div>
+                <CmsThemeEditor
+                  mode="page"
+                  inheritFrom="template"
+                  inheritedTheme={mergeTheme(siteThemeDoc, templateTheme)}
+                  value={entityThemeDraft}
+                  onChange={(next) => {
+                    setEntityThemeDraft(next);
+                    setPageTheme(
+                      mergeTheme(siteThemeDoc, templateTheme, next)
+                    );
+                  }}
+                  onSave={async () => {
+                    if (!entityId) return;
+                    setSaving(true);
+                    setError(null);
+                    try {
+                      await upsertEntityPageTheme({
+                        page_key: pageKey,
+                        entity_id: entityId,
+                        theme: entityThemeDraft,
+                      });
+                      await loadThemes(
+                        (
+                          await getPage(pageKey).catch(() => null)
+                        )?.data
+                      );
+                    } catch (err) {
+                      setError(err.message || "Could not save page theme");
+                    } finally {
+                      setSaving(false);
+                    }
+                  }}
+                  saving={saving}
+                  saveLabel="Save this page theme"
+                />
+                <button
+                  type="button"
+                  disabled={saving}
+                  onClick={async () => {
+                    if (!entityId) return;
+                    setSaving(true);
+                    setError(null);
+                    try {
+                      await deleteEntityPageTheme({
+                        page_key: pageKey,
+                        entity_id: entityId,
+                      });
+                      setEntityThemeDraft(emptyPageTheme());
+                      await loadThemes(
+                        (
+                          await getPage(pageKey).catch(() => null)
+                        )?.data
+                      );
+                    } catch (err) {
+                      setError(err.message || "Could not clear page theme");
+                    } finally {
+                      setSaving(false);
+                    }
+                  }}
+                  className="mt-3 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50 disabled:opacity-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300"
+                >
+                  Use template theme (clear this page)
+                </button>
+              </div>
+              ) : null}
+
+              {panelTab === "add" ? (
+              <form onSubmit={addOnThisPage} className="space-y-3">
                 <p className="m-0 text-[11px] font-semibold tracking-wide text-slate-500 uppercase">
                   Add on this page
                 </p>
-                <div className="grid max-h-48 grid-cols-2 gap-2 overflow-y-auto">
-                  {catalog.map((s) => {
-                    const selected = addKey === s.key;
-                    return (
-                      <div
-                        key={s.key}
-                        role="button"
-                        tabIndex={0}
-                        onClick={() => setAddKey(s.key)}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter" || e.key === " ") {
-                            e.preventDefault();
-                            setAddKey(s.key);
-                          }
-                        }}
-                        className={`flex cursor-pointer flex-col overflow-hidden rounded-lg border text-left transition ${
-                          selected
-                            ? "border-brand ring-2 ring-brand/30"
-                            : "border-slate-200 hover:border-slate-300 dark:border-slate-800"
-                        }`}
-                      >
-                        <SectionPreviewThumb
-                          src={s.section_preview_img}
-                          alt={s.name}
-                          className="h-16 w-full"
-                          rounded="rounded-none"
-                        />
-                        <span className="truncate px-2 py-1.5 text-[11px] font-medium text-slate-700 dark:text-slate-200">
-                          {s.name}
-                        </span>
-                      </div>
-                    );
-                  })}
+
+                <input
+                  className={inputClass}
+                  value={addSearch}
+                  onChange={(e) => setAddSearch(e.target.value)}
+                  placeholder="Search by name or key…"
+                />
+
+                <div className="rounded-lg border border-slate-200 bg-white p-3 dark:border-slate-800 dark:bg-slate-950">
+                  <FilterGroup
+                    title="Category"
+                    search={addCategorySearch}
+                    onSearch={setAddCategorySearch}
+                    placeholder="Search Category"
+                    options={categoryOptions}
+                    value={addCategoryFilter}
+                    onChange={setAddCategoryFilter}
+                    maxHeightClass="max-h-36"
+                  />
                 </div>
+
+                <FilterChipRow
+                  label="Scope"
+                  value={addScopeFilter}
+                  onChange={setAddScopeFilter}
+                  options={[
+                    { value: "all", label: "All scopes" },
+                    { value: "global", label: "Global" },
+                    { value: "template", label: "Template" },
+                    { value: "page", label: "Page" },
+                  ].map((opt) => ({
+                    ...opt,
+                    count: addFilterCounts.scope[opt.value] ?? 0,
+                  }))}
+                />
+
+                <FilterChipRow
+                  label="Type"
+                  value={addKindFilter}
+                  onChange={setAddKindFilter}
+                  activeClass="bg-ink text-white"
+                  options={[
+                    { value: "all", label: "All types" },
+                    { value: "hero", label: "Hero" },
+                    { value: "cards", label: "Cards" },
+                    { value: "content", label: "Content" },
+                    { value: "nav", label: "Nav" },
+                    { value: "other", label: "Other" },
+                  ].map((opt) => ({
+                    ...opt,
+                    count: addFilterCounts.kind[opt.value] ?? 0,
+                  }))}
+                />
+
+                <FilterChipRow
+                  label="On page"
+                  value={addPlacedFilter}
+                  onChange={setAddPlacedFilter}
+                  activeClass="bg-teal-700 text-white"
+                  options={[
+                    { value: "all", label: "All sections" },
+                    { value: "available", label: "Not on page" },
+                    { value: "placed", label: "Already on page" },
+                  ].map((opt) => ({
+                    ...opt,
+                    count: addFilterCounts.placed[opt.value] ?? 0,
+                  }))}
+                />
+
+                {!filteredAddOptions.length ? (
+                  <EmptyState message="No sections match these filters." />
+                ) : (
+                  <div className="grid max-h-56 grid-cols-2 gap-2 overflow-y-auto">
+                    {filteredAddOptions.map((s) => {
+                      const selected = addKey === s.key;
+                      const onPage = placedKeys.has(s.key);
+                      return (
+                        <div
+                          key={s.key}
+                          role="button"
+                          tabIndex={0}
+                          onClick={() => setAddKey(s.key)}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter" || e.key === " ") {
+                              e.preventDefault();
+                              setAddKey(s.key);
+                            }
+                          }}
+                          className={`flex cursor-pointer flex-col overflow-hidden rounded-lg border text-left transition ${
+                            selected
+                              ? "border-brand ring-2 ring-brand/30"
+                              : "border-slate-200 hover:border-slate-300 dark:border-slate-800"
+                          }`}
+                        >
+                          <SectionPreviewThumb
+                            src={s.section_preview_img}
+                            alt={s.name}
+                            className="h-16 w-full"
+                            rounded="rounded-none"
+                          />
+                          <div className="flex flex-wrap gap-1 px-2 pt-1">
+                            {onPage ? (
+                              <span className="rounded-full bg-amber-100 px-1.5 py-0.5 text-[10px] font-semibold text-amber-800 dark:bg-amber-950 dark:text-amber-300">
+                                On page
+                              </span>
+                            ) : null}
+                          </div>
+                          <span className="truncate px-2 py-1 text-[11px] font-medium text-slate-700 dark:text-slate-200">
+                            {s.name}
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+
+                <p className="m-0 text-[11px] text-slate-500">
+                  Showing {filteredAddOptions.length} of {sectionOptions.length}
+                  {addKey ? ` · selected: ${addKey}` : ""}
+                </p>
+
                 <button
                   type="submit"
                   disabled={!addKey || saving}
@@ -1050,7 +1407,9 @@ export default function CmsLivePageSections({
                   Add (this page only)
                 </button>
               </form>
+              ) : null}
 
+              {panelTab === "mapped" ? (
               <div>
                 <p className="mb-2 text-[11px] font-semibold tracking-wide text-slate-500 uppercase">
                   {sortDisabled
@@ -1168,6 +1527,20 @@ export default function CmsLivePageSections({
                   })}
                 </ul>
               </div>
+              ) : null}
+
+              {panelTab === "preview" ? (
+                <CmsPagePreviewStack
+                  emptyMessage="No sections mapped on this page yet."
+                  items={sections.map((s) => ({
+                    id: placementKey(s),
+                    section_key: s.section_key,
+                    sort_order: s.sort_order,
+                    hidden: s.status === false,
+                    preview: previewSrc(s, catalog),
+                  }))}
+                />
+              ) : null}
 
               <div className="border-t border-slate-200 pt-3 dark:border-slate-800">
                 <Link
@@ -1269,12 +1642,8 @@ export default function CmsLivePageSections({
                       <CmsBgColorPicker
                         value={fieldValueState}
                         onChange={setFieldValueState}
-                        variant={
-                          editing.section.section_key === "stats"
-                            ? "band"
-                            : "banner"
-                        }
-                        defaultLabel="Cyan default"
+                        variant="theme"
+                        defaultLabel="Default"
                       />
                     </div>
                     <div className="flex gap-2">
@@ -1299,7 +1668,7 @@ export default function CmsLivePageSections({
                     onSubmit={saveField}
                     className="space-y-3"
                   >
-                    <label className="block text-sm">
+                    <div className="block text-sm">
                       <span className="mb-1 block font-medium text-slate-700 dark:text-slate-200">
                         {meta.label}
                       </span>
@@ -1383,7 +1752,7 @@ export default function CmsLivePageSections({
                           autoFocus
                         />
                       )}
-                    </label>
+                    </div>
                     <button
                       type="submit"
                       disabled={saving}

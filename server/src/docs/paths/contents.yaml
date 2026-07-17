@@ -15,6 +15,10 @@
       - in: query
         name: q
         schema: { type: string }
+      - in: query
+        name: path
+        schema: { type: string }
+        description: Exact public path lookup (e.g. company/careers). Returns a single document.
     responses:
       "200":
         description: Paginated contents

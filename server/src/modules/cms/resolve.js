@@ -2,6 +2,9 @@ import mongoose from "mongoose";
 import Page from "./page.model.js";
 import Section, { normalizeContentScope } from "./section.model.js";
 import EntityPageSection from "./entity-page-section.model.js";
+import SiteTheme from "./site-theme.model.js";
+import EntityPageTheme from "./entity-page-theme.model.js";
+import { mergeTheme } from "./theme.utils.js";
 
 /** Overridable on page tags / entity mappings */
 const MAPPING_CONTENT_KEYS = [
@@ -9,6 +12,7 @@ const MAPPING_CONTENT_KEYS = [
   "sub_title",
   "in_page_nav_title",
   "section_bg_img",
+  "section_bg_color",
   "section_img_url",
   "data",
 ];
@@ -115,6 +119,22 @@ export async function resolvePageSections(pageKey, entityId = null) {
       meta: { reason: "page_disabled" },
     };
   }
+
+  const siteThemeDoc = await SiteTheme.getOrCreateDefault();
+  const siteTheme = siteThemeDoc?.toObject
+    ? siteThemeDoc.toObject()
+    : siteThemeDoc;
+
+  let entityTheme = null;
+  if (entityId && mongoose.Types.ObjectId.isValid(entityId)) {
+    const entityThemeDoc = await EntityPageTheme.findForEntity(
+      key,
+      entityId
+    ).lean();
+    entityTheme = entityThemeDoc?.theme || null;
+  }
+
+  const resolvedTheme = mergeTheme(siteTheme, page.theme, entityTheme);
 
   const sections = await Section.find({
     "pages.page_key": key,
@@ -258,6 +278,12 @@ export async function resolvePageSections(pageKey, entityId = null) {
       name: page.name,
       entity_type: page.entity_type,
       is_sort_disabled: page.is_sort_disabled !== false,
+      theme: resolvedTheme,
+      theme_source: {
+        site: siteTheme,
+        page: page.theme || null,
+        entity: entityTheme,
+      },
     },
     entity_id: entityId || null,
     sections: resolved,

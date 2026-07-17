@@ -7,11 +7,14 @@ import SkillHubLogo from "@/components/SkillHubLogo";
 
 const NAV = [
   { href: "/cms", label: "Dashboard", exact: true },
+  { href: "/cms/site-theme", label: "Site theme" },
+  { href: "/cms/contents", label: "Content pages" },
   { href: "/cms/pages", label: "Manage sections for templates / pages" },
   { href: "/cms/pages-content-sections", label: "All content sections" },
   { href: "/cms/vendors", label: "Vendors" },
   { href: "/cms/products", label: "Products" },
   { href: "/cms/courses", label: "Courses" },
+  { href: "/cms/blogs", label: "Blogs" },
   { href: "/cms/industries", label: "Industries" },
   { href: "/cms/skilling-areas", label: "Skilling areas" },
 ];

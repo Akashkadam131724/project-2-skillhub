@@ -4,23 +4,13 @@ import { logFetchResult } from "@/lib/cache-log";
 const NAV_API_URL =
   process.env.NAV_API_URL ||
   process.env.NEXT_PUBLIC_NAV_API_URL ||
-  "http://localhost:4000";
+  process.env.NEXT_PUBLIC_API_URL ||
+  "http://localhost:3000";
 
 const navCache = navFetchOptions();
 
 export async function getNavigationTree() {
   try {
-    const redisRes = await fetch(
-      `${NAV_API_URL}/navigation/get/reddis`,
-      navCache
-    );
-    logFetchResult("nav /navigation/get/reddis", redisRes, navCache);
-
-    if (redisRes.ok) {
-      const data = await redisRes.json();
-      return { navigation: data.navigation || [], error: null };
-    }
-
     const res = await fetch(`${NAV_API_URL}/navigation`, navCache);
     logFetchResult("nav /navigation", res, navCache);
     if (!res.ok) {
@@ -36,7 +26,7 @@ export async function getNavigationTree() {
   } catch (err) {
     return {
       navigation: [],
-      error: err.message || "Could not reach navigation server on :4000",
+      error: err.message || "Could not reach navigation API",
     };
   }
 }

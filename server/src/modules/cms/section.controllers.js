@@ -1,10 +1,29 @@
 import Section, { normalizeContentScope } from "./section.model.js";
 import Page from "./page.model.js";
+import {
+  getSectionCatalogMeta,
+  normalizeSectionTags,
+} from "./section.catalog.js";
 import { formatMongooseError } from "../../utils/formatMongooseError.js";
 
 export const createSection = async (req, res) => {
   try {
     const { pages: pageTags, ...rest } = req.body;
+
+    // Default category/tags from catalog when creating a known section key
+    const catalog = getSectionCatalogMeta(rest.key);
+    if (catalog) {
+      if (rest.category === undefined || rest.category === "") {
+        rest.category = catalog.category;
+      }
+      if (rest.tags === undefined) {
+        rest.tags = catalog.tags;
+      }
+    }
+    if (rest.tags !== undefined) {
+      rest.tags = normalizeSectionTags(rest.tags);
+    }
+
     const section = new Section(rest);
 
     if (Array.isArray(pageTags) && pageTags.length) {
@@ -23,6 +42,7 @@ export const createSection = async (req, res) => {
           section_title: tag.section_title ?? null,
           sub_title: tag.sub_title ?? null,
           section_bg_img: tag.section_bg_img ?? null,
+          section_bg_color: tag.section_bg_color ?? null,
           in_page_nav_title: tag.in_page_nav_title ?? null,
           section_img_url: tag.section_img_url ?? null,
           section_preview_img: section.section_preview_img || null,
@@ -61,10 +81,33 @@ export const getSections = async (req, res) => {
         filter.content_scope = { $nin: ["global", "template"] };
       }
     }
+    if (req.query.category) {
+      const category = String(req.query.category).toLowerCase().trim();
+      if (category === "uncategorized") {
+        filter.$and = [
+          ...(filter.$and || []),
+          {
+            $or: [
+              { category: "" },
+              { category: null },
+              { category: { $exists: false } },
+            ],
+          },
+        ];
+      } else {
+        filter.category = category;
+      }
+    }
+    if (req.query.tag) {
+      filter.tags = String(req.query.tag).toLowerCase().trim();
+    }
     if (req.query.q) {
-      filter.$or = [
-        { name: { $regex: req.query.q, $options: "i" } },
-        { key: { $regex: req.query.q, $options: "i" } },
+      const q = { $regex: req.query.q, $options: "i" };
+      filter.$and = [
+        ...(filter.$and || []),
+        {
+          $or: [{ name: q }, { key: q }, { category: q }, { tags: q }],
+        },
       ];
     }
 
@@ -102,12 +145,15 @@ export const updateSection = async (req, res) => {
     const allowed = [
       "name",
       "description",
+      "category",
+      "tags",
       "section_title",
       "sub_title",
       "in_page_nav_title",
       "button_title",
       "target_url",
       "section_bg_img",
+      "section_bg_color",
       "section_img_url",
       "section_preview_img",
       "data",
@@ -122,6 +168,14 @@ export const updateSection = async (req, res) => {
     }
     if (patch.content_scope !== undefined) {
       patch.content_scope = normalizeContentScope(patch.content_scope);
+    }
+    if (patch.tags !== undefined) {
+      patch.tags = normalizeSectionTags(patch.tags);
+    }
+    if (patch.category !== undefined) {
+      patch.category = String(patch.category || "")
+        .toLowerCase()
+        .trim();
     }
 
     if (Object.keys(patch).length === 0) {
@@ -213,6 +267,7 @@ export const setSectionPages = async (req, res) => {
         sub_title: tag.sub_title ?? null,
         in_page_nav_title: tag.in_page_nav_title ?? null,
         section_bg_img: tag.section_bg_img ?? null,
+        section_bg_color: tag.section_bg_color ?? null,
         section_img_url: tag.section_img_url ?? null,
         section_preview_img: section.section_preview_img || null,
         data: tag.data ?? null,
@@ -262,6 +317,7 @@ export const tagSectionPage = async (req, res) => {
       section_title: req.body.section_title ?? null,
       sub_title: req.body.sub_title ?? null,
       section_bg_img: req.body.section_bg_img ?? null,
+      section_bg_color: req.body.section_bg_color ?? null,
       in_page_nav_title: req.body.in_page_nav_title ?? null,
       section_img_url: req.body.section_img_url ?? null,
       section_preview_img: section.section_preview_img || null,
@@ -303,6 +359,7 @@ export const updateSectionPageTag = async (req, res) => {
       "section_title",
       "sub_title",
       "section_bg_img",
+      "section_bg_color",
       "in_page_nav_title",
       "section_img_url",
       "buttons",

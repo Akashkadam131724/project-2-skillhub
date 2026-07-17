@@ -2,7 +2,7 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* Brand theme tokens — ThemeSwitcher sets data-theme + inline vars */
+/* Brand theme tokens — CMS SiteTheme sets data-theme + inline vars */
 :root,
 [data-theme="blue"] {
   --brand: #1b4de4;
@@ -224,6 +224,27 @@ body {
   border-radius: 0.75rem;
 }
 
+.cms-rich-body .cms-rich-video {
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  margin: 1rem 0;
+  overflow: hidden;
+  border-radius: 1rem;
+  background: #0f172a;
+  aspect-ratio: 16 / 9;
+}
+
+.cms-rich-body .cms-rich-video-el {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  object-fit: cover;
+}
+
 .cms-rich-body blockquote {
   margin: 0 0 0.85em;
   padding-left: 0.9rem;
@@ -260,4 +281,25 @@ body {
 
 .theme-link:hover {
   color: var(--brand-hover);
+}
+
+@keyframes megaIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+:root {
+  --site-header-h: 4.25rem;
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --site-header-h: 4.75rem;
+  }
 }

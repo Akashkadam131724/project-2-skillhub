@@ -8,10 +8,9 @@ import {
 } from "@/components/detail/DetailShell";
 import { fetchProductsByVendor } from "@/lib/api";
 
-/** Initial visible count — 2 rows on lg (3 cols) / 3 rows on sm (2 cols) */
+/** Initial visible count — 2 rows on lg (3 cols) */
 const INITIAL_VISIBLE = 6;
 
-/** Resolve which vendor's products to load from pageContext */
 function vendorIdFromContext(pageContext = {}) {
   if (pageContext.vendorId) return String(pageContext.vendorId);
   if (pageContext.entityType === "vendor" && pageContext.entityId) {
@@ -21,9 +20,7 @@ function vendorIdFromContext(pageContext = {}) {
 }
 
 /**
- * Products grid — CMS fields: section_title, sub_title, section_bg_img.
- * Fetches products for the current vendor (vendor page) or sibling products
- * (product page via pageContext.vendorId).
+ * Products grid — fetches products for the current vendor.
  */
 export default function ProductsSection({
   section_title,
@@ -90,30 +87,42 @@ export default function ProductsSection({
   const remaining = products.length - INITIAL_VISIBLE;
 
   return (
-    <SectionFrame title={section_title} subtitle={sub_title} {...frameProps}>
+    <SectionFrame
+      title={section_title}
+      subtitle={sub_title}
+      eyebrow="Products"
+      {...frameProps}
+    >
       {!vendorId ? (
         <EmptyState message="No vendor context available for products." />
       ) : loading ? (
-        <div className="h-32 animate-pulse rounded-xl bg-slate-200/60 dark:bg-slate-800" />
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div
+              key={i}
+              className="h-40 animate-pulse rounded-[1.35rem] bg-slate-200/70 dark:bg-slate-800"
+            />
+          ))}
+        </div>
       ) : error ? (
         <p className="m-0 text-sm text-rose-600">{error}</p>
       ) : products.length === 0 ? (
         <EmptyState message="No products to show yet." />
       ) : (
         <div>
-          <ul className="m-0 grid list-none gap-3 p-0 sm:grid-cols-2 lg:grid-cols-3">
-            {visible.map((product) => (
+          <ul className="m-0 grid list-none gap-4 p-0 sm:grid-cols-2 lg:grid-cols-3">
+            {visible.map((product, i) => (
               <li key={String(product._id || product.id)}>
-                <ProductCard product={product} />
+                <ProductCard product={product} index={i} />
               </li>
             ))}
           </ul>
           {hasMore ? (
-            <div className="mt-6 flex justify-center">
+            <div className="mt-8 flex justify-center">
               <button
                 type="button"
                 onClick={() => setExpanded((v) => !v)}
-                className="inline-flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-5 py-2.5 text-sm font-semibold text-ink transition hover:border-brand hover:text-brand dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:hover:border-brand"
+                className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-semibold text-ink transition hover:border-brand hover:text-brand dark:border-slate-700 dark:bg-slate-950 dark:text-white"
               >
                 {expanded ? (
                   <>Show less</>

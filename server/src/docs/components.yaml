@@ -282,6 +282,10 @@ Content:
       type: string
     slug:
       type: string
+      description: Stable API id (no slashes)
+    path:
+      type: string
+      description: Real public URL path (e.g. / or /about-us or /company/careers)
     description:
       type: string
     status:

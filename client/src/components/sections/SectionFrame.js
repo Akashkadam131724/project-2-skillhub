@@ -1,14 +1,8 @@
 "use client";
 
 import CmsEditable from "@/components/cms/CmsEditable";
-import { mediaUrl } from "@/lib/cms-api";
 import SectionButtonsFooter from "./SectionButtonsFooter";
 import SectionWrapper from "./SectionWrapper";
-
-const SURFACE_CLASS = {
-  white: "bg-white dark:bg-slate-950",
-  muted: "bg-slate-100 dark:bg-slate-900",
-};
 
 /** @deprecated use SectionWrapper — kept as alias for older imports */
 export function SectionInner({ children, className = "" }) {
@@ -25,12 +19,11 @@ export function SectionInner({ children, className = "" }) {
 export default function SectionFrame({
   title,
   subtitle,
+  eyebrow,
   children,
   action,
   cmsMode = false,
   onEditField,
-  surfaceTone = "white",
-  section_bg_img,
   id,
   buttons,
   button_title,
@@ -42,28 +35,26 @@ export default function SectionFrame({
   const editSubtitle = subtitle !== undefined;
   const showTitle = editTitle && (title || cmsMode);
   const showSubtitle = editSubtitle && (subtitle || cmsMode);
-  const showHeader = showTitle || showSubtitle || action;
-  const bgUrl = mediaUrl(section_bg_img);
-  const surfaceClass = bgUrl
-    ? "bg-transparent"
-    : SURFACE_CLASS[surfaceTone] || SURFACE_CLASS.white;
+  const showHeader = showTitle || showSubtitle || action || eyebrow;
 
   return (
     <section
       id={id || undefined}
-      className={`relative w-full overflow-hidden py-10 sm:py-12 ${surfaceClass}${
-        bgUrl ? " bg-cover bg-center bg-no-repeat" : ""
-      }`}
-      style={bgUrl ? { backgroundImage: `url(${bgUrl})` } : undefined}
+      className="relative w-full overflow-hidden bg-transparent py-14 sm:py-16 lg:py-20"
     >
       <SectionWrapper>
         {showHeader ? (
           <header
             className={`flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between sm:gap-6 ${
-              children ? "mb-4 sm:mb-4 md:mb-6" : ""
+              children ? "mb-8 sm:mb-10" : ""
             }`}
           >
-            <div className="flex min-w-0 flex-1 flex-col gap-2 sm:gap-2.5">
+            <div className="flex min-w-0 flex-1 flex-col gap-2.5 sm:gap-3">
+              {eyebrow ? (
+                <p className="m-0 text-[11px] font-semibold tracking-[0.22em] text-brand uppercase">
+                  {eyebrow}
+                </p>
+              ) : null}
               {showTitle ? (
                 <CmsEditable
                   cmsMode={cmsMode}
@@ -72,11 +63,11 @@ export default function SectionFrame({
                   onEditField={onEditField}
                 >
                   {title ? (
-                    <h2 className="m-0 text-2xl leading-tight font-bold tracking-tight text-ink sm:text-[1.75rem] md:text-3xl dark:text-white">
+                    <h2 className="m-0 max-w-3xl font-[family-name:var(--font-display)] text-3xl leading-[1.1] font-semibold tracking-tight text-ink sm:text-4xl dark:text-white">
                       {title}
                     </h2>
                   ) : (
-                    <h2 className="m-0 text-2xl leading-tight font-bold text-slate-300 italic sm:text-[1.75rem] md:text-3xl dark:text-slate-600">
+                    <h2 className="m-0 text-3xl leading-tight font-semibold text-slate-300 italic sm:text-4xl dark:text-slate-600">
                       Add title…
                     </h2>
                   )}
@@ -90,11 +81,11 @@ export default function SectionFrame({
                   onEditField={onEditField}
                 >
                   {subtitle ? (
-                    <p className="m-0 max-w-2xl text-[15px] leading-relaxed text-slate-600 sm:text-base dark:text-slate-300">
+                    <p className="m-0 max-w-2xl text-base leading-relaxed text-slate-600 dark:text-slate-300">
                       {subtitle}
                     </p>
                   ) : (
-                    <p className="m-0 text-[15px] leading-relaxed text-slate-300 italic sm:text-base dark:text-slate-600">
+                    <p className="m-0 text-base leading-relaxed text-slate-300 italic dark:text-slate-600">
                       Add subtitle…
                     </p>
                   )}

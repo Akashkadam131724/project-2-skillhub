@@ -104,7 +104,7 @@ export default function CmsSkillingAreaEditPage() {
               All skilling areas
             </Link>
             <Link
-              href={`/skilling-areas/${item.slug}?cms=true`}
+              href={`/skilling-area/${item.slug}?cms=true`}
               className={btnPrimary}
             >
               Edit live sections

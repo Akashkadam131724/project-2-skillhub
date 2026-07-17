@@ -150,7 +150,7 @@ export default function CmsCourseEditPage() {
             <Link href="/cms/courses" className={btnSecondary}>
               All courses
             </Link>
-            <Link href={`/courses/${course.slug}?cms=true`} className={btnPrimary}>
+            <Link href={`/course/${course.slug}?cms=true`} className={btnPrimary}>
               Edit live sections
             </Link>
           </>

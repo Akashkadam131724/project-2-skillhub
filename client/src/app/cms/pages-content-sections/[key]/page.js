@@ -10,7 +10,7 @@ import {
   mediaUrl,
   uploadCmsImage,
 } from "@/lib/cms-api";
-import { isKnownSectionKey } from "@/lib/section-registry";
+import { isKnownSectionKey, SECTION_CATEGORIES } from "@/lib/section-registry";
 import {
   contentScopeLabel,
   normalizeContentScope,
@@ -38,6 +38,7 @@ export default function CmsSectionDetailPage() {
   const [meta, setMeta] = useState({
     name: "",
     description: "",
+    category: "",
     content_scope: "page",
     section_preview_img: "",
   });
@@ -54,6 +55,7 @@ export default function CmsSectionDetailPage() {
       setMeta({
         name: data.name || "",
         description: data.description || "",
+        category: data.category || "",
         content_scope: normalizeContentScope(data.content_scope),
         section_preview_img: data.section_preview_img || "",
       });
@@ -76,6 +78,7 @@ export default function CmsSectionDetailPage() {
         setMeta({
           name: data.name || "",
           description: data.description || "",
+          category: data.category || "",
           content_scope: normalizeContentScope(data.content_scope),
           section_preview_img: data.section_preview_img || "",
         });
@@ -103,6 +106,7 @@ export default function CmsSectionDetailPage() {
       await updateSection(sectionKey, {
         name: meta.name,
         description: meta.description,
+        category: meta.category || "",
         content_scope: meta.content_scope,
         section_preview_img: meta.section_preview_img || "",
       });
@@ -122,6 +126,7 @@ export default function CmsSectionDetailPage() {
       "sub_title",
       "in_page_nav_title",
       "section_bg_img",
+      "section_bg_color",
       "section_img_url",
     ]) {
       if (body[key] === null) body[key] = "";
@@ -244,6 +249,25 @@ export default function CmsSectionDetailPage() {
                 setMeta((m) => ({ ...m, description: e.target.value }))
               }
             />
+          </Field>
+          <Field
+            label="Category"
+            hint="What kind of section this is (hero, accordion, …)"
+          >
+            <select
+              className={inputClass}
+              value={meta.category}
+              onChange={(e) =>
+                setMeta((m) => ({ ...m, category: e.target.value }))
+              }
+            >
+              <option value="">Uncategorized</option>
+              {SECTION_CATEGORIES.map((category) => (
+                <option key={category.key} value={category.key}>
+                  {category.name}
+                </option>
+              ))}
+            </select>
           </Field>
           <Field
             label="Content scope"

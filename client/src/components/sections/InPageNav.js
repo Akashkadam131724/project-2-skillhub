@@ -13,8 +13,6 @@ function navLabel(section) {
 
 /**
  * Sticky in-page nav — scrolls to `cms-section-{placement_id}`.
- * `sections` should already be filtered to only those *below* the nav placement.
- * Labels come from each section's in_page_nav_title (or section_title).
  */
 export default function InPageNav({ sections = [], cmsMode = false }) {
   const items = useMemo(
@@ -78,7 +76,7 @@ export default function InPageNav({ sections = [], cmsMode = false }) {
     return (
       <nav
         aria-label="On this page"
-        className="sticky top-[68px] z-40 border-b border-slate-200 bg-white/95 backdrop-blur-sm dark:border-slate-800 dark:bg-slate-950/95"
+        className="sticky top-[var(--site-header-h,4.25rem)] z-40 w-full border-b border-slate-200/80 bg-white/80 backdrop-blur-xl dark:border-slate-800 dark:bg-slate-950/80"
       >
         <SectionWrapper className="py-3">
           <p className="m-0 text-xs text-slate-400 italic">
@@ -101,10 +99,10 @@ export default function InPageNav({ sections = [], cmsMode = false }) {
   return (
     <nav
       aria-label="On this page"
-      className="sticky top-[68px] z-40 border-b border-slate-200 bg-white/95 backdrop-blur-sm dark:border-slate-800 dark:bg-slate-950/95"
+      className="sticky top-[var(--site-header-h,4.25rem)] z-40 w-full border-b border-slate-200/70 bg-white/80 backdrop-blur-xl dark:border-slate-800/80 dark:bg-slate-950/80"
     >
       <SectionWrapper className="py-0">
-        <ul className="m-0 -mb-px flex list-none gap-0 overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <ul className="m-0 -mb-px flex list-none gap-0 overflow-x-auto p-0 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {items.map((item, index) => {
             const active = item.id === activeId;
             return (
@@ -115,7 +113,7 @@ export default function InPageNav({ sections = [], cmsMode = false }) {
                     setActiveId(item.id);
                     scrollTo(item.targetId);
                   }}
-                  className={`inline-flex items-center border-b-2 py-3 text-sm font-medium transition ${
+                  className={`inline-flex items-center border-b-2 bg-transparent py-3.5 text-sm font-medium transition ${
                     index === 0 ? "pl-0 pr-4" : "px-4"
                   } ${
                     active

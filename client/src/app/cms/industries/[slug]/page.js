@@ -103,7 +103,7 @@ export default function CmsIndustryEditPage() {
             <Link href="/cms/industries" className={btnSecondary}>
               All industries
             </Link>
-            <Link href={`/industries/${item.slug}?cms=true`} className={btnPrimary}>
+            <Link href={`/industry/${item.slug}?cms=true`} className={btnPrimary}>
               Edit live sections
             </Link>
             <StatusBadge active={item.status === "active"} />

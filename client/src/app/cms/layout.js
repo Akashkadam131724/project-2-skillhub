@@ -1,4 +1,5 @@
 import CmsShell from "@/components/cms/CmsShell";
+import CmsEditorUnlock from "@/components/cms/CmsEditorUnlock";
 
 export const metadata = {
   title: "CMS",
@@ -6,5 +7,10 @@ export const metadata = {
 };
 
 export default function CmsLayout({ children }) {
-  return <CmsShell>{children}</CmsShell>;
+  return (
+    <CmsShell>
+      <CmsEditorUnlock />
+      {children}
+    </CmsShell>
+  );
 }

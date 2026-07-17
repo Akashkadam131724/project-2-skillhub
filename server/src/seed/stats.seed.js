@@ -4,8 +4,9 @@ import Page from "../modules/cms/page.model.js";
 import Section from "../modules/cms/section.model.js";
 
 /**
- * Upserts Stats strip with enterprise metrics + cyan gradient bg,
+ * Upserts Stats strip with enterprise metrics,
  * tagged onto Home (and vendor detail).
+ * Background uses the page theme surface (no static band color).
  *
  * Usage:
  *   npm run seed:stats
@@ -39,9 +40,6 @@ const STATS = [
   item({ value: "No. 1", label: "Microsoft Training Partner" }, 7),
 ];
 
-const DEFAULT_BG =
-  "linear-gradient(135deg, #67e8f9 0%, #5ec8e8 45%, #22d3ee 100%)";
-
 const PAGE_TAGS = [
   { page_key: "home", sort_order: 18, status: true },
   { page_key: "vendor", sort_order: 3, status: true },
@@ -53,13 +51,14 @@ async function seed() {
   const fields = {
     key: "stats",
     name: "Stats Strip",
-    description: "Metric grid on a colored / gradient band",
+    description: "Metric grid — uses page theme surface by default",
     section_title: "Why Leading Enterprises Choose SkillHub",
     sub_title: "",
     in_page_nav_title: "By the Numbers",
     button_title: "",
     target_url: "",
-    data: { bg_color: DEFAULT_BG },
+    section_bg_color: null,
+    data: {},
     buttons: [],
     items: STATS,
     content_scope: "page",
@@ -75,7 +74,10 @@ async function seed() {
     section.section_title = fields.section_title;
     section.sub_title = fields.sub_title;
     section.in_page_nav_title = fields.in_page_nav_title;
-    section.data = { ...(section.data || {}), bg_color: DEFAULT_BG };
+    section.data = { ...(section.data || {}) };
+    delete section.data.bg_color;
+    section.markModified("data");
+    section.section_bg_color = null;
     section.buttons = [];
     section.items = fields.items;
     section.content_scope = fields.content_scope;
@@ -99,7 +101,8 @@ async function seed() {
       in_page_nav_title: fields.in_page_nav_title,
       buttons: [],
       items: fields.items,
-      data: { bg_color: DEFAULT_BG },
+      section_bg_color: null,
+      data: {},
     };
 
     const idx = section.pages.findIndex((p) => p.page_key === tag.page_key);
@@ -107,9 +110,12 @@ async function seed() {
       const existing = section.pages[idx].toObject
         ? section.pages[idx].toObject()
         : section.pages[idx];
+      const nextData = { ...(existing.data || {}) };
+      delete nextData.bg_color;
       section.pages[idx] = {
         ...existing,
         ...tagPayload,
+        data: nextData,
         sort_order: existing.sort_order ?? tagPayload.sort_order,
         status: existing.status !== false,
       };
@@ -123,7 +129,7 @@ async function seed() {
   }
 
   await section.save();
-  console.log(`Seeded stats · ${STATS.length} metrics · cyan gradient bg`);
+  console.log(`Seeded stats · ${STATS.length} metrics · theme surface bg`);
   await mongoose.disconnect();
 }
 

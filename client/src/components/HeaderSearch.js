@@ -4,34 +4,7 @@ import { useEffect, useId, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { fetchGlobalSearch } from "@/lib/api";
-
-const CATALOG_LINKS = [
-  {
-    label: "Course Catalog",
-    href: "/course-catalog",
-    description: "Browse all courses with filters",
-  },
-  {
-    label: "Vendors",
-    href: "/vendors",
-    description: "Technology partners & vendors",
-  },
-  {
-    label: "Products",
-    href: "/products",
-    description: "Training products & learning paths",
-  },
-  {
-    label: "Skilling Areas",
-    href: "/skilling-areas",
-    description: "Capability domains & skills",
-  },
-  {
-    label: "Industries",
-    href: "/industries",
-    description: "Industry-aligned solutions",
-  },
-];
+import { mediaAlt } from "@/lib/media-alt";
 
 const TABS = [
   { id: "all", label: "All" },
@@ -40,8 +13,32 @@ const TABS = [
   { id: "course", label: "Courses" },
   { id: "skillingArea", label: "Skilling" },
   { id: "industry", label: "Industries" },
-  { id: "catalogs", label: "Catalogs" },
+  { id: "content", label: "Pages" },
 ];
+
+const TYPE_META = {
+  vendor: { label: "Vendor", tone: "bg-sky-50 text-sky-700 dark:bg-sky-950/50 dark:text-sky-300" },
+  product: {
+    label: "Product",
+    tone: "bg-violet-50 text-violet-700 dark:bg-violet-950/50 dark:text-violet-300",
+  },
+  course: {
+    label: "Course",
+    tone: "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300",
+  },
+  skillingArea: {
+    label: "Skilling",
+    tone: "bg-amber-50 text-amber-800 dark:bg-amber-950/40 dark:text-amber-300",
+  },
+  industry: {
+    label: "Industry",
+    tone: "bg-rose-50 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300",
+  },
+  content: {
+    label: "Page",
+    tone: "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300",
+  },
+};
 
 function SearchIcon({ className = "size-5" }) {
   return (
@@ -75,56 +72,120 @@ function CloseIcon() {
   );
 }
 
+function ArrowIcon() {
+  return (
+    <svg
+      className="size-4 shrink-0 text-slate-300 transition group-hover:text-brand dark:text-slate-600"
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+    >
+      <path
+        d="M5 12h14M13 6l6 6-6 6"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 function ResultRow({ item, onSelect }) {
+  const meta = TYPE_META[item.type] || TYPE_META.content;
+  const subtitle =
+    item.vendorName || item.description || item.path || meta.label;
+
   return (
     <Link
       href={item.href}
       onClick={onSelect}
-      className="flex items-start gap-3 rounded-xl px-3 py-2.5 no-underline transition hover:bg-slate-50 dark:hover:bg-slate-800"
+      className="group flex items-center gap-3 rounded-xl px-3 py-2.5 no-underline transition hover:bg-slate-50 dark:hover:bg-slate-900/80"
     >
       {item.logo ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
           src={item.logo}
-          alt=""
-          className="mt-0.5 size-8 shrink-0 rounded-md bg-white object-contain"
+          alt={mediaAlt(item.name, "Search result")}
+          className="size-10 shrink-0 rounded-lg border border-slate-100 bg-white object-contain p-1 dark:border-slate-800"
         />
       ) : (
-        <span className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-md bg-slate-100 text-[10px] font-bold text-slate-500 dark:bg-slate-800 dark:text-slate-300">
+        <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-slate-100 font-[family-name:var(--font-display)] text-xs font-semibold text-slate-500 dark:bg-slate-800 dark:text-slate-300">
           {item.name?.slice(0, 2)?.toUpperCase() || "?"}
         </span>
       )}
       <span className="min-w-0 flex-1">
-        <span className="block truncate text-sm font-semibold text-ink dark:text-white">
-          {item.name}
+        <span className="flex items-center gap-2">
+          <span className="truncate text-sm font-semibold text-ink dark:text-white">
+            {item.name}
+          </span>
+          <span
+            className={`shrink-0 rounded-md px-1.5 py-0.5 text-[10px] font-semibold tracking-wide uppercase ${meta.tone}`}
+          >
+            {meta.label}
+          </span>
         </span>
         <span className="mt-0.5 block truncate text-xs text-slate-500 dark:text-slate-400">
-          {item.vendorName || item.description || item.type}
+          {subtitle}
         </span>
       </span>
+      <ArrowIcon />
     </Link>
   );
 }
 
-function CatalogLinkRow({ item, onSelect }) {
+function EmptyState({ hasQuery, q }) {
+  if (!hasQuery) {
+    return (
+      <div className="flex flex-col items-center px-4 py-10 text-center">
+        <span className="mb-3 inline-flex size-12 items-center justify-center rounded-2xl bg-slate-100 text-slate-400 dark:bg-slate-800">
+          <SearchIcon className="size-5" />
+        </span>
+        <p className="m-0 text-sm font-semibold text-ink dark:text-white">
+          Search the catalog
+        </p>
+        <p className="mt-1.5 mb-0 max-w-xs text-sm leading-relaxed text-slate-500 dark:text-slate-400">
+          Find vendors, products, courses, industries, skilling areas, and
+          pages. Type at least 2 characters.
+        </p>
+      </div>
+    );
+  }
+
   return (
-    <Link
-      href={item.href}
-      onClick={onSelect}
-      className="flex items-start justify-between gap-3 rounded-xl border border-slate-200 bg-white px-3.5 py-3 no-underline transition hover:border-brand/40 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-950 dark:hover:bg-slate-900"
-    >
-      <span className="min-w-0">
-        <span className="block text-sm font-semibold text-ink dark:text-white">
-          {item.label}
-        </span>
-        <span className="mt-0.5 block text-xs text-slate-500 dark:text-slate-400">
-          {item.description}
-        </span>
-      </span>
-      <span className="shrink-0 text-slate-400" aria-hidden="true">
-        →
-      </span>
-    </Link>
+    <div className="flex flex-col items-center px-4 py-10 text-center">
+      <p className="m-0 text-sm font-semibold text-ink dark:text-white">
+        No matches for “{q}”
+      </p>
+      <p className="mt-1.5 mb-0 text-sm text-slate-500 dark:text-slate-400">
+        Try another keyword, or browse the course catalog.
+      </p>
+      <Link
+        href={`/courses?q=${encodeURIComponent(q)}`}
+        className="mt-4 inline-flex items-center rounded-xl bg-ink px-3.5 py-2 text-xs font-semibold text-white no-underline transition hover:bg-brand dark:bg-white dark:text-ink dark:hover:bg-brand dark:hover:text-white"
+      >
+        Search courses
+      </Link>
+    </div>
+  );
+}
+
+function LoadingRows() {
+  return (
+    <div className="space-y-2 px-1 py-1" aria-hidden="true">
+      {Array.from({ length: 4 }).map((_, i) => (
+        <div
+          key={i}
+          className="flex items-center gap-3 rounded-xl px-3 py-2.5"
+        >
+          <div className="size-10 animate-pulse rounded-lg bg-slate-100 dark:bg-slate-800" />
+          <div className="min-w-0 flex-1 space-y-2">
+            <div className="h-3.5 w-2/3 animate-pulse rounded bg-slate-100 dark:bg-slate-800" />
+            <div className="h-2.5 w-1/2 animate-pulse rounded bg-slate-100 dark:bg-slate-800" />
+          </div>
+        </div>
+      ))}
+    </div>
   );
 }
 
@@ -206,12 +267,6 @@ export default function HeaderSearch() {
     const q = value.trim();
     if (!q) return;
 
-    if (tab === "catalogs") {
-      close();
-      router.push("/course-catalog");
-      return;
-    }
-
     if (tab !== "all") {
       const group = groups.find((g) => g.type === tab);
       if (group?.items?.[0]) {
@@ -228,41 +283,31 @@ export default function HeaderSearch() {
     }
 
     close();
-    router.push(`/course-catalog?q=${encodeURIComponent(q)}`);
+    router.push(`/courses?q=${encodeURIComponent(q)}`);
   }
 
   const q = value.trim();
   const hasQuery = q.length >= 2;
   const visibleGroups =
-    tab === "all" || tab === "catalogs"
-      ? groups
-      : groups.filter((g) => g.type === tab);
+    tab === "all" ? groups : groups.filter((g) => g.type === tab);
   const visibleTotal = visibleGroups.reduce((sum, g) => sum + g.count, 0);
-  const showCatalogs = tab === "all" || tab === "catalogs" || !hasQuery;
-  const filteredCatalogs = !hasQuery
-    ? CATALOG_LINKS
-    : CATALOG_LINKS.filter(
-        (link) =>
-          link.label.toLowerCase().includes(q.toLowerCase()) ||
-          link.description.toLowerCase().includes(q.toLowerCase())
-      );
 
   return (
     <>
       <button
         type="button"
         onClick={openSearch}
-        className="inline-flex size-10 cursor-pointer items-center justify-center rounded-full border-0 bg-transparent text-slate-700 hover:bg-slate-50 dark:text-slate-200 dark:hover:bg-slate-800"
+        className="inline-flex size-10 cursor-pointer items-center justify-center rounded-xl border border-slate-200/80 bg-white/70 text-ink transition hover:border-ink/20 hover:bg-white hover:text-brand dark:border-slate-700 dark:bg-slate-900/70 dark:text-white dark:hover:bg-slate-900"
         aria-label="Open search"
       >
-        <SearchIcon />
+        <SearchIcon className="size-[1.15rem]" />
       </button>
 
       {open && (
-        <div className="fixed inset-0 z-[80] flex items-start justify-center px-4 pt-[12vh] sm:pt-[14vh]">
+        <div className="fixed inset-0 z-[80] flex items-start justify-center px-3 pt-[8vh] sm:px-4 sm:pt-[10vh]">
           <button
             type="button"
-            className="absolute inset-0 cursor-pointer border-0 bg-slate-950/50"
+            className="absolute inset-0 cursor-pointer border-0 bg-slate-950/55 backdrop-blur-[2px]"
             aria-label="Close search"
             onClick={close}
           />
@@ -271,20 +316,27 @@ export default function HeaderSearch() {
             role="dialog"
             aria-modal="true"
             aria-labelledby={titleId}
-            className="relative z-[81] flex max-h-[min(72vh,640px)] w-full max-w-2xl flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl dark:border-slate-700 dark:bg-slate-950"
+            className="relative z-[81] flex max-h-[min(78vh,680px)] w-full max-w-xl flex-col overflow-hidden rounded-[1.35rem] border border-slate-200/80 bg-white shadow-[0_32px_80px_-24px_rgba(15,23,42,0.45)] dark:border-slate-700 dark:bg-slate-950"
           >
-            <div className="border-b border-slate-200 px-4 pt-4 pb-3 dark:border-slate-800">
+            <div className="border-b border-slate-100 px-4 pt-4 pb-3 dark:border-slate-800">
               <div className="mb-3 flex items-center justify-between gap-3">
-                <h2
-                  id={titleId}
-                  className="m-0 text-base font-bold text-ink dark:text-white"
-                >
-                  Search
-                </h2>
+                <div>
+                  <h2
+                    id={titleId}
+                    className="m-0 font-[family-name:var(--font-display)] text-lg font-semibold tracking-tight text-ink dark:text-white"
+                  >
+                    Search
+                  </h2>
+                  <p className="mt-0.5 mb-0 text-xs text-slate-400">
+                    {hasQuery && !loading
+                      ? `${visibleTotal} result${visibleTotal === 1 ? "" : "s"}`
+                      : "Vendors · products · courses · pages"}
+                  </p>
+                </div>
                 <button
                   type="button"
                   onClick={close}
-                  className="inline-flex size-9 cursor-pointer items-center justify-center rounded-full border-0 bg-transparent text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800"
+                  className="inline-flex size-9 cursor-pointer items-center justify-center rounded-full border-0 bg-slate-100 text-slate-500 transition hover:bg-slate-200 hover:text-ink dark:bg-slate-800 dark:hover:bg-slate-700 dark:hover:text-white"
                   aria-label="Close"
                 >
                   <CloseIcon />
@@ -292,107 +344,121 @@ export default function HeaderSearch() {
               </div>
 
               <form onSubmit={onSubmit}>
-                <label className="flex h-12 w-full items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 px-3.5 focus-within:border-brand/40 focus-within:bg-white focus-within:ring-2 focus-within:ring-brand/20 dark:border-slate-700 dark:bg-slate-900 dark:focus-within:bg-slate-950">
+                <label className="flex h-12 w-full items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50/80 px-3.5 transition focus-within:border-brand/35 focus-within:bg-white focus-within:ring-4 focus-within:ring-brand/10 dark:border-slate-700 dark:bg-slate-900 dark:focus-within:bg-slate-950">
                   <SearchIcon className="size-4 shrink-0 text-slate-400" />
                   <input
                     ref={inputRef}
                     type="search"
                     value={value}
                     onChange={(e) => setValue(e.target.value)}
-                    placeholder="Search vendors, products, courses…"
+                    placeholder="Search vendors, courses, pages…"
                     className="h-full min-w-0 flex-1 border-0 bg-transparent text-sm text-slate-800 outline-none placeholder:text-slate-400 dark:text-slate-100"
+                    autoComplete="off"
                   />
+                  {value ? (
+                    <button
+                      type="button"
+                      onClick={() => setValue("")}
+                      className="inline-flex size-7 cursor-pointer items-center justify-center rounded-full border-0 bg-slate-200/80 text-slate-500 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600"
+                      aria-label="Clear search"
+                    >
+                      <CloseIcon />
+                    </button>
+                  ) : (
+                    <kbd className="hidden rounded-md border border-slate-200 bg-white px-1.5 py-0.5 text-[10px] font-semibold tracking-wide text-slate-400 sm:inline-block dark:border-slate-600 dark:bg-slate-800">
+                      ESC
+                    </kbd>
+                  )}
                 </label>
               </form>
 
-              <div className="mt-3 flex gap-1.5 overflow-x-auto pb-0.5">
+              <div
+                role="tablist"
+                aria-label="Search filters"
+                className="mt-3 flex gap-1 overflow-x-auto pb-0.5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+              >
                 {TABS.map((item) => {
                   const active = tab === item.id;
+                  const count =
+                    item.id === "all"
+                      ? total
+                      : groups.find((g) => g.type === item.id)?.count || 0;
                   return (
                     <button
                       key={item.id}
                       type="button"
+                      role="tab"
+                      aria-selected={active}
                       onClick={() => setTab(item.id)}
-                      className={`shrink-0 cursor-pointer rounded-full border px-3 py-1.5 text-xs font-semibold transition ${
+                      className={`inline-flex shrink-0 cursor-pointer items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold transition ${
                         active
-                          ? "border-brand bg-brand text-white"
-                          : "border-slate-200 bg-white text-slate-600 hover:border-slate-300 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-300"
+                          ? "bg-ink text-white dark:bg-white dark:text-ink"
+                          : "bg-transparent text-slate-500 hover:bg-slate-100 hover:text-ink dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white"
                       }`}
                     >
                       {item.label}
+                      {hasQuery && !loading && count > 0 ? (
+                        <span
+                          className={`rounded-full px-1.5 py-px text-[10px] font-bold ${
+                            active
+                              ? "bg-white/20 text-white dark:bg-ink/10 dark:text-ink"
+                              : "bg-slate-100 text-slate-500 dark:bg-slate-800"
+                          }`}
+                        >
+                          {count}
+                        </span>
+                      ) : null}
                     </button>
                   );
                 })}
               </div>
             </div>
 
-            <div className="min-h-0 flex-1 overflow-y-auto px-3 py-3">
-              {showCatalogs && filteredCatalogs.length > 0 && (
-                <section className="mb-4">
-                  <h3 className="m-0 px-1 pb-2 text-[11px] font-semibold tracking-wide text-slate-400 uppercase">
-                    Catalogs
-                  </h3>
-                  <ul className="m-0 grid list-none gap-2 p-0 sm:grid-cols-2">
-                    {filteredCatalogs.map((link) => (
-                      <li key={link.href}>
-                        <CatalogLinkRow item={link} onSelect={close} />
-                      </li>
-                    ))}
-                  </ul>
-                </section>
+            <div className="min-h-0 flex-1 overflow-y-auto px-2 py-2 sm:px-3">
+              {loading && <LoadingRows />}
+
+              {!loading && (!hasQuery || visibleTotal === 0) && (
+                <EmptyState hasQuery={hasQuery} q={q} />
               )}
 
-              {tab !== "catalogs" && hasQuery && (
-                <>
-                  {loading && (
-                    <p className="m-0 px-1 py-4 text-sm text-slate-500">
-                      Searching…
-                    </p>
-                  )}
-
-                  {!loading && visibleTotal === 0 && (
-                    <p className="m-0 px-1 py-4 text-sm text-slate-500">
-                      No results for “{q}”
-                    </p>
-                  )}
-
-                  {!loading &&
-                    visibleGroups.map((group) => (
-                      <section key={group.type} className="mb-3">
-                        <h3 className="m-0 px-1 pb-1 text-[11px] font-semibold tracking-wide text-slate-400 uppercase">
-                          {group.label}
-                        </h3>
-                        <ul className="m-0 list-none p-0">
-                          {group.items.map((item) => (
-                            <li key={`${group.type}-${item.id}`}>
-                              <ResultRow item={item} onSelect={close} />
-                            </li>
-                          ))}
-                        </ul>
-                      </section>
-                    ))}
-
-                  {!loading && visibleTotal > 0 && (
-                    <div className="border-t border-slate-100 px-1 pt-3 dark:border-slate-800">
-                      <Link
-                        href={`/course-catalog?q=${encodeURIComponent(q)}`}
-                        onClick={close}
-                        className="text-xs font-semibold text-brand no-underline"
-                      >
-                        Search courses for “{q}”
-                      </Link>
+              {!loading &&
+                hasQuery &&
+                visibleTotal > 0 &&
+                visibleGroups.map((group) => (
+                  <section key={group.type} className="mb-2">
+                    <div className="sticky top-0 z-[1] flex items-center justify-between bg-white/95 px-3 py-2 backdrop-blur dark:bg-slate-950/95">
+                      <h3 className="m-0 text-[11px] font-semibold tracking-[0.14em] text-slate-400 uppercase">
+                        {group.label}
+                      </h3>
+                      <span className="text-[11px] font-medium text-slate-400">
+                        {group.count}
+                      </span>
                     </div>
-                  )}
-                </>
-              )}
-
-              {tab !== "catalogs" && !hasQuery && (
-                <p className="m-0 px-1 pt-1 text-sm text-slate-500">
-                  Type at least 2 characters to search vendors, products,
-                  courses, skilling areas, and industries.
-                </p>
-              )}
+                    <ul className="m-0 list-none p-0">
+                      {group.items.map((item) => (
+                        <li key={`${group.type}-${item.id}`}>
+                          <ResultRow item={item} onSelect={close} />
+                        </li>
+                      ))}
+                    </ul>
+                  </section>
+                ))}
             </div>
+
+            {hasQuery && !loading && visibleTotal > 0 ? (
+              <div className="flex items-center justify-between gap-3 border-t border-slate-100 px-4 py-3 dark:border-slate-800">
+                <p className="m-0 text-xs text-slate-400">
+                  Enter opens the top match
+                </p>
+                <Link
+                  href={`/courses?q=${encodeURIComponent(q)}`}
+                  onClick={close}
+                  className="text-xs font-semibold text-brand no-underline hover:underline"
+                >
+                  Browse courses for “{q}”
+                </Link>
+              </div>
+            ) : null}
           </div>
         </div>
       )}

@@ -85,7 +85,7 @@ export default function CmsSkillingAreasPage() {
       });
       setForm(emptyForm);
       setShowForm(false);
-      window.location.href = `/cms/skilling-areas/${res.data.slug}`;
+      window.location.href = `/cms/skilling-area/${res.data.slug}`;
     } catch (err) {
       setError(err);
     } finally {
@@ -197,18 +197,18 @@ export default function CmsSkillingAreasPage() {
                     <StatusBadge active={item.status === "active"} />
                   </div>
                   <p className="mt-0.5 mb-0 text-xs text-slate-500">
-                    /skilling-areas/{item.slug}
+                    /skilling-area/{item.slug}
                   </p>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   <Link
-                    href={`/cms/skilling-areas/${item.slug}`}
+                    href={`/cms/skilling-area/${item.slug}`}
                     className={btnSecondary}
                   >
                     Edit
                   </Link>
                   <Link
-                    href={`/skilling-areas/${item.slug}?cms=true`}
+                    href={`/skilling-area/${item.slug}?cms=true`}
                     className={btnPrimary}
                   >
                     Edit live

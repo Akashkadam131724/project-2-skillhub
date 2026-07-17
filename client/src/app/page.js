@@ -1,21 +1,23 @@
 import { Suspense } from "react";
-import { fetchContentBySlug } from "@/lib/api";
+import { fetchContentByPath } from "@/lib/api";
 import { getPageSectionsResolved } from "@/lib/cms-api";
 import CmsLivePageSections from "@/components/cms/CmsLivePageSections";
 
 export const metadata = {
   title: {
-    absolute: "SkillHub",
+    absolute: "SkillHub — Publish pages your team can own",
   },
-  description: "SkillHub learning platform",
+  description:
+    "Publish campaign pages, solution hubs, and showcases from a live CMS — without redeploying. Catalog stays structured; stories stay flexible.",
 };
 
 export default async function HomePage() {
   let content = null;
   let cmsSections = [];
+  let pageTheme = null;
 
   try {
-    const res = await fetchContentBySlug("home");
+    const res = await fetchContentByPath("/");
     content = res?.data || null;
     if (content) {
       const contentId = String(content._id || content.id);
@@ -24,6 +26,7 @@ export default async function HomePage() {
         contentId
       ).catch(() => ({ sections: [] }));
       cmsSections = sectionsRes.sections || [];
+      pageTheme = sectionsRes.page?.theme || null;
     }
   } catch {
     content = null;
@@ -35,10 +38,6 @@ export default async function HomePage() {
         Homepage content not found. Run{" "}
         <code className="rounded bg-slate-100 px-1 dark:bg-slate-800">
           npm run seed:contents
-        </code>{" "}
-        then{" "}
-        <code className="rounded bg-slate-100 px-1 dark:bg-slate-800">
-          npm run seed:heroes
         </code>
         .
       </main>
@@ -55,10 +54,12 @@ export default async function HomePage() {
           entityId={contentId}
           entityLabel={content.name}
           initialSections={cmsSections}
+          initialTheme={pageTheme}
           pageContext={{
             entityType: "content",
             entityId: contentId,
             entityName: content.name,
+            contentPath: content.path,
           }}
         />
       </Suspense>

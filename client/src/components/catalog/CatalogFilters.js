@@ -128,10 +128,10 @@ function FiltersPanel({
 }) {
   return (
     <div
-      className={`rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-950 ${isPending ? "opacity-70" : ""} ${className}`}
+      className={`rounded-[1.25rem] border border-slate-200/80 bg-slate-50/80 p-5 dark:border-slate-800 dark:bg-slate-900/50 ${isPending ? "opacity-70" : ""} ${className}`}
     >
       <div className="mb-4 flex items-center justify-between gap-3">
-        <h2 className="m-0 text-xl font-bold text-ink dark:text-white">
+        <h2 className="m-0 font-[family-name:var(--font-display)] text-xl font-semibold text-ink dark:text-white">
           Filters
         </h2>
         {hasFilters && (

@@ -31,7 +31,7 @@ export default function HeroCenteredSection({
   }
 
   return (
-    <section className="border-b border-slate-200 bg-slate-50 dark:border-slate-800 dark:bg-slate-900">
+    <section className="border-b border-slate-200 dark:border-slate-800">
       <SectionWrapper className="flex flex-col items-center py-14 text-center sm:py-16 lg:py-20">
         <div className="flex max-w-3xl flex-col items-center gap-4">
           <HeroTitle

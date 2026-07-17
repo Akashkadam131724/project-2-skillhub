@@ -42,19 +42,19 @@ export default function CmsModeToggle({
         onClick={toggle}
         aria-pressed={on}
         title={on ? "Turn off page CMS edit mode" : "Turn on page CMS edit mode"}
-        className={`inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-semibold tracking-wide uppercase transition ${
+        className={`inline-flex items-center gap-1.5 rounded-xl px-2.5 py-1.5 text-xs font-semibold tracking-wide uppercase transition ${
           isBar
             ? on
               ? "bg-amber-500 text-white hover:bg-amber-600"
               : "text-emerald-900 hover:bg-emerald-100 dark:text-emerald-100 dark:hover:bg-emerald-900/60"
             : on
               ? "bg-amber-500 text-white hover:bg-amber-600"
-              : "text-slate-600 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-800"
+              : "border border-slate-200/80 bg-white/70 text-slate-600 hover:border-ink/20 hover:bg-white hover:text-ink dark:border-slate-700 dark:bg-slate-900/70 dark:text-slate-300 dark:hover:bg-slate-900"
         }`}
       >
         <span
           className={`size-1.5 rounded-full ${
-            on ? "bg-white" : isBar ? "bg-emerald-700/50" : "bg-slate-400 dark:bg-slate-500"
+            on ? "bg-white" : isBar ? "bg-emerald-700/50" : "bg-brand"
           }`}
           aria-hidden
         />
@@ -63,10 +63,10 @@ export default function CmsModeToggle({
       {showAdmin ? (
         <Link
           href="/cms"
-          className={`rounded-lg px-2.5 py-1.5 text-xs font-semibold tracking-wide no-underline uppercase ${
+          className={`rounded-xl px-2.5 py-1.5 text-xs font-semibold tracking-wide no-underline uppercase ${
             isBar
               ? "text-emerald-900 hover:bg-emerald-100 dark:text-emerald-100 dark:hover:bg-emerald-900/60"
-              : "hidden text-slate-600 hover:bg-slate-50 sm:inline-flex dark:text-slate-300 dark:hover:bg-slate-800"
+              : "hidden border border-slate-200/80 bg-white/70 text-slate-600 hover:border-ink/20 hover:bg-white hover:text-ink sm:inline-flex dark:border-slate-700 dark:bg-slate-900/70 dark:text-slate-300 dark:hover:bg-slate-900"
           }`}
           title="CMS admin"
         >

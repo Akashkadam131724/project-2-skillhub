@@ -7,10 +7,7 @@ import { resolveItemsForSection } from "@/lib/item-types";
 import TextMediaRow from "./TextMediaRow";
 
 /**
- * Stacked text + media rows (AWS-style TextMediaContent).
- * Each item: title, body (rich text / links), image_url,
- * value = media position ("start" | "end").
- * content_scope: page — copy lives on the page placement.
+ * Stacked text + media rows with modern editorial split.
  */
 export default function TextMediaSection({
   section_title,
@@ -28,6 +25,7 @@ export default function TextMediaSection({
     <SectionFrame
       title={section_title || undefined}
       subtitle={sub_title || undefined}
+      eyebrow={section_title || sub_title ? "Learning paths" : undefined}
       cmsMode={cmsMode}
       onEditField={onEditField}
       buttonsFooter={false}
@@ -40,7 +38,7 @@ export default function TextMediaSection({
         itemCount={items.length}
       />
       {items.length ? (
-        <div className="flex flex-col gap-12 sm:gap-14 md:gap-16">
+        <div className="flex flex-col gap-16 sm:gap-20 lg:gap-24">
           {items.map((item, i) => (
             <TextMediaRow
               key={item._id || item.id || i}

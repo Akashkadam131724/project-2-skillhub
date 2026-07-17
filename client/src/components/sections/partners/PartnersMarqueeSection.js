@@ -10,15 +10,18 @@ import { PARTNER_LOGOS } from "./partner-logos";
 
 function LogoCell({ name, src, href }) {
   const img = (
-    <div className="relative h-12 w-36 md:h-16 md:w-40 lg:h-24 lg:w-56">
+    <div className="relative flex h-14 w-40 items-center justify-center sm:h-16 sm:w-44 lg:h-20 lg:w-52">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={src}
         alt={name || "Partner"}
-        className="absolute inset-0 size-full object-contain"
+        className="max-h-full max-w-full object-contain opacity-80 transition duration-300 group-hover/logo:opacity-100"
       />
     </div>
   );
+
+  const shellClass =
+    "group/logo flex-shrink-0 rounded-2xl border border-slate-200/80 bg-white/80 px-4 py-3 shadow-[0_10px_30px_-24px_color-mix(in_srgb,var(--ink)_35%,transparent)] backdrop-blur-sm transition hover:-translate-y-0.5 hover:border-brand/25 dark:border-slate-800 dark:bg-slate-950/70";
 
   if (href) {
     return (
@@ -26,22 +29,19 @@ function LogoCell({ name, src, href }) {
         href={href}
         target="_blank"
         rel="noopener noreferrer"
-        className="flex-shrink-0 rounded-md p-2 no-underline sm:p-3 lg:p-4"
+        className={`${shellClass} no-underline`}
       >
         {img}
       </a>
     );
   }
 
-  return (
-    <div className="flex-shrink-0 rounded-md p-2 sm:p-3 lg:p-4">{img}</div>
-  );
+  return <div className={shellClass}>{img}</div>;
 }
 
 /**
  * Partners — Logo Marquee
- * Centered title + infinite horizontal logo strip.
- * Global-scope content: edit once under Content sections.
+ * Soft edge-fade strip with floating logo chips.
  */
 export default function PartnersMarqueeSection({
   section_title,
@@ -50,8 +50,6 @@ export default function PartnersMarqueeSection({
   section_key = "partners_marquee",
   cmsMode,
   onEditField,
-  surfaceTone = "white",
-  section_bg_img,
   id,
 }) {
   const mapped = resolveItemsForSection(section_key, mappingItems);
@@ -79,19 +77,11 @@ export default function PartnersMarqueeSection({
 
   const showTitle = Boolean(section_title) || cmsMode;
   const showSubtitle = Boolean(sub_title) || cmsMode;
-  const bgUrl = mediaUrl(section_bg_img);
 
   return (
     <section
       id={id || undefined}
-      className={`relative w-full overflow-hidden py-10 sm:py-12 ${
-        bgUrl
-          ? "bg-cover bg-center bg-no-repeat"
-          : surfaceTone === "muted"
-            ? "bg-slate-100 dark:bg-slate-900"
-            : "bg-white dark:bg-slate-950"
-      }`}
-      style={bgUrl ? { backgroundImage: `url(${bgUrl})` } : undefined}
+      className="relative w-full overflow-hidden py-14 sm:py-16"
     >
       <SectionWrapper>
         <CmsSectionItemsBar
@@ -103,7 +93,10 @@ export default function PartnersMarqueeSection({
         />
 
         {showTitle || showSubtitle ? (
-          <header className="mb-6 flex flex-col items-start gap-2 text-left sm:mb-8">
+          <header className="mb-8 flex max-w-3xl flex-col gap-3 sm:mb-10">
+            <p className="m-0 text-[11px] font-semibold tracking-[0.22em] text-brand uppercase">
+              Ecosystem
+            </p>
             {showTitle ? (
               <CmsEditable
                 cmsMode={cmsMode}
@@ -112,11 +105,11 @@ export default function PartnersMarqueeSection({
                 onEditField={onEditField}
               >
                 {section_title ? (
-                  <h2 className="m-0 max-w-4xl text-2xl leading-tight font-bold tracking-tight text-ink sm:text-[1.75rem] md:text-3xl dark:text-white">
+                  <h2 className="m-0 font-[family-name:var(--font-display)] text-3xl leading-[1.1] font-semibold tracking-tight text-ink sm:text-4xl dark:text-white">
                     {section_title}
                   </h2>
                 ) : (
-                  <h2 className="m-0 text-2xl font-bold text-slate-300 italic dark:text-slate-600">
+                  <h2 className="m-0 text-3xl font-semibold text-slate-300 italic dark:text-slate-600">
                     Add title…
                   </h2>
                 )}
@@ -130,11 +123,11 @@ export default function PartnersMarqueeSection({
                 onEditField={onEditField}
               >
                 {sub_title ? (
-                  <p className="m-0 max-w-2xl text-[15px] leading-relaxed text-slate-600 sm:text-base dark:text-slate-300">
+                  <p className="m-0 max-w-2xl text-base leading-relaxed text-slate-600 dark:text-slate-300">
                     {sub_title}
                   </p>
                 ) : (
-                  <p className="m-0 text-[15px] text-slate-300 italic dark:text-slate-600">
+                  <p className="m-0 text-base text-slate-300 italic dark:text-slate-600">
                     Add subtitle…
                   </p>
                 )}
@@ -151,8 +144,8 @@ export default function PartnersMarqueeSection({
             />
           ) : null
         ) : (
-          <div className="relative overflow-hidden pt-2">
-            <div className="flex w-max animate-[partner-marquee_80s_linear_infinite] items-center gap-x-4 sm:gap-x-6">
+          <div className="relative overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)]">
+            <div className="flex w-max animate-[partner-marquee_70s_linear_infinite] items-center gap-x-4 py-1 sm:gap-x-5">
               {track.map((logo, i) => (
                 <LogoCell
                   key={`${logo.name}-${i}`}

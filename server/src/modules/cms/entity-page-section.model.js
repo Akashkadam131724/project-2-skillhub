@@ -61,6 +61,7 @@ const entityPageSectionSchema = new Schema(
     sub_title: { type: String, trim: true, default: null },
     in_page_nav_title: { type: String, trim: true, default: null },
     section_bg_img: { type: String, trim: true, default: null },
+    section_bg_color: { type: String, trim: true, default: null, maxlength: 400 },
     section_img_url: { type: String, trim: true, default: null },
     data: { type: Schema.Types.Mixed, default: null },
 

@@ -40,7 +40,7 @@ export default function HeroStatsSection({
   const hasStats = stats.length > 0;
 
   return (
-    <section className="border-b border-slate-200 bg-ink text-white dark:border-slate-800">
+    <section className="border-b border-slate-200 text-white dark:border-slate-800">
       <SectionWrapper className="py-12 sm:py-14 lg:py-16">
         <div
           className={

@@ -114,8 +114,8 @@ export default function CourseCatalogClient({
         ) : null}
 
         <section className="min-w-0">
-          <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <h3 className="m-0 text-xl font-bold text-ink dark:text-white">
+          <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <h3 className="m-0 font-[family-name:var(--font-display)] text-2xl font-semibold tracking-tight text-ink dark:text-white">
               {loading ? "…" : error ? "—" : `${total.toLocaleString("en-US")} ${heading}`}
             </h3>
             <CatalogSearch
@@ -124,18 +124,25 @@ export default function CourseCatalogClient({
             />
           </div>
 
-          {error ? <p className="mb-4 text-sm text-red-700">{error}</p> : null}
+          {error ? <p className="mb-4 text-sm text-rose-600">{error}</p> : null}
 
           {!error && !loading && courses.length === 0 ? (
-            <p className="rounded-xl border border-slate-200 bg-white p-6 text-sm text-slate-500 dark:border-slate-700 dark:bg-slate-950">
+            <p className="rounded-[1.25rem] border border-slate-200 bg-slate-50 p-6 text-sm text-slate-500 dark:border-slate-800 dark:bg-slate-900/50">
               No courses match these filters.
             </p>
           ) : null}
 
           {loading ? (
-            <div className="h-40 animate-pulse rounded-xl bg-slate-200/60 dark:bg-slate-800" />
+            <div className="grid gap-4 sm:grid-cols-2">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="h-44 animate-pulse rounded-[1.35rem] bg-slate-200/70 dark:bg-slate-800"
+                />
+              ))}
+            </div>
           ) : (
-            <ul className="m-0 grid list-none gap-3 p-0">
+            <ul className="m-0 grid list-none gap-4 p-0 sm:grid-cols-2">
               {courses.map((course) => (
                 <li key={String(course._id || course.id)}>
                   <CourseCard course={course} />

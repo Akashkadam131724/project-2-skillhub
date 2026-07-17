@@ -65,18 +65,19 @@ export default function HeroMediaSection({
 }) {
   const items = resolveItemsForSection(section_key, mappingItems);
   const [index, setIndex] = useState(0);
+  const [videoOpen, setVideoOpen] = useState(false);
 
   useEffect(() => {
     setIndex(0);
   }, [items.length]);
 
   useEffect(() => {
-    if (cmsMode || items.length < 2) return undefined;
+    if (cmsMode || items.length < 2 || videoOpen) return undefined;
     const id = window.setInterval(() => {
       setIndex((i) => (i + 1) % items.length);
     }, 6500);
     return () => window.clearInterval(id);
-  }, [cmsMode, items.length]);
+  }, [cmsMode, items.length, videoOpen]);
 
   if (!items.length && !cmsMode) return null;
 
@@ -115,7 +116,11 @@ export default function HeroMediaSection({
       ) : null}
 
       {current && hasSide ? (
-        <HeroSlideSideMedia item={current} cmsMode={cmsMode} />
+        <HeroSlideSideMedia
+          item={current}
+          cmsMode={cmsMode}
+          onVideoOpenChange={setVideoOpen}
+        />
       ) : null}
 
       <SectionWrapper

@@ -81,6 +81,8 @@ export function placementHasFieldContent(section) {
       !isRichTextEmpty(section?.data?.body) ||
       String(section.section_img_url || "").trim() ||
       String(section.section_bg_img || "").trim() ||
+      String(section.section_bg_color || "").trim() ||
+      String(section.data?.bg_color || "").trim() ||
       hasActiveButtons(section)
   );
 }
@@ -92,6 +94,9 @@ export function placementHasFieldContent(section) {
 const CONTEXT_BACKED_SECTION_KEYS = new Set([
   "in_page_nav",
   "catalog",
+  "entity_directory",
+  "latest_blogs",
+  "blog_directory",
   "products",
   "related_courses",
 ]);
@@ -144,6 +149,7 @@ export function sectionProbeFromProps(sectionKey, props = {}) {
     data: props.data,
     section_img_url: props.section_img_url,
     section_bg_img: props.section_bg_img,
+    section_bg_color: props.section_bg_color,
     buttons: props.buttons,
     button_title: props.button_title,
     target_url: props.target_url,

@@ -124,9 +124,9 @@ function MetaItem({ icon, label, value, href }) {
 
   return (
     <span className="inline-flex min-w-0 items-center gap-1.5 text-sm text-slate-600 dark:text-slate-300">
-      <span className="group relative inline-flex shrink-0 cursor-help text-brand dark:text-brand">
+      <span className="group/tip relative inline-flex shrink-0 cursor-help text-brand">
         <span aria-hidden="true">{icon}</span>
-        <span className="pointer-events-none absolute bottom-full left-1/2 z-20 mb-1.5 -translate-x-1/2 whitespace-nowrap rounded-md bg-ink px-2 py-1 text-[11px] font-semibold text-white opacity-0 shadow-md transition-opacity duration-150 group-hover:opacity-100 group-focus-within:opacity-100 dark:bg-slate-100 dark:text-slate-900">
+        <span className="pointer-events-none absolute bottom-full left-1/2 z-20 mb-1.5 -translate-x-1/2 whitespace-nowrap rounded-md bg-ink px-2 py-1 text-[11px] font-semibold text-white opacity-0 shadow-md transition-opacity duration-150 group-hover/tip:opacity-100 group-focus-within/tip:opacity-100 dark:bg-slate-100 dark:text-slate-900">
           {label}
           <span
             className="absolute left-1/2 top-full -mt-px -translate-x-1/2 border-4 border-transparent border-t-ink dark:border-t-slate-100"
@@ -148,12 +148,16 @@ export default function CourseCard({ course }) {
   const skillLevelName = course.skillLevel?.name || "";
   const industryNames = formatNames(course.industries, "");
   const skillingAreaNames = formatNames(course.skillingAreas, "");
-  const courseHref = course.slug ? `/courses/${course.slug}` : null;
+  const courseHref = course.slug ? `/course/${course.slug}` : null;
 
   return (
-    <article className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-slate-300 hover:shadow-md dark:border-slate-700 dark:bg-slate-950 dark:hover:border-slate-600">
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <h3 className="m-0 text-lg font-bold text-ink dark:text-white">
+    <article className="group relative h-full overflow-hidden rounded-[1.35rem] border border-slate-200/80 bg-white p-5 shadow-[0_16px_40px_-32px_color-mix(in_srgb,var(--ink)_35%,transparent)] transition hover:-translate-y-1 hover:border-brand/25 dark:border-slate-800 dark:bg-slate-950">
+      <div
+        aria-hidden
+        className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-ink via-brand to-ink opacity-80"
+      />
+      <div className="flex flex-wrap items-start justify-between gap-3 pt-1">
+        <h3 className="m-0 text-lg font-semibold tracking-tight text-ink dark:text-white">
           {courseHref ? (
             <Link
               href={courseHref}
@@ -168,7 +172,7 @@ export default function CourseCard({ course }) {
         {productName && (
           productSlug ? (
             <Link
-              href={`/products/${productSlug}`}
+              href={`/product/${productSlug}`}
               className="inline-flex items-center gap-1.5 rounded-full border border-brand/25 bg-brand-soft px-2.5 py-1 text-xs font-semibold text-brand no-underline dark:border-brand/40 dark:bg-brand/20 dark:text-brand"
             >
               <IconProduct className="size-3.5" />
@@ -192,7 +196,7 @@ export default function CourseCard({ course }) {
           icon={<IconVendor />}
           label="Vendor"
           value={vendorName}
-          href={vendorSlug ? `/vendors/${vendorSlug}` : null}
+          href={vendorSlug ? `/vendor/${vendorSlug}` : null}
         />
         <MetaItem
           icon={<IconSkillLevel />}
@@ -205,7 +209,7 @@ export default function CourseCard({ course }) {
           value={industryNames}
           href={
             course.industries?.[0]?.slug
-              ? `/industries/${course.industries[0].slug}`
+              ? `/industry/${course.industries[0].slug}`
               : null
           }
         />
@@ -215,7 +219,7 @@ export default function CourseCard({ course }) {
           value={skillingAreaNames}
           href={
             course.skillingAreas?.[0]?.slug
-              ? `/skilling-areas/${course.skillingAreas[0].slug}`
+              ? `/skilling-area/${course.skillingAreas[0].slug}`
               : null
           }
         />

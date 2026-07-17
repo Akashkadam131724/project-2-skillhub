@@ -7,8 +7,7 @@ import { resolveItemsForSection } from "@/lib/item-types";
 import { TrainingOptionCard } from "./CardItems";
 
 /**
- * Flexible training modalities — 4-up image cards.
- * Title + footer CTAs are left-aligned via SectionFrame.
+ * Flexible training modalities — image-led modern tiles.
  */
 export default function TrainingOptionsSection({
   section_title,
@@ -26,6 +25,7 @@ export default function TrainingOptionsSection({
     <SectionFrame
       title={section_title}
       subtitle={sub_title}
+      eyebrow="Formats"
       cmsMode={cmsMode}
       onEditField={onEditField}
       {...frameProps}
@@ -37,10 +37,10 @@ export default function TrainingOptionsSection({
         itemCount={items.length}
       />
       {items.length ? (
-        <ul className="m-0 grid list-none gap-4 p-0 sm:grid-cols-2 sm:gap-5 lg:grid-cols-4 lg:gap-6">
+        <ul className="m-0 grid list-none gap-5 p-0 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6">
           {items.map((item, i) => (
             <li key={item._id || item.id || i} className="min-w-0">
-              <TrainingOptionCard item={item} />
+              <TrainingOptionCard item={item} index={i} />
             </li>
           ))}
         </ul>

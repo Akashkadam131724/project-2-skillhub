@@ -1,6 +1,13 @@
 "use client";
 
+import { useCallback, useState } from "react";
 import { mediaUrl } from "@/lib/cms-api";
+import { mediaAlt } from "@/lib/media-alt";
+import {
+  youtubeEmbedUrl,
+  youtubeWatchUrl,
+} from "@/lib/button-types";
+import YoutubeModal from "@/components/ui/YoutubeModal";
 
 function PlayIcon({ className = "size-8" }) {
   return (
@@ -17,28 +24,53 @@ function PlayIcon({ className = "size-8" }) {
 
 /**
  * Full-height right-panel media — covers the right side of the banner.
- * item.icon = image, item.href = optional video URL (shows play icon).
+ * item.icon = image, item.href = optional video URL (shows play icon → modal).
  */
 export default function HeroSlideSideMedia({
   item,
   cmsMode = false,
   className = "",
+  onVideoOpenChange,
 }) {
+  const [open, setOpen] = useState(false);
   const sideImg = mediaUrl(item?.icon || "");
   const videoUrl = String(item?.href || "").trim();
+  const embedSrc = videoUrl
+    ? youtubeEmbedUrl(videoUrl, { autoplay: false })
+    : null;
+  const watchHref = videoUrl ? youtubeWatchUrl(videoUrl) || videoUrl : null;
   const hasVideo = Boolean(videoUrl);
+
+  const setVideoOpen = useCallback(
+    (next) => {
+      setOpen(next);
+      onVideoOpenChange?.(next);
+    },
+    [onVideoOpenChange]
+  );
+
+  function handlePlay() {
+    if (cmsMode) return;
+    if (embedSrc) {
+      setVideoOpen(true);
+      return;
+    }
+    if (watchHref) {
+      window.open(watchHref, "_blank", "noopener,noreferrer");
+    }
+  }
 
   if (!sideImg && !cmsMode) return null;
 
   const panel = (
     <div
-      className={`absolute inset-y-0 right-0 z-[1] hidden w-[40%] sm:block lg:w-[36%] ${className}`.trim()}
+      className={`absolute inset-y-0 right-0 z-[3] hidden w-[40%] sm:block lg:w-[36%] ${className}`.trim()}
     >
       {sideImg ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
           src={sideImg}
-          alt=""
+          alt={mediaAlt(item, "Hero media")}
           className="absolute inset-0 size-full object-cover object-center"
         />
       ) : (
@@ -53,7 +85,24 @@ export default function HeroSlideSideMedia({
         aria-hidden
       />
 
-      {hasVideo && sideImg ? (
+      {hasVideo && sideImg && !cmsMode ? (
+        <button
+          type="button"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            handlePlay();
+          }}
+          className="absolute inset-0 z-10 flex cursor-pointer items-center justify-center border-0 bg-black/0 transition hover:bg-black/20"
+          aria-label="Play video"
+        >
+          <span className="pointer-events-none inline-flex size-14 items-center justify-center rounded-full bg-white/95 text-ink shadow-lg ring-1 ring-black/5 transition group-hover:scale-105 sm:size-16">
+            <PlayIcon className="size-7 translate-x-0.5 sm:size-8" />
+          </span>
+        </button>
+      ) : null}
+
+      {hasVideo && sideImg && cmsMode ? (
         <span
           className="pointer-events-none absolute inset-0 flex items-center justify-center"
           aria-hidden
@@ -69,22 +118,16 @@ export default function HeroSlideSideMedia({
           {sideImg ? `Video: ${videoUrl}` : "Video URL set — add side image"}
         </p>
       ) : null}
+
+      <YoutubeModal
+        open={open}
+        title={item?.title || "Video"}
+        embedSrc={embedSrc}
+        watchHref={watchHref}
+        onClose={() => setVideoOpen(false)}
+      />
     </div>
   );
-
-  if (hasVideo && sideImg && !cmsMode) {
-    return (
-      <a
-        href={videoUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="contents"
-        aria-label="Play video"
-      >
-        {panel}
-      </a>
-    );
-  }
 
   return panel;
 }

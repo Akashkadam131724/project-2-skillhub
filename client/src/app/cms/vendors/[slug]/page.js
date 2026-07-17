@@ -115,7 +115,7 @@ export default function CmsVendorEditPage() {
             <Link href="/cms/vendors" className={btnSecondary}>
               All vendors
             </Link>
-            <Link href={`/vendors/${vendor.slug}?cms=true`} className={btnPrimary}>
+            <Link href={`/vendor/${vendor.slug}?cms=true`} className={btnPrimary}>
               Edit live sections
             </Link>
             <StatusBadge active={vendor.status === "active"} />

@@ -85,7 +85,7 @@ export default function CmsIndustriesPage() {
       });
       setForm(emptyForm);
       setShowForm(false);
-      window.location.href = `/cms/industries/${res.data.slug}`;
+      window.location.href = `/cms/industry/${res.data.slug}`;
     } catch (err) {
       setError(err);
     } finally {
@@ -197,18 +197,18 @@ export default function CmsIndustriesPage() {
                     <StatusBadge active={item.status === "active"} />
                   </div>
                   <p className="mt-0.5 mb-0 text-xs text-slate-500">
-                    /industries/{item.slug}
+                    /industry/{item.slug}
                   </p>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   <Link
-                    href={`/cms/industries/${item.slug}`}
+                    href={`/cms/industry/${item.slug}`}
                     className={btnSecondary}
                   >
                     Edit
                   </Link>
                   <Link
-                    href={`/industries/${item.slug}?cms=true`}
+                    href={`/industry/${item.slug}?cms=true`}
                     className={btnPrimary}
                   >
                     Edit live

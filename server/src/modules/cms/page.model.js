@@ -1,4 +1,5 @@
 import { Schema, model } from "mongoose";
+import { emptyPageTheme, themeSchemaFields } from "./theme.utils.js";
 
 /**
  * Page templates: product, course, vendor, home, industry, skilling_area, content, ...
@@ -12,7 +13,12 @@ const PAGE_ENTITY_TYPES = [
   "industry",
   "skilling_area",
   "content",
+  "blog",
 ];
+
+const pageThemeSchema = new Schema(themeSchemaFields({ nullable: true }), {
+  _id: false,
+});
 
 const pageSchema = new Schema(
   {
@@ -69,6 +75,15 @@ const pageSchema = new Schema(
     is_sort_disabled: {
       type: Boolean,
       default: true,
+    },
+
+    /**
+     * Template theme overrides — null/empty fields inherit SiteTheme.
+     * Resolved as merge(SiteTheme, Page.theme) for live pages.
+     */
+    theme: {
+      type: pageThemeSchema,
+      default: () => emptyPageTheme(),
     },
   },
   {

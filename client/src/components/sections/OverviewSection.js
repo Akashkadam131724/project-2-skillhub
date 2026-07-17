@@ -3,6 +3,7 @@
 import CmsEditable from "@/components/cms/CmsEditable";
 import CmsRichText from "@/components/cms/CmsRichText";
 import { mediaUrl } from "@/lib/cms-api";
+import { mediaAlt } from "@/lib/media-alt";
 import {
   placementHasMeaningfulContent,
   sectionProbeFromProps,
@@ -12,8 +13,7 @@ import SectionButtonsFooter from "./SectionButtonsFooter";
 import SectionFrame from "./SectionFrame";
 
 /**
- * Overview — `section_img_url` on the left; title / subtitle / body on the right.
- * Buttons + CMS edit sit under the text column (this layout owns placement).
+ * Overview — editorial split with image + copy column.
  */
 export default function OverviewSection({
   section_title,
@@ -54,12 +54,13 @@ export default function OverviewSection({
       cmsMode={cmsMode}
       onEditField={onEditField}
       buttonsFooter={false}
+      eyebrow="Overview"
       {...frameProps}
     >
       <div
-        className={`grid gap-6 sm:gap-8 ${
+        className={`grid gap-8 lg:gap-12 ${
           showImage
-            ? "md:grid-cols-[minmax(16rem,24rem)_minmax(0,1fr)] md:items-start"
+            ? "lg:grid-cols-[minmax(0,18rem)_minmax(0,1fr)] lg:items-start xl:grid-cols-[minmax(0,22rem)_minmax(0,1fr)]"
             : ""
         }`}
       >
@@ -72,21 +73,23 @@ export default function OverviewSection({
             className="order-1 w-full"
           >
             {imgUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={imgUrl}
-                alt=""
-                className="aspect-[16/9] w-full rounded-lg object-cover sm:aspect-[2/1] md:aspect-[16/9]"
-              />
+              <div className="overflow-hidden rounded-[1.75rem] shadow-[0_36px_80px_-42px_color-mix(in_srgb,var(--ink)_50%,transparent)] ring-1 ring-slate-200/70 dark:ring-slate-800">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={imgUrl}
+                  alt={mediaAlt(section_title, "Overview")}
+                  className="aspect-[16/10] max-h-56 w-full object-cover sm:max-h-64 md:max-h-72"
+                />
+              </div>
             ) : (
-              <div className="flex aspect-[16/9] w-full items-center justify-center rounded-lg border border-dashed border-slate-300 text-sm text-slate-400 italic sm:aspect-[2/1] md:aspect-[16/9] dark:border-slate-700 dark:text-slate-600">
+              <div className="flex aspect-[16/10] max-h-56 w-full items-center justify-center rounded-[1.75rem] border border-dashed border-slate-300 text-sm text-slate-400 italic sm:max-h-64 md:max-h-72 dark:border-slate-700 dark:text-slate-600">
                 Add section image…
               </div>
             )}
           </CmsEditable>
         ) : null}
 
-        <div className="order-2 flex min-w-0 flex-col gap-2 sm:gap-2.5">
+        <div className="order-2 flex min-w-0 flex-col gap-4 sm:gap-5">
           {section_title || cmsMode ? (
             <CmsEditable
               cmsMode={cmsMode}
@@ -95,11 +98,11 @@ export default function OverviewSection({
               onEditField={onEditField}
             >
               {section_title ? (
-                <h2 className="m-0 text-2xl leading-tight font-bold tracking-tight text-ink sm:text-[1.75rem] md:text-3xl dark:text-white">
+                <h2 className="m-0 font-[family-name:var(--font-display)] text-3xl leading-[1.12] font-semibold tracking-tight text-ink sm:text-4xl dark:text-white">
                   {section_title}
                 </h2>
               ) : (
-                <h2 className="m-0 text-2xl leading-tight font-bold text-slate-300 italic sm:text-[1.75rem] md:text-3xl dark:text-slate-600">
+                <h2 className="m-0 text-3xl font-semibold text-slate-300 italic sm:text-4xl dark:text-slate-600">
                   Add title…
                 </h2>
               )}
@@ -114,11 +117,11 @@ export default function OverviewSection({
               onEditField={onEditField}
             >
               {sub_title ? (
-                <p className="m-0 max-w-2xl text-[15px] leading-relaxed text-slate-600 sm:text-base dark:text-slate-300">
+                <p className="m-0 max-w-2xl text-base leading-relaxed text-slate-600 dark:text-slate-300">
                   {sub_title}
                 </p>
               ) : (
-                <p className="m-0 text-[15px] leading-relaxed text-slate-300 italic sm:text-base dark:text-slate-600">
+                <p className="m-0 text-base leading-relaxed text-slate-300 italic dark:text-slate-600">
                   Add subtitle…
                 </p>
               )}
@@ -131,11 +134,11 @@ export default function OverviewSection({
               field="body"
               label="Body"
               onEditField={onEditField}
-              className="mt-2 block w-full sm:mt-3"
+              className="block w-full"
             >
               <CmsRichText
                 html={body}
-                className="text-[15px] leading-relaxed text-slate-700 dark:text-slate-200"
+                className="text-[15px] leading-relaxed text-slate-700 sm:text-base dark:text-slate-200"
                 empty={
                   cmsMode ? (
                     <p className="m-0 text-[15px] text-slate-300 italic dark:text-slate-600">
@@ -154,7 +157,7 @@ export default function OverviewSection({
             cmsMode={cmsMode}
             onEditField={onEditField}
             onFormOpen={onFormOpen}
-            className="mt-4 sm:mt-5"
+            className="mt-2 sm:mt-3"
           />
         </div>
       </div>

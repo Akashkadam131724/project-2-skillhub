@@ -42,7 +42,7 @@ export default function HeroSplitSection({
   const hasImage = hasMediaUrl(section_img_url);
 
   return (
-    <section className="border-b border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-950">
+    <section className="border-b border-slate-200 dark:border-slate-800">
       <SectionWrapper className="py-12 sm:py-14 lg:py-16">
         <div
           className={

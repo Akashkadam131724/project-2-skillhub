@@ -12,12 +12,18 @@ import TextAlign from "@tiptap/extension-text-align";
 import { TextStyle } from "@tiptap/extension-text-style";
 import Color from "@tiptap/extension-color";
 import Placeholder from "@tiptap/extension-placeholder";
+import { BulletList, OrderedList } from "@tiptap/extension-list";
+import { Extension } from "@tiptap/core";
 import {
   plainTextToHtml,
   sanitizePastedHtml,
   sanitizeRichHtml,
   isRichTextEmpty,
 } from "@/lib/rich-text";
+import {
+  VideoEmbed,
+  normalizeVideoEmbed,
+} from "@/components/cms/VideoEmbedExtension";
 
 const TEXT_COLORS = [
   { label: "Default", value: "", group: "light" },
@@ -49,6 +55,89 @@ const ExitFriendlyUnderline = Underline.extend({ inclusive: false });
 const ExitFriendlyLink = Link.extend({ inclusive: false });
 // Color must not stick to the caret — only selected text gets colored
 const ExitFriendlyTextStyle = TextStyle.extend({ inclusive: false });
+
+/**
+ * Lists are toolbar-only.
+ * TipTap's default input rules (`- `, `* `, `1. `) were turning normal text into
+ * <li> when focusing / typing near those characters.
+ */
+const SafeBulletList = BulletList.extend({
+  addInputRules() {
+    return [];
+  },
+  addPasteRules() {
+    return [];
+  },
+  addKeyboardShortcuts() {
+    // Disable Mod-Shift-8 — it was easy to hit / feel like “focus activated list”
+    return {};
+  },
+});
+
+const SafeOrderedList = OrderedList.extend({
+  addInputRules() {
+    return [];
+  },
+  addPasteRules() {
+    return [];
+  },
+  addKeyboardShortcuts() {
+    // Disable Mod-Shift-7
+    return {};
+  },
+  // Disable plain-text paste → ordered list conversion
+  addProseMirrorPlugins() {
+    return [];
+  },
+});
+
+/** Minimal list keys after disabling TipTap ListKeymap (avoids join-into-previous-list). */
+const SafeListKeys = Extension.create({
+  name: "safeListKeys",
+  addKeyboardShortcuts() {
+    return {
+      Backspace: () => {
+        if (!this.editor.isActive("listItem")) return false;
+        const { $from, empty } = this.editor.state.selection;
+        if (!empty || $from.parentOffset !== 0) return false;
+        return this.editor.commands.liftListItem("listItem");
+      },
+      Enter: () => {
+        if (!this.editor.isActive("listItem")) return false;
+        const { $from, empty } = this.editor.state.selection;
+        if (!empty) return false;
+        const listItem = $from.node($from.depth - 1);
+        if (!listItem || listItem.type.name !== "listItem") return false;
+        if (listItem.textContent.trim()) return false;
+        return this.editor.commands.liftListItem("listItem");
+      },
+    };
+  },
+});
+
+/** True when the caret is inside a real list node (not a false-positive toolbar state). */
+function isCaretInList(editor, listName) {
+  if (!editor) return false;
+  const { $from } = editor.state.selection;
+  for (let depth = $from.depth; depth > 0; depth -= 1) {
+    if ($from.node(depth).type.name === listName) return true;
+  }
+  return false;
+}
+
+/** If focus lands in an empty list item, lift back to a normal paragraph. */
+function liftEmptyListItem(editor) {
+  if (!editor) return;
+  if (!isCaretInList(editor, "bulletList") && !isCaretInList(editor, "orderedList")) {
+    return;
+  }
+  const { $from, empty } = editor.state.selection;
+  if (!empty) return;
+  const listItem = $from.node($from.depth - 1);
+  if (!listItem || listItem.type.name !== "listItem") return;
+  if (listItem.textContent.trim()) return;
+  editor.commands.liftListItem("listItem");
+}
 
 function ToolbarButton({ active, disabled, onClick, title, children }) {
   return (
@@ -101,8 +190,28 @@ export default function CmsRichTextEditor({
   const [headingPanelOpen, setHeadingPanelOpen] = useState(false);
   const colorRangeRef = useRef(null);
   const rootRef = useRef(null);
+  const lastEmittedRef = useRef(sanitizeRichHtml(plainTextToHtml(value) || ""));
   // Selection actions (Colors / Bold / Exit selection) only while the editor chrome is focused
   const [shellActive, setShellActive] = useState(false);
+  /**
+   * List toolbar highlight is armed only by clicking • List / 1. List.
+   * Never derive from TipTap isActive / caret-in-list — focus inside existing
+   * <ul>/<ol> HTML was lighting the buttons and looking like “list mode on”.
+   * null | "bullet" | "ordered"
+   */
+  const [listArmed, setListArmed] = useState(null);
+  const listArmedRef = useRef(null);
+  const armingListRef = useRef(false);
+
+  function armList(next) {
+    listArmedRef.current = next;
+    setListArmed(next);
+  }
+
+  function disarmList() {
+    listArmedRef.current = null;
+    setListArmed(null);
+  }
 
   function toggleKeepPasteColors() {
     setKeepPasteColors((prev) => {
@@ -128,7 +237,9 @@ export default function CmsRichTextEditor({
 
   const emit = useCallback(
     (html) => {
-      onChange?.(sanitizeRichHtml(html));
+      const clean = sanitizeRichHtml(html);
+      lastEmittedRef.current = clean;
+      onChange?.(clean);
     },
     [onChange]
   );
@@ -139,10 +250,18 @@ export default function CmsRichTextEditor({
     extensions: [
       StarterKit.configure({
         heading: { levels: [2, 3, 4] },
-        // Replaced with exit-friendly versions below
+        // Replaced with exit-friendly / safer versions below
         bold: false,
         italic: false,
+        bulletList: false,
+        orderedList: false,
+        // Prevents Backspace at the start of a paragraph after a list from
+        // sucking that paragraph into the previous list (feels like “focus activated list”).
+        listKeymap: false,
       }),
+      SafeBulletList,
+      SafeOrderedList,
+      SafeListKeys,
       ExitFriendlyBold,
       ExitFriendlyItalic,
       ExitFriendlyUnderline,
@@ -164,11 +283,12 @@ export default function CmsRichTextEditor({
           class: "cms-rich-img",
         },
       }),
+      VideoEmbed,
       Placeholder.configure({
         placeholder,
       }),
     ],
-    content: plainTextToHtml(value) || "",
+    content: plainTextToHtml(value) || "<p></p>",
     editorProps: {
       attributes: {
         class:
@@ -187,27 +307,66 @@ export default function CmsRichTextEditor({
     },
   });
 
+  // List toolbar arming: button click only. Focus/blur on the ProseMirror DOM
+  // must never leave • List / 1. List looking pressed from caret-in-list.
   useEffect(() => {
     if (!editor) return;
-    const next = plainTextToHtml(value) || "";
-    const current = editor.getHTML();
-    if (sanitizeRichHtml(current) !== sanitizeRichHtml(next)) {
-      editor.commands.setContent(next ? next : "<p></p>", {
-        emitUpdate: false,
-      });
-      editor.view.dispatch(editor.state.tr.setStoredMarks([]));
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [editor, value]);
+    const dom = editor.view.dom;
 
-  // Land in the writing area — never on a leftover toolbar control
+    const onFocus = () => {
+      queueMicrotask(() => {
+        if (armingListRef.current) return;
+        liftEmptyListItem(editor);
+        disarmList();
+      });
+    };
+
+    const onBlur = () => {
+      queueMicrotask(() => {
+        if (armingListRef.current) return;
+        disarmList();
+      });
+    };
+
+    const onSelection = () => {
+      if (armingListRef.current) return;
+      const armed = listArmedRef.current;
+      if (!armed) return;
+      if (armed === "bullet" && !isCaretInList(editor, "bulletList")) disarmList();
+      else if (armed === "ordered" && !isCaretInList(editor, "orderedList")) {
+        disarmList();
+      }
+    };
+
+    dom.addEventListener("focus", onFocus);
+    dom.addEventListener("blur", onBlur);
+    editor.on("selectionUpdate", onSelection);
+    return () => {
+      dom.removeEventListener("focus", onFocus);
+      dom.removeEventListener("blur", onBlur);
+      editor.off("selectionUpdate", onSelection);
+    };
+  }, [editor]);
+
+  // Sync external value → editor, but never clobber while the user is focused/typing.
   useEffect(() => {
     if (!editor) return;
-    const id = window.setTimeout(() => {
-      editor.commands.focus("end");
-    }, 20);
-    return () => window.clearTimeout(id);
-  }, [editor]);
+    const next = sanitizeRichHtml(plainTextToHtml(value) || "");
+    if (next === lastEmittedRef.current) return;
+    if (editor.isFocused) return;
+
+    const current = sanitizeRichHtml(editor.getHTML());
+    if (current === next) {
+      lastEmittedRef.current = next;
+      return;
+    }
+
+    editor.commands.setContent(next ? next : "<p></p>", {
+      emitUpdate: false,
+    });
+    lastEmittedRef.current = next;
+    editor.view.dispatch(editor.state.tr.setStoredMarks([]));
+  }, [editor, value]);
 
   useEffect(() => {
     if (!editor) return;
@@ -236,6 +395,7 @@ export default function CmsRichTextEditor({
         ) {
           editor.commands.setContent("<p></p>", { emitUpdate: false });
           editor.view.dispatch(editor.state.tr.setStoredMarks([]));
+          lastEmittedRef.current = "";
         }
       }
     };
@@ -253,6 +413,7 @@ export default function CmsRichTextEditor({
 
     function deactivateShell() {
       setShellActive(false);
+      disarmList();
       closeSelectionPanels();
       const { from, to } = editor.state.selection;
       if (to > from) {
@@ -390,6 +551,22 @@ export default function CmsRichTextEditor({
     editor.chain().focus().setImage({ src: trimmed }).run();
   }
 
+  function addVideo() {
+    const url = window.prompt(
+      "Video URL (YouTube, Vimeo, or direct .mp4/.webm)",
+      "https://"
+    );
+    if (url === null) return;
+    const embed = normalizeVideoEmbed(url);
+    if (!embed) {
+      window.alert(
+        "Couldn’t use that URL. Paste a YouTube/Vimeo link or a direct video file URL."
+      );
+      return;
+    }
+    editor.chain().focus().setVideoEmbed(embed).run();
+  }
+
   function setLink() {
     const prev = editor.getAttributes("link").href || "";
     const url = window.prompt("Link URL (leave empty to remove)", prev);
@@ -430,31 +607,67 @@ export default function CmsRichTextEditor({
     editor.chain().focus().setParagraph().run();
   }
   function exitBulletList() {
-    if (editor.isActive("bulletList")) {
+    armingListRef.current = true;
+    if (isCaretInList(editor, "bulletList")) {
       editor.chain().focus().toggleBulletList().run();
     }
+    disarmList();
+    queueMicrotask(() => {
+      armingListRef.current = false;
+    });
   }
   function exitOrderedList() {
-    if (editor.isActive("orderedList")) {
+    armingListRef.current = true;
+    if (isCaretInList(editor, "orderedList")) {
       editor.chain().focus().toggleOrderedList().run();
     }
+    disarmList();
+    queueMicrotask(() => {
+      armingListRef.current = false;
+    });
   }
   function exitAlign() {
     editor.chain().focus().unsetTextAlign().run();
   }
 
+  function toggleBulletList() {
+    armingListRef.current = true;
+    editor.chain().focus().toggleBulletList().run();
+    const on = isCaretInList(editor, "bulletList");
+    armList(on ? "bullet" : null);
+    // Survive focus + selection microtasks from this click
+    window.setTimeout(() => {
+      armingListRef.current = false;
+    }, 50);
+  }
+
+  function toggleOrderedList() {
+    armingListRef.current = true;
+    editor.chain().focus().toggleOrderedList().run();
+    const on = isCaretInList(editor, "orderedList");
+    armList(on ? "ordered" : null);
+    window.setTimeout(() => {
+      armingListRef.current = false;
+    }, 50);
+  }
+
   function clearAllFormats() {
+    armingListRef.current = true;
     editor.chain().focus().unsetAllMarks().unsetColor().unsetTextAlign().run();
     if (editor.isActive("heading")) {
       editor.chain().focus().setParagraph().run();
     }
-    if (editor.isActive("bulletList")) {
+    if (isCaretInList(editor, "bulletList")) {
       editor.chain().focus().toggleBulletList().run();
     }
-    if (editor.isActive("orderedList")) {
+    if (isCaretInList(editor, "orderedList")) {
       editor.chain().focus().toggleOrderedList().run();
     }
+    disarmList();
     editor.view.dispatch(editor.state.tr.setStoredMarks([]));
+    queueMicrotask(() => {
+      armingListRef.current = false;
+    });
   }
 
   const contentEmpty = isRichTextEmpty(editor.getHTML());
@@ -470,13 +683,14 @@ export default function CmsRichTextEditor({
     : [2, 3, 4].find((level) => editor.isActive("heading", { level }));
   // Empty field = nothing “on” by default (lists / headings included)
   const activeHeading = Boolean(activeHeadingLevel);
-  const activeBullet = !contentEmpty && editor.isActive("bulletList");
-  const activeOrdered = !contentEmpty && editor.isActive("orderedList");
+  // List buttons: armed-by-click only — never TipTap isActive(bulletList/orderedList)
+  const activeBullet = listArmed === "bullet";
+  const activeOrdered = listArmed === "ordered";
+  // Only non-default aligns count as “active” (left/unset is normal, not armed)
   const activeAlign =
     !contentEmpty &&
     (editor.isActive({ textAlign: "center" }) ||
-      editor.isActive({ textAlign: "right" }) ||
-      editor.isActive({ textAlign: "left" }));
+      editor.isActive({ textAlign: "right" }));
 
   const { from: selFrom, to: selTo } = editor.state.selection;
   const hasTextSelection = selTo > selFrom;
@@ -579,14 +793,14 @@ export default function CmsRichTextEditor({
         <ToolbarButton
           title="Bullet list"
           active={activeBullet}
-          onClick={() => editor.chain().focus().toggleBulletList().run()}
+          onClick={toggleBulletList}
         >
           • List
         </ToolbarButton>
         <ToolbarButton
           title="Numbered list"
           active={activeOrdered}
-          onClick={() => editor.chain().focus().toggleOrderedList().run()}
+          onClick={toggleOrderedList}
         >
           1. List
         </ToolbarButton>
@@ -599,6 +813,12 @@ export default function CmsRichTextEditor({
         </ToolbarButton>
         <ToolbarButton title="Insert image by URL" onClick={addImage}>
           Img
+        </ToolbarButton>
+        <ToolbarButton
+          title="Insert YouTube, Vimeo, or video file URL"
+          onClick={addVideo}
+        >
+          Video
         </ToolbarButton>
         <ToolbarButton
           title="Align left"

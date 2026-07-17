@@ -3,6 +3,7 @@ import Product from "../product/product.model.js";
 import Course from "../course/course.model.js";
 import SkillingArea from "../skilling-area/skilling-area.model.js";
 import Industry from "../industry/industry.model.js";
+import Content from "../content/content.model.js";
 import { formatMongooseError } from "../../utils/formatMongooseError.js";
 
 const SEARCH_SOURCES = [
@@ -10,7 +11,7 @@ const SEARCH_SOURCES = [
     type: "vendor",
     label: "Vendors",
     filterKey: "vendor",
-    detailPath: "vendors",
+    detailPath: "vendor",
     Model: Vendor,
     fields: ["name", "slug", "description", "shortDescription"],
     select: "name slug logoUrl vendorCatalogueLogo shortDescription status",
@@ -27,7 +28,7 @@ const SEARCH_SOURCES = [
     type: "product",
     label: "Products",
     filterKey: "product",
-    detailPath: "products",
+    detailPath: "product",
     Model: Product,
     fields: ["name", "slug", "description", "category"],
     select: "name slug description category status vendor",
@@ -46,7 +47,7 @@ const SEARCH_SOURCES = [
     type: "course",
     label: "Courses",
     filterKey: "q",
-    detailPath: "courses",
+    detailPath: "course",
     Model: Course,
     fields: ["name", "slug", "description"],
     select: "name slug description product",
@@ -71,7 +72,7 @@ const SEARCH_SOURCES = [
     type: "skillingArea",
     label: "Skilling Areas",
     filterKey: "skillingArea",
-    detailPath: "skilling-areas",
+    detailPath: "skilling-area",
     Model: SkillingArea,
     fields: ["name", "slug", "description"],
     select: "name slug description status sortOrder",
@@ -87,7 +88,7 @@ const SEARCH_SOURCES = [
     type: "industry",
     label: "Industries",
     filterKey: "industry",
-    detailPath: "industries",
+    detailPath: "industry",
     Model: Industry,
     fields: ["name", "slug", "description"],
     select: "name slug description status sortOrder",
@@ -98,6 +99,28 @@ const SEARCH_SOURCES = [
       slug: doc.slug,
       description: doc.description || "",
     }),
+  },
+  {
+    type: "content",
+    label: "Pages",
+    filterKey: "content",
+    Model: Content,
+    fields: ["name", "slug", "path", "description"],
+    select: "name slug path description status sortOrder",
+    // Active pages only — never surface the homepage
+    statusFilter: {
+      status: "active",
+      path: { $ne: "/" },
+      slug: { $ne: "home" },
+    },
+    mapItem: (doc) => ({
+      id: String(doc._id),
+      name: doc.name,
+      slug: doc.slug,
+      path: doc.path,
+      description: doc.description || doc.path || "",
+    }),
+    hrefFromDoc: (doc) => doc.path || `/${doc.slug}`,
   },
 ];
 
@@ -113,7 +136,8 @@ function buildTextFilter(fields, q) {
 }
 
 /**
- * Global search across vendors, products, courses, skilling areas, and industries.
+ * Global search across vendors, products, courses, skilling areas,
+ * industries, and content pages (homepage excluded).
  * GET /search?q=&limit=
  */
 export const globalSearch = async (req, res) => {
@@ -149,11 +173,14 @@ export const globalSearch = async (req, res) => {
 
         const items = docs.map((doc) => {
           const item = source.mapItem(doc);
+          const href = source.hrefFromDoc
+            ? source.hrefFromDoc(doc)
+            : `/${source.detailPath}/${item.slug}`;
           return {
             ...item,
             type: source.type,
             filterKey: source.filterKey,
-            href: `/${source.detailPath}/${item.slug}`,
+            href,
           };
         });
 

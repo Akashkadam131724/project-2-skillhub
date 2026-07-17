@@ -7,7 +7,7 @@ import { resolveItemsForSection } from "@/lib/item-types";
 import { AwardCard } from "./CardItems";
 
 /**
- * Awards / recognition — 3-up badge cards + left footer CTA.
+ * Awards / recognition — editorial numbered tiles.
  */
 export default function AwardsSection({
   section_title,
@@ -25,6 +25,7 @@ export default function AwardsSection({
     <SectionFrame
       title={section_title}
       subtitle={sub_title}
+      eyebrow="Quality"
       cmsMode={cmsMode}
       onEditField={onEditField}
       {...frameProps}
@@ -36,10 +37,10 @@ export default function AwardsSection({
         itemCount={items.length}
       />
       {items.length ? (
-        <ul className="m-0 grid list-none gap-4 p-0 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3 lg:gap-6">
+        <ul className="m-0 grid list-none gap-5 p-0 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
           {items.map((item, i) => (
             <li key={item._id || item.id || i} className="min-w-0">
-              <AwardCard item={item} />
+              <AwardCard item={item} index={i} />
             </li>
           ))}
         </ul>

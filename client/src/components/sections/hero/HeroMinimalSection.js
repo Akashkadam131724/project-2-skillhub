@@ -29,7 +29,7 @@ export default function HeroMinimalSection({
   }
 
   return (
-    <section className="border-b border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-950">
+    <section className="border-b border-slate-200 dark:border-slate-800">
       <SectionWrapper className="py-10 sm:py-12">
         <div className="h-1 w-12 rounded-full bg-brand" aria-hidden />
         <div className="mt-5 flex max-w-xl flex-col gap-3">

@@ -114,7 +114,7 @@ export default function CmsProductEditPage() {
             <Link href="/cms/products" className={btnSecondary}>
               All products
             </Link>
-            <Link href={`/products/${product.slug}?cms=true`} className={btnPrimary}>
+            <Link href={`/product/${product.slug}?cms=true`} className={btnPrimary}>
               Edit live sections
             </Link>
             <StatusBadge active={product.status === "active"} />

@@ -3,6 +3,7 @@ import connectDB from "../config/db.js";
 import Page from "../modules/cms/page.model.js";
 import Section from "../modules/cms/section.model.js";
 import EntityPageSection from "../modules/cms/entity-page-section.model.js";
+import { getSectionCatalogMeta } from "../modules/cms/section.catalog.js";
 
 /**
  * Seeds page templates + body sections (NO banner/hero).
@@ -30,6 +31,7 @@ const PAGES = [
     description: "Single product page",
     entity_type: "product",
     status: true,
+    is_sort_disabled: true,
   },
   {
     key: "course",
@@ -37,6 +39,7 @@ const PAGES = [
     description: "Single course page",
     entity_type: "course",
     status: true,
+    is_sort_disabled: true,
   },
   {
     key: "vendor",
@@ -44,6 +47,7 @@ const PAGES = [
     description: "Single vendor page",
     entity_type: "vendor",
     status: true,
+    is_sort_disabled: true,
   },
   {
     key: "industry",
@@ -51,6 +55,7 @@ const PAGES = [
     description: "Single industry page",
     entity_type: "industry",
     status: true,
+    is_sort_disabled: true,
   },
   {
     key: "skilling_area",
@@ -58,6 +63,15 @@ const PAGES = [
     description: "Single skilling area page",
     entity_type: "skilling_area",
     status: true,
+    is_sort_disabled: true,
+  },
+  {
+    key: "blog",
+    name: "Blog Detail",
+    description: "Single editorial article page",
+    entity_type: "blog",
+    status: true,
+    is_sort_disabled: true,
   },
 ];
 
@@ -121,10 +135,7 @@ const SECTIONS = [
     sub_title: "",
     button_title: "",
     target_url: "",
-    data: {
-      bg_color:
-        "linear-gradient(135deg, #67e8f9 0%, #5ec8e8 45%, #22d3ee 100%)",
-    },
+    data: {},
     status: true,
   },
   {
@@ -135,7 +146,7 @@ const SECTIONS = [
     in_page_nav_title: "Related Courses",
     sub_title: "Continue learning with these programs.",
     button_title: "View catalog",
-    target_url: "/course-catalog",
+    target_url: "/courses",
     data: {},
     status: true,
   },
@@ -292,6 +303,45 @@ const SECTIONS = [
     status: true,
   },
   {
+    key: "entity_directory",
+    name: "Entity Directory",
+    description:
+      "Searchable directory of vendors, products, industries, or skilling areas",
+    section_title: "",
+    sub_title: "",
+    button_title: "",
+    target_url: "",
+    data: { directory_type: "vendor" },
+    content_scope: "page",
+    status: true,
+  },
+  {
+    key: "latest_blogs",
+    name: "Latest Blogs",
+    description: "Dynamic grid of the latest published editorial articles",
+    section_title: "Ideas worth sharing",
+    sub_title:
+      "Fresh thinking on workforce learning, technology, and organizational capability.",
+    button_title: "",
+    target_url: "/blogs",
+    data: { limit: 3 },
+    content_scope: "global",
+    status: true,
+  },
+  {
+    key: "blog_directory",
+    name: "Blog Directory",
+    description: "Searchable journal listing with featured story and pagination",
+    section_title: "Fresh from the journal",
+    sub_title:
+      "Research, playbooks, and perspectives on learning, technology, and organizational capability.",
+    button_title: "",
+    target_url: "",
+    data: { limit: 10 },
+    content_scope: "page",
+    status: true,
+  },
+  {
     key: "hero_classic",
     name: "Hero — Classic",
     description: "Navy gradient hero with atmosphere",
@@ -444,8 +494,6 @@ const SECTION_PAGE_TAGS = {
   ],
   customer_testimonials: [
     { page_key: "home", sort_order: 26, status: true },
-    { page_key: "product", sort_order: 5, status: true },
-    { page_key: "vendor", sort_order: 5, status: true },
   ],
   faq: [
     { page_key: "product", sort_order: 6, status: true },
@@ -470,6 +518,7 @@ const SECTION_PAGE_TAGS = {
     { page_key: "industry", sort_order: 5, status: true },
     { page_key: "skilling_area", sort_order: 5, status: true },
   ],
+  latest_blogs: [{ page_key: "home", sort_order: 14, status: true }],
   hero_classic: [{ page_key: "home", sort_order: 1, status: true }],
   hero_split: [{ page_key: "home", sort_order: 2, status: false }],
   hero_centered: [{ page_key: "home", sort_order: 3, status: false }],
@@ -501,10 +550,13 @@ async function seed() {
   const pageByKey = Object.fromEntries(pages.map((p) => [p.key, p]));
 
   const sectionDocs = SECTIONS.map((s) => {
-    const tags = SECTION_PAGE_TAGS[s.key] || [];
+    const pageTags = SECTION_PAGE_TAGS[s.key] || [];
+    const catalog = getSectionCatalogMeta(s.key);
     return {
       ...s,
-      pages: tags.map((t) => {
+      category: catalog?.category || s.category || "",
+      tags: catalog?.tags || s.tags || [],
+      pages: pageTags.map((t) => {
         const page = pageByKey[t.page_key];
         if (!page) {
           throw new Error(`Unknown page_key in tags: ${t.page_key}`);

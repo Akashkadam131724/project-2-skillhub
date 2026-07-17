@@ -76,6 +76,33 @@ export function deletePage(key) {
   return request(`/pages/${encodeURIComponent(key)}`, { method: "DELETE" });
 }
 
+/* ─── Site theme ─── */
+export function getSiteTheme(options = {}) {
+  return request("/site-theme", options);
+}
+
+export function updateSiteTheme(body) {
+  return request("/site-theme", { method: "PUT", body });
+}
+
+/* ─── Entity page theme (this page only) ─── */
+export function getEntityPageTheme({ page_key, entity_id }) {
+  return request(
+    `/entity-page-theme${toQuery({ page_key, entity_id })}`
+  );
+}
+
+export function upsertEntityPageTheme(body) {
+  return request("/entity-page-theme", { method: "PUT", body });
+}
+
+export function deleteEntityPageTheme({ page_key, entity_id }) {
+  return request(
+    `/entity-page-theme${toQuery({ page_key, entity_id })}`,
+    { method: "DELETE" }
+  );
+}
+
 /* ─── Sections ─── */
 export function listSections(params) {
   return request(`/sections${toQuery(params)}`);

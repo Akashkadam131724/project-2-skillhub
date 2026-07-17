@@ -111,7 +111,7 @@ export default function CmsCoursesPage() {
       });
       setForm(emptyForm);
       setShowForm(false);
-      window.location.href = `/cms/courses/${res.data.slug}`;
+      window.location.href = `/cms/course/${res.data.slug}`;
     } catch (err) {
       setError(err);
     } finally {
@@ -276,18 +276,18 @@ export default function CmsCoursesPage() {
                     {course.name}
                   </p>
                   <p className="mt-0.5 mb-0 text-xs text-slate-500">
-                    {course.product?.name || "—"} · /courses/{course.slug}
+                    {course.product?.name || "—"} · /course/{course.slug}
                   </p>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   <Link
-                    href={`/cms/courses/${course.slug}`}
+                    href={`/cms/course/${course.slug}`}
                     className={btnSecondary}
                   >
                     Edit
                   </Link>
                   <Link
-                    href={`/courses/${course.slug}?cms=true`}
+                    href={`/course/${course.slug}?cms=true`}
                     className={btnPrimary}
                   >
                     Edit live

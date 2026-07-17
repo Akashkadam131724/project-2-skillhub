@@ -19,7 +19,6 @@ export default function FaqSection({
   onFormOpen,
   ...frameProps
 }) {
-  // Entity/live FAQ uses mapping `items[]` only — never legacy data / template bleed
   const items = resolveItemsForSection(section_key, mappingItems);
   if (!items.length && !cmsMode) return null;
 
@@ -27,6 +26,7 @@ export default function FaqSection({
     <SectionFrame
       title={section_title}
       subtitle={sub_title}
+      eyebrow="FAQ"
       cmsMode={cmsMode}
       onEditField={onEditField}
       buttons={buttons}
@@ -42,12 +42,13 @@ export default function FaqSection({
         itemCount={items.length}
       />
       {items.length ? (
-        <div className="border-t border-slate-200 dark:border-slate-800">
+        <div className="flex flex-col gap-3">
           {items.map((item, i) => (
             <SectionItemCard
               key={item._id || item.id || i}
               type="faq"
               item={item}
+              index={i}
             />
           ))}
         </div>

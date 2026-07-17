@@ -72,15 +72,18 @@ export function youtubeWatchUrl(videoIdOrUrl) {
   return id ? `https://www.youtube.com/watch?v=${id}` : null;
 }
 
-export function youtubeEmbedUrl(videoIdOrUrl, { autoplay = true } = {}) {
+export function youtubeEmbedUrl(videoIdOrUrl, { autoplay = true, mute = false } = {}) {
   const id = parseYoutubeVideoId(videoIdOrUrl);
   if (!id) return null;
   const params = new URLSearchParams({
     rel: "0",
     modestbranding: "1",
+    playsinline: "1",
     ...(autoplay ? { autoplay: "1" } : {}),
+    ...(mute || autoplay ? { mute: "1" } : {}),
   });
-  return `https://www.youtube.com/embed/${id}?${params.toString()}`;
+  // youtube-nocookie reduces third-party cookie warnings in Lighthouse
+  return `https://www.youtube-nocookie.com/embed/${id}?${params.toString()}`;
 }
 
 /**

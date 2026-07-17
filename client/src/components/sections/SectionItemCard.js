@@ -3,6 +3,7 @@
 import CmsRichText from "@/components/cms/CmsRichText";
 import SectionButtons from "@/components/ui/SectionButtons";
 import { mediaUrl } from "@/lib/cms-api";
+import { mediaAlt } from "@/lib/media-alt";
 import { bannerBgStyle, bannerOverlayStyle } from "@/lib/banner-bg";
 import { isRichTextEmpty, richTextPlainPreview } from "@/lib/rich-text";
 import {
@@ -25,27 +26,30 @@ function Placeholder({ children }) {
 }
 
 /** Shared FAQ accordion row — used on page + CMS preview */
-export function FaqItemCard({ item, preview = false }) {
+export function FaqItemCard({ item, preview = false, index = 0 }) {
   const q = itemQuestion(item);
   const a = itemAnswer(item);
   const hasButtons = Array.isArray(item.buttons) && item.buttons.length > 0;
+  const n = String((index ?? 0) + 1).padStart(2, "0");
 
   return (
-    <div className="border-b border-slate-200 last:border-b-0 dark:border-slate-800">
-      <details
-        open={preview || undefined}
-        className="group/faq"
-      >
+    <div className="overflow-hidden rounded-[1.25rem] border border-slate-200/80 bg-white shadow-[0_12px_40px_-32px_color-mix(in_srgb,var(--ink)_35%,transparent)] dark:border-slate-800 dark:bg-slate-950">
+      <details open={preview || undefined} className="group/faq">
         <summary
-          className={`flex list-none items-start justify-between gap-4 py-5 text-left outline-none marker:content-none [&::-webkit-details-marker]:hidden ${
+          className={`flex list-none items-start justify-between gap-4 px-5 py-5 text-left outline-none marker:content-none sm:px-6 [&::-webkit-details-marker]:hidden ${
             preview ? "cursor-default" : "cursor-pointer"
           }`}
         >
-          <span className="min-w-0 flex-1 text-base font-bold leading-snug tracking-tight text-ink sm:text-lg dark:text-white">
-            {q || (preview ? <Placeholder>Question…</Placeholder> : null)}
+          <span className="flex min-w-0 flex-1 items-start gap-4">
+            <span className="mt-0.5 shrink-0 font-[family-name:var(--font-display)] text-lg font-semibold text-brand/70">
+              {n}
+            </span>
+            <span className="min-w-0 flex-1 text-base font-semibold leading-snug tracking-tight text-ink sm:text-lg dark:text-white">
+              {q || (preview ? <Placeholder>Question…</Placeholder> : null)}
+            </span>
           </span>
           <span
-            className="mt-0.5 inline-flex size-7 shrink-0 items-center justify-center rounded-full border border-slate-200 text-lg leading-none font-light text-ink transition group-open/faq:border-brand group-open/faq:bg-brand group-open/faq:text-white dark:border-slate-700 dark:text-slate-200"
+            className="mt-0.5 inline-flex size-8 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-slate-50 text-lg leading-none font-light text-ink transition group-open/faq:border-brand group-open/faq:bg-brand group-open/faq:text-white dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
             aria-hidden
           >
             <span className="group-open/faq:hidden">+</span>
@@ -53,28 +57,30 @@ export function FaqItemCard({ item, preview = false }) {
           </span>
         </summary>
         {(!isRichTextEmpty(a) || preview || hasButtons) && (
-          <div className="pb-5 pr-11 sm:pr-12">
-            {!isRichTextEmpty(a) || preview ? (
-              <CmsRichText
-                html={a}
-                className="text-[15px] leading-relaxed text-slate-600 sm:text-base dark:text-slate-300"
-                empty={
-                  preview ? (
-                    <p className="m-0 text-[15px] leading-relaxed text-slate-600 sm:text-base dark:text-slate-300">
-                      <Placeholder>Answer…</Placeholder>
-                    </p>
-                  ) : null
-                }
-              />
-            ) : null}
-            {hasButtons ? (
-              <div className="mt-4">
-                <SectionButtons
-                  buttons={item.buttons}
-                  className="flex flex-wrap items-center gap-2"
+          <div className="border-t border-slate-200/80 px-5 pb-5 sm:px-6 sm:pb-6 dark:border-slate-800">
+            <div className="pt-4 pl-10 sm:pl-12">
+              {!isRichTextEmpty(a) || preview ? (
+                <CmsRichText
+                  html={a}
+                  className="text-[15px] leading-relaxed text-slate-600 sm:text-base dark:text-slate-300"
+                  empty={
+                    preview ? (
+                      <p className="m-0 text-[15px] leading-relaxed text-slate-600 sm:text-base dark:text-slate-300">
+                        <Placeholder>Answer…</Placeholder>
+                      </p>
+                    ) : null
+                  }
                 />
-              </div>
-            ) : null}
+              ) : null}
+              {hasButtons ? (
+                <div className="mt-4">
+                  <SectionButtons
+                    buttons={item.buttons}
+                    className="flex flex-wrap items-center gap-2"
+                  />
+                </div>
+              ) : null}
+            </div>
           </div>
         )}
       </details>
@@ -95,7 +101,7 @@ export function BenefitItemCard({ item, preview = false }) {
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={imgSrc}
-            alt=""
+            alt={mediaAlt(item, "Benefit")}
             className="aspect-[16/10] w-full object-cover"
           />
         ) : (
@@ -228,7 +234,7 @@ export function TextMediaItemCard({ item, preview = false }) {
     <div className="flex gap-3 rounded-lg border border-slate-200 bg-white p-3 dark:border-slate-800 dark:bg-slate-950">
       {src ? (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={src} alt="" className="h-14 w-20 shrink-0 object-cover" />
+        <img src={src} alt={mediaAlt(item, "Media")} className="h-14 w-20 shrink-0 object-cover" />
       ) : preview ? (
         <div className="flex h-14 w-20 shrink-0 items-center justify-center border border-dashed border-slate-300 text-[10px] text-slate-400 italic">
           Image…
@@ -258,38 +264,48 @@ export function CurriculumItemCard({ item, preview = false }) {
   );
 }
 
-export function WhyChooseItemCard({ item, preview = false }) {
+export function WhyChooseItemCard({ item, preview = false, index = 0 }) {
   const title = itemTitle(item);
   const desc = item.body || item.subtitle;
   const imgSrc = mediaUrl(item.image_url || item.icon || "");
   const showIcon = Boolean(imgSrc) || preview;
+  const n = String((index ?? 0) + 1).padStart(2, "0");
 
   return (
-    <article className="flex h-full flex-col rounded-xl bg-white px-5 py-6 shadow-sm sm:px-6 sm:py-7 dark:bg-slate-950">
-      {showIcon ? (
-        <div className="mb-4 flex size-12 items-center justify-center sm:mb-5 sm:size-14">
-          {imgSrc ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={imgSrc}
-              alt=""
-              className="max-h-full max-w-full object-contain"
-            />
-          ) : (
-            <div className="size-10 rounded-lg bg-brand/15 sm:size-12" />
-          )}
-        </div>
-      ) : null}
-      <h3 className="m-0 text-base leading-snug font-bold tracking-tight text-ink sm:text-lg dark:text-white">
+    <article className="group relative flex h-full flex-col overflow-hidden rounded-[1.35rem] border border-white/12 bg-white/[0.06] p-6 backdrop-blur-sm transition hover:border-white/25 hover:bg-white/[0.1] sm:p-7">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -right-8 -bottom-10 size-28 rounded-full bg-brand/20 blur-2xl transition group-hover:bg-brand/35"
+      />
+      <div className="relative mb-5 flex items-start justify-between gap-3">
+        {showIcon ? (
+          <div className="flex size-14 items-center justify-center rounded-2xl bg-white/12 ring-1 ring-white/15">
+            {imgSrc ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={imgSrc}
+                alt={mediaAlt(item, "Feature icon")}
+                className="max-h-8 max-w-8 object-contain"
+              />
+            ) : (
+              <div className="size-8 rounded-xl bg-brand/30" />
+            )}
+          </div>
+        ) : null}
+        <span className="font-[family-name:var(--font-display)] text-2xl font-semibold text-white/25">
+          {n}
+        </span>
+      </div>
+      <h3 className="relative m-0 text-lg leading-snug font-semibold tracking-tight text-white sm:text-xl">
         {title || (preview ? <Placeholder>Feature title…</Placeholder> : null)}
       </h3>
       {!isRichTextEmpty(desc) || preview ? (
         <CmsRichText
           html={desc}
-          className="mt-2 text-sm leading-relaxed text-slate-600 sm:text-[15px] dark:text-slate-300"
+          className="relative mt-3 text-sm leading-relaxed text-white/72 sm:text-[15px]"
           empty={
             preview ? (
-              <p className="mt-2 mb-0 text-sm leading-relaxed text-slate-600 sm:text-[15px] dark:text-slate-300">
+              <p className="relative mt-3 mb-0 text-sm leading-relaxed text-white/50">
                 <Placeholder>Description…</Placeholder>
               </p>
             ) : null
@@ -337,7 +353,7 @@ export function HeroBannerItemCard({ item, preview = false }) {
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={sideImg}
-              alt=""
+              alt={mediaAlt(item, "Hero banner media")}
               className="absolute inset-0 size-full object-cover object-center"
             />
           ) : (
@@ -407,16 +423,24 @@ export function HeroBannerItemCard({ item, preview = false }) {
  * Dispatch by SECTION_ITEMS_CONFIG.preview key.
  * One card component for live page + CMS editor preview.
  */
-export default function SectionItemCard({ type, item, preview = false, className }) {
+export default function SectionItemCard({
+  type,
+  item,
+  preview = false,
+  className,
+  index = 0,
+}) {
   if (!item && !preview) return null;
 
   switch (type) {
     case "faq":
-      return <FaqItemCard item={item} preview={preview} />;
+      return <FaqItemCard item={item} preview={preview} index={index} />;
     case "benefit":
       return <BenefitItemCard item={item} preview={preview} />;
     case "why_choose":
-      return <WhyChooseItemCard item={item} preview={preview} />;
+      return (
+        <WhyChooseItemCard item={item} preview={preview} index={index} />
+      );
     case "stat":
       if (preview) {
         return (
@@ -453,7 +477,7 @@ export default function SectionItemCard({ type, item, preview = false, className
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={src}
-              alt=""
+              alt={mediaAlt(item, "Partner logo")}
               className="h-10 w-28 object-contain"
             />
           ) : preview ? (

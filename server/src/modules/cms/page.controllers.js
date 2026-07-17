@@ -1,10 +1,15 @@
 import Page from "./page.model.js";
 import { formatMongooseError } from "../../utils/formatMongooseError.js";
 import { resolvePageSections } from "./resolve.js";
+import { emptyPageTheme, pickThemePatch } from "./theme.utils.js";
 
 export const createPage = async (req, res) => {
   try {
-    const page = await Page.create(req.body);
+    const body = { ...req.body };
+    if (body.theme) {
+      body.theme = { ...emptyPageTheme(), ...pickThemePatch(body.theme) };
+    }
+    const page = await Page.create(body);
     res.status(201).json({ success: true, data: page });
   } catch (err) {
     const formatted = formatMongooseError(err);
@@ -48,9 +53,38 @@ export const getPageByKey = async (req, res) => {
 
 export const updatePage = async (req, res) => {
   try {
+    const allowed = [
+      "name",
+      "description",
+      "entity_type",
+      "status",
+      "is_sort_disabled",
+      "theme",
+    ];
+    const patch = {};
+    for (const key of allowed) {
+      if (req.body[key] === undefined) continue;
+      if (key === "theme") {
+        // Allow clearing individual fields back to inherit (null)
+        patch.theme = {
+          ...emptyPageTheme(),
+          ...pickThemePatch(req.body.theme || {}),
+        };
+        continue;
+      }
+      patch[key] = req.body[key];
+    }
+
+    if (Object.keys(patch).length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "No editable fields provided",
+      });
+    }
+
     const page = await Page.findOneAndUpdate(
       { key: String(req.params.key).toLowerCase() },
-      req.body,
+      { $set: patch },
       { new: true, runValidators: true }
     );
     if (!page) {

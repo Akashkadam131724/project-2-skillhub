@@ -18,6 +18,9 @@ const ALLOWED_TAGS = [
   "span",
   "blockquote",
   "div",
+  "iframe",
+  "video",
+  "source",
 ];
 
 const ALLOWED_ATTR = [
@@ -29,7 +32,40 @@ const ALLOWED_ATTR = [
   "class",
   "style",
   "title",
+  "id",
+  "controls",
+  "playsinline",
+  "allow",
+  "allowfullscreen",
+  "frameborder",
+  "loading",
+  "data-video-embed",
+  "data-provider",
+  "data-src",
 ];
+
+const VIDEO_HOST_ALLOWLIST = new Set([
+  "youtube.com",
+  "www.youtube.com",
+  "youtube-nocookie.com",
+  "www.youtube-nocookie.com",
+  "youtu.be",
+  "player.vimeo.com",
+  "vimeo.com",
+  "www.vimeo.com",
+]);
+
+function isSafeMediaSrc(src) {
+  try {
+    const parsed = new URL(String(src || "").trim());
+    if (!/^https?:$/i.test(parsed.protocol)) return false;
+    const host = parsed.hostname.toLowerCase();
+    if (VIDEO_HOST_ALLOWLIST.has(host)) return true;
+    return /\.(mp4|webm|ogg)(\?|#|$)/i.test(parsed.pathname + parsed.search);
+  } catch {
+    return false;
+  }
+}
 
 /** True when the string looks like HTML markup (not plain paragraphs). */
 export function looksLikeHtml(value) {
@@ -45,7 +81,27 @@ export function plainTextToHtml(value) {
     .split(/\n{2,}/)
     .map((block) => block.trim())
     .filter(Boolean)
-    .map((block) => `<p>${escapeHtml(block).replace(/\n/g, "<br>")}</p>`)
+    .map((block) => {
+      if (/^###\s+/.test(block)) {
+        return `<h3>${escapeHtml(block.replace(/^###\s+/, ""))}</h3>`;
+      }
+      if (/^##\s+/.test(block)) {
+        return `<h2>${escapeHtml(block.replace(/^##\s+/, ""))}</h2>`;
+      }
+      const lines = block.split("\n");
+      // Only multi-line markdown lists — a single "- foo" / "* foo" line stays a paragraph
+      // so focusing/syncing never turns normal prose into accidental <li> nodes.
+      if (
+        lines.length >= 2 &&
+        lines.every((line) => /^[-*]\s+\S/.test(line.trim()))
+      ) {
+        const items = lines
+          .map((line) => `<li><p>${escapeHtml(line.trim().replace(/^[-*]\s+/, ""))}</p></li>`)
+          .join("");
+        return `<ul>${items}</ul>`;
+      }
+      return `<p>${escapeHtml(block).replace(/\n/g, "<br>")}</p>`;
+    })
     .join("");
 }
 
@@ -61,15 +117,31 @@ function escapeHtml(str) {
  * Sanitize rich HTML for storage / display.
  * Prefer calling on save and always on render.
  */
+/**
+ * Sanitize rich HTML for storage / display.
+ * Prefer calling on save and always on render.
+ */
 export function sanitizeRichHtml(html) {
   const raw = String(html || "").trim();
   if (!raw) return "";
   const input = looksLikeHtml(raw) ? raw : plainTextToHtml(raw);
-  return DOMPurify.sanitize(input, {
+  const clean = DOMPurify.sanitize(input, {
     ALLOWED_TAGS,
     ALLOWED_ATTR,
     ALLOW_DATA_ATTR: false,
+    ADD_ATTR: ["allowfullscreen", "playsinline"],
   });
+  return String(clean)
+    .replace(/youtube\.com\/embed\//gi, "youtube-nocookie.com/embed/")
+    .replace(/www\.youtube\.com\/embed\//gi, "www.youtube-nocookie.com/embed/")
+    .replace(/<iframe\b[^>]*>\s*<\/iframe>/gi, (match) => {
+      const src = match.match(/\ssrc=["']([^"']+)["']/i)?.[1] || "";
+      return isSafeMediaSrc(src) ? match : "";
+    })
+    .replace(/<video\b[^>]*>[\s\S]*?<\/video>/gi, (match) => {
+      const src = match.match(/\ssrc=["']([^"']+)["']/i)?.[1] || "";
+      return isSafeMediaSrc(src) ? match : "";
+    });
 }
 
 /** Drop class / id junk pasted from Word, Docs, websites, etc. */

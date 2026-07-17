@@ -6,12 +6,10 @@ import EmptyItemsHint from "@/components/sections/EmptyItemsHint";
 import SectionItemCard from "@/components/sections/SectionItemCard";
 import SectionButtonsFooter from "@/components/sections/SectionButtonsFooter";
 import SectionWrapper from "@/components/sections/SectionWrapper";
-import { mediaUrl } from "@/lib/cms-api";
 import { resolveItemsForSection } from "@/lib/item-types";
 
 /**
- * Navy “Why choose” band — centered title + white icon/title/body cards (2×3).
- * Items: icon/image_url, title, body.
+ * Theme ink “Why choose” band — glass feature cards.
  */
 export default function WhyChooseSection({
   section_title,
@@ -20,7 +18,6 @@ export default function WhyChooseSection({
   section_key = "why_choose",
   cmsMode,
   onEditField,
-  section_bg_img,
   buttons,
   button_title,
   target_url,
@@ -30,27 +27,25 @@ export default function WhyChooseSection({
   const items = resolveItemsForSection(section_key, mappingItems);
   if (!items.length && !cmsMode) return null;
 
-  const bgUrl = mediaUrl(section_bg_img);
-
   return (
     <section
       id={id || undefined}
-      className="relative w-full overflow-hidden bg-ink py-12 text-white sm:py-14 md:py-16"
+      className="relative w-full overflow-hidden py-16 text-white sm:py-20"
     >
-      {bgUrl ? (
-        <>
-          <div
-            className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-            style={{ backgroundImage: `url(${bgUrl})` }}
-            aria-hidden
-          />
-          <div className="absolute inset-0 bg-ink/85" aria-hidden />
-        </>
-      ) : null}
-
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 opacity-30"
+        style={{
+          backgroundImage:
+            "radial-gradient(circle at 20% 20%, color-mix(in srgb, var(--brand) 45%, transparent), transparent 42%), radial-gradient(circle at 85% 70%, color-mix(in srgb, white 18%, transparent), transparent 40%)",
+        }}
+      />
       <SectionWrapper className="relative z-[1]">
         {(section_title || sub_title || cmsMode) && (
-          <header className="mb-8 text-center sm:mb-10">
+          <header className="mb-10 flex max-w-3xl flex-col gap-3 sm:mb-12">
+            <p className="m-0 text-[11px] font-semibold tracking-[0.22em] text-white/50 uppercase">
+              Why choose us
+            </p>
             {section_title || cmsMode ? (
               <CmsEditable
                 cmsMode={cmsMode}
@@ -58,14 +53,13 @@ export default function WhyChooseSection({
                 label="Title"
                 onEditField={onEditField}
                 inverted
-                className="justify-center"
               >
                 {section_title ? (
-                  <h2 className="m-0 text-2xl leading-tight font-bold tracking-tight text-white sm:text-3xl md:text-[2rem]">
+                  <h2 className="m-0 font-[family-name:var(--font-display)] text-3xl leading-[1.1] font-semibold tracking-tight text-white sm:text-4xl">
                     {section_title}
                   </h2>
                 ) : (
-                  <h2 className="m-0 text-2xl leading-tight font-bold text-white/40 italic sm:text-3xl">
+                  <h2 className="m-0 text-3xl font-semibold text-white/40 italic sm:text-4xl">
                     Add title…
                   </h2>
                 )}
@@ -78,14 +72,13 @@ export default function WhyChooseSection({
                 label="Subtitle"
                 onEditField={onEditField}
                 inverted
-                className="mt-3 justify-center"
               >
                 {sub_title ? (
-                  <p className="m-0 mx-auto max-w-2xl text-[15px] leading-relaxed text-white/80 sm:text-base">
+                  <p className="m-0 max-w-2xl text-base leading-relaxed text-white/72">
                     {sub_title}
                   </p>
                 ) : (
-                  <p className="m-0 text-[15px] text-white/35 italic sm:text-base">
+                  <p className="m-0 text-base text-white/35 italic">
                     Add subtitle…
                   </p>
                 )}
@@ -106,7 +99,7 @@ export default function WhyChooseSection({
           <ul className="m-0 grid list-none gap-4 p-0 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3 lg:gap-6">
             {items.map((item, i) => (
               <li key={item._id || item.id || i} className="min-w-0">
-                <SectionItemCard type="why_choose" item={item} />
+                <SectionItemCard type="why_choose" item={item} index={i} />
               </li>
             ))}
           </ul>
@@ -121,7 +114,8 @@ export default function WhyChooseSection({
           cmsMode={cmsMode}
           onEditField={onEditField}
           onFormOpen={onFormOpen}
-          className="mt-8 justify-center sm:mt-10"
+          inverted
+          className="mt-8 sm:mt-10"
         />
       </SectionWrapper>
     </section>

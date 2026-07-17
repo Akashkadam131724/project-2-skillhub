@@ -42,7 +42,7 @@ export default function HeroDualCtaSection({
   const hasImage = hasMediaUrl(section_img_url);
 
   return (
-    <section className="border-b border-slate-200 bg-gradient-to-br from-slate-50 via-white to-brand-soft dark:border-slate-800 dark:from-slate-950 dark:via-slate-950 dark:to-slate-900">
+    <section className="border-b border-slate-200 dark:border-slate-800">
       <SectionWrapper className="py-12 sm:py-14 lg:py-16">
         <div
           className={

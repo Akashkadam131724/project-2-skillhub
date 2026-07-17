@@ -17,6 +17,7 @@ import {
   deletePageSectionTag,
   setPageSectionTagStatus,
   uploadCmsImage,
+  getSiteTheme,
 } from "@/lib/cms-api";
 import {
   CmsHeading,
@@ -35,6 +36,16 @@ import {
   contentScopeLabel,
   normalizeContentScope,
 } from "@/lib/content-scope";
+import { emptyPageTheme, mergeTheme, normalizePageTheme } from "@/lib/theme";
+import CmsThemeEditor from "@/components/cms/CmsThemeEditor";
+import CmsPagePreviewStack from "@/components/cms/CmsPagePreviewStack";
+import {
+  FilterGroup,
+  FilterChipRow,
+  buildCategoryOptions,
+  sectionCategory,
+  sectionKind,
+} from "@/components/cms/CmsSectionFilters";
 
 const ENTITY_TYPES = [
   { value: "", label: "None (static)" },
@@ -67,38 +78,6 @@ const PLACED_FILTERS = [
   { value: "available", label: "Not on page" },
   { value: "placed", label: "Already on page" },
 ];
-
-function sectionKind(key) {
-  const k = String(key || "").toLowerCase();
-  if (k.startsWith("hero_")) return "hero";
-  if (
-    k === "training_options" ||
-    k === "awards" ||
-    k === "key_benefits" ||
-    k === "why_choose"
-  ) {
-    return "cards";
-  }
-  if (k === "in_page_nav") return "nav";
-  if (
-    k === "overview" ||
-    k === "text_media" ||
-    k === "faq" ||
-    k === "testimonials" ||
-    k === "customer_testimonials" ||
-    k === "resources" ||
-    k === "curriculum" ||
-    k === "stats" ||
-    k === "partners" ||
-    k === "partners_marquee" ||
-    k === "catalog" ||
-    k === "products" ||
-    k === "related_courses"
-  ) {
-    return "content";
-  }
-  return "other";
-}
 
 function ScopeBadge({ scope }) {
   const normalized = normalizeContentScope(scope);
@@ -137,6 +116,8 @@ export default function CmsPageDetailPage() {
 
   const [page, setPage] = useState(null);
   const [form, setForm] = useState(null);
+  const [themeForm, setThemeForm] = useState(emptyPageTheme());
+  const [siteTheme, setSiteTheme] = useState(null);
   const [placements, setPlacements] = useState([]);
   const [allSections, setAllSections] = useState([]);
   const [addForm, setAddForm] = useState(emptyPlacement);
@@ -148,15 +129,19 @@ export default function CmsPageDetailPage() {
   const [addScopeFilter, setAddScopeFilter] = useState("all");
   const [addKindFilter, setAddKindFilter] = useState("all");
   const [addPlacedFilter, setAddPlacedFilter] = useState("all");
+  const [addCategoryFilter, setAddCategoryFilter] = useState("all");
+  const [addCategorySearch, setAddCategorySearch] = useState("");
   const [addSearch, setAddSearch] = useState("");
+  const [pageTab, setPageTab] = useState("mapped");
 
   async function load() {
     setError(null);
     try {
-      const [pageRes, tagsRes, sectionsRes] = await Promise.all([
+      const [pageRes, tagsRes, sectionsRes, siteRes] = await Promise.all([
         getPage(pageKey),
         listPageSections({ page_key: pageKey }),
         listSections(),
+        getSiteTheme().catch(() => null),
       ]);
       setPage(pageRes.data);
       setForm({
@@ -166,6 +151,8 @@ export default function CmsPageDetailPage() {
         status: pageRes.data.status !== false,
         is_sort_disabled: pageRes.data.is_sort_disabled !== false,
       });
+      setThemeForm(normalizePageTheme(pageRes.data.theme));
+      setSiteTheme(siteRes?.data || null);
       const tags = (tagsRes.data || [])
         .slice()
         .sort((a, b) => a.sort_order - b.sort_order);
@@ -188,10 +175,11 @@ export default function CmsPageDetailPage() {
     let alive = true;
     (async () => {
       try {
-        const [pageRes, tagsRes, sectionsRes] = await Promise.all([
+        const [pageRes, tagsRes, sectionsRes, siteRes] = await Promise.all([
           getPage(pageKey),
           listPageSections({ page_key: pageKey }),
           listSections(),
+          getSiteTheme().catch(() => null),
         ]);
         if (!alive) return;
         setPage(pageRes.data);
@@ -202,6 +190,8 @@ export default function CmsPageDetailPage() {
           status: pageRes.data.status !== false,
           is_sort_disabled: pageRes.data.is_sort_disabled !== false,
         });
+        setThemeForm(normalizePageTheme(pageRes.data.theme));
+        setSiteTheme(siteRes?.data || null);
         const tags = (tagsRes.data || [])
           .slice()
           .sort((a, b) => a.sort_order - b.sort_order);
@@ -242,6 +232,12 @@ export default function CmsPageDetailPage() {
       if (addKindFilter !== "all" && sectionKind(s.key) !== addKindFilter) {
         return false;
       }
+      if (
+        addCategoryFilter !== "all" &&
+        sectionCategory(s) !== addCategoryFilter
+      ) {
+        return false;
+      }
       const onPage = placedKeys.has(s.key);
       if (addPlacedFilter === "available" && onPage) return false;
       if (addPlacedFilter === "placed" && !onPage) return false;
@@ -262,10 +258,16 @@ export default function CmsPageDetailPage() {
     sectionOptions,
     addScopeFilter,
     addKindFilter,
+    addCategoryFilter,
     addPlacedFilter,
     addSearch,
     placedKeys,
   ]);
+
+  const categoryOptions = useMemo(
+    () => buildCategoryOptions(sectionOptions),
+    [sectionOptions]
+  );
 
   const addFilterCounts = useMemo(() => {
     const scope = { all: sectionOptions.length, global: 0, template: 0, page: 0 };
@@ -306,6 +308,34 @@ export default function CmsPageDetailPage() {
         status: form.status,
         is_sort_disabled: form.is_sort_disabled !== false,
       });
+      await load();
+    } catch (err) {
+      setError(err);
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function saveTheme() {
+    setSaving(true);
+    setError(null);
+    try {
+      await updatePage(pageKey, { theme: themeForm });
+      await load();
+    } catch (err) {
+      setError(err);
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function clearTemplateTheme() {
+    setSaving(true);
+    setError(null);
+    try {
+      const cleared = emptyPageTheme();
+      setThemeForm(cleared);
+      await updatePage(pageKey, { theme: cleared });
       await load();
     } catch (err) {
       setError(err);
@@ -471,7 +501,34 @@ export default function CmsPageDetailPage() {
 
       <ErrorBanner error={error} />
 
+      <div className="mb-4 flex gap-1 rounded-lg border border-slate-200 bg-slate-50 p-1 dark:border-slate-800 dark:bg-slate-900">
+        {[
+          {
+            key: "mapped",
+            label: `Mapped Sections (${placements.length})`,
+          },
+          { key: "add", label: "Add new Sections" },
+          { key: "preview", label: "Preview" },
+          { key: "theme", label: "Theme" },
+        ].map((tab) => (
+          <button
+            key={tab.key}
+            type="button"
+            onClick={() => setPageTab(tab.key)}
+            className={`flex-1 rounded-md px-2 py-2 text-[11px] font-semibold transition sm:px-3 sm:text-sm ${
+              pageTab === tab.key
+                ? "bg-white text-brand shadow-sm dark:bg-slate-950 dark:text-white"
+                : "text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-100"
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
       <div className="grid gap-4">
+        {pageTab === "theme" ? (
+          <>
         <CmsPanel title="Sort policy">
           <form
             onSubmit={savePage}
@@ -501,6 +558,38 @@ export default function CmsPageDetailPage() {
               {saving ? "Saving…" : "Save sort policy"}
             </button>
           </form>
+        </CmsPanel>
+
+        <CmsPanel
+          title="Template theme"
+          actions={
+            <Link href="/cms/site-theme" className={`${btnSecondary} text-xs`}>
+              Edit global site theme
+            </Link>
+          }
+        >
+          <p className="mt-0 mb-3 text-xs text-slate-500">
+            Overrides for every page using this template. Empty fields use the
+            global site theme. Entity pages can override further.
+          </p>
+          <CmsThemeEditor
+            mode="page"
+            inheritFrom="site"
+            inheritedTheme={mergeTheme(siteTheme)}
+            value={themeForm}
+            onChange={setThemeForm}
+            onSave={saveTheme}
+            saving={saving}
+            saveLabel="Save template theme"
+          />
+          <button
+            type="button"
+            disabled={saving}
+            onClick={clearTemplateTheme}
+            className={`${btnSecondary} mt-3 w-full`}
+          >
+            Use site theme (clear template overrides)
+          </button>
         </CmsPanel>
 
         {!isEntityTemplate ? (
@@ -552,7 +641,10 @@ export default function CmsPageDetailPage() {
             </form>
           </CmsPanel>
         ) : null}
+          </>
+        ) : null}
 
+        {pageTab === "mapped" ? (
         <CmsPanel
           title="Sections on this page"
           actions={
@@ -563,7 +655,7 @@ export default function CmsPageDetailPage() {
           }
         >
           {!placements.length ? (
-            <EmptyState message="No sections tagged yet. Add one below." />
+            <EmptyState message='No sections tagged yet. Use the "Add new Sections" tab.' />
           ) : (
             <ul className="m-0 list-none space-y-3 p-0">
               {placements.map((tag, index) => (
@@ -832,12 +924,14 @@ export default function CmsPageDetailPage() {
             </ul>
           )}
         </CmsPanel>
+        ) : null}
 
+        {pageTab === "add" ? (
         <CmsPanel title="Add section placement">
           <form onSubmit={addPlacement} className="grid gap-3 sm:grid-cols-2">
             <Field
               label="Section"
-              hint="Filter by scope / type, then pick a preview — same section can be added more than once"
+              hint="Filter by category / scope / type, then pick a preview — same section can be added more than once"
               className="sm:col-span-2"
             >
               <div className="mb-3 space-y-2.5">
@@ -848,104 +942,50 @@ export default function CmsPageDetailPage() {
                   placeholder="Search by name or key…"
                 />
 
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className="text-[10px] font-semibold tracking-wide text-slate-500 uppercase">
-                    Scope
-                  </span>
-                  {SCOPE_FILTERS.map((opt) => {
-                    const active = addScopeFilter === opt.value;
-                    const count = addFilterCounts.scope[opt.value] ?? 0;
-                    return (
-                      <button
-                        key={opt.value}
-                        type="button"
-                        onClick={() => setAddScopeFilter(opt.value)}
-                        className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold transition ${
-                          active
-                            ? "bg-brand text-white"
-                            : "bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
-                        }`}
-                      >
-                        {opt.label}
-                        <span
-                          className={`rounded-full px-1.5 py-0.5 text-[10px] ${
-                            active
-                              ? "bg-white/20 text-white"
-                              : "bg-white text-slate-500 dark:bg-slate-900 dark:text-slate-400"
-                          }`}
-                        >
-                          {count}
-                        </span>
-                      </button>
-                    );
-                  })}
+                <div className="rounded-lg border border-slate-200 bg-white p-3 dark:border-slate-800 dark:bg-slate-950">
+                  <FilterGroup
+                    title="Category"
+                    search={addCategorySearch}
+                    onSearch={setAddCategorySearch}
+                    placeholder="Search Category"
+                    options={categoryOptions}
+                    value={addCategoryFilter}
+                    onChange={setAddCategoryFilter}
+                    maxHeightClass="max-h-40"
+                  />
                 </div>
 
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className="text-[10px] font-semibold tracking-wide text-slate-500 uppercase">
-                    Type
-                  </span>
-                  {KIND_FILTERS.map((opt) => {
-                    const active = addKindFilter === opt.value;
-                    const count = addFilterCounts.kind[opt.value] ?? 0;
-                    return (
-                      <button
-                        key={opt.value}
-                        type="button"
-                        onClick={() => setAddKindFilter(opt.value)}
-                        className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold transition ${
-                          active
-                            ? "bg-ink text-white"
-                            : "bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
-                        }`}
-                      >
-                        {opt.label}
-                        <span
-                          className={`rounded-full px-1.5 py-0.5 text-[10px] ${
-                            active
-                              ? "bg-white/20 text-white"
-                              : "bg-white text-slate-500 dark:bg-slate-900 dark:text-slate-400"
-                          }`}
-                        >
-                          {count}
-                        </span>
-                      </button>
-                    );
-                  })}
-                </div>
+                <FilterChipRow
+                  label="Scope"
+                  value={addScopeFilter}
+                  onChange={setAddScopeFilter}
+                  options={SCOPE_FILTERS.map((opt) => ({
+                    ...opt,
+                    count: addFilterCounts.scope[opt.value] ?? 0,
+                  }))}
+                />
 
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className="text-[10px] font-semibold tracking-wide text-slate-500 uppercase">
-                    On page
-                  </span>
-                  {PLACED_FILTERS.map((opt) => {
-                    const active = addPlacedFilter === opt.value;
-                    const count = addFilterCounts.placed[opt.value] ?? 0;
-                    return (
-                      <button
-                        key={opt.value}
-                        type="button"
-                        onClick={() => setAddPlacedFilter(opt.value)}
-                        className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold transition ${
-                          active
-                            ? "bg-teal-700 text-white"
-                            : "bg-slate-100 text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
-                        }`}
-                      >
-                        {opt.label}
-                        <span
-                          className={`rounded-full px-1.5 py-0.5 text-[10px] ${
-                            active
-                              ? "bg-white/20 text-white"
-                              : "bg-white text-slate-500 dark:bg-slate-900 dark:text-slate-400"
-                          }`}
-                        >
-                          {count}
-                        </span>
-                      </button>
-                    );
-                  })}
-                </div>
+                <FilterChipRow
+                  label="Type"
+                  value={addKindFilter}
+                  onChange={setAddKindFilter}
+                  activeClass="bg-ink text-white"
+                  options={KIND_FILTERS.map((opt) => ({
+                    ...opt,
+                    count: addFilterCounts.kind[opt.value] ?? 0,
+                  }))}
+                />
+
+                <FilterChipRow
+                  label="On page"
+                  value={addPlacedFilter}
+                  onChange={setAddPlacedFilter}
+                  activeClass="bg-teal-700 text-white"
+                  options={PLACED_FILTERS.map((opt) => ({
+                    ...opt,
+                    count: addFilterCounts.placed[opt.value] ?? 0,
+                  }))}
+                />
               </div>
 
               {!filteredAddOptions.length ? (
@@ -1162,6 +1202,26 @@ export default function CmsPageDetailPage() {
             </div>
           </form>
         </CmsPanel>
+        ) : null}
+
+        {pageTab === "preview" ? (
+          <CmsPanel title="Page preview">
+            <CmsPagePreviewStack
+              emptyMessage='No sections mapped yet. Use the "Add new Sections" tab.'
+              items={placements.map((tag) => ({
+                id: tag.id,
+                section_key: tag.section_key,
+                sort_order: tag.sort_order,
+                hidden: tag.status === false,
+                preview:
+                  tag.section_preview_img ||
+                  allSections.find((s) => s.key === tag.section_key)
+                    ?.section_preview_img ||
+                  "",
+              }))}
+            />
+          </CmsPanel>
+        ) : null}
       </div>
     </div>
   );

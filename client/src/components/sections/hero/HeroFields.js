@@ -3,6 +3,7 @@
 import CmsEditable from "@/components/cms/CmsEditable";
 import CmsRichText from "@/components/cms/CmsRichText";
 import { mediaUrl } from "@/lib/cms-api";
+import { mediaAlt } from "@/lib/media-alt";
 import {
   placementHasMeaningfulContent,
   sectionProbeFromProps,
@@ -114,6 +115,7 @@ export function HeroImage({
   inverted = false,
   className = "",
   imgClassName = "h-full w-full object-cover",
+  title,
 }) {
   const imgUrl = mediaUrl(section_img_url);
 
@@ -151,7 +153,7 @@ export function HeroImage({
       className={className}
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={imgUrl} alt="" className={imgClassName} />
+      <img src={imgUrl} alt={mediaAlt(title, "Hero image")} className={imgClassName} />
     </CmsEditable>
   );
 }

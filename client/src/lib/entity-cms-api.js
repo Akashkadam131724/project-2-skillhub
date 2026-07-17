@@ -81,6 +81,28 @@ export function deleteSkillingArea(slug) {
   return request(`/skilling-areas/${enc(slug)}`, { method: "DELETE" });
 }
 
+/* Content pages (about-us, our-team, …) */
+export function createContent(body) {
+  return request("/contents", { method: "POST", body });
+}
+export function updateContent(slug, body) {
+  return request(`/contents/${enc(slug)}`, { method: "PUT", body });
+}
+export function deleteContent(slug) {
+  return request(`/contents/${enc(slug)}`, { method: "DELETE" });
+}
+
+/* Blogs */
+export function createBlog(body) {
+  return request("/blogs", { method: "POST", body });
+}
+export function updateBlog(slug, body) {
+  return request(`/blogs/${enc(slug)}`, { method: "PUT", body });
+}
+export function deleteBlog(slug) {
+  return request(`/blogs/${enc(slug)}`, { method: "DELETE" });
+}
+
 /* Skill levels (for course form) */
 export function listSkillLevels(params = {}) {
   const qs = new URLSearchParams();

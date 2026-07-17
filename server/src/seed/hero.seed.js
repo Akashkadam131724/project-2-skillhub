@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import connectDB from "../config/db.js";
 import Page from "../modules/cms/page.model.js";
 import Section from "../modules/cms/section.model.js";
+import { getSectionCatalogMeta } from "../modules/cms/section.catalog.js";
 
 /**
  * Upserts homepage hero section catalog entries (content_scope: page)
@@ -60,7 +61,7 @@ const HEROES = [
     data: {},
     buttons: [
       btn("Explore Solutions", {
-        target_url: "/course-catalog",
+        target_url: "/courses",
         sort_order: 0,
       }),
     ],
@@ -77,10 +78,10 @@ const HEROES = [
     in_page_nav_title: "",
     data: {},
     buttons: [
-      btn("Browse catalog", { target_url: "/course-catalog", sort_order: 0 }),
+      btn("Browse catalog", { target_url: "/courses", sort_order: 0 }),
       btn("Talk to us", {
         variant: "outline",
-        target_url: "/course-catalog",
+        target_url: "/courses",
         sort_order: 1,
       }),
     ],
@@ -98,7 +99,7 @@ const HEROES = [
     data: {},
     buttons: [
       btn("Explore Solutions", {
-        target_url: "/course-catalog",
+        target_url: "/courses",
         sort_order: 0,
       }),
     ],
@@ -116,7 +117,7 @@ const HEROES = [
     data: {},
     buttons: [
       btn("Explore Solutions", {
-        target_url: "/course-catalog",
+        target_url: "/courses",
         sort_order: 0,
       }),
     ],
@@ -140,7 +141,7 @@ const HEROES = [
           subtitle: HOME_SUB,
           buttons: [
             btn("Explore Solutions", {
-              target_url: "/course-catalog",
+              target_url: "/courses",
               variant: "inverse",
               sort_order: 0,
             }),
@@ -169,7 +170,7 @@ const HEROES = [
           body: "Role-based paths, hands-on labs, and certification-aligned courses for enterprise teams.",
           buttons: [
             btn("View catalog", {
-              target_url: "/course-catalog",
+              target_url: "/courses",
               variant: "inverse",
               sort_order: 0,
             }),
@@ -197,7 +198,7 @@ const HEROES = [
     ],
     buttons: [
       btn("Explore Solutions", {
-        target_url: "/course-catalog",
+        target_url: "/courses",
         sort_order: 0,
       }),
     ],
@@ -215,7 +216,7 @@ const HEROES = [
     data: {},
     buttons: [
       btn("Explore Solutions", {
-        target_url: "/course-catalog",
+        target_url: "/courses",
         sort_order: 0,
       }),
       btn("View vendors", {
@@ -238,7 +239,7 @@ const HEROES = [
     data: {},
     buttons: [
       btn("Explore Solutions", {
-        target_url: "/course-catalog",
+        target_url: "/courses",
         sort_order: 0,
       }),
       btn("Browse vendors", {
@@ -274,11 +275,14 @@ async function seed() {
 
   for (const hero of HEROES) {
     const { home_tag, ...fields } = hero;
+    const catalog = getSectionCatalogMeta(hero.key);
     let section = await Section.findOne({ key: hero.key });
 
     if (!section) {
       section = new Section({
         ...fields,
+        category: catalog?.category || "",
+        tags: catalog?.tags || [],
         pages: [],
       });
     } else {
@@ -292,6 +296,10 @@ async function seed() {
       if (fields.items) section.items = fields.items;
       section.content_scope = "page";
       section.status = true;
+      if (catalog) {
+        section.category = catalog.category;
+        section.tags = catalog.tags;
+      }
     }
 
     const tagPayload = {

@@ -1,6 +1,10 @@
 import { Schema, model } from "mongoose";
 import { createCmsButtonSchema } from "./button.schema.js";
 import { createCmsItemSchema } from "./item.schema.js";
+import {
+  SECTION_CATEGORY_KEYS,
+  normalizeSectionTags,
+} from "./section.catalog.js";
 
 /** Content resolution mode on the Section catalog */
 export const SECTION_CONTENT_SCOPES = ["global", "template", "page", "cascading"];
@@ -57,6 +61,8 @@ const pageTagSchema = new Schema(
     in_page_nav_title: { type: String, trim: true, default: null },
     /** Optional background image URL for this placement */
     section_bg_img: { type: String, trim: true, default: null },
+    /** Solid color or CSS gradient for the section band */
+    section_bg_color: { type: String, trim: true, default: null, maxlength: 400 },
     /** Optional image — each section UI decides if/where to render it */
     section_img_url: { type: String, trim: true, default: null },
     /** Snapshot from Section at map time — not editable on the placement */
@@ -120,6 +126,31 @@ const sectionSchema = new Schema(
       default: "",
     },
 
+    /**
+     * Catalog classification — what kind of section this is (hero, accordion, …).
+     * Editable in CMS; seeded from section.catalog.js for known keys.
+     */
+    category: {
+      type: String,
+      lowercase: true,
+      trim: true,
+      default: "",
+      index: true,
+      validate: {
+        validator(v) {
+          if (v == null || v === "") return true;
+          return SECTION_CATEGORY_KEYS.includes(String(v).toLowerCase());
+        },
+        message: `category must be one of: ${SECTION_CATEGORY_KEYS.join(", ")}`,
+      },
+    },
+
+    /** Free-form labels for filtering (accordion, hero, cards, …) */
+    tags: {
+      type: [String],
+      default: [],
+    },
+
     // Default content (overridden by pages[] tag, then by entity override when cascading)
     section_title: { type: String, trim: true, default: "" },
     sub_title: { type: String, trim: true, default: "" },
@@ -129,6 +160,8 @@ const sectionSchema = new Schema(
     /** @deprecated Prefer `buttons[]` */
     target_url: { type: String, trim: true, default: "" },
     section_bg_img: { type: String, trim: true, default: "" },
+    /** Solid color or CSS gradient for the section band */
+    section_bg_color: { type: String, trim: true, default: "", maxlength: 400 },
     /** Optional image — section components opt in to render it */
     section_img_url: { type: String, trim: true, default: "" },
     /** CMS catalog preview — copied onto page tags when mapped */
@@ -192,6 +225,16 @@ const sectionSchema = new Schema(
 
 sectionSchema.index({ "pages.page_key": 1, "pages.sort_order": 1 });
 sectionSchema.index({ "pages.page": 1 });
+sectionSchema.index({ tags: 1 });
+
+sectionSchema.pre("validate", function () {
+  if (this.category) {
+    this.category = String(this.category).toLowerCase().trim();
+  }
+  if (this.tags != null) {
+    this.tags = normalizeSectionTags(this.tags);
+  }
+});
 
 sectionSchema.statics.findByKey = function (key) {
   return this.findOne({ key: String(key).toLowerCase() });

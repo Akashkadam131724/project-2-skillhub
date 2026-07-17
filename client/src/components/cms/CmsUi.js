@@ -57,15 +57,20 @@ export function StatusBadge({ active, labelOn = "On", labelOff = "Off" }) {
   );
 }
 
+/**
+ * Use a div — not <label>. Wrapping toolbar editors (or any control group) in
+ * <label> makes clicks on the content activate the first button inside
+ * (e.g. • List toggling on every click in the blog Content field).
+ */
 export function Field({ label, children, hint, className = "" }) {
   return (
-    <label className={`flex flex-col gap-1.5 text-sm ${className}`.trim()}>
+    <div className={`flex flex-col gap-1.5 text-sm ${className}`.trim()}>
       <span className="font-medium text-slate-700 dark:text-slate-200">{label}</span>
       {children}
       {hint ? (
         <span className="text-xs text-slate-500 dark:text-slate-400">{hint}</span>
       ) : null}
-    </label>
+    </div>
   );
 }
 
@@ -105,6 +110,10 @@ export function SectionPreviewThumb({
   className = "size-12",
   rounded = "rounded-md",
   expandable = true,
+  /** "cover" for small thumbs, "contain" for large boxes */
+  fit = "cover",
+  /** Full-width image at natural height (gallery / stacked previews) */
+  natural = false,
 }) {
   const [open, setOpen] = useState(false);
   const url = mediaUrl(src);
@@ -133,6 +142,8 @@ export function SectionPreviewThumb({
     );
   }
 
+  const objectFit = fit === "contain" ? "object-contain" : "object-cover";
+
   return (
     <>
       <div
@@ -152,8 +163,8 @@ export function SectionPreviewThumb({
           }
         }}
         className={`shrink-0 overflow-hidden ${rounded} ${
-          expandable ? "cursor-zoom-in" : ""
-        }`}
+          natural ? "w-full" : className
+        } ${expandable ? "cursor-zoom-in" : ""}`}
         title={expandable ? "View full preview" : alt || "Section preview"}
         aria-label={
           expandable ? `View full preview${alt ? `: ${alt}` : ""}` : undefined
@@ -163,42 +174,44 @@ export function SectionPreviewThumb({
         <img
           src={url}
           alt={alt}
-          className={`pointer-events-none block object-cover ${rounded} ${className}`}
+          className={
+            natural
+              ? "pointer-events-none block h-auto w-full"
+              : `pointer-events-none block h-full w-full ${objectFit}`
+          }
         />
       </div>
 
       {open && expandable ? (
-        <div className="fixed inset-0 z-[90] flex items-center justify-center p-4 sm:p-8">
-          <button
-            type="button"
-            aria-label="Close preview"
-            className="absolute inset-0 border-0 bg-slate-950/75"
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              setOpen(false);
-            }}
-          />
-          <div
-            role="dialog"
-            aria-modal="true"
-            aria-label={alt || "Section preview"}
-            className="relative z-[1] flex max-h-full max-w-full flex-col items-center gap-3"
-            onClick={(e) => e.stopPropagation()}
-          >
+        <div
+          className="fixed inset-0 z-[90] flex flex-col bg-slate-950"
+          role="dialog"
+          aria-modal="true"
+          aria-label={alt || "Section preview"}
+        >
+          <div className="flex shrink-0 items-center justify-between gap-3 border-b border-white/10 px-4 py-3">
+            <p className="m-0 truncate text-sm font-semibold text-white">
+              {alt || "Section preview"}
+            </p>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setOpen(false);
+              }}
+              className="rounded-lg bg-white px-4 py-2 text-sm font-semibold text-slate-800 hover:bg-slate-100"
+            >
+              Close
+            </button>
+          </div>
+          <div className="relative min-h-0 flex-1">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={url}
               alt={alt || "Section preview"}
-              className="max-h-[min(85vh,900px)] max-w-[min(92vw,1100px)] rounded-lg object-contain shadow-2xl"
+              className="absolute inset-0 h-full w-full object-contain"
             />
-            <button
-              type="button"
-              onClick={() => setOpen(false)}
-              className="rounded-lg bg-white px-4 py-2 text-sm font-semibold text-slate-800 shadow hover:bg-slate-100"
-            >
-              Close
-            </button>
           </div>
         </div>
       ) : null}

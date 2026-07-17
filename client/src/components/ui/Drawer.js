@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 
 const SIZE_WIDTH = {
   sm: "w-[min(420px,90%)]",
@@ -53,9 +54,14 @@ export default function Drawer({
   widthControl = false,
   defaultWidthPct = 70,
 }) {
+  const [mounted, setMounted] = useState(false);
   const [widthPct, setWidthPct] = useState(() =>
     widthControl ? readStoredWidth() || defaultWidthPct : null
   );
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (!open || !widthControl) return;
@@ -81,7 +87,7 @@ export default function Drawer({
     return () => document.removeEventListener("keydown", onKey);
   }, [open, onClose]);
 
-  if (!open) return null;
+  if (!open || !mounted) return null;
 
   const sideClass =
     side === "right" ? "right-0 border-l" : "left-0 border-r";
@@ -98,12 +104,12 @@ export default function Drawer({
     }
   }
 
-  return (
-    <div className="fixed inset-0 z-[80]">
+  return createPortal(
+    <div className="fixed inset-0 z-[100]">
       <button
         type="button"
         aria-label="Close drawer"
-        className="absolute inset-0 border-0 bg-slate-950/45"
+        className="absolute inset-0 border-0 bg-ink/45"
         onClick={onClose}
       />
       <aside
@@ -156,7 +162,8 @@ export default function Drawer({
         </div>
         <div className="min-h-0 flex-1 overflow-y-auto p-4">{children}</div>
       </aside>
-    </div>
+    </div>,
+    document.body
   );
 }
 
@@ -166,11 +173,11 @@ export function HamburgerButton({ onClick, label = "Open menu" }) {
       type="button"
       onClick={onClick}
       aria-label={label}
-      className="inline-flex size-10 cursor-pointer flex-col items-center justify-center gap-1.5 rounded-full border-0 bg-transparent text-slate-700 hover:bg-slate-50 dark:text-slate-200 dark:hover:bg-slate-800"
+      className="inline-flex size-10 shrink-0 cursor-pointer flex-col items-center justify-center gap-1 rounded-xl border border-slate-200/80 bg-white/70 p-0 text-ink transition hover:border-ink/20 hover:bg-white hover:text-brand dark:border-slate-700 dark:bg-slate-900/70 dark:text-white dark:hover:bg-slate-900"
     >
-      <span className="block h-0.5 w-5 rounded bg-current" />
-      <span className="block h-0.5 w-5 rounded bg-current" />
-      <span className="block h-0.5 w-5 rounded bg-current" />
+      <span className="block h-0.5 w-[1.15rem] rounded-full bg-current" />
+      <span className="block h-0.5 w-[1.15rem] rounded-full bg-current" />
+      <span className="block h-0.5 w-[1.15rem] rounded-full bg-current" />
     </button>
   );
 }

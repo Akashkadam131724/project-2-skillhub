@@ -38,8 +38,6 @@ export function catalogHideKeysFromContext(pageContext) {
 
 /**
  * Course catalog CMS section — owns its own catalog UI.
- * Title/subtitle: CMS custom value wins; otherwise pageContext.catalogTitle /
- * catalogSubtitle (dynamic from the entity page).
  */
 export default function CatalogSection({
   section_title,
@@ -69,17 +67,26 @@ export default function CatalogSection({
     "";
 
   return (
-    <SectionFrame id="catalog" title={title} subtitle={subtitle} {...frameProps}>
-      <Suspense
-        fallback={
-          <div className="h-40 animate-pulse rounded-xl bg-slate-200/60 dark:bg-slate-800" />
-        }
-      >
-        <CourseCatalogClient
-          baseParams={baseParams}
-          hideFilterKeys={hideFilterKeys}
-        />
-      </Suspense>
+    <SectionFrame
+      id="catalog"
+      title={title}
+      subtitle={subtitle}
+      eyebrow="Catalog"
+      buttonsFooter={false}
+      {...frameProps}
+    >
+      <div className="overflow-hidden rounded-[1.75rem] border border-slate-200/80 bg-white p-4 shadow-[0_24px_70px_-48px_color-mix(in_srgb,var(--ink)_35%,transparent)] sm:p-6 dark:border-slate-800 dark:bg-slate-950">
+        <Suspense
+          fallback={
+            <div className="h-40 animate-pulse rounded-[1.25rem] bg-slate-200/60 dark:bg-slate-800" />
+          }
+        >
+          <CourseCatalogClient
+            baseParams={baseParams}
+            hideFilterKeys={hideFilterKeys}
+          />
+        </Suspense>
+      </div>
     </SectionFrame>
   );
 }

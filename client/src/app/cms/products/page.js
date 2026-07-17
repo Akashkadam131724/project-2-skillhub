@@ -98,7 +98,7 @@ export default function CmsProductsPage() {
       });
       setForm(emptyForm);
       setShowForm(false);
-      window.location.href = `/cms/products/${res.data.slug}`;
+      window.location.href = `/cms/product/${res.data.slug}`;
     } catch (err) {
       setError(err);
     } finally {
@@ -224,18 +224,18 @@ export default function CmsProductsPage() {
                     <StatusBadge active={product.status === "active"} />
                   </div>
                   <p className="mt-0.5 mb-0 text-xs text-slate-500">
-                    {product.vendor?.name || "—"} · /products/{product.slug}
+                    {product.vendor?.name || "—"} · /product/{product.slug}
                   </p>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   <Link
-                    href={`/cms/products/${product.slug}`}
+                    href={`/cms/product/${product.slug}`}
                     className={btnSecondary}
                   >
                     Edit
                   </Link>
                   <Link
-                    href={`/products/${product.slug}?cms=true`}
+                    href={`/product/${product.slug}?cms=true`}
                     className={btnPrimary}
                   >
                     Edit live
