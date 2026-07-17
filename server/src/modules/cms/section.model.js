@@ -112,6 +112,22 @@ const sectionSchema = new Schema(
       ],
     },
 
+    /**
+     * Optional component key — when set, the client renders SECTION_COMPONENTS[render_key]
+     * instead of SECTION_COMPONENTS[key]. Use for scope variants (e.g. page_testimonials
+     * → customer_testimonials) without duplicating React components in the registry.
+     */
+    render_key: {
+      type: String,
+      lowercase: true,
+      trim: true,
+      default: "",
+      match: [
+        /^$|^[a-z0-9]+(?:_[a-z0-9]+)*$/,
+        "render_key must be snake_case (a-z, 0-9, underscores)",
+      ],
+    },
+
     name: {
       type: String,
       required: [true, "Section name is required"],

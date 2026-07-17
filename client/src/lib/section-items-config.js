@@ -3,6 +3,21 @@
  * Sections omitted here do not use items (e.g. overview uses data.body instead).
  */
 
+/** Fallback when DB render_key is unset — keep in sync with section.catalog.js */
+const BEHAVIOR_ALIASES = {
+  page_testimonials: "customer_testimonials",
+  partners: "partners_marquee",
+  tabs_vertical: "feature_tabs",
+};
+
+/** Resolve component + CMS config key from catalog key and optional render_key */
+export function resolveSectionBehaviorKey(sectionKey, renderKey) {
+  const k = String(sectionKey || "").toLowerCase();
+  const r = String(renderKey || "").toLowerCase().trim();
+  if (r) return r;
+  return BEHAVIOR_ALIASES[k] || k;
+}
+
 export const SECTION_ITEMS_CONFIG = {
   text_media: {
     label: "Text + media rows",
@@ -163,13 +178,117 @@ export const SECTION_ITEMS_CONFIG = {
   feature_tabs: {
     label: "Feature tabs",
     actionLabel: "tabs",
-    fields: ["image_url", "value", "title", "subtitle", "body"],
+    /** Flat items[] with item_type + parent_id (tab → many items) */
+    nestedTabs: true,
+    fields: ["image_url", "value", "title", "subtitle", "body", "buttons"],
     fieldLabels: {
       image_url: "Preview image",
-      value: "Tab label",
+      value: "Tab label / count",
       title: "Title",
       subtitle: "Subtitle",
       body: "Description",
+    },
+    /** Fields shown on child items under a tab */
+    childFields: ["image_url", "title", "subtitle", "body", "href", "buttons"],
+    childFieldLabels: {
+      image_url: "Card image",
+      title: "Card title",
+      subtitle: "Subtitle",
+      body: "Description",
+      href: "Link URL",
+    },
+    preview: "benefit",
+  },
+  tabs_vertical: {
+    label: "Vertical tabs",
+    actionLabel: "tabs",
+    nestedTabs: true,
+    fields: ["image_url", "value", "title", "subtitle", "body", "buttons"],
+    fieldLabels: {
+      image_url: "Preview image",
+      value: "Tab label / count",
+      title: "Title",
+      subtitle: "Subtitle",
+      body: "Description",
+    },
+    childFields: ["image_url", "title", "subtitle", "body", "href", "buttons"],
+    childFieldLabels: {
+      image_url: "Card image",
+      title: "Card title",
+      subtitle: "Subtitle",
+      body: "Description",
+      href: "Link URL",
+    },
+    preview: "benefit",
+  },
+  tabs_horizontal: {
+    label: "Horizontal tabs",
+    actionLabel: "tabs",
+    nestedTabs: true,
+    fields: ["image_url", "value", "title", "subtitle", "body", "buttons"],
+    fieldLabels: {
+      image_url: "Preview image",
+      value: "Tab label / count",
+      title: "Title",
+      subtitle: "Subtitle",
+      body: "Description",
+    },
+    childFields: ["image_url", "title", "subtitle", "body", "href", "buttons"],
+    childFieldLabels: {
+      image_url: "Card image",
+      title: "Card title",
+      subtitle: "Subtitle",
+      body: "Description",
+      href: "Link URL",
+    },
+    preview: "benefit",
+  },
+  tabs_underline: {
+    label: "Underline tabs",
+    actionLabel: "tabs",
+    nestedTabs: true,
+    fields: ["image_url", "value", "title", "subtitle", "body", "buttons"],
+    fieldLabels: {
+      image_url: "Preview image",
+      value: "Tab label / count",
+      title: "Title",
+      subtitle: "Subtitle",
+      body: "Description",
+    },
+    childFields: ["image_url", "title", "subtitle", "body", "href", "buttons"],
+    childFieldLabels: {
+      image_url: "Card image",
+      title: "Card title",
+      subtitle: "Subtitle",
+      body: "Description",
+      href: "Link URL",
+    },
+    preview: "benefit",
+  },
+  tabs_success_stories: {
+    label: "Success story",
+    actionLabel: "stories",
+    fields: [
+      "icon",
+      "label",
+      "subtitle",
+      "title",
+      "value",
+      "image_url",
+      "href",
+      "bg_color",
+      "buttons",
+    ],
+    fieldLabels: {
+      icon: "Tab icon (government, healthcare, finance, local, technology)",
+      label: "Tab name",
+      subtitle: "Partner name",
+      title: "Story headline",
+      value: "Partner logo URL",
+      image_url: "Story image",
+      href: "Video URL (optional)",
+      bg_color: "Panel gradient",
+      buttons: "CTA button",
     },
     preview: "benefit",
   },
@@ -412,15 +531,17 @@ export const SECTION_ITEMS_CONFIG = {
   },
 };
 
-export function sectionUsesItems(key) {
-  return Boolean(SECTION_ITEMS_CONFIG[String(key || "").toLowerCase()]);
+export function sectionUsesItems(key, renderKey) {
+  const behavior = resolveSectionBehaviorKey(key, renderKey);
+  return Boolean(SECTION_ITEMS_CONFIG[behavior]);
 }
 
-export function getSectionItemsConfig(key) {
-  return SECTION_ITEMS_CONFIG[String(key || "").toLowerCase()] || null;
+export function getSectionItemsConfig(key, renderKey) {
+  const behavior = resolveSectionBehaviorKey(key, renderKey);
+  return SECTION_ITEMS_CONFIG[behavior] || null;
 }
 
 /** Alias — item-driven sections require items on the public page */
-export function sectionRequiresItems(key) {
-  return sectionUsesItems(key);
+export function sectionRequiresItems(key, renderKey) {
+  return sectionUsesItems(key, renderKey);
 }

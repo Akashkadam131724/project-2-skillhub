@@ -4,6 +4,7 @@ import CmsEditable from "@/components/cms/CmsEditable";
 import CmsSectionItemsBar from "@/components/sections/CmsSectionItemsBar";
 import EmptyItemsHint from "@/components/sections/EmptyItemsHint";
 import SectionItemCard from "@/components/sections/SectionItemCard";
+import MobileCardPeekRow from "@/components/sections/MobileCardPeekRow";
 import SectionButtonsFooter from "@/components/sections/SectionButtonsFooter";
 import SectionWrapper from "@/components/sections/SectionWrapper";
 import { resolveItemsForSection } from "@/lib/item-types";
@@ -96,13 +97,19 @@ export default function WhyChooseSection({
         />
 
         {items.length ? (
-          <ul className="m-0 grid list-none gap-4 p-0 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3 lg:gap-6">
+          <MobileCardPeekRow
+            gapClassName="gap-4 sm:gap-5 lg:gap-6"
+            gridClassName="sm:grid-cols-2 lg:grid-cols-3"
+          >
             {items.map((item, i) => (
-              <li key={item._id || item.id || i} className="min-w-0">
-                <SectionItemCard type="why_choose" item={item} index={i} />
-              </li>
+              <SectionItemCard
+                key={item._id || item.id || i}
+                type="why_choose"
+                item={item}
+                index={i}
+              />
             ))}
-          </ul>
+          </MobileCardPeekRow>
         ) : (
           <EmptyItemsHint sectionKey={section_key} onEditField={onEditField} />
         )}

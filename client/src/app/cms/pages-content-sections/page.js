@@ -15,14 +15,15 @@ import {
   SECTION_CATEGORIES,
   isKnownSectionKey,
 } from "@/lib/section-registry";
-import {
-  contentScopeLabel,
-  normalizeContentScope,
-} from "@/lib/content-scope";
+import { contentScopeLabel } from "@/lib/content-scope";
 import {
   FilterGroup,
+  FilterChipRow,
   buildCategoryOptions,
+  buildScopeOptions,
   sectionCategory,
+  sectionScope,
+  ScopeBadge,
 } from "@/components/cms/CmsSectionFilters";
 import {
   CmsHeading,
@@ -51,25 +52,6 @@ function sectionPageKeys(section) {
   return keys;
 }
 
-function ScopeBadge({ scope }) {
-  const normalized = normalizeContentScope(scope);
-  const label = contentScopeLabel(normalized);
-  const styles =
-    normalized === "global"
-      ? "bg-sky-100 text-sky-800 dark:bg-sky-950 dark:text-sky-300"
-      : normalized === "template"
-        ? "bg-violet-100 text-violet-800 dark:bg-violet-950 dark:text-violet-300"
-        : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300";
-
-  return (
-    <span
-      className={`inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-semibold ${styles}`}
-    >
-      {label}
-    </span>
-  );
-}
-
 function CategoryBadge({ category }) {
   const label =
     SECTION_CATEGORIES.find((item) => item.key === category)?.name ||
@@ -92,6 +74,7 @@ export default function CmsSectionsPage() {
   const [showForm, setShowForm] = useState(false);
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [categorySearch, setCategorySearch] = useState("");
+  const [scopeFilter, setScopeFilter] = useState("all");
   const [showSectionPreviews, setShowSectionPreviews] = useState(false);
   const [showFilters, setShowFilters] = useState(true);
 
@@ -193,12 +176,25 @@ export default function CmsSectionsPage() {
     [sections]
   );
 
-  const filteredSections = useMemo(() => {
-    if (categoryFilter === "all") return sections;
-    return sections.filter((s) => sectionCategory(s) === categoryFilter);
-  }, [sections, categoryFilter]);
+  const scopeOptions = useMemo(
+    () => buildScopeOptions(sections),
+    [sections]
+  );
 
-  const filtersActive = categoryFilter !== "all";
+  const filteredSections = useMemo(() => {
+    return sections.filter((s) => {
+      if (categoryFilter !== "all" && sectionCategory(s) !== categoryFilter) {
+        return false;
+      }
+      if (scopeFilter !== "all" && sectionScope(s) !== scopeFilter) {
+        return false;
+      }
+      return true;
+    });
+  }, [sections, categoryFilter, scopeFilter]);
+
+  const filtersActive =
+    categoryFilter !== "all" || scopeFilter !== "all";
 
   async function onCreate(e) {
     e.preventDefault();
@@ -219,6 +215,8 @@ export default function CmsSectionsPage() {
         in_page_nav_title: meta?.name || pickKey,
         category: meta?.category || "",
         tags: meta?.tags || [],
+        render_key: meta?.render_key || "",
+        content_scope: meta?.content_scope || "page",
         status: true,
       });
       setPickKey("");
@@ -244,7 +242,7 @@ export default function CmsSectionsPage() {
     <div>
       <CmsHeading
         title="All content sections"
-        subtitle="Reusable section types for page templates. Filter by category."
+        subtitle="Reusable section types for page templates. Filter by category or content scope."
         actions={
           <>
             <button
@@ -366,11 +364,21 @@ export default function CmsSectionsPage() {
                   onChange={setCategoryFilter}
                 />
 
+                <FilterChipRow
+                  label="Scope"
+                  value={scopeFilter}
+                  onChange={setScopeFilter}
+                  options={scopeOptions}
+                />
+
                 {filtersActive ? (
                   <button
                     type="button"
                     className={`${btnSecondary} w-full text-xs`}
-                    onClick={() => setCategoryFilter("all")}
+                    onClick={() => {
+                      setCategoryFilter("all");
+                      setScopeFilter("all");
+                    }}
                   >
                     Clear filters
                   </button>
@@ -386,11 +394,16 @@ export default function CmsSectionsPage() {
               <p className="mb-3 mt-0 text-xs text-slate-500">
                 Showing {filteredSections.length} section
                 {filteredSections.length === 1 ? "" : "s"}
-                {` · category: ${
-                  SECTION_CATEGORIES.find(
-                    (category) => category.key === categoryFilter
-                  )?.name || "Uncategorized"
-                }`}
+                {categoryFilter !== "all"
+                  ? ` · category: ${
+                      SECTION_CATEGORIES.find(
+                        (category) => category.key === categoryFilter
+                      )?.name || "Uncategorized"
+                    }`
+                  : ""}
+                {scopeFilter !== "all"
+                  ? ` · scope: ${contentScopeLabel(scopeFilter)}`
+                  : ""}
               </p>
             ) : null}
 
@@ -399,7 +412,7 @@ export default function CmsSectionsPage() {
             ) : !sections.length ? (
               <EmptyState message='No sections yet. Click "Add section" to register a component type.' />
             ) : !filteredSections.length ? (
-              <EmptyState message="No sections in this category. Clear the filter and try again." />
+              <EmptyState message="No sections match these filters. Clear filters and try again." />
             ) : showSectionPreviews ? (
               <div className="space-y-6">
                 {filteredSections.map((section) => {
@@ -494,7 +507,7 @@ export default function CmsSectionsPage() {
                           </td>
                           <td className="py-3 pr-3 font-mono text-xs text-slate-500">
                             {section.key}
-                            {!isKnownSectionKey(section.key) ? (
+                            {!isKnownSectionKey(section.key, section.render_key) ? (
                               <span className="mt-0.5 block text-amber-600">
                                 no component
                               </span>
@@ -533,7 +546,13 @@ export default function CmsSectionsPage() {
                             )}
                           </td>
                           <td className="py-3 pr-3">
-                            <ScopeBadge scope={section.content_scope} />
+                            <button
+                              type="button"
+                              onClick={() => setScopeFilter(sectionScope(section))}
+                              title={`Filter by ${contentScopeLabel(section.content_scope)} scope`}
+                            >
+                              <ScopeBadge scope={section.content_scope} />
+                            </button>
                           </td>
                           <td className="py-3 pr-3">
                             <StatusBadge active={section.status} />

@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import SectionWrapper from "@/components/sections/SectionWrapper";
-import { SECTION_COMPONENTS, sectionUsesAltSurface, sectionUsesImage, sectionUsesBg, sectionUsesItems, getSectionItemsConfig } from "@/lib/section-registry";
+import { resolveSectionComponent, sectionUsesAltSurface, sectionUsesImage, sectionUsesBg, sectionUsesItems, getSectionItemsConfig } from "@/lib/section-registry";
 import { FallbackSection } from "@/components/sections";
 import Drawer from "@/components/ui/Drawer";
 import {
@@ -19,6 +19,7 @@ import {
   buildCategoryOptions,
   sectionCategory,
   sectionKind,
+  ScopeBadge,
 } from "@/components/cms/CmsSectionFilters";
 import CmsSectionToolbar from "@/components/cms/CmsSectionToolbar";
 import SectionSurface from "@/components/sections/SectionSurface";
@@ -216,6 +217,7 @@ function mergePlacements(tags, overrides, entityId, catalog = [], sortDisabled =
       page_tag_id: tag.id,
       is_entity_extra: false,
       section_key: tag.section_key,
+      render_key: catalogSection?.render_key || "",
       section_id: tag.section_id,
       name: tag.section_name || tag.section_key,
       content_scope,
@@ -257,6 +259,7 @@ function mergePlacements(tags, overrides, entityId, catalog = [], sortDisabled =
       page_tag_id: null,
       is_entity_extra: true,
       section_key: extra.section_key,
+      render_key: catalogSection?.render_key || "",
       section_id: extra.section,
       name: extra.section_key,
       content_scope,
@@ -323,12 +326,9 @@ function mergePlacements(tags, overrides, entityId, catalog = [], sortDisabled =
   );
 }
 
-const SHOW_SECTION_PREVIEWS_KEY = "cms-show-section-previews";
-
 function SectionRender({
   section,
   cmsMode,
-  showSectionPreviews = false,
   surfaceTone,
   pageContext,
   catalog = [],
@@ -342,18 +342,18 @@ function SectionRender({
 
   const hidden = section.status === false;
   const key = section.section_key;
+  const renderKey = section.render_key || "";
   const pid = placementKey(section);
   const preview = previewSrc(section, catalog);
-  const previewUrl = mediaUrl(preview);
   const cmsProps = cmsMode
     ? {
         cmsMode: true,
-        onEditField: (field) => onEditField?.(section, field),
+        onEditField: (field, options) =>
+          onEditField?.(section, field, options),
       }
     : {};
 
-  const Comp =
-    SECTION_COMPONENTS[String(key || "").toLowerCase()] || FallbackSection;
+  const Comp = resolveSectionComponent(key, renderKey) || FallbackSection;
   // Section catalog docs use `key` — must not spread into JSX (React reserved)
   const { key: _catalogKey, ...sectionProps } = section;
   const compProps = {
@@ -369,23 +369,7 @@ function SectionRender({
   // position:sticky is limited to its parent's height, so a nav-tall parent
   // makes sticky appear broken.
   let body;
-  if (cmsMode && showSectionPreviews) {
-    body = previewUrl ? (
-      <div className="w-full bg-slate-100 dark:bg-slate-900">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={previewUrl}
-          alt={`${section.section_title || key || "Section"} preview`}
-          className="block h-auto w-full"
-        />
-      </div>
-    ) : (
-      <div className="border-y border-dashed border-slate-300 bg-slate-50 px-4 py-10 text-center text-sm text-slate-500 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-400">
-        No preview image for{" "}
-        <span className="font-mono text-xs">{key || "section"}</span>
-      </div>
-    );
-  } else if (key === "in_page_nav") {
+  if (key === "in_page_nav") {
     body = <Comp {...compProps} />;
   } else {
     body = (
@@ -433,6 +417,7 @@ function SectionRender({
   return (
     <div
       id={`cms-section-${pid}`}
+      data-section-capture={key || undefined}
       className={`scroll-mt-[120px] transition ${
         cmsMode && hidden ? "opacity-40" : ""
       }`}
@@ -510,29 +495,6 @@ export default function CmsLivePageSections({
   const [panelOpen, setPanelOpen] = useState(false);
   const [panelTab, setPanelTab] = useState("mapped");
   const [sortDisabled, setSortDisabled] = useState(true);
-  const [showSectionPreviews, setShowSectionPreviews] = useState(false);
-
-  useEffect(() => {
-    try {
-      setShowSectionPreviews(
-        localStorage.getItem(SHOW_SECTION_PREVIEWS_KEY) === "1"
-      );
-    } catch {
-      /* ignore */
-    }
-  }, []);
-
-  function toggleShowSectionPreviews() {
-    setShowSectionPreviews((prev) => {
-      const next = !prev;
-      try {
-        localStorage.setItem(SHOW_SECTION_PREVIEWS_KEY, next ? "1" : "0");
-      } catch {
-        /* ignore */
-      }
-      return next;
-    });
-  }
 
   async function loadThemes(pageDoc) {
     const [siteRes, entityRes] = await Promise.all([
@@ -658,7 +620,7 @@ export default function CmsLivePageSections({
       const usesAlt =
         !hasCustomBg &&
         !isTransparent &&
-        sectionUsesAltSurface(section.section_key);
+        sectionUsesAltSurface(section.section_key, section.render_key);
       let surfaceTone;
       if (isTransparent && !hasCustomBg) {
         surfaceTone = null; // clear — page bg shows through
@@ -673,15 +635,15 @@ export default function CmsLivePageSections({
     });
   }, [visible, pageTheme?.surface_mode]);
 
-  function openFieldEdit(section, field) {
+  function openFieldEdit(section, field, options = {}) {
     if (!FIELD_META[field]) return;
-    if (field === "items" && !sectionUsesItems(section.section_key)) return;
-    if (field === "section_img_url" && !sectionUsesImage(section.section_key))
+    if (field === "items" && !sectionUsesItems(section.section_key, section.render_key)) return;
+    if (field === "section_img_url" && !sectionUsesImage(section.section_key, section.render_key))
       return;
     if (field === "section_bg_img" && !sectionUsesBg(section.section_key))
       return;
     setPanelOpen(false);
-    setEditing({ section, field });
+    setEditing({ section, field, ...options });
     if (field === "buttons") {
       setButtonsDraft(normalizeButtonsDraft(section.buttons));
       setItemsDraft([]);
@@ -999,7 +961,10 @@ export default function CmsLivePageSections({
   const meta = editing ? FIELD_META[editing.field] : null;
   const itemsConfig =
     editing?.field === "items"
-      ? getSectionItemsConfig(editing.section.section_key)
+      ? getSectionItemsConfig(
+          editing.section.section_key,
+          editing.section.render_key
+        )
       : null;
   const drawerTitle = editing
     ? editing.field === "items"
@@ -1023,27 +988,10 @@ export default function CmsLivePageSections({
                 ) : null}
               </p>
               <p className="mt-0.5 mb-0 text-[11px] text-emerald-800/70 dark:text-emerald-200/70">
-                Edits save live · pages always fetch fresh data (SSR)
+                Edits save live · use ⋮ on each section to edit fields
               </p>
             </div>
             <div className="flex shrink-0 items-center gap-2">
-              <button
-                type="button"
-                onClick={toggleShowSectionPreviews}
-                aria-pressed={showSectionPreviews}
-                title={
-                  showSectionPreviews
-                    ? "Showing section preview images — click for live sections"
-                    : "Show section preview images instead of live sections"
-                }
-                className={`rounded-lg px-3 py-2 text-xs font-semibold transition ${
-                  showSectionPreviews
-                    ? "bg-emerald-700 text-white hover:bg-emerald-800"
-                    : "bg-white text-emerald-900 ring-1 ring-emerald-200 hover:bg-emerald-100 dark:bg-emerald-900/40 dark:text-emerald-50 dark:ring-emerald-800 dark:hover:bg-emerald-900/70"
-                }`}
-              >
-                {showSectionPreviews ? "Previews on" : "Previews off"}
-              </button>
               <CmsModeToggle variant="bar" />
               <button
                 type="button"
@@ -1109,7 +1057,6 @@ export default function CmsLivePageSections({
                   key={placementKey(section)}
                   section={section}
                   cmsMode={cmsMode}
-                  showSectionPreviews={showSectionPreviews}
                   surfaceTone={surfaceTone}
                   pageContext={pageContext}
                   catalog={catalog}
@@ -1379,6 +1326,7 @@ export default function CmsLivePageSections({
                             rounded="rounded-none"
                           />
                           <div className="flex flex-wrap gap-1 px-2 pt-1">
+                            <ScopeBadge scope={s.content_scope} />
                             {onPage ? (
                               <span className="rounded-full bg-amber-100 px-1.5 py-0.5 text-[10px] font-semibold text-amber-800 dark:bg-amber-950 dark:text-amber-300">
                                 On page
@@ -1467,6 +1415,10 @@ export default function CmsLivePageSections({
                             #{s.sort_order}
                           </span>
                           {s.section_key}
+                          <ScopeBadge
+                            scope={s.content_scope}
+                            className="ml-1 align-middle"
+                          />
                           {s.is_entity_extra ? (
                             <span className="ml-1 text-[10px] text-emerald-600">
                               +page
@@ -1537,6 +1489,7 @@ export default function CmsLivePageSections({
                     section_key: s.section_key,
                     sort_order: s.sort_order,
                     hidden: s.status === false,
+                    content_scope: s.content_scope,
                     preview: previewSrc(s, catalog),
                   }))}
                 />
@@ -1632,6 +1585,7 @@ export default function CmsLivePageSections({
                     value={itemsDraft}
                     onChange={setItemsDraft}
                     sectionKey={editing.section.section_key}
+                    expandItemButtons={Boolean(editing.expandItemButtons)}
                   />
                 ) : meta.input === "bg_color" ? (
                   <form onSubmit={saveField} className="space-y-3">

@@ -3,6 +3,7 @@
 import CmsSectionItemsBar from "@/components/sections/CmsSectionItemsBar";
 import EmptyItemsHint from "@/components/sections/EmptyItemsHint";
 import SectionFrame from "@/components/sections/SectionFrame";
+import MobileCardPeekRow from "@/components/sections/MobileCardPeekRow";
 import { resolveItemsForSection } from "@/lib/item-types";
 import { AwardCard } from "./CardItems";
 
@@ -37,13 +38,14 @@ export default function AwardsSection({
         itemCount={items.length}
       />
       {items.length ? (
-        <ul className="m-0 grid list-none gap-5 p-0 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
+        <MobileCardPeekRow
+          gapClassName="gap-5 lg:gap-6"
+          gridClassName="sm:grid-cols-2 lg:grid-cols-3"
+        >
           {items.map((item, i) => (
-            <li key={item._id || item.id || i} className="min-w-0">
-              <AwardCard item={item} index={i} />
-            </li>
+            <AwardCard key={item._id || item.id || i} item={item} index={i} />
           ))}
-        </ul>
+        </MobileCardPeekRow>
       ) : (
         <EmptyItemsHint sectionKey={section_key} onEditField={onEditField} />
       )}

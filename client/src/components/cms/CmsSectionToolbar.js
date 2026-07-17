@@ -66,7 +66,8 @@ export default function CmsSectionToolbar({
   const [open, setOpen] = useState(false);
   const rootRef = useRef(null);
   const sectionKey = section?.section_key || section?.key;
-  const showImage = sectionUsesImage(sectionKey);
+  const renderKey = section?.render_key || "";
+  const showImage = sectionUsesImage(sectionKey, renderKey);
   const showBg = sectionUsesBg(sectionKey);
   const showBgColor = sectionUsesBgColor(sectionKey);
   const previewSrc = preview ?? section?.section_preview_img;

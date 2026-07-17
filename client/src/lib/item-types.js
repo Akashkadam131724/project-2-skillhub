@@ -5,24 +5,52 @@ import {
 } from "@/lib/section-items-config";
 import { isRichTextEmpty } from "@/lib/rich-text";
 
+function itemId(item) {
+  return String(item?._id || item?.id || "").trim();
+}
+
+function itemHasVisibleContent(item) {
+  if (!item) return false;
+  return Boolean(
+    item.title ||
+      item.subtitle ||
+      !isRichTextEmpty(item.body) ||
+      item.label ||
+      item.value ||
+      item.image_url ||
+      item.bg_color ||
+      item.icon ||
+      item.href ||
+      (Array.isArray(item.buttons) && item.buttons.length) ||
+      // Tabs can exist as shells that only group children
+      String(item.item_type || "").toLowerCase() === "tab"
+  );
+}
+
+/** True when this row is a nested child of a tab (or other parent). */
+export function isChildItem(item) {
+  if (!item || item.status === false) return false;
+  const type = String(item.item_type || "").toLowerCase();
+  if (type === "tab") return false;
+  return Boolean(String(item.parent_id || "").trim());
+}
+
+/** True when this row is a top-level tab / legacy item. */
+export function isTabItem(item) {
+  if (!item || item.status === false) return false;
+  if (isChildItem(item)) return false;
+  const type = String(item.item_type || "").toLowerCase();
+  // Explicit tab, or legacy top-level row (no item_type / no parent)
+  return type === "tab" || type === "";
+}
+
 /** Active items sorted by sort_order (must have some visible content) */
 export function sortActiveItems(items) {
   if (!Array.isArray(items)) return [];
   return [...items]
     .filter((item) => {
       if (!item || item.status === false) return false;
-      return Boolean(
-        item.title ||
-          item.subtitle ||
-          !isRichTextEmpty(item.body) ||
-          item.label ||
-          item.value ||
-          item.image_url ||
-          item.bg_color ||
-          item.icon ||
-          item.href ||
-          (Array.isArray(item.buttons) && item.buttons.length)
-      );
+      return itemHasVisibleContent(item);
     })
     .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0));
 }
@@ -35,9 +63,46 @@ export function resolveSectionItems(items) {
   return sortActiveItems(Array.isArray(items) ? items : []);
 }
 
-/** Resolve items for a placement (sectionKey kept for callers / future filters) */
-export function resolveItemsForSection(_sectionKey, items) {
-  return resolveSectionItems(items);
+/**
+ * Group flat items into tabs with children.
+ * Legacy rows (no item_type / parent_id) become tabs with empty children.
+ */
+export function groupItemsByTabs(items) {
+  const all = resolveSectionItems(items);
+  const tabs = all.filter((item) => isTabItem(item));
+  const children = all.filter((item) => isChildItem(item));
+
+  return tabs.map((tab) => {
+    const id = itemId(tab);
+    return {
+      ...tab,
+      children: children
+        .filter((child) => String(child.parent_id || "").trim() === id)
+        .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0)),
+    };
+  });
+}
+
+/** Section keys that use flat tab → child nesting via item_type + parent_id */
+export const NESTED_TABS_SECTION_KEYS = new Set([
+  "feature_tabs",
+  "tabs_vertical",
+  "tabs_horizontal",
+  "tabs_underline",
+]);
+
+/** Resolve items for a placement — nested children hidden unless section wants them */
+export function resolveItemsForSection(sectionKey, items) {
+  const active = resolveSectionItems(items);
+  const key = String(sectionKey || "").toLowerCase();
+
+  // Nested tab sections: return tab shells only (children via groupItemsByTabs)
+  if (NESTED_TABS_SECTION_KEYS.has(key)) {
+    return active.filter((item) => isTabItem(item));
+  }
+
+  // Other sections: ignore nested children so they don't leak into grids
+  return active.filter((item) => !isChildItem(item));
 }
 
 /**
@@ -45,7 +110,7 @@ export function resolveItemsForSection(_sectionKey, items) {
  * Returns false when the public page (cms !== true) should hide the whole section.
  */
 export function placementHasRequiredItems(section) {
-  if (!sectionUsesItems(section?.section_key)) return true;
+  if (!sectionUsesItems(section?.section_key, section?.render_key)) return true;
   return resolveItemsForSection(section.section_key, section?.items).length > 0;
 }
 
@@ -113,7 +178,7 @@ export function placementHasMeaningfulContent(section) {
 
   if (CONTEXT_BACKED_SECTION_KEYS.has(key)) return true;
 
-  if (sectionUsesItems(key)) {
+  if (sectionUsesItems(key, section.render_key)) {
     const hasItems =
       resolveItemsForSection(key, section.items).length > 0;
     // Hero stats can be useful with copy alone (items optional in the UI)

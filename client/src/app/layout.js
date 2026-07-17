@@ -1,6 +1,7 @@
 import { Fraunces, Manrope } from "next/font/google";
 import "./globals.css";
 import SiteHeader from "@/components/SiteHeader";
+import SiteHeaderGate from "@/components/SiteHeaderGate";
 import SiteThemeBootstrap from "@/components/cms/SiteThemeBootstrap";
 import CmsModeFab from "@/components/CmsModeFab";
 
@@ -37,7 +38,9 @@ export default function RootLayout({ children }) {
     >
       <body className="min-h-full bg-white antialiased" suppressHydrationWarning>
         <SiteThemeBootstrap />
-        <SiteHeader />
+        <SiteHeaderGate>
+          <SiteHeader />
+        </SiteHeaderGate>
         {children}
         <CmsModeFab />
       </body>

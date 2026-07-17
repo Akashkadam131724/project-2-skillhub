@@ -141,6 +141,10 @@ async function ensureSection(def) {
     section.description = def.description;
     section.content_scope = def.content_scope;
     section.status = true;
+    if (def.render_key) section.render_key = def.render_key;
+    if (catalog?.render_key && !section.render_key) {
+      section.render_key = catalog.render_key;
+    }
     if (catalog) {
       section.category = catalog.category;
       section.tags = catalog.tags;
@@ -335,11 +339,40 @@ const ABOUT_PLACEMENTS = [
     section_key: "customer_testimonials",
     sort_order: 7,
     section_title: null,
-    in_page_nav_title: "Stories",
+    in_page_nav_title: "Global stories",
+  },
+  {
+    section_key: "page_testimonials",
+    sort_order: 8,
+    section_title: "Hear from our partners",
+    sub_title: "Page-only quotes — edit these without changing the global carousel.",
+    in_page_nav_title: "Page stories",
+    items: [
+      item(
+        {
+          title: "Elena V.",
+          body: "<p>SkillHub helped us stand up a cloud academy in weeks, not quarters. The page-specific story block is separate from the global testimonials carousel.</p>",
+          value: "5",
+          image_url:
+            "https://images.netcomlearning.com/cms/logos/deloitte-logo.png?1697715092298",
+        },
+        0
+      ),
+      item(
+        {
+          title: "James T.",
+          body: "<p>We use global testimonials on catalog pages and this block for landing-page proof tailored to each campaign.</p>",
+          value: "5",
+          image_url:
+            "https://images.netcomlearning.com/cms/logos/optum.png?1697714884430",
+        },
+        1
+      ),
+    ],
   },
   {
     section_key: "faq",
-    sort_order: 8,
+    sort_order: 9,
     section_title: "About SkillHub — FAQs",
     sub_title: "Common questions from enterprise buyers and L&D leaders.",
     in_page_nav_title: "FAQ",

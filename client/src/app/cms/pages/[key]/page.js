@@ -45,6 +45,7 @@ import {
   buildCategoryOptions,
   sectionCategory,
   sectionKind,
+  ScopeBadge,
 } from "@/components/cms/CmsSectionFilters";
 
 const ENTITY_TYPES = [
@@ -78,25 +79,6 @@ const PLACED_FILTERS = [
   { value: "available", label: "Not on page" },
   { value: "placed", label: "Already on page" },
 ];
-
-function ScopeBadge({ scope }) {
-  const normalized = normalizeContentScope(scope);
-  const label = contentScopeLabel(normalized);
-  const styles =
-    normalized === "global"
-      ? "bg-sky-100 text-sky-800 dark:bg-sky-950 dark:text-sky-300"
-      : normalized === "template"
-        ? "bg-violet-100 text-violet-800 dark:bg-violet-950 dark:text-violet-300"
-        : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300";
-
-  return (
-    <span
-      className={`inline-flex items-center rounded-full px-1.5 py-0.5 text-[10px] font-semibold ${styles}`}
-    >
-      {label}
-    </span>
-  );
-}
 
 const emptyPlacement = {
   section_key: "",
@@ -686,15 +668,7 @@ export default function CmsPageDetailPage() {
                           {tag.section_key}
                         </Link>
                         <StatusBadge active={tag.status} />
-                        {tag.content_scope &&
-                        tag.content_scope !== "page" &&
-                        tag.content_scope !== "cascading" ? (
-                          <StatusBadge
-                            active
-                            labelOn={`Scope: ${tag.content_scope}`}
-                            labelOff={`Scope: ${tag.content_scope}`}
-                          />
-                        ) : null}
+                        <ScopeBadge scope={tag.content_scope} />
                         {tag.section_global_status === false ? (
                           <StatusBadge active={false} labelOff="Global off" />
                         ) : null}
@@ -1213,6 +1187,7 @@ export default function CmsPageDetailPage() {
                 section_key: tag.section_key,
                 sort_order: tag.sort_order,
                 hidden: tag.status === false,
+                content_scope: tag.content_scope,
                 preview:
                   tag.section_preview_img ||
                   allSections.find((s) => s.key === tag.section_key)

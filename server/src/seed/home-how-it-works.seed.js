@@ -10,7 +10,12 @@ import connectDB from "../config/db.js";
 import Content from "../modules/content/content.model.js";
 import Page from "../modules/cms/page.model.js";
 import Section from "../modules/cms/section.model.js";
+import Vendor from "../modules/vendor/vendor.model.js";
+import Product from "../modules/product/product.model.js";
+import Course from "../modules/course/course.model.js";
+import Blog from "../modules/blog/blog.model.js";
 import { getSectionCatalogMeta } from "../modules/cms/section.catalog.js";
+import { buildHomeExploreTabsContent } from "./lib/cms-seed-shared.js";
 
 const HOME_KEY = "home";
 
@@ -226,55 +231,18 @@ const HOME_SECTIONS = [
     section_key: "feature_tabs",
     sort_order: 4,
     status: true,
-    in_page_nav_title: "Use cases",
-    section_title: "Pages teams actually publish",
-    sub_title: "Common SkillHub publishing jobs — beyond the homepage.",
-    items: [
-      item(
-        {
-          title: "Campaign landing pages",
-          subtitle: "Launch week stories",
-          body: "<p>Hero + proof + CTA for a new academy, partner promo, or certification drive. Swap imagery and outcomes without touching the catalog schema.</p>",
-          image_url:
-            "https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=1400&q=80",
-          label: "Campaigns",
-        },
-        0
-      ),
-      item(
-        {
-          title: "Solution hubs",
-          subtitle: "Industry or role stories",
-          body: "<p>Compose pillars for cloud, AI, or leadership — then deep-link into filtered courses. One narrative layer over structured data.</p>",
-          image_url:
-            "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1400&q=80",
-          label: "Solutions",
-        },
-        1
-      ),
-      item(
-        {
-          title: "Partner & campus pages",
-          subtitle: "Immersive showcases",
-          body: "<p>Use galleries, bento mosaics, and narratives for Learning Campus–style tours that feel premium — still fully CMS-owned.</p>",
-          image_url:
-            "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1400&q=80",
-          label: "Showcases",
-        },
-        2
-      ),
-      item(
-        {
-          title: "Editorial & blogs",
-          subtitle: "Long-form with TOC",
-          body: "<p>Publish insights with rich text, embeds, and a table of contents — then feature them on Home via Latest Blogs.</p>",
-          image_url:
-            "https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&w=1400&q=80",
-          label: "Editorial",
-        },
-        3
-      ),
+    in_page_nav_title: "Explore",
+    section_title: "Explore SkillHub by learning path",
+    sub_title:
+      "Move from technology partners to products, courses, and practical insights.",
+    buttons: [
+      btn("View full catalog", {
+        variant: "outline",
+        target_url: "/courses",
+      }),
     ],
+    // Items filled at seed time from live catalog counts (see seed()).
+    items: [],
   },
   {
     section_key: "card_stack",
@@ -737,13 +705,30 @@ async function seed() {
     await disableOnHome(homePage, key);
   }
 
+  const [vendors, products, courses, blogs] = await Promise.all([
+    Vendor.countDocuments({ status: "active" }),
+    Product.countDocuments({ status: "active" }),
+    Course.countDocuments({}),
+    Blog.countDocuments({ status: "active" }),
+  ]);
+  const exploreTabs = buildHomeExploreTabsContent({
+    vendors,
+    products,
+    courses,
+    blogs,
+  });
+
   for (const placement of HOME_SECTIONS) {
     const section = await Section.findOne({ key: placement.section_key });
     if (!section) {
       console.warn(`  ! missing ${placement.section_key}`);
       continue;
     }
-    applyHomeTag(section, homePage, placement);
+    const next =
+      placement.section_key === "feature_tabs"
+        ? { ...placement, ...exploreTabs }
+        : placement;
+    applyHomeTag(section, homePage, next);
     await section.save();
     console.log(`  ✓ ${placement.section_key} (sort ${placement.sort_order})`);
   }

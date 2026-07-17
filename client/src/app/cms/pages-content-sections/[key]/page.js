@@ -159,7 +159,7 @@ export default function CmsSectionDetailPage() {
     );
   }
 
-  const known = isKnownSectionKey(section.key);
+  const known = isKnownSectionKey(section.key, section.render_key);
 
   return (
     <div>

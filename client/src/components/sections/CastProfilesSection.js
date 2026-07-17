@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import CmsSectionItemsBar from "@/components/sections/CmsSectionItemsBar";
 import EmptyItemsHint from "@/components/sections/EmptyItemsHint";
 import SectionFrame from "@/components/sections/SectionFrame";
+import MobileCardPeekRow from "@/components/sections/MobileCardPeekRow";
 import CmsRichText from "@/components/cms/CmsRichText";
 import { mediaUrl } from "@/lib/cms-api";
 import { resolveItemsForSection } from "@/lib/item-types";
@@ -24,11 +25,7 @@ function ProfileCard({ item, index, featured = false, visible }) {
       }`}
       style={{ transitionDelay: `${delay}ms` }}
     >
-      <div
-        className={`relative overflow-hidden rounded-2xl bg-slate-900 shadow-lg ring-1 ring-black/10 ${
-          featured ? "aspect-[3/4]" : "aspect-[3/4]"
-        }`}
-      >
+      <div className="relative h-80 w-full shrink-0 overflow-hidden rounded-2xl bg-slate-900 shadow-lg ring-1 ring-black/10 sm:aspect-[3/4] sm:h-auto">
         {photo ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -124,21 +121,20 @@ export default function CastProfilesSection({
           itemCount={items.length}
         />
         {items.length ? (
-          <ul className="m-0 grid list-none grid-cols-2 gap-4 p-0 sm:grid-cols-3 sm:gap-5 lg:grid-cols-4 lg:gap-6">
+          <MobileCardPeekRow
+            gapClassName="gap-4 sm:gap-5 lg:gap-6"
+            gridClassName="sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+          >
             {items.map((item, i) => (
-              <li
+              <ProfileCard
                 key={item._id || item.id || i}
-                className={`min-w-0 ${i === 0 ? "sm:col-span-1" : ""}`}
-              >
-                <ProfileCard
-                  item={item}
-                  index={i}
-                  featured={i === 0}
-                  visible={visible}
-                />
-              </li>
+                item={item}
+                index={i}
+                featured={i === 0}
+                visible={visible}
+              />
             ))}
-          </ul>
+          </MobileCardPeekRow>
         ) : (
           <EmptyItemsHint sectionKey={section_key} onEditField={onEditField} />
         )}

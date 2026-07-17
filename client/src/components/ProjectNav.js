@@ -13,11 +13,8 @@ export const PROJECT_NAV_LINKS = [
   { name: "How it works", href: "/how-it-works" },
   { name: "Catalog guide", href: "/catalog-guide" },
   { name: "CMS preview", href: "/cms-preview" },
+  { name: "Sections", href: "/sections" },
   { name: "The Odyssey", href: "/odyssey" },
-  { name: "Courses", href: "/courses" },
-  { name: "Products", href: "/products" },
-  { name: "Vendors", href: "/vendors" },
-  { name: "Blogs", href: "/blogs" },
 ];
 
 const linkClass =

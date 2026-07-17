@@ -1,11 +1,12 @@
 "use client";
 
 import { mediaUrl } from "@/lib/cms-api";
+import { ScopeBadge } from "@/components/cms/CmsSectionFilters";
 
 /**
  * Stacked section_preview_img mock of a page layout (template or live).
  * Images render full width at natural height.
- * @param {{ items: Array<{ id: string, section_key: string, preview?: string, sort_order?: number, hidden?: boolean }> }} props
+ * @param {{ items: Array<{ id: string, section_key: string, preview?: string, sort_order?: number, hidden?: boolean, content_scope?: string }> }} props
  */
 export default function CmsPagePreviewStack({ items = [], emptyMessage }) {
   if (!items.length) {
@@ -38,6 +39,9 @@ export default function CmsPagePreviewStack({ items = [], emptyMessage }) {
                 <span className="rounded bg-black/65 px-1.5 py-0.5 text-[10px] font-semibold text-white">
                   #{item.sort_order ?? "—"} {item.section_key}
                 </span>
+                {item.content_scope ? (
+                  <ScopeBadge scope={item.content_scope} />
+                ) : null}
                 {item.hidden ? (
                   <span className="rounded bg-rose-600/90 px-1.5 py-0.5 text-[10px] font-semibold text-white">
                     hidden

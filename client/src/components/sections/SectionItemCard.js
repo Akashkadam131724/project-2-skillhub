@@ -97,18 +97,20 @@ export function BenefitItemCard({ item, preview = false }) {
   return (
     <article className="flex h-full flex-col overflow-hidden rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-950">
       {showImage ? (
-        imgSrc ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={imgSrc}
-            alt={mediaAlt(item, "Benefit")}
-            className="aspect-[16/10] w-full object-cover"
-          />
-        ) : (
-          <div className="flex aspect-[16/10] w-full items-center justify-center bg-slate-100 text-xs text-slate-400 italic dark:bg-slate-900 dark:text-slate-600">
-            Add image…
-          </div>
-        )
+        <div className="relative h-56 w-full shrink-0 overflow-hidden sm:aspect-[16/10] sm:h-auto">
+          {imgSrc ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={imgSrc}
+              alt={mediaAlt(item, "Benefit")}
+              className="h-full w-full object-cover"
+            />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center bg-slate-100 text-xs text-slate-400 italic dark:bg-slate-900 dark:text-slate-600">
+              Add image…
+            </div>
+          )}
+        </div>
       ) : null}
       <div className="flex flex-1 flex-col gap-2 px-4 py-4 sm:px-5 sm:py-5">
         <h3 className="m-0 text-base font-bold leading-snug tracking-tight text-ink sm:text-[1.05rem] dark:text-white">

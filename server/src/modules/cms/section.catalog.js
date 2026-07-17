@@ -8,6 +8,7 @@ export const SECTION_CATEGORIES = [
   { key: "hero", name: "Hero" },
   { key: "content", name: "Content" },
   { key: "features", name: "Features & cards" },
+  { key: "tabs", name: "Tabs" },
   { key: "accordion", name: "Accordion" },
   { key: "catalog", name: "Catalog & learning" },
   { key: "social_proof", name: "Social proof" },
@@ -36,7 +37,14 @@ export const SECTION_CATALOG_META = {
   pillar_destinations: { category: "features", tags: ["pillars", "links"] },
   orbit_hero: { category: "hero", tags: ["hero", "product-frame"] },
   card_stack: { category: "features", tags: ["stack", "scroll"] },
-  feature_tabs: { category: "features", tags: ["tabs", "preview"] },
+  feature_tabs: { category: "tabs", tags: ["tabs", "vertical", "preview"] },
+  tabs_vertical: { category: "tabs", tags: ["tabs", "vertical"] },
+  tabs_horizontal: { category: "tabs", tags: ["tabs", "horizontal", "pills"] },
+  tabs_underline: { category: "tabs", tags: ["tabs", "underline", "editorial"] },
+  tabs_success_stories: {
+    category: "tabs",
+    tags: ["tabs", "horizontal", "icons", "case-study"],
+  },
   pricing_tiers: { category: "content", tags: ["pricing", "plans"] },
   masonry_quotes: {
     category: "social_proof",
@@ -65,7 +73,12 @@ export const SECTION_CATALOG_META = {
   testimonials: { category: "social_proof", tags: ["quotes", "reviews"] },
   customer_testimonials: {
     category: "social_proof",
-    tags: ["carousel", "reviews"],
+    tags: ["carousel", "reviews", "global"],
+  },
+  page_testimonials: {
+    category: "social_proof",
+    tags: ["carousel", "reviews", "page"],
+    render_key: "customer_testimonials",
   },
   faq: { category: "accordion", tags: ["accordion", "questions"] },
   resources: { category: "catalog", tags: ["resources", "cards"] },

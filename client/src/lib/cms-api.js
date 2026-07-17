@@ -203,6 +203,25 @@ export function upsertEntityPageSection(body) {
   return request("/page-sections/entity", { method: "PUT", body });
 }
 
+/** Create page-only section placements for a content entity (in order). */
+export async function createContentPageSections(pageKey, entityId, sectionKeys) {
+  const keys = Array.isArray(sectionKeys) ? sectionKeys : [];
+  const results = [];
+  for (let i = 0; i < keys.length; i += 1) {
+    const section_key = String(keys[i] || "").trim();
+    if (!section_key) continue;
+    const res = await upsertEntityPageSection({
+      page_key: pageKey,
+      entity_id: entityId,
+      section_key,
+      sort_order: i,
+      status: true,
+    });
+    results.push(res);
+  }
+  return results;
+}
+
 export function getEntityPageSections({ page_key, entity_id }) {
   return request(
     `/page-sections/entity${toQuery({ page_key, entity_id })}`

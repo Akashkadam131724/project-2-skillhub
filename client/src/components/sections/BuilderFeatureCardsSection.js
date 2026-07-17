@@ -3,6 +3,7 @@
 import CmsSectionItemsBar from "@/components/sections/CmsSectionItemsBar";
 import EmptyItemsHint from "@/components/sections/EmptyItemsHint";
 import SectionFrame from "@/components/sections/SectionFrame";
+import MobileCardPeekRow from "@/components/sections/MobileCardPeekRow";
 import CmsRichText from "@/components/cms/CmsRichText";
 import { resolveItemsForSection } from "@/lib/item-types";
 import { isRichTextEmpty } from "@/lib/rich-text";
@@ -25,21 +26,41 @@ export default function BuilderFeatureCardsSection({
       <SectionFrame title={section_title} subtitle={sub_title} cmsMode={cmsMode} onEditField={onEditField} {...frameProps}>
         <CmsSectionItemsBar sectionKey={section_key} cmsMode={cmsMode} onEditField={onEditField} itemCount={items.length} />
         {items.length ? (
-          <ul className="m-0 grid list-none gap-px overflow-hidden rounded-[1.75rem] border border-slate-200 bg-slate-200 p-0 md:grid-cols-2 lg:grid-cols-4 dark:border-slate-800 dark:bg-slate-800">
+          <MobileCardPeekRow
+            gapClassName="gap-px"
+            gridClassName="sm:grid-cols-2 lg:grid-cols-4"
+            className="overflow-hidden rounded-[1.75rem] border border-slate-200 bg-slate-200 dark:border-slate-800 dark:bg-slate-800"
+          >
             {items.map((item, i) => (
-              <li key={item._id || item.id || i}>
-                <article className="flex min-h-[280px] flex-col bg-white p-6 dark:bg-slate-900">
-                  <div className="mb-8 flex size-12 items-center justify-center rounded-full bg-ink text-sm font-semibold text-white">
-                    {item.value || String(i + 1).padStart(2, "0")}
-                  </div>
-                  {item.title ? <h3 className="m-0 text-xl font-semibold tracking-tight text-ink dark:text-white">{item.title}</h3> : null}
-                  {item.subtitle ? <p className="mt-2 mb-0 text-sm font-medium text-brand">{item.subtitle}</p> : null}
-                  {!isRichTextEmpty(item.body) ? <CmsRichText html={item.body} className="mt-4 text-sm leading-relaxed text-slate-600 dark:text-slate-300" /> : null}
-                  <div className="mt-auto pt-8 text-sm font-semibold text-ink dark:text-white">Learn more →</div>
-                </article>
-              </li>
+              <article
+                key={item._id || item.id || i}
+                className="flex min-h-[280px] flex-col bg-white p-6 dark:bg-slate-900"
+              >
+                <div className="mb-8 flex size-12 items-center justify-center rounded-full bg-ink text-sm font-semibold text-white">
+                  {item.value || String(i + 1).padStart(2, "0")}
+                </div>
+                {item.title ? (
+                  <h3 className="m-0 text-xl font-semibold tracking-tight text-ink dark:text-white">
+                    {item.title}
+                  </h3>
+                ) : null}
+                {item.subtitle ? (
+                  <p className="mt-2 mb-0 text-sm font-medium text-brand">
+                    {item.subtitle}
+                  </p>
+                ) : null}
+                {!isRichTextEmpty(item.body) ? (
+                  <CmsRichText
+                    html={item.body}
+                    className="mt-4 text-sm leading-relaxed text-slate-600 dark:text-slate-300"
+                  />
+                ) : null}
+                <div className="mt-auto pt-8 text-sm font-semibold text-ink dark:text-white">
+                  Learn more →
+                </div>
+              </article>
             ))}
-          </ul>
+          </MobileCardPeekRow>
         ) : (
           <EmptyItemsHint sectionKey={section_key} onEditField={onEditField} />
         )}

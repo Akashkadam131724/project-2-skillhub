@@ -16,6 +16,8 @@ export default function SectionButtonsFooter({
   target_url,
   cmsMode = false,
   onEditField,
+  /** CMS drawer field — default section buttons; item-driven sections use "items". */
+  editField = "buttons",
   onFormOpen,
   inverted = false,
   className = "mt-6 sm:mt-8",
@@ -51,7 +53,7 @@ export default function SectionButtonsFooter({
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              onEditField?.("buttons");
+              onEditField?.(editField);
             }}
             className={`inline-flex items-center gap-1.5 rounded-lg border border-dashed px-3 py-1.5 text-[11px] font-semibold transition ${
               inverted

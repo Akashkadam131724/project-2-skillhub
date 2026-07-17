@@ -85,12 +85,12 @@ export default function CmsShell({ children }) {
   }
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] bg-slate-50 dark:bg-slate-900/40">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900/40">
       <div className="flex w-full flex-col gap-4 px-4 py-6 sm:px-6 md:px-8 lg:flex-row lg:gap-6">
         {/* Collapsed rail (desktop) */}
         {ready && !open ? (
           <div className="hidden shrink-0 lg:block">
-            <div className="sticky top-20">
+            <div className="sticky top-6">
               <button
                 type="button"
                 onClick={toggle}
@@ -110,24 +110,36 @@ export default function CmsShell({ children }) {
             ready && !open ? "hidden lg:hidden" : ""
           }`}
         >
-          <div className="sticky top-20 rounded-xl border border-slate-200 bg-white p-3 dark:border-slate-800 dark:bg-slate-950">
-            <div className="mb-3 flex items-center justify-between gap-2">
-              <div className="min-w-0">
-                <SkillHubLogo size={28} showWordmark={false} />
-                <p className="m-0 mt-1.5 text-[11px] font-semibold tracking-[0.16em] text-slate-500 uppercase">
-                  SkillHub CMS
-                </p>
-              </div>
+          <div className="sticky top-6 rounded-xl border border-slate-200 bg-white p-3 dark:border-slate-800 dark:bg-slate-950">
+            <div className="mb-3 flex items-start justify-between gap-2 border-b border-slate-100 pb-3 dark:border-slate-800">
+              <Link
+                href="/"
+                className="group flex min-w-0 flex-1 items-center gap-2.5 no-underline"
+                aria-label="SkillHub home"
+              >
+                <SkillHubLogo size={32} showWordmark={false} />
+                <span className="flex min-w-0 flex-col leading-none">
+                  <span className="font-[family-name:var(--font-display)] text-[1.02rem] font-semibold tracking-tight text-ink dark:text-white">
+                    SkillHub
+                  </span>
+                  <span className="mt-1 text-[9px] font-semibold tracking-[0.16em] text-slate-400 uppercase">
+                    Learn · Build · Ship
+                  </span>
+                </span>
+              </Link>
               <button
                 type="button"
                 onClick={toggle}
-                className="inline-flex size-8 items-center justify-center rounded-lg text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
+                className="inline-flex size-8 shrink-0 items-center justify-center rounded-lg text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
                 aria-label="Close CMS sidebar"
                 title="Close sidebar"
               >
                 <MenuIcon open />
               </button>
             </div>
+            <p className="m-0 mb-2 px-1 text-[10px] font-semibold tracking-[0.14em] text-slate-400 uppercase">
+              CMS
+            </p>
             <nav className="flex flex-row gap-1 overflow-x-auto lg:flex-col">
               {NAV.map((item) => {
                 const active = navActive(pathname, item.href, item.exact);

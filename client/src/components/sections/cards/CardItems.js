@@ -24,7 +24,7 @@ export function TrainingOptionCard({ item, preview = false, index = 0 }) {
   return (
     <article className="group flex h-full flex-col overflow-hidden rounded-[1.5rem] bg-ink text-white shadow-[0_28px_70px_-40px_color-mix(in_srgb,var(--ink)_55%,transparent)] transition duration-500 hover:-translate-y-1">
       {showImage ? (
-        <div className="relative aspect-[16/11] overflow-hidden">
+        <div className="relative h-56 w-full shrink-0 overflow-hidden sm:aspect-[16/11] sm:h-auto">
           {imgSrc ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img

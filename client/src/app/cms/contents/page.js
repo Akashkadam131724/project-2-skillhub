@@ -9,11 +9,14 @@ import {
   updateContent,
 } from "@/lib/entity-cms-api";
 import {
+  CONTENT_PAGE_KEY,
   contentCmsHref,
   contentPublicHref,
   normalizeContentPath,
   slugFromPath,
 } from "@/lib/content-pages";
+import { createContentPageSections, listSections } from "@/lib/cms-api";
+import ContentPageSectionBuilder from "@/components/cms/ContentPageSectionBuilder";
 import {
   CmsHeading,
   CmsPanel,
@@ -58,6 +61,9 @@ export default function CmsContentsPage() {
   const [editingSlug, setEditingSlug] = useState(null);
   const [form, setForm] = useState(emptyForm);
   const [pathTouched, setPathTouched] = useState(false);
+  const [sectionCatalog, setSectionCatalog] = useState([]);
+  const [selectedSections, setSelectedSections] = useState([]);
+  const [catalogLoading, setCatalogLoading] = useState(false);
 
   async function load(search = q) {
     setLoading(true);
@@ -103,6 +109,19 @@ export default function CmsContentsPage() {
     setEditingSlug(null);
     setForm(emptyForm);
     setPathTouched(false);
+    setSelectedSections([]);
+  }
+
+  async function loadSectionCatalog() {
+    setCatalogLoading(true);
+    try {
+      const res = await listSections({ status: true, limit: 200 });
+      setSectionCatalog(res.data || []);
+    } catch {
+      setSectionCatalog([]);
+    } finally {
+      setCatalogLoading(false);
+    }
   }
 
   function openCreate() {
@@ -110,7 +129,9 @@ export default function CmsContentsPage() {
     setEditingSlug(null);
     setForm(emptyForm);
     setPathTouched(false);
+    setSelectedSections([]);
     setError(null);
+    loadSectionCatalog();
   }
 
   function openEdit(item) {
@@ -158,9 +179,18 @@ export default function CmsContentsPage() {
         await load();
       } else {
         const res = await createContent(payload);
+        const content = res.data;
+        const entityId = String(content._id || content.id || "");
+        if (entityId && selectedSections.length) {
+          await createContentPageSections(
+            CONTENT_PAGE_KEY,
+            entityId,
+            selectedSections.map((row) => row.section_key)
+          );
+        }
         closeForm();
         await load();
-        window.location.href = contentCmsHref(res.data);
+        window.location.href = contentCmsHref(content);
       }
     } catch (err) {
       setError(err);
@@ -199,7 +229,7 @@ export default function CmsContentsPage() {
     <div>
       <CmsHeading
         title="Content pages"
-        subtitle="Edit name, URL path, and description — or open live CMS to build sections."
+        subtitle="Create a URL, pick sections locally, then publish — or open live CMS to edit an existing page."
         actions={
           <button
             type="button"
@@ -337,7 +367,9 @@ export default function CmsContentsPage() {
                   ? "Saving…"
                   : formMode === "edit"
                     ? "Save changes"
-                    : "Create & edit live"}
+                    : selectedSections.length
+                      ? `Create page (${selectedSections.length} sections)`
+                      : "Create blank page"}
               </button>
               <button
                 type="button"
@@ -349,6 +381,20 @@ export default function CmsContentsPage() {
               </button>
             </div>
           </form>
+          {formMode === "new" ? (
+            catalogLoading ? (
+              <p className="mt-4 border-t border-slate-200 pt-4 text-sm text-slate-500 dark:border-slate-800">
+                Loading section library…
+              </p>
+            ) : (
+              <ContentPageSectionBuilder
+                catalog={sectionCatalog}
+                value={selectedSections}
+                onChange={setSelectedSections}
+                disabled={saving}
+              />
+            )
+          ) : null}
         </CmsPanel>
       ) : null}
 

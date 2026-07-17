@@ -45,6 +45,9 @@ import PillarDestinationsSection from "@/components/sections/PillarDestinationsS
 import OrbitHeroSection from "@/components/sections/OrbitHeroSection";
 import CardStackSection from "@/components/sections/CardStackSection";
 import FeatureTabsSection from "@/components/sections/FeatureTabsSection";
+import TabsHorizontalSection from "@/components/sections/TabsHorizontalSection";
+import TabsUnderlineSection from "@/components/sections/TabsUnderlineSection";
+import TabsSuccessStoriesSection from "@/components/sections/TabsSuccessStoriesSection";
 import PricingTiersSection from "@/components/sections/PricingTiersSection";
 import MasonryQuotesSection from "@/components/sections/MasonryQuotesSection";
 import MetricRailSection from "@/components/sections/MetricRailSection";
@@ -55,6 +58,13 @@ import DomainSearchBandSection from "@/components/sections/DomainSearchBandSecti
 import WebsiteBuildStepsSection from "@/components/sections/WebsiteBuildStepsSection";
 import VideoBannerSection from "@/components/sections/VideoBannerSection";
 import CastProfilesSection from "@/components/sections/CastProfilesSection";
+import {
+  SECTION_ITEMS_CONFIG,
+  sectionUsesItems,
+  getSectionItemsConfig,
+  sectionRequiresItems,
+  resolveSectionBehaviorKey,
+} from "./section-items-config.js";
 
 /** key → React component (do not rename keys without a code change) */
 export const SECTION_COMPONENTS = {
@@ -76,6 +86,10 @@ export const SECTION_COMPONENTS = {
   orbit_hero: OrbitHeroSection,
   card_stack: CardStackSection,
   feature_tabs: FeatureTabsSection,
+  tabs_vertical: FeatureTabsSection,
+  tabs_horizontal: TabsHorizontalSection,
+  tabs_underline: TabsUnderlineSection,
+  tabs_success_stories: TabsSuccessStoriesSection,
   pricing_tiers: PricingTiersSection,
   masonry_quotes: MasonryQuotesSection,
   metric_rail: MetricRailSection,
@@ -138,6 +152,10 @@ export const SECTION_SURFACE = {
   orbit_hero: "fixed",
   card_stack: "alt",
   feature_tabs: "alt",
+  tabs_vertical: "alt",
+  tabs_horizontal: "alt",
+  tabs_underline: "alt",
+  tabs_success_stories: "alt",
   pricing_tiers: "alt",
   masonry_quotes: "alt",
   metric_rail: "fixed",
@@ -176,8 +194,9 @@ export const SECTION_SURFACE = {
   hero_dual_cta: "fixed",
 };
 
-export function sectionUsesAltSurface(key) {
-  return SECTION_SURFACE[String(key || "").toLowerCase()] !== "fixed";
+export function sectionUsesAltSurface(key, renderKey) {
+  const behavior = resolveSectionBehaviorKey(key, renderKey);
+  return SECTION_SURFACE[behavior] !== "fixed";
 }
 
 /**
@@ -209,8 +228,15 @@ export function sectionUsesBgColor(_key) {
   return true;
 }
 
-export function sectionUsesImage(key) {
-  return SECTION_USES_IMAGE.has(String(key || "").toLowerCase());
+export function sectionUsesImage(key, renderKey) {
+  const behavior = resolveSectionBehaviorKey(key, renderKey);
+  return SECTION_USES_IMAGE.has(behavior);
+}
+
+/** Resolve React component for a catalog key + optional DB render_key */
+export function resolveSectionComponent(sectionKey, renderKey) {
+  const behavior = resolveSectionBehaviorKey(sectionKey, renderKey);
+  return SECTION_COMPONENTS[behavior] || null;
 }
 
 export {
@@ -218,7 +244,8 @@ export {
   sectionUsesItems,
   getSectionItemsConfig,
   sectionRequiresItems,
-} from "./section-items-config.js";
+  resolveSectionBehaviorKey,
+};
 
 export {
   shouldRenderPlacement,
@@ -251,7 +278,11 @@ export const SECTION_CATALOG = [
   { key: "pillar_destinations", name: "Pillar Destinations", category: "features", tags: ["pillars", "links"] },
   { key: "orbit_hero", name: "Orbit Hero", category: "hero", tags: ["hero", "product-frame"] },
   { key: "card_stack", name: "Card Stack", category: "features", tags: ["stack", "scroll"] },
-  { key: "feature_tabs", name: "Feature Tabs", category: "features", tags: ["tabs", "preview"] },
+  { key: "feature_tabs", name: "Tabs — Vertical", category: "tabs", tags: ["tabs", "vertical", "preview"] },
+  { key: "tabs_vertical", name: "Tabs — Vertical", category: "tabs", tags: ["tabs", "vertical"] },
+  { key: "tabs_horizontal", name: "Tabs — Horizontal", category: "tabs", tags: ["tabs", "horizontal", "pills"] },
+  { key: "tabs_underline", name: "Tabs — Underline", category: "tabs", tags: ["tabs", "underline", "editorial"] },
+  { key: "tabs_success_stories", name: "Tabs — Success Stories", category: "tabs", tags: ["tabs", "horizontal", "icons", "case-study"] },
   { key: "pricing_tiers", name: "Pricing Tiers", category: "content", tags: ["pricing", "plans"] },
   { key: "masonry_quotes", name: "Masonry Quotes", category: "social_proof", tags: ["testimonials", "masonry"] },
   { key: "metric_rail", name: "Metric Rail", category: "data", tags: ["metrics", "proof"] },
@@ -272,7 +303,15 @@ export const SECTION_CATALOG = [
   { key: "awards", name: "Awards & Recognition", category: "social_proof", tags: ["awards", "cards"] },
   { key: "in_page_nav", name: "In-Page Navigation", category: "navigation", tags: ["sticky", "links"] },
   { key: "testimonials", name: "Testimonials", category: "social_proof", tags: ["quotes", "reviews"] },
-  { key: "customer_testimonials", name: "Customer Testimonials", category: "social_proof", tags: ["carousel", "reviews"] },
+  { key: "customer_testimonials", name: "Customer Testimonials", category: "social_proof", tags: ["carousel", "reviews", "global"], content_scope: "global" },
+  {
+    key: "page_testimonials",
+    name: "Page Testimonials",
+    category: "social_proof",
+    tags: ["carousel", "reviews", "page"],
+    render_key: "customer_testimonials",
+    content_scope: "page",
+  },
   { key: "faq", name: "FAQ", category: "accordion", tags: ["accordion", "questions"] },
   { key: "resources", name: "Resources", category: "catalog", tags: ["resources", "cards"] },
   { key: "products", name: "Products Grid", category: "catalog", tags: ["products", "grid"] },
@@ -311,6 +350,7 @@ export const SECTION_CATEGORIES = [
   { key: "hero", name: "Hero" },
   { key: "content", name: "Content" },
   { key: "features", name: "Features & cards" },
+  { key: "tabs", name: "Tabs" },
   { key: "accordion", name: "Accordion" },
   { key: "catalog", name: "Catalog & learning" },
   { key: "social_proof", name: "Social proof" },
@@ -324,8 +364,7 @@ export function getSectionCatalogMeta(key) {
   return SECTION_CATALOG.find((section) => section.key === normalized) || null;
 }
 
-/** True when a React renderer exists for this section key */
-export function isKnownSectionKey(key) {
-  const k = String(key || "").toLowerCase();
-  return Boolean(SECTION_COMPONENTS[k]);
+/** True when a React renderer exists for this section key (incl. render_key variants) */
+export function isKnownSectionKey(key, renderKey) {
+  return Boolean(resolveSectionComponent(key, renderKey));
 }

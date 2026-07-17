@@ -209,6 +209,7 @@ export async function resolvePageSections(pageKey, entityId = null) {
 
       resolved.push({
         section_key: section.key,
+        render_key: section.render_key || "",
         section_id: section._id,
         page_tag_id: tag._id,
         placement_id: String(tag._id),
@@ -249,6 +250,7 @@ export async function resolvePageSections(pageKey, entityId = null) {
 
     resolved.push({
       section_key: section.key,
+      render_key: section.render_key || "",
       section_id: section._id,
       page_tag_id: null,
       placement_id: String(extra._id),

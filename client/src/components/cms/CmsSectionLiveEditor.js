@@ -13,7 +13,7 @@ import CmsItemsEditor, {
   serializeItemsDraft,
 } from "@/components/cms/CmsItemsEditor";
 import {
-  SECTION_COMPONENTS,
+  resolveSectionComponent,
   sectionUsesImage,
   sectionUsesBg,
   sectionUsesBgColor,
@@ -138,9 +138,12 @@ export default function CmsSectionLiveEditor({
   if (!section) return null;
 
   const key = section.section_key || section.key;
+  const renderKey = section.render_key || "";
   const meta = editingField ? CMS_FIELD_META[editingField] : null;
   const itemsConfig =
-    editingField === "items" ? getSectionItemsConfig(key) : null;
+    editingField === "items"
+      ? getSectionItemsConfig(key, renderKey)
+      : null;
   const drawerTitle =
     editingField === "items"
       ? `Edit ${itemsConfig?.label || "cards"} · ${key}`
@@ -148,8 +151,8 @@ export default function CmsSectionLiveEditor({
 
   function openFieldEdit(field) {
     if (!CMS_FIELD_META[field]) return;
-    if (field === "items" && !sectionUsesItems(key)) return;
-    if (field === "section_img_url" && !sectionUsesImage(key)) return;
+    if (field === "items" && !sectionUsesItems(key, renderKey)) return;
+    if (field === "section_img_url" && !sectionUsesImage(key, renderKey)) return;
     if (field === "section_bg_img" && !sectionUsesBg(key)) return;
 
     setEditingField(field);
@@ -219,8 +222,7 @@ export default function CmsSectionLiveEditor({
     }
   }
 
-  const Comp =
-    SECTION_COMPONENTS[String(key || "").toLowerCase()] || FallbackSection;
+  const Comp = resolveSectionComponent(key, renderKey) || FallbackSection;
   const hidden = section.status === false;
   // Section catalog docs use `key` — must not spread into JSX (React reserved)
   const { key: _catalogKey, ...sectionProps } = section;

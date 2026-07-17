@@ -160,11 +160,17 @@ export const updateSection = async (req, res) => {
       "buttons",
       "items",
       "content_scope",
+      "render_key",
       "status",
     ];
     const patch = {};
     for (const field of allowed) {
       if (req.body[field] !== undefined) patch[field] = req.body[field];
+    }
+    if (patch.render_key !== undefined) {
+      patch.render_key = String(patch.render_key || "")
+        .toLowerCase()
+        .trim();
     }
     if (patch.content_scope !== undefined) {
       patch.content_scope = normalizeContentScope(patch.content_scope);

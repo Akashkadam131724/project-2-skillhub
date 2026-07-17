@@ -14,7 +14,7 @@ export function enableCmsFab() {
   }
 }
 
-function EditIcon({ className = "size-5" }) {
+function UserIcon({ className = "size-5" }) {
   return (
     <svg
       className={className}
@@ -24,12 +24,30 @@ function EditIcon({ className = "size-5" }) {
       strokeWidth="1.8"
       aria-hidden="true"
     >
-      <path d="M12 20h9" strokeLinecap="round" strokeLinejoin="round" />
+      <circle cx="12" cy="8" r="3.25" />
       <path
-        d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"
+        d="M5.5 19.5c.9-3.1 3.4-5 6.5-5s5.6 1.9 6.5 5"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
+    </svg>
+  );
+}
+
+function LayoutIcon({ className = "size-5" }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      aria-hidden="true"
+    >
+      <rect x="3" y="3" width="8" height="8" rx="1.5" />
+      <rect x="13" y="3" width="8" height="5" rx="1.5" />
+      <rect x="13" y="10" width="8" height="11" rx="1.5" />
+      <rect x="3" y="13" width="8" height="8" rx="1.5" />
     </svg>
   );
 }
@@ -45,27 +63,6 @@ function CloseIcon({ className = "size-5" }) {
       aria-hidden="true"
     >
       <path d="M6 6l12 12M18 6L6 18" strokeLinecap="round" />
-    </svg>
-  );
-}
-
-function AdminIcon({ className = "size-5" }) {
-  return (
-    <svg
-      className={className}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.8"
-      aria-hidden="true"
-    >
-      <path
-        d="M4 19V5a1 1 0 0 1 1-1h10l5 5v10a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1z"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path d="M14 4v5h5" strokeLinecap="round" strokeLinejoin="round" />
-      <path d="M8 13h8M8 17h5" strokeLinecap="round" />
     </svg>
   );
 }
@@ -168,7 +165,7 @@ function CmsModeFabInner() {
         label="CMS Admin"
         className="bg-white text-ink ring-slate-200/90 hover:bg-slate-50 dark:bg-slate-900 dark:text-white dark:ring-slate-700 dark:hover:bg-slate-800"
       >
-        <AdminIcon />
+        <LayoutIcon />
       </FabButton>
 
       <FabButton
@@ -181,7 +178,7 @@ function CmsModeFabInner() {
             : "bg-ink text-white ring-black/10 hover:bg-brand dark:bg-white dark:text-ink dark:ring-white/20 dark:hover:bg-brand dark:hover:text-white"
         }
       >
-        {on ? <CloseIcon /> : <EditIcon />}
+        {on ? <CloseIcon /> : <UserIcon />}
       </FabButton>
     </div>
   );

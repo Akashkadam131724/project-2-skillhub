@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import CmsSectionItemsBar from "@/components/sections/CmsSectionItemsBar";
 import EmptyItemsHint from "@/components/sections/EmptyItemsHint";
 import SectionFrame from "@/components/sections/SectionFrame";
+import MobileCardPeekRow from "@/components/sections/MobileCardPeekRow";
 import CmsRichText from "@/components/cms/CmsRichText";
 import { mediaUrl } from "@/lib/cms-api";
 import { mediaAlt } from "@/lib/media-alt";
@@ -28,7 +29,7 @@ function Pillar({ item, index, visible }) {
       )}
       <div className="absolute inset-0 bg-ink/55 transition duration-500 group-hover:bg-ink/35" />
       <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/40 to-transparent" />
-      <div className="relative z-[1] flex h-full min-h-[380px] flex-col justify-end p-6 sm:min-h-[440px] sm:p-8">
+      <div className="relative z-[1] flex h-full w-full flex-col justify-end p-6 sm:p-8">
         <p className="m-0 mb-3 font-[family-name:var(--font-display)] text-5xl font-semibold text-white/25 sm:text-6xl">
           {String(index + 1).padStart(2, "0")}
         </p>
@@ -60,7 +61,7 @@ function Pillar({ item, index, visible }) {
     </>
   );
 
-  const className = `group relative block overflow-hidden rounded-[1.75rem] transition duration-700 ease-out ${
+  const className = `group relative flex h-full min-h-[22rem] overflow-hidden rounded-[1.75rem] transition duration-700 ease-out sm:min-h-[440px] ${
     visible ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
   }`;
 
@@ -130,13 +131,20 @@ export default function PillarDestinationsSection({
           itemCount={items.length}
         />
         {items.length ? (
-          <ul className="m-0 grid list-none gap-4 p-0 sm:grid-cols-2 lg:grid-cols-3 lg:gap-5">
+          <MobileCardPeekRow
+            gridFrom="md"
+            gapClassName="gap-4 lg:gap-5"
+            gridClassName="md:grid-cols-2 lg:grid-cols-3"
+          >
             {items.map((item, i) => (
-              <li key={item._id || item.id || i}>
-                <Pillar item={item} index={i} visible={visible} />
-              </li>
+              <Pillar
+                key={item._id || item.id || i}
+                item={item}
+                index={i}
+                visible={visible}
+              />
             ))}
-          </ul>
+          </MobileCardPeekRow>
         ) : (
           <EmptyItemsHint sectionKey={section_key} onEditField={onEditField} />
         )}

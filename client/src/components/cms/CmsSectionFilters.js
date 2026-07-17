@@ -4,6 +4,10 @@ import {
   SECTION_CATEGORIES,
   getSectionCatalogMeta,
 } from "@/lib/section-registry";
+import {
+  contentScopeLabel,
+  normalizeContentScope,
+} from "@/lib/content-scope";
 
 export function sectionCategory(section) {
   const catalog = getSectionCatalogMeta(section?.key);
@@ -48,6 +52,7 @@ export function sectionKind(key) {
     k === "faq" ||
     k === "testimonials" ||
     k === "customer_testimonials" ||
+    k === "page_testimonials" ||
     k === "resources" ||
     k === "curriculum" ||
     k === "stats" ||
@@ -162,6 +167,52 @@ export function buildCategoryOptions(sections = []) {
     });
   }
   return options;
+}
+
+export function sectionScope(section) {
+  return normalizeContentScope(section?.content_scope);
+}
+
+export function buildScopeOptions(sections = []) {
+  const counts = { all: sections.length, global: 0, template: 0, page: 0 };
+  for (const section of sections) {
+    const scope = sectionScope(section);
+    if (scope in counts) counts[scope] += 1;
+  }
+  return [
+    { value: "all", label: "All scopes", count: counts.all },
+    {
+      value: "global",
+      label: contentScopeLabel("global"),
+      count: counts.global,
+    },
+    {
+      value: "template",
+      label: contentScopeLabel("template"),
+      count: counts.template,
+    },
+    { value: "page", label: contentScopeLabel("page"), count: counts.page },
+  ];
+}
+
+/** Colored pill for global / template / page content scope */
+export function ScopeBadge({ scope, className = "" }) {
+  const normalized = normalizeContentScope(scope);
+  const label = contentScopeLabel(normalized);
+  const styles =
+    normalized === "global"
+      ? "bg-sky-100 text-sky-800 dark:bg-sky-950 dark:text-sky-300"
+      : normalized === "template"
+        ? "bg-violet-100 text-violet-800 dark:bg-violet-950 dark:text-violet-300"
+        : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300";
+
+  return (
+    <span
+      className={`inline-flex items-center rounded-full px-1.5 py-0.5 text-[10px] font-semibold ${styles} ${className}`.trim()}
+    >
+      {label}
+    </span>
+  );
 }
 
 /** Chip row used by add-section pickers (scope / type / on page). */

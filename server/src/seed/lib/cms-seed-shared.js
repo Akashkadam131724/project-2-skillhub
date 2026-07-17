@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import Section from "../../modules/cms/section.model.js";
 
 export function btn(label, opts = {}) {
@@ -24,6 +25,8 @@ export function item(fields, i = 0) {
     image_url: "",
     icon: "",
     href: "",
+    item_type: "",
+    parent_id: "",
     buttons: [],
     sort_order: i,
     status: true,
@@ -927,6 +930,7 @@ export async function buildTagIndex(pageKeys) {
   const byPage = new Map(pageKeys.map((k) => [k, new Map()]));
 
   for (const section of sections) {
+
     for (const tag of section.pages || []) {
       const pk = tag.page_key;
       const map = byPage.get(pk);
@@ -940,3 +944,209 @@ export async function buildTagIndex(pageKeys) {
 
   return byPage;
 }
+
+function formatCatalogCount(n) {
+  return new Intl.NumberFormat("en-US").format(Number(n) || 0);
+}
+
+const HOME_EXPLORE_IMAGES = {
+  vendors:
+    "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1600&q=80",
+  products:
+    "https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1600&q=80",
+  courses:
+    "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1600&q=80",
+  blogs:
+    "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1600&q=80",
+};
+
+/** Homepage Feature Tabs content from live catalog counts. */
+export function buildHomeExploreTabsContent(counts) {
+  const vendorTabId = new mongoose.Types.ObjectId().toString();
+  const productTabId = new mongoose.Types.ObjectId().toString();
+  const courseTabId = new mongoose.Types.ObjectId().toString();
+  const blogTabId = new mongoose.Types.ObjectId().toString();
+
+  let order = 0;
+  const next = () => order++;
+
+  return {
+    section_title: "Explore SkillHub by learning path",
+    sub_title:
+      "Move from technology partners to products, courses, and practical insights.",
+    in_page_nav_title: "Explore",
+    buttons: [
+      btn("View full catalog", {
+        variant: "outline",
+        target_url: "/courses",
+      }),
+    ],
+    items: [
+      item(
+        {
+          _id: vendorTabId,
+          item_type: "tab",
+          value: `${formatCatalogCount(counts.vendors)} vendors`,
+          title: "Start with trusted technology partners",
+          subtitle: "Browse official training ecosystems",
+          body: `<p>Explore authorized vendors with mapped products, certification paths, and related courses.</p>`,
+          image_url: HOME_EXPLORE_IMAGES.vendors,
+          href: "/vendors",
+          buttons: [
+            btn("Browse vendors", {
+              variant: "inverse",
+              target_url: "/vendors",
+            }),
+          ],
+        },
+        next()
+      ),
+      item(
+        {
+          item_type: "item",
+          parent_id: vendorTabId,
+          title: "Official curricula",
+          subtitle: "Vendor-authorized paths",
+          body: "<p>Mapped certification tracks maintained by technology partners.</p>",
+          href: "/vendors",
+        },
+        next()
+      ),
+      item(
+        {
+          item_type: "item",
+          parent_id: vendorTabId,
+          title: "Partner ecosystems",
+          subtitle: "Products + courses together",
+          body: "<p>See how each vendor’s catalog connects products to hands-on courses.</p>",
+          href: "/vendors",
+        },
+        next()
+      ),
+      item(
+        {
+          _id: productTabId,
+          item_type: "tab",
+          value: `${formatCatalogCount(counts.products)} products`,
+          title: "Choose a structured learning product",
+          subtitle: "Role-aligned bundles for teams",
+          body: `<p>Products group courses, labs, and certification prep into clear learning paths.</p>`,
+          image_url: HOME_EXPLORE_IMAGES.products,
+          href: "/products",
+          buttons: [
+            btn("Browse products", {
+              variant: "inverse",
+              target_url: "/products",
+            }),
+          ],
+        },
+        next()
+      ),
+      item(
+        {
+          item_type: "item",
+          parent_id: productTabId,
+          title: "Role-aligned bundles",
+          subtitle: "Outcomes over one-off classes",
+          body: "<p>Pick a product when your team needs a full path, not a single class.</p>",
+          href: "/products",
+        },
+        next()
+      ),
+      item(
+        {
+          item_type: "item",
+          parent_id: productTabId,
+          title: "Labs + cert prep",
+          subtitle: "Practice built in",
+          body: "<p>Products package practice environments and exam prep with curriculum.</p>",
+          href: "/products",
+        },
+        next()
+      ),
+      item(
+        {
+          _id: courseTabId,
+          item_type: "tab",
+          value: `${formatCatalogCount(counts.courses)} courses`,
+          title: "Find the right course",
+          subtitle: "Search the full training catalog",
+          body: `<p>Discover instructor-led courses across vendors, industries, and skilling areas.</p>`,
+          image_url: HOME_EXPLORE_IMAGES.courses,
+          href: "/courses",
+          buttons: [
+            btn("Browse courses", {
+              variant: "inverse",
+              target_url: "/courses",
+            }),
+          ],
+        },
+        next()
+      ),
+      item(
+        {
+          item_type: "item",
+          parent_id: courseTabId,
+          title: "Filter by skill area",
+          subtitle: "Cloud, data, security…",
+          body: "<p>Narrow the catalog by industry, vendor, or skilling area.</p>",
+          href: "/courses",
+        },
+        next()
+      ),
+      item(
+        {
+          item_type: "item",
+          parent_id: courseTabId,
+          title: "Open a live CMS page",
+          subtitle: "Own the course story",
+          body: "<p>Each course detail page is editable in the live CMS.</p>",
+          href: "/courses",
+        },
+        next()
+      ),
+      item(
+        {
+          _id: blogTabId,
+          item_type: "tab",
+          value: `${formatCatalogCount(counts.blogs)} insights`,
+          title: "Learn from practical guides",
+          subtitle: "Editorial content for capability teams",
+          body: `<p>Read SkillHub articles on catalog strategy, vendor enablement, and learning operations.</p>`,
+          image_url: HOME_EXPLORE_IMAGES.blogs,
+          href: "/blogs",
+          buttons: [
+            btn("Read insights", {
+              variant: "inverse",
+              target_url: "/blogs",
+            }),
+          ],
+        },
+        next()
+      ),
+      item(
+        {
+          item_type: "item",
+          parent_id: blogTabId,
+          title: "Catalog strategy",
+          subtitle: "Keep data honest",
+          body: "<p>Guides for tagging, retirement, and linking campaigns to real courses.</p>",
+          href: "/blogs",
+        },
+        next()
+      ),
+      item(
+        {
+          item_type: "item",
+          parent_id: blogTabId,
+          title: "Enablement playbooks",
+          subtitle: "Vendor + L&D ops",
+          body: "<p>Practical writing for teams that publish while the catalog stays structured.</p>",
+          href: "/blogs",
+        },
+        next()
+      ),
+    ],
+  };
+}
+

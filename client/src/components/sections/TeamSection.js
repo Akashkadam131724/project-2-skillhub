@@ -4,6 +4,7 @@ import CmsRichText from "@/components/cms/CmsRichText";
 import CmsSectionItemsBar from "@/components/sections/CmsSectionItemsBar";
 import EmptyItemsHint from "@/components/sections/EmptyItemsHint";
 import SectionFrame from "@/components/sections/SectionFrame";
+import MobileCardPeekRow from "@/components/sections/MobileCardPeekRow";
 import { mediaUrl } from "@/lib/cms-api";
 import { resolveItemsForSection } from "@/lib/item-types";
 import { isRichTextEmpty } from "@/lib/rich-text";
@@ -16,7 +17,7 @@ function TeamMemberCard({ item }) {
 
   return (
     <article className="flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-950">
-      <div className="aspect-[4/5] overflow-hidden bg-slate-100 dark:bg-slate-900">
+      <div className="relative h-80 w-full shrink-0 overflow-hidden bg-slate-100 sm:aspect-[4/5] sm:h-auto dark:bg-slate-900">
         {photo ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -77,13 +78,14 @@ export default function TeamSection({
         itemCount={items.length}
       />
       {items.length ? (
-        <ul className="m-0 grid list-none gap-5 p-0 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <MobileCardPeekRow
+          gapClassName="gap-5"
+          gridClassName="sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+        >
           {items.map((item, i) => (
-            <li key={item._id || item.id || i} className="min-w-0">
-              <TeamMemberCard item={item} />
-            </li>
+            <TeamMemberCard key={item._id || item.id || i} item={item} />
           ))}
-        </ul>
+        </MobileCardPeekRow>
       ) : (
         <EmptyItemsHint sectionKey={section_key} onEditField={onEditField} />
       )}
