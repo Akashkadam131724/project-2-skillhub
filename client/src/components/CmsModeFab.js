@@ -34,7 +34,7 @@ function UserIcon({ className = "size-5" }) {
   );
 }
 
-function LayoutIcon({ className = "size-5" }) {
+function EditIcon({ className = "size-5" }) {
   return (
     <svg
       className={className}
@@ -44,10 +44,12 @@ function LayoutIcon({ className = "size-5" }) {
       strokeWidth="1.8"
       aria-hidden="true"
     >
-      <rect x="3" y="3" width="8" height="8" rx="1.5" />
-      <rect x="13" y="3" width="8" height="5" rx="1.5" />
-      <rect x="13" y="10" width="8" height="11" rx="1.5" />
-      <rect x="3" y="13" width="8" height="8" rx="1.5" />
+      <path
+        d="M4 20l4.2-1 10.6-10.6a2.1 2.1 0 0 0-3-3L5.2 16 4 20Z"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path d="m14.5 6.7 3 3" strokeLinecap="round" />
     </svg>
   );
 }
@@ -159,26 +161,22 @@ function CmsModeFabInner() {
   }
 
   return (
-    <div className="fixed bottom-5 left-5 z-[60] flex flex-col items-start gap-2.5 print:hidden">
+    <div className="fixed bottom-5 left-1/2 z-[60] flex -translate-x-1/2 items-center gap-2.5 print:hidden">
       <FabButton
         href="/cms"
         label="CMS Admin"
         className="bg-white text-ink ring-slate-200/90 hover:bg-slate-50 dark:bg-slate-900 dark:text-white dark:ring-slate-700 dark:hover:bg-slate-800"
       >
-        <LayoutIcon />
+        <UserIcon />
       </FabButton>
 
       <FabButton
         onClick={toggle}
         pressed={on}
         label={editLabel}
-        className={
-          on
-            ? "bg-amber-500 text-white ring-amber-600/40 hover:bg-amber-600"
-            : "bg-ink text-white ring-black/10 hover:bg-brand dark:bg-white dark:text-ink dark:ring-white/20 dark:hover:bg-brand dark:hover:text-white"
-        }
+        className="bg-amber-500 text-white ring-amber-600/40 hover:bg-amber-600"
       >
-        {on ? <CloseIcon /> : <UserIcon />}
+        {on ? <CloseIcon /> : <EditIcon />}
       </FabButton>
     </div>
   );

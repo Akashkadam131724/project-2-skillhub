@@ -50,8 +50,7 @@ export default function VideoBannerSection({
             title={title || "Video banner"}
             className="block aspect-video w-full border-0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            allowFullScreenc
-
+            allowFullScreen
           />
         ) : fallbackImage ? (
           // eslint-disable-next-line @next/next/no-img-element
