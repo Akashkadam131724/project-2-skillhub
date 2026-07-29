@@ -51,6 +51,7 @@ npm run seed:pipeline -- --safe --only=entity-cms,content-pages
 | `contact-page` | Contact content page |
 | `blog` (catalog) | Blog article detail pages |
 | `section-library` | Section library showcase (`page_key: section`) |
+| `section-previews` | Sets `section_preview_img` from `uploads/section-previews/{key}.png` |
 | `content-missing-eps` | Careers, `/sections/*`, showcase demos, any other content URL still at 0 EPS |
 
 **Important:** `seed:pages` without safe runs `EntityPageSection.deleteMany({})` and rebuilds templates. Always run **`entity-cms`** and layout seeds **after** `pages` in the same pipeline.

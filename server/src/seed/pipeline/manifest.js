@@ -207,6 +207,12 @@ export const SEED_STEPS = [
     profiles: ["core", "full", "replenish"],
   },
   {
+    id: "section-previews",
+    label: "Section catalog previews (uploads/section-previews)",
+    script: "steps/06-site/section-preview-images.seed.js",
+    profiles: ["core", "full", "replenish"],
+  },
+  {
     id: "site-theme",
     label: "Site theme defaults",
     script: "steps/06-site/site-theme.seed.js",

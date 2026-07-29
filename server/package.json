@@ -50,6 +50,7 @@
     "seed:pages": "node --env-file=.env src/seed/steps/02-cms/page-section.seed.js",
     "seed:section-categories": "node --env-file=.env src/seed/steps/02-cms/section-categories.seed.js",
     "seed:section-library": "node --env-file=.env src/seed/steps/06-site/section-library.seed.js",
+    "seed:section-previews": "node --env-file=.env src/seed/steps/06-site/section-preview-images.seed.js",
     "seed:section-tags": "node --env-file=.env src/seed/steps/02-cms/section-tags.seed.js",
     "seed:site-theme": "node --env-file=.env src/seed/steps/06-site/site-theme.seed.js",
     "seed:cms-content": "node --env-file=.env src/seed/steps/04-entity/cms-content.seed.js",
