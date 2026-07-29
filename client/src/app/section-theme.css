@@ -1,0 +1,517 @@
+/**
+ * Section theme — swap token sets on the band; optional surface presets on cards.
+ *
+ * Architecture: see `lib/section-design-system.js` and primitives in
+ * `components/sections/design/`.
+ *
+ * Band: [data-section-theme="light" | "dark"]  → --band-*, default --card-* on band
+ * Surface presets: light-card | dark-overlay | glass-card
+ */
+
+/* —— Fixed palettes (never swap with band — only applied via presets / theme blocks) —— */
+:root {
+  --ds-light-card-bg: #ffffff;
+  --ds-light-card-fg: var(--ink);
+  --ds-light-card-muted: rgb(71 85 105);
+  --ds-light-card-subtle: rgb(148 163 184);
+  --ds-light-card-border: rgb(226 232 240);
+
+  --ds-light-field-bg: #ffffff;
+  --ds-light-field-fg: var(--ink);
+  --ds-light-field-border: rgb(226 232 240);
+  --ds-light-field-placeholder: rgb(148 163 184);
+
+  --ds-glass-card-bg: rgb(255 255 255 / 0.08);
+  --ds-glass-card-fg: #ffffff;
+  --ds-glass-card-muted: rgb(255 255 255 / 0.72);
+  --ds-glass-card-subtle: rgb(255 255 255 / 0.5);
+  --ds-glass-card-border: rgb(255 255 255 / 0.14);
+
+  --ds-glass-field-bg: rgb(255 255 255 / 0.08);
+  --ds-glass-field-fg: #ffffff;
+  --ds-glass-field-border: rgb(255 255 255 / 0.22);
+  --ds-glass-field-placeholder: rgb(255 255 255 / 0.45);
+
+  /* Page default when no data-section-theme (treat as light band) */
+  --band-fg: var(--ink);
+  --band-muted: var(--ds-light-card-muted);
+  --band-subtle: var(--ds-light-card-subtle);
+  --band-border: var(--ds-light-card-border);
+  --band-bg: #ffffff;
+  --card-fg: var(--ds-light-card-fg);
+  --card-muted: var(--ds-light-card-muted);
+  --card-subtle: var(--ds-light-card-subtle);
+  --card-bg: var(--ds-light-card-bg);
+  --card-border: var(--ds-light-card-border);
+  --field-bg: var(--ds-light-field-bg);
+  --field-fg: var(--ds-light-field-fg);
+  --field-border: var(--ds-light-field-border);
+  --field-placeholder: var(--ds-light-field-placeholder);
+}
+
+/* —— Light band —— */
+[data-section-theme="light"] {
+  color: var(--band-fg);
+  --band-bg: #ffffff;
+  --band-fg: var(--ink);
+  --band-muted: var(--ds-light-card-muted);
+  --band-subtle: var(--ds-light-card-subtle);
+  --band-border: var(--ds-light-card-border);
+  --card-fg: var(--ds-light-card-fg);
+  --card-muted: var(--ds-light-card-muted);
+  --card-subtle: var(--ds-light-card-subtle);
+  --card-bg: var(--ds-light-card-bg);
+  --card-border: var(--ds-light-card-border);
+  --field-bg: var(--ds-light-field-bg);
+  --field-fg: var(--ds-light-field-fg);
+  --field-border: var(--ds-light-field-border);
+  --field-placeholder: var(--ds-light-field-placeholder);
+  --section-fg: var(--band-fg);
+  --section-muted: var(--band-muted);
+  --section-subtle: var(--band-subtle);
+  --section-card-bg: var(--card-bg);
+  --section-card-border: var(--card-border);
+}
+
+/* —— Dark band —— */
+[data-section-theme="dark"] {
+  color: rgb(255 255 255 / 0.92);
+  --band-bg: var(--ink);
+  --band-fg: #fff;
+  --band-muted: var(--ds-glass-card-muted);
+  --band-subtle: var(--ds-glass-card-subtle);
+  --band-border: var(--ds-glass-card-border);
+  --card-fg: var(--ds-glass-card-fg);
+  --card-muted: var(--ds-glass-card-muted);
+  --card-subtle: var(--ds-glass-card-subtle);
+  --card-bg: var(--ds-glass-card-bg);
+  --card-border: var(--ds-glass-card-border);
+  --field-bg: var(--ds-glass-field-bg);
+  --field-fg: var(--ds-glass-field-fg);
+  --field-border: var(--ds-glass-field-border);
+  --field-placeholder: var(--ds-glass-field-placeholder);
+  --section-fg: var(--band-fg);
+  --section-muted: var(--band-muted);
+  --section-subtle: var(--band-subtle);
+  --section-card-bg: var(--card-bg);
+  --section-card-border: var(--card-border);
+}
+
+.section-band-bg {
+  background-color: var(--band-bg);
+  color: var(--band-fg);
+}
+
+.section-band-bg--muted {
+  --band-bg: rgb(241 245 249);
+}
+
+[data-section-theme="dark"].section-band-bg--muted,
+[data-section-theme="dark"] .section-band-bg--muted {
+  --band-bg: color-mix(in srgb, var(--ink) 88%, white);
+}
+
+/* Token-based card shell — use instead of bg-white / dark:bg-slate-* */
+.section-ui-card {
+  background-color: var(--card-bg) !important;
+  border-color: var(--card-border) !important;
+  color: var(--card-fg);
+}
+
+.section-ui-chip {
+  background-color: var(--card-bg);
+  border: 1px solid var(--card-border);
+  color: var(--card-fg);
+}
+
+
+.bg-ink.text-white {
+  color: rgb(255 255 255 / 0.92);
+  --band-fg: #fff;
+  --band-muted: rgb(255 255 255 / 0.72);
+  --band-subtle: rgb(255 255 255 / 0.5);
+  --section-fg: var(--band-fg);
+  --section-muted: var(--band-muted);
+  --section-subtle: var(--band-subtle);
+}
+
+/* —— Layout shells (use with design-system primitives) —— */
+.section-band-shell {
+  background: transparent;
+}
+
+.section-ds-eyebrow {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--brand);
+}
+
+.section-light-card-shell {
+  color: var(--card-fg, var(--ink));
+  background-color: var(--card-bg, #fff);
+  border: 1px solid var(--card-border, rgb(226 232 240 / 0.85));
+  box-shadow: 0 30px 80px -48px rgb(15 23 42 / 0.45);
+}
+
+.section-light-card-shell--compact,
+.section-light-card-shell.shadow-none {
+  box-shadow: none;
+}
+
+.contact-channel-card--link {
+  color: var(--card-fg);
+}
+
+.contact-channel-card--link:hover .section-theme-heading {
+  color: var(--brand) !important;
+}
+
+[data-section-surface="light-card"] a.contact-channel-card--link,
+[data-light-surface] a.contact-channel-card--link {
+  color: var(--card-fg);
+}
+
+.section-glass-card-shell,
+[data-section-surface="glass-card"] {
+  color: var(--card-fg, #fff);
+  background-color: var(--card-bg, rgb(255 255 255 / 0.08));
+  border: 1px solid var(--card-border, rgb(255 255 255 / 0.14));
+}
+
+.section-brand-glow {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  opacity: 0.6;
+}
+
+[data-section-theme="dark"] .section-brand-glow {
+  opacity: 0.35;
+}
+
+.section-band-divider-top {
+  border-top: 1px solid var(--band-border, rgb(226 232 240));
+}
+
+/* —— Surface: white card (ink text on any band) —— */
+.section-light-card,
+[data-section-surface="light-card"],
+[data-light-surface],
+[data-always-ink-text] {
+  color: var(--ds-light-card-fg);
+  --card-fg: var(--ds-light-card-fg);
+  --card-muted: var(--ds-light-card-muted);
+  --card-subtle: var(--ds-light-card-subtle);
+  --card-bg: var(--ds-light-card-bg);
+  --card-border: var(--ds-light-card-border);
+  --field-bg: var(--ds-light-field-bg);
+  --field-fg: var(--ds-light-field-fg);
+  --field-border: var(--ds-light-field-border);
+  --field-placeholder: var(--ds-light-field-placeholder);
+  color-scheme: light;
+}
+
+[data-section-surface="glass-card"],
+.section-glass-card-shell {
+  color: var(--ds-glass-card-fg);
+  --card-fg: var(--ds-glass-card-fg);
+  --card-muted: var(--ds-glass-card-muted);
+  --card-subtle: var(--ds-glass-card-subtle);
+  --card-bg: var(--ds-glass-card-bg);
+  --card-border: var(--ds-glass-card-border);
+  --field-bg: var(--ds-glass-field-bg);
+  --field-fg: var(--ds-glass-field-fg);
+  --field-border: var(--ds-glass-field-border);
+  --field-placeholder: var(--ds-glass-field-placeholder);
+}
+
+/* —— Surface: image / ink overlay (always light copy) —— */
+[data-section-surface="dark-overlay"],
+[data-always-light-text] {
+  color: #fff;
+  --card-fg: #fff;
+  --card-muted: rgb(255 255 255 / 0.72);
+  --card-subtle: rgb(255 255 255 / 0.5);
+  --card-bg: transparent;
+  --card-border: rgb(255 255 255 / 0.15);
+}
+
+/* Badge / chip on portrait or media overlays */
+.section-media-badge {
+  background-color: rgb(255 255 255 / 0.95);
+  color: var(--ink);
+  box-shadow: 0 1px 2px rgb(15 23 42 / 0.08);
+}
+
+[data-section-theme="dark"] .section-media-badge,
+[data-section-surface="dark-overlay"] .section-media-badge {
+  background-color: rgb(255 255 255 / 0.16);
+  color: #fff;
+  border: 1px solid rgb(255 255 255 / 0.22);
+  box-shadow: none;
+  backdrop-filter: blur(6px);
+}
+
+/* FAQ row index (01, 02…) — brand on light cards, light copy on glass / dark band */
+.section-faq-index {
+  color: color-mix(in srgb, var(--brand) 70%, transparent);
+}
+
+[data-section-surface="glass-card"] .section-faq-index,
+.section-glass-card-shell .section-faq-index,
+[data-section-surface="dark-overlay"] .section-faq-index {
+  color: var(--card-fg);
+  opacity: 0.8;
+}
+
+[data-section-surface="light-card"] .section-faq-index,
+.section-light-card .section-faq-index,
+[data-light-surface] .section-faq-index {
+  color: color-mix(in srgb, var(--brand) 70%, transparent);
+  opacity: 1;
+}
+
+/* Band typography (section headers, copy outside cards) */
+.section-theme-heading {
+  color: var(--band-fg, var(--ink));
+}
+
+.section-theme-muted {
+  color: var(--band-muted, rgb(71 85 105));
+}
+
+.section-theme-subtle {
+  color: var(--band-subtle, rgb(148 163 184));
+}
+
+.section-theme-placeholder {
+  color: var(--band-subtle, rgb(203 213 225));
+}
+
+[data-section-theme] .section-theme-heading:not([data-light-surface] *):not([data-section-surface] *) {
+  color: var(--band-fg) !important;
+}
+
+[data-section-theme] .section-theme-muted:not([data-light-surface] *):not([data-section-surface] *) {
+  color: var(--band-muted) !important;
+}
+
+[data-section-theme] .section-theme-subtle:not([data-light-surface] *):not([data-section-surface] *),
+[data-section-theme] .section-theme-placeholder:not([data-light-surface] *):not([data-section-surface] *) {
+  color: var(--band-subtle) !important;
+}
+
+/* Inside a surface preset — use card tokens */
+.section-light-card .section-theme-heading,
+[data-section-surface] .section-theme-heading,
+[data-light-surface] .section-theme-heading,
+[data-always-light-text] .section-theme-heading,
+[data-always-ink-text] .section-theme-heading {
+  color: var(--card-fg) !important;
+}
+
+.section-light-card .section-theme-muted,
+[data-section-surface] .section-theme-muted,
+[data-light-surface] .section-theme-muted,
+[data-always-ink-text] .section-theme-muted {
+  color: var(--card-muted) !important;
+}
+
+[data-section-surface] .section-theme-subtle,
+[data-light-surface] .section-theme-subtle,
+[data-always-ink-text] .section-theme-subtle {
+  color: var(--card-subtle) !important;
+}
+
+[data-section-surface="dark-overlay"] .section-theme-muted,
+[data-always-light-text] .section-theme-muted {
+  color: var(--card-muted) !important;
+}
+
+[data-section-surface] .cms-rich-body,
+[data-section-surface] .cms-rich-body p,
+[data-section-surface] .cms-rich-body li,
+[data-light-surface] .cms-rich-body,
+[data-light-surface] .cms-rich-body p,
+[data-light-surface] .cms-rich-body li {
+  color: var(--card-muted) !important;
+}
+
+[data-section-surface] .cms-rich-body h2,
+[data-section-surface] .cms-rich-body h3,
+[data-section-surface] .cms-rich-body h4,
+[data-light-surface] .cms-rich-body h2,
+[data-light-surface] .cms-rich-body h3,
+[data-light-surface] .cms-rich-body h4 {
+  color: var(--card-fg) !important;
+}
+
+[data-section-surface="dark-overlay"] .cms-rich-body,
+[data-section-surface="dark-overlay"] .cms-rich-body p,
+[data-always-light-text] .cms-rich-body,
+[data-always-light-text] .cms-rich-body p {
+  color: var(--card-muted) !important;
+}
+
+[data-section-surface="dark-overlay"] .cms-rich-body h2,
+[data-section-surface="dark-overlay"] .cms-rich-body h3,
+[data-always-light-text] .cms-rich-body h2,
+[data-always-light-text] .cms-rich-body h3 {
+  color: var(--card-fg) !important;
+}
+
+[data-section-theme] .cms-rich-body:not([data-section-surface] *):not([data-light-surface] *) {
+  color: var(--band-muted);
+}
+
+[data-section-theme] .cms-rich-body:not([data-section-surface] *):not([data-light-surface] *) p,
+[data-section-theme] .cms-rich-body:not([data-section-surface] *):not([data-light-surface] *) li {
+  color: var(--band-muted);
+}
+
+[data-section-theme] .cms-rich-body:not([data-section-surface] *):not([data-light-surface] *) h2,
+[data-section-theme] .cms-rich-body:not([data-section-surface] *):not([data-light-surface] *) h3,
+[data-section-theme] .cms-rich-body:not([data-section-surface] *):not([data-light-surface] *) h4 {
+  color: var(--band-fg) !important;
+}
+
+/* Surfaces: backgrounds & borders */
+.section-light-card .bg-white,
+.section-light-card .bg-white\/80,
+.section-light-card .dark\:bg-slate-950,
+.section-light-card .dark\:bg-slate-900,
+[data-section-surface="light-card"] .bg-white,
+[data-section-surface="light-card"] .bg-white\/80,
+[data-section-surface="light-card"] .dark\:bg-slate-950,
+[data-light-surface] .bg-white,
+[data-light-surface] .bg-white\/80,
+[data-light-surface] .dark\:bg-slate-950,
+[data-always-ink-text] .bg-white {
+  background-color: var(--card-bg) !important;
+}
+
+.section-light-card .border-slate-200,
+.section-light-card .border-slate-200\/80,
+[data-section-surface="light-card"] .border-slate-200,
+[data-section-surface="light-card"] .border-slate-200\/80,
+[data-light-surface] .border-slate-200,
+[data-light-surface] .border-slate-200\/80 {
+  border-color: var(--card-border) !important;
+}
+
+/* Form fields — band level */
+[data-section-theme] input:not([data-section-surface] *):not([data-light-surface] *),
+[data-section-theme] textarea:not([data-section-surface] *):not([data-light-surface] *),
+[data-section-theme] select:not([data-section-surface] *):not([data-light-surface] *) {
+  background-color: var(--field-bg) !important;
+  border-color: var(--field-border) !important;
+  color: var(--field-fg) !important;
+}
+
+[data-section-theme] input:not([data-section-surface] *):not([data-light-surface] *)::placeholder,
+[data-section-theme] textarea:not([data-section-surface] *):not([data-light-surface] *)::placeholder {
+  color: var(--field-placeholder) !important;
+}
+
+[data-section-surface] .section-field,
+[data-light-surface] .section-field {
+  background-color: var(--field-bg) !important;
+  border-color: var(--field-border) !important;
+  color: var(--field-fg) !important;
+}
+
+[data-section-surface] .section-field::placeholder,
+[data-light-surface] .section-field::placeholder {
+  color: var(--field-placeholder) !important;
+}
+
+.section-field-label {
+  color: var(--band-muted, rgb(71 85 105));
+}
+
+[data-section-surface] .section-field-label,
+[data-light-surface] .section-field-label,
+.section-light-card .section-field-label {
+  color: var(--card-muted) !important;
+}
+
+[data-section-theme] .section-field-label:not([data-light-surface] *):not([data-section-surface] *) {
+  color: var(--band-muted) !important;
+}
+
+.section-field {
+  width: 100%;
+  border-radius: 0.75rem;
+  border: 1px solid var(--field-border, rgb(226 232 240));
+  background-color: var(--field-bg, #fff);
+  padding: 0.625rem 0.875rem;
+  font-size: 0.875rem;
+  line-height: 1.25;
+  color: var(--field-fg, var(--ink));
+  outline: none;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.section-field::placeholder {
+  color: var(--field-placeholder, rgb(148 163 184));
+}
+
+.section-field:focus {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--brand) 22%, transparent);
+}
+
+[data-section-theme="dark"] .section-field:focus:not([data-light-surface] *):not([data-section-surface] *),
+[data-section-surface] .section-field:focus,
+[data-light-surface] .section-field:focus {
+  border-color: color-mix(in srgb, var(--brand) 55%, white);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--brand) 35%, transparent);
+}
+
+/* Native selects on white cards (avoid OS dark-mode option styling on dark bands) */
+.section-light-card select.section-field option,
+[data-section-surface="light-card"] select.section-field option,
+[data-light-surface] select.section-field option {
+  color: var(--ink);
+  background-color: #fff;
+}
+
+.section-field-checkbox {
+  margin-top: 0.25rem;
+  height: 1rem;
+  width: 1rem;
+  border-radius: 0.25rem;
+  border: 1px solid var(--field-border, rgb(203 213 225));
+  accent-color: var(--brand);
+}
+[data-section-theme="dark"] .text-ink:not([data-section-surface] *):not([data-light-surface] *) {
+  color: var(--band-fg) !important;
+}
+
+[data-section-theme="light"] .dark\:text-white:not([data-section-surface] *):not([data-light-surface] *) {
+  color: var(--band-fg) !important;
+}
+
+/* Secondary chips / links on dark bands (still use bg-white in markup) */
+[data-section-theme="dark"] a.section-theme-heading.bg-white,
+[data-section-theme="dark"] button.section-theme-heading.bg-white,
+[data-section-theme="dark"] a.section-theme-heading.bg-white\/80,
+[data-section-theme="dark"] .section-theme-heading.bg-white.rounded-xl,
+[data-section-theme="dark"] .section-theme-heading.bg-white.rounded-full {
+  background-color: rgb(255 255 255 / 0.1) !important;
+  border-color: rgb(255 255 255 / 0.22) !important;
+  color: var(--band-fg) !important;
+}
+
+[data-section-theme="dark"] a.section-theme-heading.bg-white:hover,
+[data-section-theme="dark"] button.section-theme-heading.bg-white:hover,
+[data-section-theme="dark"] .section-theme-heading.bg-white.rounded-xl:hover,
+[data-section-theme="dark"] .section-theme-heading.bg-white.rounded-full:hover {
+  border-color: color-mix(in srgb, var(--brand) 45%, white) !important;
+  color: var(--brand) !important;
+}

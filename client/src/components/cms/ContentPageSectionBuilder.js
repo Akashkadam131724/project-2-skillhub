@@ -262,7 +262,7 @@ export default function ContentPageSectionBuilder({
           </p>
         </div>
         <Link
-          href="/sections"
+          href="/cms/section"
           target="_blank"
           className="text-xs font-semibold text-brand no-underline hover:underline"
         >

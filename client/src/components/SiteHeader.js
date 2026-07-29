@@ -1,8 +1,6 @@
 import Link from "next/link";
-// Dynamic mega-nav (paused — restore later):
-// import { getNavigationTree } from "@/lib/navigation";
-// import SiteHeaderNav from "@/components/SiteHeaderNav";
-import ProjectNav from "@/components/ProjectNav";
+import { getNavigationTree } from "@/lib/navigation";
+import SiteHeaderNav from "@/components/SiteHeaderNav";
 import HeaderSearch from "@/components/HeaderSearch";
 import SkillHubLogo from "@/components/SkillHubLogo";
 import SectionWrapper from "@/components/sections/SectionWrapper";
@@ -42,8 +40,7 @@ function IconButton({ href, label, children }) {
 }
 
 export default async function SiteHeader() {
-  // --- Dynamic navigation (commented for now; use later) ---
-  // const { navigation, error } = await getNavigationTree();
+  const { navigation, error } = await getNavigationTree();
 
   return (
     <header className="sticky top-0 z-50 border-b border-slate-200/70 bg-white/75 backdrop-blur-xl [--site-header-h:4.25rem] dark:border-slate-800/80 dark:bg-slate-950/75 lg:[--site-header-h:4.75rem]">
@@ -78,16 +75,13 @@ export default async function SiteHeader() {
         </div>
 
         <div className="hidden justify-self-center lg:block">
-          {/* Dynamic mega-nav (restore later):
           {error ? (
             <p className="m-0 text-sm text-rose-500">
-              {error}. Is the SkillHub API running on :3000?
+              {error}. Is the API running? Check NEXT_PUBLIC_API_URL (e.g. :3005).
             </p>
           ) : (
             <SiteHeaderNav navigation={navigation} showMobile={false} />
           )}
-          */}
-          <ProjectNav showMobile={false} />
         </div>
 
         <div className="ml-auto flex shrink-0 items-center justify-end gap-1.5 sm:gap-2 lg:ml-0 lg:justify-self-end">
@@ -105,12 +99,9 @@ export default async function SiteHeader() {
           </Link>
 
           <div className="lg:hidden">
-            {/* Dynamic mobile nav (restore later):
             {error ? null : (
               <SiteHeaderNav navigation={navigation} showDesktop={false} />
             )}
-            */}
-            <ProjectNav showDesktop={false} />
           </div>
         </div>
       </SectionWrapper>

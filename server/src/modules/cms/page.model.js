@@ -6,7 +6,6 @@ import { emptyPageTheme, themeSchemaFields } from "./theme.utils.js";
  * entity_type links detail pages to a catalog model; null for static pages.
  */
 const PAGE_ENTITY_TYPES = [
-  null,
   "product",
   "course",
   "vendor",
@@ -14,6 +13,8 @@ const PAGE_ENTITY_TYPES = [
   "skilling_area",
   "content",
   "blog",
+  "webinar",
+  "section",
 ];
 
 const pageThemeSchema = new Schema(themeSchemaFields({ nullable: true }), {

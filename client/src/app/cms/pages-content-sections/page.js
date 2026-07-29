@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import {
   createSection,
   listPages,
+  listSectionCategories,
   listSections,
   mediaUrl,
   setSectionStatus,
@@ -52,8 +53,9 @@ function sectionPageKeys(section) {
   return keys;
 }
 
-function CategoryBadge({ category }) {
+function CategoryBadge({ category, categories = [] }) {
   const label =
+    categories.find((item) => item.key === category)?.name ||
     SECTION_CATEGORIES.find((item) => item.key === category)?.name ||
     "Uncategorized";
   return (
@@ -66,6 +68,7 @@ function CategoryBadge({ category }) {
 export default function CmsSectionsPage() {
   const router = useRouter();
   const [sections, setSections] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [pages, setPages] = useState([]);
   const [pickKey, setPickKey] = useState("");
   const [error, setError] = useState(null);
@@ -118,12 +121,14 @@ export default function CmsSectionsPage() {
   async function load() {
     setError(null);
     try {
-      const [secRes, pageRes] = await Promise.all([
+      const [secRes, pageRes, catRes] = await Promise.all([
         listSections(),
         listPages(),
+        listSectionCategories({ status: true }),
       ]);
       setSections(secRes.data || []);
       setPages(pageRes.data || []);
+      setCategories(catRes.data || []);
     } catch (err) {
       setError(err);
     } finally {
@@ -135,13 +140,15 @@ export default function CmsSectionsPage() {
     let alive = true;
     (async () => {
       try {
-        const [secRes, pageRes] = await Promise.all([
+        const [secRes, pageRes, catRes] = await Promise.all([
           listSections(),
           listPages(),
+          listSectionCategories({ status: true }),
         ]);
         if (!alive) return;
         setSections(secRes.data || []);
         setPages(pageRes.data || []);
+        setCategories(catRes.data || []);
       } catch (err) {
         if (alive) setError(err);
       } finally {
@@ -172,8 +179,8 @@ export default function CmsSectionsPage() {
   }, [pages]);
 
   const categoryOptions = useMemo(
-    () => buildCategoryOptions(sections),
-    [sections]
+    () => buildCategoryOptions(sections, categories),
+    [sections, categories]
   );
 
   const scopeOptions = useMemo(
@@ -213,8 +220,7 @@ export default function CmsSectionsPage() {
         name: meta?.name || pickKey,
         section_title: meta?.name || pickKey,
         in_page_nav_title: meta?.name || pickKey,
-        category: meta?.category || "",
-        tags: meta?.tags || [],
+        category_key: meta?.category || "",
         render_key: meta?.render_key || "",
         content_scope: meta?.content_scope || "page",
         status: true,
@@ -245,6 +251,9 @@ export default function CmsSectionsPage() {
         subtitle="Reusable section types for page templates. Filter by category or content scope."
         actions={
           <>
+            <Link href="/cms/section" className={btnSecondary}>
+              Public previews
+            </Link>
             <button
               type="button"
               onClick={toggleShowFilters}
@@ -519,7 +528,10 @@ export default function CmsSectionsPage() {
                               onClick={() => setCategoryFilter(category)}
                               title={`Filter by ${category}`}
                             >
-                              <CategoryBadge category={category} />
+                              <CategoryBadge
+                                category={category}
+                                categories={categories}
+                              />
                             </button>
                           </td>
                           <td className="py-3 pr-3">

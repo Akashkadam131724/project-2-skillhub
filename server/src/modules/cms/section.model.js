@@ -1,10 +1,6 @@
 import { Schema, model } from "mongoose";
 import { createCmsButtonSchema } from "./button.schema.js";
 import { createCmsItemSchema } from "./item.schema.js";
-import {
-  SECTION_CATEGORY_KEYS,
-  normalizeSectionTags,
-} from "./section.catalog.js";
 
 /** Content resolution mode on the Section catalog */
 export const SECTION_CONTENT_SCOPES = ["global", "template", "page", "cascading"];
@@ -65,8 +61,8 @@ const pageTagSchema = new Schema(
     section_bg_color: { type: String, trim: true, default: null, maxlength: 400 },
     /** Optional image — each section UI decides if/where to render it */
     section_img_url: { type: String, trim: true, default: null },
-    /** Snapshot from Section at map time — not editable on the placement */
-    section_preview_img: { type: String, trim: true, default: null },
+    /** light | dark — null/empty = inherit page alternation */
+    section_theme: { type: String, trim: true, lowercase: true, default: null },
     data: { type: Schema.Types.Mixed, default: null },
 
     /**
@@ -143,28 +139,13 @@ const sectionSchema = new Schema(
     },
 
     /**
-     * Catalog classification — what kind of section this is (hero, accordion, …).
-     * Editable in CMS; seeded from section.catalog.js for known keys.
+     * Catalog classification — ref to SectionCategory (hero, accordion, …).
      */
-    category: {
-      type: String,
-      lowercase: true,
-      trim: true,
-      default: "",
+    section_category: {
+      type: Schema.Types.ObjectId,
+      ref: "SectionCategory",
+      default: null,
       index: true,
-      validate: {
-        validator(v) {
-          if (v == null || v === "") return true;
-          return SECTION_CATEGORY_KEYS.includes(String(v).toLowerCase());
-        },
-        message: `category must be one of: ${SECTION_CATEGORY_KEYS.join(", ")}`,
-      },
-    },
-
-    /** Free-form labels for filtering (accordion, hero, cards, …) */
-    tags: {
-      type: [String],
-      default: [],
     },
 
     // Default content (overridden by pages[] tag, then by entity override when cascading)
@@ -180,7 +161,9 @@ const sectionSchema = new Schema(
     section_bg_color: { type: String, trim: true, default: "", maxlength: 400 },
     /** Optional image — section components opt in to render it */
     section_img_url: { type: String, trim: true, default: "" },
-    /** CMS catalog preview — copied onto page tags when mapped */
+    /** light | dark — empty = inherit page alternation */
+    section_theme: { type: String, trim: true, lowercase: true, default: "" },
+    /** CMS catalog preview thumbnail (section picker / page previews) */
     section_preview_img: { type: String, trim: true, default: "" },
     data: { type: Schema.Types.Mixed, default: {} },
 
@@ -241,16 +224,6 @@ const sectionSchema = new Schema(
 
 sectionSchema.index({ "pages.page_key": 1, "pages.sort_order": 1 });
 sectionSchema.index({ "pages.page": 1 });
-sectionSchema.index({ tags: 1 });
-
-sectionSchema.pre("validate", function () {
-  if (this.category) {
-    this.category = String(this.category).toLowerCase().trim();
-  }
-  if (this.tags != null) {
-    this.tags = normalizeSectionTags(this.tags);
-  }
-});
 
 sectionSchema.statics.findByKey = function (key) {
   return this.findOne({ key: String(key).toLowerCase() });

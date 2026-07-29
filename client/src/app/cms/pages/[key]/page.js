@@ -497,11 +497,10 @@ export default function CmsPageDetailPage() {
             key={tab.key}
             type="button"
             onClick={() => setPageTab(tab.key)}
-            className={`flex-1 rounded-md px-2 py-2 text-[11px] font-semibold transition sm:px-3 sm:text-sm ${
-              pageTab === tab.key
+            className={`flex-1 rounded-md px-2 py-2 text-[11px] font-semibold transition sm:px-3 sm:text-sm ${pageTab === tab.key
                 ? "bg-white text-brand shadow-sm dark:bg-slate-950 dark:text-white"
                 : "text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-100"
-            }`}
+              }`}
           >
             {tab.label}
           </button>
@@ -511,671 +510,671 @@ export default function CmsPageDetailPage() {
       <div className="grid gap-4">
         {pageTab === "theme" ? (
           <>
-        <CmsPanel title="Sort policy">
-          <form
-            onSubmit={savePage}
-            className="flex flex-wrap items-end gap-4"
-          >
-            <label className="flex cursor-pointer items-start gap-2 text-sm text-slate-700 dark:text-slate-200">
-              <input
-                type="checkbox"
-                className="mt-1"
-                checked={form.is_sort_disabled !== false}
-                onChange={(e) =>
-                  setForm((f) => ({
-                    ...f,
-                    is_sort_disabled: e.target.checked,
-                  }))
-                }
+            <CmsPanel
+              title="Template theme"
+              actions={
+                <Link href="/cms/site-theme" className={`${btnSecondary} text-xs`}>
+                  Edit global site theme
+                </Link>
+              }
+            >
+              <p className="mt-0 mb-3 text-xs text-slate-500">
+                Overrides for every page using this template. Empty fields use the
+                global site theme. Entity pages can override further.
+              </p>
+              <CmsThemeEditor
+                mode="page"
+                inheritFrom="site"
+                inheritedTheme={mergeTheme(siteTheme)}
+                value={themeForm}
+                onChange={setThemeForm}
+                onSave={saveTheme}
+                saving={saving}
+                saveLabel="Save template theme"
               />
-              <span>
-                <span className="font-semibold">Disable page-level sort</span>
-                <span className="mt-0.5 block text-xs text-slate-500">
-                  On (default): order only on this template. Off: live entity
-                  CMS may reorder per page.
-                </span>
-              </span>
-            </label>
-            <button type="submit" className={btnPrimary} disabled={saving}>
-              {saving ? "Saving…" : "Save sort policy"}
-            </button>
-          </form>
-        </CmsPanel>
+              <button
+                type="button"
+                disabled={saving}
+                onClick={clearTemplateTheme}
+                className={`${btnSecondary} mt-3 w-full`}
+              >
+                Use site theme (clear template overrides)
+              </button>
+            </CmsPanel>
 
-        <CmsPanel
-          title="Template theme"
-          actions={
-            <Link href="/cms/site-theme" className={`${btnSecondary} text-xs`}>
-              Edit global site theme
-            </Link>
-          }
-        >
-          <p className="mt-0 mb-3 text-xs text-slate-500">
-            Overrides for every page using this template. Empty fields use the
-            global site theme. Entity pages can override further.
-          </p>
-          <CmsThemeEditor
-            mode="page"
-            inheritFrom="site"
-            inheritedTheme={mergeTheme(siteTheme)}
-            value={themeForm}
-            onChange={setThemeForm}
-            onSave={saveTheme}
-            saving={saving}
-            saveLabel="Save template theme"
-          />
-          <button
-            type="button"
-            disabled={saving}
-            onClick={clearTemplateTheme}
-            className={`${btnSecondary} mt-3 w-full`}
-          >
-            Use site theme (clear template overrides)
-          </button>
-        </CmsPanel>
-
-        {!isEntityTemplate ? (
-          <CmsPanel title="Page settings">
-            <form onSubmit={savePage} className="grid gap-3 sm:grid-cols-2">
-              <Field label="Name">
-                <input
-                  className={inputClass}
-                  required
-                  value={form.name}
-                  onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-                />
-              </Field>
-              <Field label="Entity type">
-                <select
-                  className={inputClass}
-                  value={form.entity_type}
-                  onChange={(e) =>
-                    setForm((f) => ({ ...f, entity_type: e.target.value }))
-                  }
-                >
-                  {ENTITY_TYPES.map((t) => (
-                    <option key={t.value || "none"} value={t.value}>
-                      {t.label}
-                    </option>
-                  ))}
-                </select>
-              </Field>
-              <Field label="Description">
-                <textarea
-                  className={`${inputClass} min-h-[72px]`}
-                  value={form.description}
-                  onChange={(e) =>
-                    setForm((f) => ({ ...f, description: e.target.value }))
-                  }
-                />
-              </Field>
-              <div className="flex flex-wrap gap-2 sm:col-span-2">
-                <button type="submit" className={btnPrimary} disabled={saving}>
-                  {saving ? "Saving…" : "Save page"}
-                </button>
-                <button type="button" className={btnSecondary} onClick={togglePageStatus}>
-                  {page.status ? "Disable page" : "Enable page"}
-                </button>
-                <button type="button" className={btnDanger} onClick={onDeletePage}>
-                  Delete page
-                </button>
-              </div>
-            </form>
-          </CmsPanel>
-        ) : null}
+            {!isEntityTemplate ? (
+              <CmsPanel title="Page settings">
+                <form onSubmit={savePage} className="grid gap-3 sm:grid-cols-2">
+                  <Field label="Name">
+                    <input
+                      className={inputClass}
+                      required
+                      value={form.name}
+                      onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+                    />
+                  </Field>
+                  <Field label="Entity type">
+                    <select
+                      className={inputClass}
+                      value={form.entity_type}
+                      onChange={(e) =>
+                        setForm((f) => ({ ...f, entity_type: e.target.value }))
+                      }
+                    >
+                      {ENTITY_TYPES.map((t) => (
+                        <option key={t.value || "none"} value={t.value}>
+                          {t.label}
+                        </option>
+                      ))}
+                    </select>
+                  </Field>
+                  <Field label="Description">
+                    <textarea
+                      className={`${inputClass} min-h-[72px]`}
+                      value={form.description}
+                      onChange={(e) =>
+                        setForm((f) => ({ ...f, description: e.target.value }))
+                      }
+                    />
+                  </Field>
+                  <div className="flex flex-wrap gap-2 sm:col-span-2">
+                    <button type="submit" className={btnPrimary} disabled={saving}>
+                      {saving ? "Saving…" : "Save page"}
+                    </button>
+                    <button type="button" className={btnSecondary} onClick={togglePageStatus}>
+                      {page.status ? "Disable page" : "Enable page"}
+                    </button>
+                    <button type="button" className={btnDanger} onClick={onDeletePage}>
+                      Delete page
+                    </button>
+                  </div>
+                </form>
+              </CmsPanel>
+            ) : null}
           </>
         ) : null}
 
         {pageTab === "mapped" ? (
-        <CmsPanel
-          title="Sections on this page"
-          actions={
-            <span className="text-xs text-slate-500">
-              {placements.length} placement{placements.length === 1 ? "" : "s"} · drag
-              order via ↑ ↓
-            </span>
-          }
-        >
-          {!placements.length ? (
-            <EmptyState message='No sections tagged yet. Use the "Add new Sections" tab.' />
-          ) : (
-            <ul className="m-0 list-none space-y-3 p-0">
-              {placements.map((tag, index) => (
-                <li
-                  key={tag.id}
-                  className="rounded-lg border border-slate-200 p-3 dark:border-slate-800"
-                >
-                  <div className="flex flex-wrap items-start justify-between gap-3">
-                    <div className="flex min-w-0 items-start gap-3">
-                      <SectionPreviewThumb
-                        src={
-                          tag.section_preview_img ||
-                          allSections.find((s) => s.key === tag.section_key)
-                            ?.section_preview_img
-                        }
-                        alt={tag.section_key}
-                        className="size-14"
-                      />
-                      <div className="min-w-0">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <span className="rounded bg-slate-100 px-2 py-0.5 text-xs font-semibold text-slate-600 dark:bg-slate-800 dark:text-slate-300">
-                          #{tag.sort_order}
-                        </span>
-                        <Link
-                          href={`/cms/pages-content-sections/${tag.section_key}`}
-                          className="font-semibold text-slate-900 no-underline hover:text-brand dark:text-white"
-                        >
-                          {tag.section_key}
-                        </Link>
-                        <StatusBadge active={tag.status} />
-                        <ScopeBadge scope={tag.content_scope} />
-                        {tag.section_global_status === false ? (
-                          <StatusBadge active={false} labelOff="Global off" />
-                        ) : null}
-                      </div>
-                      <p className="mt-1 mb-0 text-sm text-slate-600 dark:text-slate-300">
-                        {tag.section_title || tag.section_name || "— inherits section defaults"}
-                      </p>
-                      </div>
-                    </div>
-                    <div className="flex flex-wrap gap-1.5">
-                      <button
-                        type="button"
-                        className={btnSecondary}
-                        disabled={index === 0}
-                        onClick={() => move(index, -1)}
-                        aria-label="Move up"
-                      >
-                        ↑
-                      </button>
-                      <button
-                        type="button"
-                        className={btnSecondary}
-                        disabled={index === placements.length - 1}
-                        onClick={() => move(index, 1)}
-                        aria-label="Move down"
-                      >
-                        ↓
-                      </button>
-                      <Link
-                        href={`/cms/pages/${pageKey}/placements/${tag.id}`}
-                        className={btnSecondary}
-                      >
-                        Template content
-                      </Link>
-                      <button
-                        type="button"
-                        className={btnSecondary}
-                        onClick={() =>
-                          editingId === tag.id ? setEditingId(null) : startEdit(tag)
-                        }
-                      >
-                        {editingId === tag.id ? "Close" : "Quick edit"}
-                      </button>
-                      <button
-                        type="button"
-                        className={btnSecondary}
-                        onClick={() => toggleTag(tag)}
-                      >
-                        {tag.status ? "Disable" : "Enable"}
-                      </button>
-                      <button
-                        type="button"
-                        className={btnDanger}
-                        onClick={() => removeTag(tag)}
-                      >
-                        Remove
-                      </button>
-                    </div>
-                  </div>
+          <>
+            <CmsPanel title="Sort policy">
+              <form
+                onSubmit={savePage}
+                className="flex flex-wrap items-end gap-4"
+              >
+                <label className="flex cursor-pointer items-start gap-2 text-sm text-slate-700 dark:text-slate-200">
+                  <input
+                    type="checkbox"
+                    className="mt-1"
+                    checked={form.is_sort_disabled !== false}
+                    onChange={(e) =>
+                      setForm((f) => ({
+                        ...f,
+                        is_sort_disabled: e.target.checked,
+                      }))
+                    }
+                  />
+                  <span>
+                    <span className="font-semibold">Disable page-level sort</span>
+                    <span className="mt-0.5 block text-xs text-slate-500">
+                      On (default): order only on this template. Off: live entity
+                      CMS may reorder per page.
+                    </span>
+                  </span>
+                </label>
+                <button type="submit" className={btnPrimary} disabled={saving}>
+                  {saving ? "Saving…" : "Save sort policy"}
+                </button>
+              </form>
+            </CmsPanel>
 
-                  {editingId === tag.id && editForm ? (
-                    <form
-                      onSubmit={saveEdit}
-                      className="mt-3 grid gap-3 border-t border-slate-100 pt-3 sm:grid-cols-2 dark:border-slate-900"
+            <CmsPanel
+              title="Sections on this page"
+              actions={
+                <span className="text-xs text-slate-500">
+                  {placements.length} placement{placements.length === 1 ? "" : "s"} · drag
+                  order via ↑ ↓
+                </span>
+              }
+            >
+              {!placements.length ? (
+                <EmptyState message='No sections tagged yet. Use the "Add new Sections" tab.' />
+              ) : (
+                <ul className="m-0 list-none space-y-3 p-0">
+                  {placements.map((tag, index) => (
+                    <li
+                      key={tag.id}
+                      className="rounded-lg border border-slate-200 p-3 dark:border-slate-800"
                     >
-                      <Field label="Section title override">
-                        <input
-                          className={inputClass}
-                          value={editForm.section_title}
-                          onChange={(e) =>
-                            setEditForm((f) => ({ ...f, section_title: e.target.value }))
-                          }
-                          placeholder="Inherit default"
-                        />
-                      </Field>
-                      <Field label="Subtitle override">
-                        <input
-                          className={inputClass}
-                          value={editForm.sub_title}
-                          onChange={(e) =>
-                            setEditForm((f) => ({ ...f, sub_title: e.target.value }))
-                          }
-                        />
-                      </Field>
-                      <Field label="In-page nav title" hint="Sticky nav label">
-                        <input
-                          className={inputClass}
-                          value={editForm.in_page_nav_title}
-                          onChange={(e) =>
-                            setEditForm((f) => ({
-                              ...f,
-                              in_page_nav_title: e.target.value,
-                            }))
-                          }
-                          placeholder="Inherit default"
-                        />
-                      </Field>
-                      <Field
-                        label="Section image"
-                        hint="Optional — only rendered if the section UI supports it"
-                      >
-                        <div className="space-y-2">
-                          {editForm.section_img_url ? (
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <img
-                              src={mediaUrl(editForm.section_img_url)}
-                              alt=""
-                              className="h-20 w-28 rounded-lg object-cover"
-                            />
-                          ) : null}
-                          <input
-                            className={inputClass}
-                            value={editForm.section_img_url}
-                            onChange={(e) =>
-                              setEditForm((f) => ({
-                                ...f,
-                                section_img_url: e.target.value,
-                              }))
+                      <div className="flex flex-wrap items-start justify-between gap-3">
+                        <div className="flex min-w-0 items-start gap-3">
+                          <SectionPreviewThumb
+                            src={
+                              allSections.find((s) => s.key === tag.section_key)
+                                ?.section_preview_img
                             }
-                            placeholder="/uploads/… or https://…"
+                            alt={tag.section_key}
+                            className="size-14"
                           />
-                          <input
-                            type="file"
-                            accept="image/jpeg,image/png,image/webp,image/gif"
-                            className="block w-full text-xs"
-                            onChange={async (e) => {
-                              const file = e.target.files?.[0];
-                              e.target.value = "";
-                              if (!file) return;
-                              setSaving(true);
-                              try {
-                                const dataUrl = await new Promise((resolve, reject) => {
-                                  const reader = new FileReader();
-                                  reader.onload = () => resolve(reader.result);
-                                  reader.onerror = () =>
-                                    reject(new Error("Could not read file"));
-                                  reader.readAsDataURL(file);
-                                });
-                                const res = await uploadCmsImage(dataUrl, "sections");
-                                setEditForm((f) => ({
-                                  ...f,
-                                  section_img_url: res.data?.url || "",
-                                }));
-                              } catch (err) {
-                                setError(err);
-                              } finally {
-                                setSaving(false);
-                              }
-                            }}
-                          />
+                          <div className="min-w-0">
+                            <div className="flex flex-wrap items-center gap-2">
+                              <span className="rounded bg-slate-100 px-2 py-0.5 text-xs font-semibold text-slate-600 dark:bg-slate-800 dark:text-slate-300">
+                                #{tag.sort_order}
+                              </span>
+                              <Link
+                                href={`/cms/pages-content-sections/${tag.section_key}`}
+                                className="font-semibold text-slate-900 no-underline hover:text-brand dark:text-white"
+                              >
+                                {tag.section_key}
+                              </Link>
+                              <StatusBadge active={tag.status} />
+                              <ScopeBadge scope={tag.content_scope} />
+                              {tag.section_global_status === false ? (
+                                <StatusBadge active={false} labelOff="Global off" />
+                              ) : null}
+                            </div>
+                            <p className="mt-1 mb-0 text-sm text-slate-600 dark:text-slate-300">
+                              {tag.section_title || tag.section_name || "— inherits section defaults"}
+                            </p>
+                          </div>
                         </div>
-                      </Field>
-                      <Field label="Background image" hint="URL or upload">
-                        <div className="space-y-2">
-                          {editForm.section_bg_img ? (
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <img
-                              src={mediaUrl(editForm.section_bg_img)}
-                              alt=""
-                              className="h-20 w-full rounded-lg object-cover"
-                            />
-                          ) : null}
-                          <input
-                            className={inputClass}
-                            value={editForm.section_bg_img}
-                            onChange={(e) =>
-                              setEditForm((f) => ({
-                                ...f,
-                                section_bg_img: e.target.value,
-                              }))
+                        <div className="flex flex-wrap gap-1.5">
+                          <button
+                            type="button"
+                            className={btnSecondary}
+                            disabled={index === 0}
+                            onClick={() => move(index, -1)}
+                            aria-label="Move up"
+                          >
+                            ↑
+                          </button>
+                          <button
+                            type="button"
+                            className={btnSecondary}
+                            disabled={index === placements.length - 1}
+                            onClick={() => move(index, 1)}
+                            aria-label="Move down"
+                          >
+                            ↓
+                          </button>
+                          <Link
+                            href={`/cms/pages/${pageKey}/placements/${tag.id}`}
+                            className={btnSecondary}
+                          >
+                            Template content
+                          </Link>
+                          <button
+                            type="button"
+                            className={btnSecondary}
+                            onClick={() =>
+                              editingId === tag.id ? setEditingId(null) : startEdit(tag)
                             }
-                            placeholder="/uploads/… or https://…"
-                          />
-                          <input
-                            type="file"
-                            accept="image/jpeg,image/png,image/webp,image/gif"
-                            className="block w-full text-xs"
-                            onChange={async (e) => {
-                              const file = e.target.files?.[0];
-                              e.target.value = "";
-                              if (!file) return;
-                              setSaving(true);
-                              try {
-                                const dataUrl = await new Promise((resolve, reject) => {
-                                  const reader = new FileReader();
-                                  reader.onload = () => resolve(reader.result);
-                                  reader.onerror = () =>
-                                    reject(new Error("Could not read file"));
-                                  reader.readAsDataURL(file);
-                                });
-                                const res = await uploadCmsImage(dataUrl, "sections");
-                                setEditForm((f) => ({
-                                  ...f,
-                                  section_bg_img: res.data?.url || "",
-                                }));
-                              } catch (err) {
-                                setError(err);
-                              } finally {
-                                setSaving(false);
-                              }
-                            }}
-                          />
+                          >
+                            {editingId === tag.id ? "Close" : "Quick edit"}
+                          </button>
+                          <button
+                            type="button"
+                            className={btnSecondary}
+                            onClick={() => toggleTag(tag)}
+                          >
+                            {tag.status ? "Disable" : "Enable"}
+                          </button>
+                          <button
+                            type="button"
+                            className={btnDanger}
+                            onClick={() => removeTag(tag)}
+                          >
+                            Remove
+                          </button>
                         </div>
-                      </Field>
-                      <Field label="Sort order">
-                        <input
-                          type="number"
-                          className={inputClass}
-                          value={editForm.sort_order}
-                          onChange={(e) =>
-                            setEditForm((f) => ({
-                              ...f,
-                              sort_order: e.target.value,
-                            }))
-                          }
-                        />
-                      </Field>
-                      <div className="flex items-end">
-                        <button type="submit" className={btnPrimary} disabled={saving}>
-                          Save placement
-                        </button>
                       </div>
-                    </form>
-                  ) : null}
-                </li>
-              ))}
-            </ul>
-          )}
-        </CmsPanel>
+
+                      {editingId === tag.id && editForm ? (
+                        <form
+                          onSubmit={saveEdit}
+                          className="mt-3 grid gap-3 border-t border-slate-100 pt-3 sm:grid-cols-2 dark:border-slate-900"
+                        >
+                          <Field label="Section title override">
+                            <input
+                              className={inputClass}
+                              value={editForm.section_title}
+                              onChange={(e) =>
+                                setEditForm((f) => ({ ...f, section_title: e.target.value }))
+                              }
+                              placeholder="Inherit default"
+                            />
+                          </Field>
+                          <Field label="Subtitle override">
+                            <input
+                              className={inputClass}
+                              value={editForm.sub_title}
+                              onChange={(e) =>
+                                setEditForm((f) => ({ ...f, sub_title: e.target.value }))
+                              }
+                            />
+                          </Field>
+                          <Field label="In-page nav title" hint="Sticky nav label">
+                            <input
+                              className={inputClass}
+                              value={editForm.in_page_nav_title}
+                              onChange={(e) =>
+                                setEditForm((f) => ({
+                                  ...f,
+                                  in_page_nav_title: e.target.value,
+                                }))
+                              }
+                              placeholder="Inherit default"
+                            />
+                          </Field>
+                          <Field
+                            label="Section image"
+                            hint="Optional — only rendered if the section UI supports it"
+                          >
+                            <div className="space-y-2">
+                              {editForm.section_img_url ? (
+                                // eslint-disable-next-line @next/next/no-img-element
+                                <img
+                                  src={mediaUrl(editForm.section_img_url)}
+                                  alt=""
+                                  className="h-20 w-28 rounded-lg object-cover"
+                                />
+                              ) : null}
+                              <input
+                                className={inputClass}
+                                value={editForm.section_img_url}
+                                onChange={(e) =>
+                                  setEditForm((f) => ({
+                                    ...f,
+                                    section_img_url: e.target.value,
+                                  }))
+                                }
+                                placeholder="/uploads/… or https://…"
+                              />
+                              <input
+                                type="file"
+                                accept="image/jpeg,image/png,image/webp,image/gif"
+                                className="block w-full text-xs"
+                                onChange={async (e) => {
+                                  const file = e.target.files?.[0];
+                                  e.target.value = "";
+                                  if (!file) return;
+                                  setSaving(true);
+                                  try {
+                                    const dataUrl = await new Promise((resolve, reject) => {
+                                      const reader = new FileReader();
+                                      reader.onload = () => resolve(reader.result);
+                                      reader.onerror = () =>
+                                        reject(new Error("Could not read file"));
+                                      reader.readAsDataURL(file);
+                                    });
+                                    const res = await uploadCmsImage(dataUrl, "sections");
+                                    setEditForm((f) => ({
+                                      ...f,
+                                      section_img_url: res.data?.url || "",
+                                    }));
+                                  } catch (err) {
+                                    setError(err);
+                                  } finally {
+                                    setSaving(false);
+                                  }
+                                }}
+                              />
+                            </div>
+                          </Field>
+                          <Field label="Background image" hint="URL or upload">
+                            <div className="space-y-2">
+                              {editForm.section_bg_img ? (
+                                // eslint-disable-next-line @next/next/no-img-element
+                                <img
+                                  src={mediaUrl(editForm.section_bg_img)}
+                                  alt=""
+                                  className="h-20 w-full rounded-lg object-cover"
+                                />
+                              ) : null}
+                              <input
+                                className={inputClass}
+                                value={editForm.section_bg_img}
+                                onChange={(e) =>
+                                  setEditForm((f) => ({
+                                    ...f,
+                                    section_bg_img: e.target.value,
+                                  }))
+                                }
+                                placeholder="/uploads/… or https://…"
+                              />
+                              <input
+                                type="file"
+                                accept="image/jpeg,image/png,image/webp,image/gif"
+                                className="block w-full text-xs"
+                                onChange={async (e) => {
+                                  const file = e.target.files?.[0];
+                                  e.target.value = "";
+                                  if (!file) return;
+                                  setSaving(true);
+                                  try {
+                                    const dataUrl = await new Promise((resolve, reject) => {
+                                      const reader = new FileReader();
+                                      reader.onload = () => resolve(reader.result);
+                                      reader.onerror = () =>
+                                        reject(new Error("Could not read file"));
+                                      reader.readAsDataURL(file);
+                                    });
+                                    const res = await uploadCmsImage(dataUrl, "sections");
+                                    setEditForm((f) => ({
+                                      ...f,
+                                      section_bg_img: res.data?.url || "",
+                                    }));
+                                  } catch (err) {
+                                    setError(err);
+                                  } finally {
+                                    setSaving(false);
+                                  }
+                                }}
+                              />
+                            </div>
+                          </Field>
+                          <Field label="Sort order">
+                            <input
+                              type="number"
+                              className={inputClass}
+                              value={editForm.sort_order}
+                              onChange={(e) =>
+                                setEditForm((f) => ({
+                                  ...f,
+                                  sort_order: e.target.value,
+                                }))
+                              }
+                            />
+                          </Field>
+                          <div className="flex items-end">
+                            <button type="submit" className={btnPrimary} disabled={saving}>
+                              Save placement
+                            </button>
+                          </div>
+                        </form>
+                      ) : null}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </CmsPanel>
+          </>
         ) : null}
 
         {pageTab === "add" ? (
-        <CmsPanel title="Add section placement">
-          <form onSubmit={addPlacement} className="grid gap-3 sm:grid-cols-2">
-            <Field
-              label="Section"
-              hint="Filter by category / scope / type, then pick a preview — same section can be added more than once"
-              className="sm:col-span-2"
-            >
-              <div className="mb-3 space-y-2.5">
-                <input
-                  className={inputClass}
-                  value={addSearch}
-                  onChange={(e) => setAddSearch(e.target.value)}
-                  placeholder="Search by name or key…"
-                />
-
-                <div className="rounded-lg border border-slate-200 bg-white p-3 dark:border-slate-800 dark:bg-slate-950">
-                  <FilterGroup
-                    title="Category"
-                    search={addCategorySearch}
-                    onSearch={setAddCategorySearch}
-                    placeholder="Search Category"
-                    options={categoryOptions}
-                    value={addCategoryFilter}
-                    onChange={setAddCategoryFilter}
-                    maxHeightClass="max-h-40"
+          <CmsPanel title="Add section placement">
+            <form onSubmit={addPlacement} className="grid gap-3 sm:grid-cols-2">
+              <Field
+                label="Section"
+                hint="Filter by category / scope / type, then pick a preview — same section can be added more than once"
+                className="sm:col-span-2"
+              >
+                <div className="mb-3 space-y-2.5">
+                  <input
+                    className={inputClass}
+                    value={addSearch}
+                    onChange={(e) => setAddSearch(e.target.value)}
+                    placeholder="Search by name or key…"
                   />
-                </div>
 
-                <FilterChipRow
-                  label="Scope"
-                  value={addScopeFilter}
-                  onChange={setAddScopeFilter}
-                  options={SCOPE_FILTERS.map((opt) => ({
-                    ...opt,
-                    count: addFilterCounts.scope[opt.value] ?? 0,
-                  }))}
-                />
-
-                <FilterChipRow
-                  label="Type"
-                  value={addKindFilter}
-                  onChange={setAddKindFilter}
-                  activeClass="bg-ink text-white"
-                  options={KIND_FILTERS.map((opt) => ({
-                    ...opt,
-                    count: addFilterCounts.kind[opt.value] ?? 0,
-                  }))}
-                />
-
-                <FilterChipRow
-                  label="On page"
-                  value={addPlacedFilter}
-                  onChange={setAddPlacedFilter}
-                  activeClass="bg-teal-700 text-white"
-                  options={PLACED_FILTERS.map((opt) => ({
-                    ...opt,
-                    count: addFilterCounts.placed[opt.value] ?? 0,
-                  }))}
-                />
-              </div>
-
-              {!filteredAddOptions.length ? (
-                <EmptyState message="No sections match these filters." />
-              ) : (
-                <div className="max-h-[22rem] overflow-y-auto overscroll-contain rounded-lg border border-slate-200 p-2 dark:border-slate-800 sm:max-h-[28rem]">
-                  <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4">
-                    {filteredAddOptions.map((s) => {
-                      const selected = addForm.section_key === s.key;
-                      const onPage = placedKeys.has(s.key);
-                      return (
-                        <div
-                          key={s.key}
-                          role="button"
-                          tabIndex={0}
-                          onClick={() =>
-                            setAddForm((f) => ({ ...f, section_key: s.key }))
-                          }
-                          onKeyDown={(e) => {
-                            if (e.key === "Enter" || e.key === " ") {
-                              e.preventDefault();
-                              setAddForm((f) => ({ ...f, section_key: s.key }));
-                            }
-                          }}
-                          className={`flex cursor-pointer flex-col overflow-hidden rounded-lg border text-left transition ${
-                            selected
-                              ? "border-brand ring-2 ring-brand/30"
-                              : "border-slate-200 hover:border-slate-300 dark:border-slate-800"
-                          }`}
-                        >
-                          <SectionPreviewThumb
-                            src={s.section_preview_img}
-                            alt={s.name}
-                            className="h-20 w-full"
-                            rounded="rounded-none"
-                          />
-                          <div className="flex flex-wrap items-center gap-1 px-2 pt-1.5">
-                            <ScopeBadge scope={s.content_scope} />
-                            {onPage ? (
-                              <span className="rounded-full bg-amber-100 px-1.5 py-0.5 text-[10px] font-semibold text-amber-800 dark:bg-amber-950 dark:text-amber-300">
-                                On page
-                              </span>
-                            ) : null}
-                          </div>
-                          <span className="truncate px-2 py-1 text-xs font-medium text-slate-700 dark:text-slate-200">
-                            {s.name}
-                          </span>
-                          <span className="truncate px-2 pb-1.5 font-mono text-[10px] text-slate-400">
-                            {s.key}
-                          </span>
-                        </div>
-                      );
-                    })}
+                  <div className="rounded-lg border border-slate-200 bg-white p-3 dark:border-slate-800 dark:bg-slate-950">
+                    <FilterGroup
+                      title="Category"
+                      search={addCategorySearch}
+                      onSearch={setAddCategorySearch}
+                      placeholder="Search Category"
+                      options={categoryOptions}
+                      value={addCategoryFilter}
+                      onChange={setAddCategoryFilter}
+                      maxHeightClass="max-h-40"
+                    />
                   </div>
-                </div>
-              )}
-              <p className="mt-2 mb-0 text-[11px] text-slate-500">
-                Showing {filteredAddOptions.length} of {sectionOptions.length}
-                {addForm.section_key
-                  ? ` · selected: ${addForm.section_key}`
-                  : ""}
-              </p>
-            </Field>
-            <Field label="Sort order">
-              <input
-                type="number"
-                className={inputClass}
-                value={addForm.sort_order}
-                onChange={(e) =>
-                  setAddForm((f) => ({ ...f, sort_order: e.target.value }))
-                }
-              />
-            </Field>
-            <Field label="Title override">
-              <input
-                className={inputClass}
-                value={addForm.section_title}
-                onChange={(e) =>
-                  setAddForm((f) => ({ ...f, section_title: e.target.value }))
-                }
-                placeholder="Optional"
-              />
-            </Field>
-            <Field label="Subtitle override">
-              <input
-                className={inputClass}
-                value={addForm.sub_title}
-                onChange={(e) =>
-                  setAddForm((f) => ({ ...f, sub_title: e.target.value }))
-                }
-              />
-            </Field>
-            <Field label="In-page nav title">
-              <input
-                className={inputClass}
-                value={addForm.in_page_nav_title}
-                onChange={(e) =>
-                  setAddForm((f) => ({
-                    ...f,
-                    in_page_nav_title: e.target.value,
-                  }))
-                }
-                placeholder="Optional"
-              />
-            </Field>
-            <Field
-              label="Section image"
-              hint="Optional — only rendered if the section UI supports it"
-            >
-              <div className="space-y-2">
-                {addForm.section_img_url ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={mediaUrl(addForm.section_img_url)}
-                    alt=""
-                    className="h-20 w-28 rounded-lg object-cover"
+
+                  <FilterChipRow
+                    label="Scope"
+                    value={addScopeFilter}
+                    onChange={setAddScopeFilter}
+                    options={SCOPE_FILTERS.map((opt) => ({
+                      ...opt,
+                      count: addFilterCounts.scope[opt.value] ?? 0,
+                    }))}
                   />
-                ) : null}
+
+                  <FilterChipRow
+                    label="Type"
+                    value={addKindFilter}
+                    onChange={setAddKindFilter}
+                    activeClass="bg-ink text-white"
+                    options={KIND_FILTERS.map((opt) => ({
+                      ...opt,
+                      count: addFilterCounts.kind[opt.value] ?? 0,
+                    }))}
+                  />
+
+                  <FilterChipRow
+                    label="On page"
+                    value={addPlacedFilter}
+                    onChange={setAddPlacedFilter}
+                    activeClass="bg-teal-700 text-white"
+                    options={PLACED_FILTERS.map((opt) => ({
+                      ...opt,
+                      count: addFilterCounts.placed[opt.value] ?? 0,
+                    }))}
+                  />
+                </div>
+
+                {!filteredAddOptions.length ? (
+                  <EmptyState message="No sections match these filters." />
+                ) : (
+                  <div className="max-h-[22rem] overflow-y-auto overscroll-contain rounded-lg border border-slate-200 p-2 dark:border-slate-800 sm:max-h-[28rem]">
+                    <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4">
+                      {filteredAddOptions.map((s) => {
+                        const selected = addForm.section_key === s.key;
+                        const onPage = placedKeys.has(s.key);
+                        return (
+                          <div
+                            key={s.key}
+                            role="button"
+                            tabIndex={0}
+                            onClick={() =>
+                              setAddForm((f) => ({ ...f, section_key: s.key }))
+                            }
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter" || e.key === " ") {
+                                e.preventDefault();
+                                setAddForm((f) => ({ ...f, section_key: s.key }));
+                              }
+                            }}
+                            className={`flex cursor-pointer flex-col overflow-hidden rounded-lg border text-left transition ${selected
+                                ? "border-brand ring-2 ring-brand/30"
+                                : "border-slate-200 hover:border-slate-300 dark:border-slate-800"
+                              }`}
+                          >
+                            <SectionPreviewThumb
+                              src={s.section_preview_img}
+                              alt={s.name}
+                              className="h-20 w-full"
+                              rounded="rounded-none"
+                            />
+                            <div className="flex flex-wrap items-center gap-1 px-2 pt-1.5">
+                              <ScopeBadge scope={s.content_scope} />
+                              {onPage ? (
+                                <span className="rounded-full bg-amber-100 px-1.5 py-0.5 text-[10px] font-semibold text-amber-800 dark:bg-amber-950 dark:text-amber-300">
+                                  On page
+                                </span>
+                              ) : null}
+                            </div>
+                            <span className="truncate px-2 py-1 text-xs font-medium text-slate-700 dark:text-slate-200">
+                              {s.name}
+                            </span>
+                            <span className="truncate px-2 pb-1.5 font-mono text-[10px] text-slate-400">
+                              {s.key}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+                <p className="mt-2 mb-0 text-[11px] text-slate-500">
+                  Showing {filteredAddOptions.length} of {sectionOptions.length}
+                  {addForm.section_key
+                    ? ` · selected: ${addForm.section_key}`
+                    : ""}
+                </p>
+              </Field>
+              <Field label="Sort order">
+                <input
+                  type="number"
+                  className={inputClass}
+                  value={addForm.sort_order}
+                  onChange={(e) =>
+                    setAddForm((f) => ({ ...f, sort_order: e.target.value }))
+                  }
+                />
+              </Field>
+              <Field label="Title override">
                 <input
                   className={inputClass}
-                  value={addForm.section_img_url}
+                  value={addForm.section_title}
+                  onChange={(e) =>
+                    setAddForm((f) => ({ ...f, section_title: e.target.value }))
+                  }
+                  placeholder="Optional"
+                />
+              </Field>
+              <Field label="Subtitle override">
+                <input
+                  className={inputClass}
+                  value={addForm.sub_title}
+                  onChange={(e) =>
+                    setAddForm((f) => ({ ...f, sub_title: e.target.value }))
+                  }
+                />
+              </Field>
+              <Field label="In-page nav title">
+                <input
+                  className={inputClass}
+                  value={addForm.in_page_nav_title}
                   onChange={(e) =>
                     setAddForm((f) => ({
                       ...f,
-                      section_img_url: e.target.value,
+                      in_page_nav_title: e.target.value,
                     }))
                   }
-                  placeholder="/uploads/… or https://…"
+                  placeholder="Optional"
                 />
-                <input
-                  type="file"
-                  accept="image/jpeg,image/png,image/webp,image/gif"
-                  className="block w-full text-xs"
-                  onChange={async (e) => {
-                    const file = e.target.files?.[0];
-                    e.target.value = "";
-                    if (!file) return;
-                    setSaving(true);
-                    try {
-                      const dataUrl = await new Promise((resolve, reject) => {
-                        const reader = new FileReader();
-                        reader.onload = () => resolve(reader.result);
-                        reader.onerror = () =>
-                          reject(new Error("Could not read file"));
-                        reader.readAsDataURL(file);
-                      });
-                      const res = await uploadCmsImage(dataUrl, "sections");
+              </Field>
+              <Field
+                label="Section image"
+                hint="Optional — only rendered if the section UI supports it"
+              >
+                <div className="space-y-2">
+                  {addForm.section_img_url ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={mediaUrl(addForm.section_img_url)}
+                      alt=""
+                      className="h-20 w-28 rounded-lg object-cover"
+                    />
+                  ) : null}
+                  <input
+                    className={inputClass}
+                    value={addForm.section_img_url}
+                    onChange={(e) =>
                       setAddForm((f) => ({
                         ...f,
-                        section_img_url: res.data?.url || "",
-                      }));
-                    } catch (err) {
-                      setError(err);
-                    } finally {
-                      setSaving(false);
+                        section_img_url: e.target.value,
+                      }))
                     }
-                  }}
-                />
-              </div>
-            </Field>
-            <Field label="Background image" hint="Optional URL or upload">
-              <div className="space-y-2 sm:col-span-2">
-                {addForm.section_bg_img ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={mediaUrl(addForm.section_bg_img)}
-                    alt=""
-                    className="h-20 w-full rounded-lg object-cover"
+                    placeholder="/uploads/… or https://…"
                   />
-                ) : null}
-                <input
-                  className={inputClass}
-                  value={addForm.section_bg_img}
-                  onChange={(e) =>
-                    setAddForm((f) => ({ ...f, section_bg_img: e.target.value }))
-                  }
-                  placeholder="/uploads/… or https://…"
-                />
-                <input
-                  type="file"
-                  accept="image/jpeg,image/png,image/webp,image/gif"
-                  className="block w-full text-xs"
-                  onChange={async (e) => {
-                    const file = e.target.files?.[0];
-                    e.target.value = "";
-                    if (!file) return;
-                    setSaving(true);
-                    try {
-                      const dataUrl = await new Promise((resolve, reject) => {
-                        const reader = new FileReader();
-                        reader.onload = () => resolve(reader.result);
-                        reader.onerror = () =>
-                          reject(new Error("Could not read file"));
-                        reader.readAsDataURL(file);
-                      });
-                      const res = await uploadCmsImage(dataUrl, "sections");
-                      setAddForm((f) => ({
-                        ...f,
-                        section_bg_img: res.data?.url || "",
-                      }));
-                    } catch (err) {
-                      setError(err);
-                    } finally {
-                      setSaving(false);
+                  <input
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp,image/gif"
+                    className="block w-full text-xs"
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      e.target.value = "";
+                      if (!file) return;
+                      setSaving(true);
+                      try {
+                        const dataUrl = await new Promise((resolve, reject) => {
+                          const reader = new FileReader();
+                          reader.onload = () => resolve(reader.result);
+                          reader.onerror = () =>
+                            reject(new Error("Could not read file"));
+                          reader.readAsDataURL(file);
+                        });
+                        const res = await uploadCmsImage(dataUrl, "sections");
+                        setAddForm((f) => ({
+                          ...f,
+                          section_img_url: res.data?.url || "",
+                        }));
+                      } catch (err) {
+                        setError(err);
+                      } finally {
+                        setSaving(false);
+                      }
+                    }}
+                  />
+                </div>
+              </Field>
+              <Field label="Background image" hint="Optional URL or upload">
+                <div className="space-y-2 sm:col-span-2">
+                  {addForm.section_bg_img ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={mediaUrl(addForm.section_bg_img)}
+                      alt=""
+                      className="h-20 w-full rounded-lg object-cover"
+                    />
+                  ) : null}
+                  <input
+                    className={inputClass}
+                    value={addForm.section_bg_img}
+                    onChange={(e) =>
+                      setAddForm((f) => ({ ...f, section_bg_img: e.target.value }))
                     }
-                  }}
-                />
+                    placeholder="/uploads/… or https://…"
+                  />
+                  <input
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp,image/gif"
+                    className="block w-full text-xs"
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      e.target.value = "";
+                      if (!file) return;
+                      setSaving(true);
+                      try {
+                        const dataUrl = await new Promise((resolve, reject) => {
+                          const reader = new FileReader();
+                          reader.onload = () => resolve(reader.result);
+                          reader.onerror = () =>
+                            reject(new Error("Could not read file"));
+                          reader.readAsDataURL(file);
+                        });
+                        const res = await uploadCmsImage(dataUrl, "sections");
+                        setAddForm((f) => ({
+                          ...f,
+                          section_bg_img: res.data?.url || "",
+                        }));
+                      } catch (err) {
+                        setError(err);
+                      } finally {
+                        setSaving(false);
+                      }
+                    }}
+                  />
+                </div>
+              </Field>
+              <div className="sm:col-span-2">
+                <button type="submit" className={btnPrimary} disabled={saving}>
+                  Add to page
+                </button>
               </div>
-            </Field>
-            <div className="sm:col-span-2">
-              <button type="submit" className={btnPrimary} disabled={saving}>
-                Add to page
-              </button>
-            </div>
-          </form>
-        </CmsPanel>
+            </form>
+          </CmsPanel>
         ) : null}
 
         {pageTab === "preview" ? (
@@ -1189,7 +1188,6 @@ export default function CmsPageDetailPage() {
                 hidden: tag.status === false,
                 content_scope: tag.content_scope,
                 preview:
-                  tag.section_preview_img ||
                   allSections.find((s) => s.key === tag.section_key)
                     ?.section_preview_img ||
                   "",

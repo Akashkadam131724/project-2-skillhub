@@ -2,6 +2,8 @@ import { Fraunces, Manrope } from "next/font/google";
 import "./globals.css";
 import SiteHeader from "@/components/SiteHeader";
 import SiteHeaderGate from "@/components/SiteHeaderGate";
+import SiteFooter from "@/components/SiteFooter";
+import SiteFooterGate from "@/components/SiteFooterGate";
 import SiteThemeBootstrap from "@/components/cms/SiteThemeBootstrap";
 import CmsModeFab from "@/components/CmsModeFab";
 
@@ -36,12 +38,15 @@ export default function RootLayout({ children }) {
       data-theme="blue"
       suppressHydrationWarning
     >
-      <body className="min-h-full bg-white antialiased" suppressHydrationWarning>
+      <body className="flex min-h-full flex-col bg-white antialiased" suppressHydrationWarning>
         <SiteThemeBootstrap />
         <SiteHeaderGate>
           <SiteHeader />
         </SiteHeaderGate>
-        {children}
+        <div className="flex min-h-0 flex-1 flex-col">{children}</div>
+        <SiteFooterGate>
+          <SiteFooter />
+        </SiteFooterGate>
         <CmsModeFab />
       </body>
     </html>

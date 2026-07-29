@@ -30,6 +30,7 @@ export default function SectionFrame({
   target_url,
   onFormOpen,
   buttonsFooter = true,
+  buttonsInverted = false,
 }) {
   const editTitle = title !== undefined;
   const editSubtitle = subtitle !== undefined;
@@ -63,11 +64,11 @@ export default function SectionFrame({
                   onEditField={onEditField}
                 >
                   {title ? (
-                    <h2 className="m-0 max-w-3xl font-[family-name:var(--font-display)] text-3xl leading-[1.1] font-semibold tracking-tight text-ink sm:text-4xl dark:text-white">
+                    <h2 className="section-theme-heading m-0 max-w-3xl font-[family-name:var(--font-display)] text-3xl leading-[1.1] font-semibold tracking-tight sm:text-4xl">
                       {title}
                     </h2>
                   ) : (
-                    <h2 className="m-0 text-3xl leading-tight font-semibold text-slate-300 italic sm:text-4xl dark:text-slate-600">
+                    <h2 className="section-theme-placeholder m-0 text-3xl leading-tight font-semibold italic sm:text-4xl">
                       Add title…
                     </h2>
                   )}
@@ -81,11 +82,11 @@ export default function SectionFrame({
                   onEditField={onEditField}
                 >
                   {subtitle ? (
-                    <p className="m-0 max-w-2xl text-base leading-relaxed text-slate-600 dark:text-slate-300">
+                    <p className="section-theme-muted m-0 max-w-2xl text-base leading-relaxed">
                       {subtitle}
                     </p>
                   ) : (
-                    <p className="m-0 text-base leading-relaxed text-slate-300 italic dark:text-slate-600">
+                    <p className="section-theme-placeholder m-0 text-base leading-relaxed italic">
                       Add subtitle…
                     </p>
                   )}
@@ -106,6 +107,7 @@ export default function SectionFrame({
             cmsMode={cmsMode}
             onEditField={onEditField}
             onFormOpen={onFormOpen}
+            inverted={buttonsInverted}
           />
         ) : null}
       </SectionWrapper>

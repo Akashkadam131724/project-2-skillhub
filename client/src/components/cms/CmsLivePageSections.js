@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import SectionWrapper from "@/components/sections/SectionWrapper";
-import { resolveSectionComponent, sectionUsesAltSurface, sectionUsesImage, sectionUsesBg, sectionUsesItems, getSectionItemsConfig } from "@/lib/section-registry";
+import { resolveSectionComponent, sectionUsesImage, sectionUsesBg, sectionUsesBgColor, sectionUsesItems, getSectionItemsConfig } from "@/lib/section-registry";
 import { FallbackSection } from "@/components/sections";
 import Drawer from "@/components/ui/Drawer";
 import {
@@ -29,8 +29,20 @@ import {
   emptyPageTheme,
   mergeTheme,
   normalizePageTheme,
-  surfaceToneForMode,
 } from "@/lib/theme";
+import {
+  normalizeSectionTheme,
+  computePlacementSurface,
+  SECTION_THEME_BAND_SKIP_KEYS,
+} from "@/lib/section-theme";
+import SectionThemeWrap from "@/components/sections/SectionThemeWrap";
+import { mergePlacementData } from "@/lib/placement-data";
+import {
+  saveSectionBandForPlacement,
+} from "@/lib/placement-save";
+import { bandDraftFromSection } from "@/lib/section-band-cms";
+import { resolvePageBandFill } from "@/lib/page-band-fill";
+import CmsSectionBandEditor from "@/components/cms/CmsSectionBandEditor";
 import CmsBgColorPicker from "@/components/cms/CmsBgColorPicker";
 import CmsButtonsEditor, {
   normalizeButtonsDraft,
@@ -112,6 +124,38 @@ const FIELD_META = {
     input: "items",
     hint: "Structured cards for this section — fields follow the section layout",
   },
+  faq_header_side: {
+    label: "Title column",
+    input: "select",
+    hint: "Which side shows the title — FAQs stack on the opposite column",
+    options: [
+      { value: "left", label: "Title left · FAQs right" },
+      { value: "right", label: "Title right · FAQs left" },
+    ],
+  },
+  cta_image_side: {
+    label: "Image column",
+    input: "select",
+    hint: "Hero image on the left or right of the copy (tablet+)",
+    options: [
+      { value: "right", label: "Image right · Copy left" },
+      { value: "left", label: "Image left · Copy right" },
+    ],
+  },
+  form_content_side: {
+    label: "Content column",
+    input: "select",
+    hint: "Copy on the left or right — form sits on the opposite side",
+    options: [
+      { value: "left", label: "Content left · Form right" },
+      { value: "right", label: "Content right · Form left" },
+    ],
+  },
+  section_band: {
+    label: "Section band",
+    input: "section_band",
+    hint: "Background image or color for this section — band light/dark comes from page theme",
+  },
 };
 
 function placementKey(s) {
@@ -126,6 +170,18 @@ function previewSrc(section, catalog = []) {
 
 function fieldValue(section, field) {
   if (field === "body") return section?.data?.body || "";
+  if (field === "faq_header_side") {
+    const side = section?.data?.header_side;
+    return side === "right" ? "right" : "left";
+  }
+  if (field === "cta_image_side") {
+    const side = section?.data?.image_side;
+    return side === "left" ? "left" : "right";
+  }
+  if (field === "form_content_side") {
+    const side = section?.data?.content_side;
+    return side === "right" ? "right" : "left";
+  }
   if (field === "section_bg_color") {
     return (
       section?.section_bg_color || section?.data?.bg_color || ""
@@ -144,6 +200,9 @@ function pickArrayField(field, ...sources) {
 function mergePlacements(tags, overrides, entityId, catalog = [], sortDisabled = true) {
   const catalogByKey = new Map(
     (catalog || []).map((s) => [String(s.key).toLowerCase(), s])
+  );
+  const catalogById = new Map(
+    (catalog || []).map((s) => [String(s._id || s.id || ""), s])
   );
   const byTag = new Map(
     (overrides || [])
@@ -207,8 +266,8 @@ function mergePlacements(tags, overrides, entityId, catalog = [], sortDisabled =
 
     const sort_order =
       !sortDisabled &&
-      override?.sort_order !== null &&
-      override?.sort_order !== undefined
+        override?.sort_order !== null &&
+        override?.sort_order !== undefined
         ? override.sort_order
         : tag.sort_order;
 
@@ -228,18 +287,20 @@ function mergePlacements(tags, overrides, entityId, catalog = [], sortDisabled =
       section_bg_img: pick("section_bg_img"),
       section_bg_color: pick("section_bg_color"),
       section_img_url: pick("section_img_url"),
-      section_preview_img:
-        pick("section_preview_img") ||
-        catalogSection?.section_preview_img ||
-        "",
+      section_theme: pick("section_theme"),
+      section_preview_img: catalogSection?.section_preview_img || "",
       buttons: pickButtons(),
       items: pickItems(),
       data:
         content_scope === "global"
-          ? catalogSection?.data ?? {}
+          ? mergePlacementData(catalogSection?.data)
           : content_scope === "template"
-            ? (tag.data ?? catalogSection?.data ?? {})
-            : (override?.data ?? tag.data ?? catalogSection?.data ?? {}),
+            ? mergePlacementData(catalogSection?.data, tag.data)
+            : mergePlacementData(
+              catalogSection?.data,
+              tag.data,
+              override?.data
+            ),
       status,
       entity_override_id: override?._id || override?.id || null,
       entity_id: entityId,
@@ -247,9 +308,9 @@ function mergePlacements(tags, overrides, entityId, catalog = [], sortDisabled =
   });
 
   const fromExtras = extras.map((extra) => {
-    const catalogSection = catalogByKey.get(
-      String(extra.section_key || "").toLowerCase()
-    );
+    const catalogSection =
+      catalogByKey.get(String(extra.section_key || "").toLowerCase()) ||
+      catalogById.get(String(extra.section?._id || extra.section || ""));
     const content_scope = normalizeContentScope(
       catalogSection?.content_scope
     );
@@ -258,10 +319,13 @@ function mergePlacements(tags, overrides, entityId, catalog = [], sortDisabled =
       placement_id: String(extra._id || extra.id),
       page_tag_id: null,
       is_entity_extra: true,
-      section_key: extra.section_key,
+      section_key:
+        extra.section_key ||
+        catalogSection?.key ||
+        "",
       render_key: catalogSection?.render_key || "",
       section_id: extra.section,
-      name: extra.section_key,
+      name: catalogSection?.name || extra.section_key || catalogSection?.key || "",
       content_scope,
       sort_order: extra.sort_order ?? 99,
       section_title:
@@ -276,8 +340,8 @@ function mergePlacements(tags, overrides, entityId, catalog = [], sortDisabled =
         content_scope === "global"
           ? catalogSection?.in_page_nav_title || ""
           : extra.in_page_nav_title ||
-            catalogSection?.in_page_nav_title ||
-            "",
+          catalogSection?.in_page_nav_title ||
+          "",
       section_bg_img:
         content_scope === "global"
           ? catalogSection?.section_bg_img || ""
@@ -285,20 +349,21 @@ function mergePlacements(tags, overrides, entityId, catalog = [], sortDisabled =
       section_bg_color:
         content_scope === "global"
           ? catalogSection?.section_bg_color ||
-            catalogSection?.data?.bg_color ||
-            ""
+          catalogSection?.data?.bg_color ||
+          ""
           : extra.section_bg_color ||
-            catalogSection?.section_bg_color ||
-            catalogSection?.data?.bg_color ||
-            "",
+          catalogSection?.section_bg_color ||
+          catalogSection?.data?.bg_color ||
+          "",
       section_img_url:
         content_scope === "global"
           ? catalogSection?.section_img_url || ""
           : extra.section_img_url || catalogSection?.section_img_url || "",
-      section_preview_img:
-        catalogSection?.section_preview_img ||
-        extra.section_preview_img ||
-        "",
+      section_preview_img: catalogSection?.section_preview_img || "",
+      section_theme:
+        content_scope === "global"
+          ? catalogSection?.section_theme || ""
+          : extra.section_theme || catalogSection?.section_theme || "",
       buttons:
         content_scope === "global"
           ? Array.isArray(catalogSection?.buttons)
@@ -313,8 +378,8 @@ function mergePlacements(tags, overrides, entityId, catalog = [], sortDisabled =
           : pickArrayField("items", extra, catalogSection),
       data:
         content_scope === "global"
-          ? catalogSection?.data ?? {}
-          : extra.data ?? catalogSection?.data ?? {},
+          ? mergePlacementData(catalogSection?.data)
+          : mergePlacementData(catalogSection?.data, extra.data),
       status: extra.status !== false,
       entity_override_id: extra._id || extra.id,
       entity_id: entityId,
@@ -330,6 +395,8 @@ function SectionRender({
   section,
   cmsMode,
   surfaceTone,
+  sectionTheme = "inherit",
+  pageTheme,
   pageContext,
   catalog = [],
   navSections,
@@ -347,10 +414,10 @@ function SectionRender({
   const preview = previewSrc(section, catalog);
   const cmsProps = cmsMode
     ? {
-        cmsMode: true,
-        onEditField: (field, options) =>
-          onEditField?.(section, field, options),
-      }
+      cmsMode: true,
+      onEditField: (field, options) =>
+        onEditField?.(section, field, options),
+    }
     : {};
 
   const Comp = resolveSectionComponent(key, renderKey) || FallbackSection;
@@ -361,6 +428,8 @@ function SectionRender({
     section_key: key || _catalogKey,
     ...cmsProps,
     surfaceTone,
+    sectionTheme,
+    lightBand: sectionTheme === "light",
     pageContext,
     ...(key === "in_page_nav" ? { navSections: navSections || [] } : {}),
   };
@@ -369,9 +438,15 @@ function SectionRender({
   // position:sticky is limited to its parent's height, so a nav-tall parent
   // makes sticky appear broken.
   let body;
-  if (key === "in_page_nav") {
-    body = <Comp {...compProps} />;
+  const fullBleedKeys = SECTION_THEME_BAND_SKIP_KEYS;
+  if (fullBleedKeys.has(key)) {
+    body = (
+      <SectionThemeWrap theme={sectionTheme} sectionKey={key}>
+        <Comp {...compProps} />
+      </SectionThemeWrap>
+    );
   } else {
+    const pageBandFill = resolvePageBandFill(pageTheme, surfaceTone);
     body = (
       <SectionSurface
         sectionKey={key || _catalogKey}
@@ -379,6 +454,8 @@ function SectionRender({
         section_bg_img={section.section_bg_img}
         legacy_bg_color={section.data?.bg_color}
         surfaceTone={surfaceTone}
+        sectionTheme={sectionTheme}
+        pageBandFill={pageBandFill}
       >
         <Comp {...compProps} />
       </SectionSurface>
@@ -401,7 +478,7 @@ function SectionRender({
       <>
         <div
           id={`cms-section-${pid}`}
-          className="scroll-mt-[120px]"
+          className="scroll-mt-[var(--scroll-anchor-offset,7.5rem)]"
           aria-hidden
         />
         {cmsMode ? (
@@ -417,10 +494,8 @@ function SectionRender({
   return (
     <div
       id={`cms-section-${pid}`}
-      data-section-capture={key || undefined}
-      className={`scroll-mt-[120px] transition ${
-        cmsMode && hidden ? "opacity-40" : ""
-      }`}
+      className={`scroll-mt-[var(--scroll-anchor-offset,7.5rem)] transition ${cmsMode && hidden ? "opacity-40" : ""
+        }`}
     >
       {cmsToolbar}
       {body}
@@ -489,6 +564,7 @@ export default function CmsLivePageSections({
   const itemsDraftRef = useRef(itemsDraft);
   buttonsDraftRef.current = buttonsDraft;
   itemsDraftRef.current = itemsDraft;
+  const [bandDraft, setBandDraft] = useState(() => bandDraftFromSection(null));
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [error, setError] = useState(null);
   const [saving, setSaving] = useState(false);
@@ -501,8 +577,8 @@ export default function CmsLivePageSections({
       getSiteTheme().catch(() => null),
       entityId
         ? getEntityPageTheme({ page_key: pageKey, entity_id: entityId }).catch(
-            () => null
-          )
+          () => null
+        )
         : Promise.resolve(null),
     ]);
     const site = siteRes?.data || null;
@@ -605,38 +681,85 @@ export default function CmsLivePageSections({
   }, [cmsMode, sections]);
 
   const visibleWithSurface = useMemo(() => {
-    let altIndex = 0;
+    const altIndex = { current: 0 };
     const mode = pageTheme?.surface_mode || "alternating";
-    const isTransparent =
-      String(mode).toLowerCase() === "transparent" ||
-      String(mode).toLowerCase() === "none";
-    return visible.map((section) => {
-      const hasCustomBg = Boolean(
-        section.section_bg_img ||
-          section.section_bg_color ||
-          section.data?.bg_color
-      );
-      // Fixed surfaces + sections with custom bg skip white/grey alternation
-      const usesAlt =
-        !hasCustomBg &&
-        !isTransparent &&
-        sectionUsesAltSurface(section.section_key, section.render_key);
-      let surfaceTone;
-      if (isTransparent && !hasCustomBg) {
-        surfaceTone = null; // clear — page bg shows through
-      } else if (usesAlt) {
-        surfaceTone = surfaceToneForMode(mode, altIndex);
-        altIndex += 1;
-      }
-      return {
-        section,
-        surfaceTone: hasCustomBg ? undefined : surfaceTone,
-      };
-    });
+    return visible.map((section) => ({
+      section,
+      ...computePlacementSurface(section, {
+        pageSurfaceMode: mode,
+        altIndex,
+      }),
+    }));
   }, [visible, pageTheme?.surface_mode]);
 
   function openFieldEdit(section, field, options = {}) {
+    if (
+      field === "section_bg_img" ||
+      field === "section_bg_color"
+    ) {
+      field = "section_band";
+    }
     if (!FIELD_META[field]) return;
+    if (
+      field === "faq_header_side" &&
+      (options.preset === "left" || options.preset === "right")
+    ) {
+      if (contentLockedAtLayer(section.content_scope, "page")) {
+        setError(lockedContentMessage(section.content_scope, "page"));
+        return;
+      }
+      setSaving(true);
+      savePlacement(section, {
+        data: {
+          ...(section.data || {}),
+          header_side: options.preset,
+        },
+      })
+        .then(() => reload())
+        .catch((err) => setError(err.message || "Save failed"))
+        .finally(() => setSaving(false));
+      return;
+    }
+    if (
+      field === "cta_image_side" &&
+      (options.preset === "left" || options.preset === "right")
+    ) {
+      if (contentLockedAtLayer(section.content_scope, "page")) {
+        setError(lockedContentMessage(section.content_scope, "page"));
+        return;
+      }
+      setSaving(true);
+      savePlacement(section, {
+        data: {
+          ...(section.data || {}),
+          image_side: options.preset,
+        },
+      })
+        .then(() => reload())
+        .catch((err) => setError(err.message || "Save failed"))
+        .finally(() => setSaving(false));
+      return;
+    }
+    if (
+      field === "form_content_side" &&
+      (options.preset === "left" || options.preset === "right")
+    ) {
+      if (contentLockedAtLayer(section.content_scope, "page")) {
+        setError(lockedContentMessage(section.content_scope, "page"));
+        return;
+      }
+      setSaving(true);
+      savePlacement(section, {
+        data: {
+          ...(section.data || {}),
+          content_side: options.preset,
+        },
+      })
+        .then(() => reload())
+        .catch((err) => setError(err.message || "Save failed"))
+        .finally(() => setSaving(false));
+      return;
+    }
     if (field === "items" && !sectionUsesItems(section.section_key, section.render_key)) return;
     if (field === "section_img_url" && !sectionUsesImage(section.section_key, section.render_key))
       return;
@@ -644,7 +767,12 @@ export default function CmsLivePageSections({
       return;
     setPanelOpen(false);
     setEditing({ section, field, ...options });
-    if (field === "buttons") {
+    if (field === "section_band") {
+      setBandDraft(bandDraftFromSection(section));
+      setButtonsDraft([]);
+      setItemsDraft([]);
+      setFieldValueState("");
+    } else if (field === "buttons") {
       setButtonsDraft(normalizeButtonsDraft(section.buttons));
       setItemsDraft([]);
       setFieldValueState("");
@@ -667,6 +795,7 @@ export default function CmsLivePageSections({
     setFieldValueState("");
     setButtonsDraft([]);
     setItemsDraft([]);
+    setBandDraft(bandDraftFromSection(null));
   }
 
   function openCmsPanel() {
@@ -771,7 +900,14 @@ export default function CmsLivePageSections({
     e.preventDefault();
     if (!editing) return;
     const { section, field } = editing;
-    if (contentLockedAtLayer(section.content_scope, "page")) {
+    const pageContentLocked = contentLockedAtLayer(
+      section.content_scope,
+      "page"
+    );
+    if (
+      field !== "section_band" &&
+      pageContentLocked
+    ) {
       setError(lockedContentMessage(section.content_scope, "page"));
       return;
     }
@@ -798,6 +934,27 @@ export default function CmsLivePageSections({
         const value = fieldValueState.trim();
         await savePlacement(section, {
           section_bg_color: value || null,
+        });
+      } else if (field === "faq_header_side") {
+        const side = fieldValueState === "right" ? "right" : "left";
+        await savePlacement(section, {
+          data: { ...(section.data || {}), header_side: side },
+        });
+      } else if (field === "cta_image_side") {
+        const side = fieldValueState === "left" ? "left" : "right";
+        await savePlacement(section, {
+          data: { ...(section.data || {}), image_side: side },
+        });
+      } else if (field === "form_content_side") {
+        const side = fieldValueState === "right" ? "right" : "left";
+        await savePlacement(section, {
+          data: { ...(section.data || {}), content_side: side },
+        });
+      } else if (field === "section_band") {
+        await saveSectionBandForPlacement(section, {
+          draft: bandDraft,
+          savePlacement,
+          contentLocked: pageContentLocked,
         });
       } else {
         const value = fieldValueState.trim();
@@ -962,15 +1119,25 @@ export default function CmsLivePageSections({
   const itemsConfig =
     editing?.field === "items"
       ? getSectionItemsConfig(
-          editing.section.section_key,
-          editing.section.render_key
-        )
+        editing.section.section_key,
+        editing.section.render_key
+      )
       : null;
   const drawerTitle = editing
     ? editing.field === "items"
       ? `Edit ${itemsConfig?.label || "cards"} · ${editing.section.section_key}`
-      : `Edit ${meta?.label || "field"} · ${editing.section.section_key}`
+      : editing.field === "section_band"
+        ? `Section band · ${editing.section.section_key}`
+        : `Edit ${meta?.label || "field"} · ${editing.section.section_key}`
     : "Edit field";
+
+  const bandEditorPlacement = useMemo(() => {
+    if (!editing?.section) return { inheritedSurfaceTone: undefined };
+    const row = visibleWithSurface.find(
+      ({ section: s }) => placementKey(s) === placementKey(editing.section)
+    );
+    return { inheritedSurfaceTone: row?.surfaceTone };
+  }, [editing, visibleWithSurface]);
 
   return (
     <div>
@@ -1043,31 +1210,53 @@ export default function CmsLivePageSections({
             </Link>
           </SectionWrapper>
         ) : (
-          <>
-            {visibleWithSurface.map(({ section, surfaceTone }, index) => {
-              const navSections =
-                section.section_key === "in_page_nav"
-                  ? visibleWithSurface
+          (() => {
+            const navIndex = visibleWithSurface.findIndex(
+              ({ section }) => section.section_key === "in_page_nav"
+            );
+
+            const renderPlacements = (rows, baseIndex) =>
+              rows.map(({ section, surfaceTone, sectionTheme }, relIndex) => {
+                const index = baseIndex + relIndex;
+                const navSections =
+                  section.section_key === "in_page_nav"
+                    ? visibleWithSurface
                       .slice(index + 1)
                       .map(({ section: s }) => s)
                       .filter((s) => s.section_key !== "in_page_nav")
-                  : undefined;
-              return (
-                <SectionRender
-                  key={placementKey(section)}
-                  section={section}
-                  cmsMode={cmsMode}
-                  surfaceTone={surfaceTone}
-                  pageContext={pageContext}
-                  catalog={catalog}
-                  navSections={navSections}
-                  onEditField={openFieldEdit}
-                  onToggleVisibility={toggleVisibility}
-                  onRemoveExtra={removeExtra}
-                />
-              );
-            })}
-          </>
+                    : undefined;
+                return (
+                  <SectionRender
+                    key={placementKey(section)}
+                    section={section}
+                    cmsMode={cmsMode}
+                    surfaceTone={surfaceTone}
+                    sectionTheme={sectionTheme}
+                    pageTheme={pageTheme}
+                    pageContext={pageContext}
+                    catalog={catalog}
+                    navSections={navSections}
+                    onEditField={openFieldEdit}
+                    onToggleVisibility={toggleVisibility}
+                    onRemoveExtra={removeExtra}
+                  />
+                );
+              });
+
+            if (navIndex === -1) {
+              return renderPlacements(visibleWithSurface, 0);
+            }
+
+            return (
+              <>
+                {renderPlacements(visibleWithSurface.slice(0, navIndex), 0)}
+                {/* Sticky in-page nav must share a tall ancestor with sections below */}
+                <div className="relative">
+                  {renderPlacements(visibleWithSurface.slice(navIndex), navIndex)}
+                </div>
+              </>
+            );
+          })()
         )}
       </PageThemeShell>
 
@@ -1113,11 +1302,10 @@ export default function CmsLivePageSections({
                     key={tab.key}
                     type="button"
                     onClick={() => setPanelTab(tab.key)}
-                    className={`flex-1 rounded-md px-2 py-2 text-[11px] font-semibold transition sm:px-3 sm:text-xs ${
-                      panelTab === tab.key
+                    className={`flex-1 rounded-md px-2 py-2 text-[11px] font-semibold transition sm:px-3 sm:text-xs ${panelTab === tab.key
                         ? "bg-white text-brand shadow-sm dark:bg-slate-950 dark:text-white"
                         : "text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-100"
-                    }`}
+                      }`}
                   >
                     {tab.label}
                   </button>
@@ -1125,360 +1313,358 @@ export default function CmsLivePageSections({
               </div>
 
               {panelTab === "theme" ? (
-              <div className="rounded-xl border border-slate-200 p-3 dark:border-slate-800">
-                <div className="mb-3 flex flex-wrap items-start justify-between gap-2">
-                  <div>
-                    <p className="m-0 text-[11px] font-semibold tracking-wide text-slate-500 uppercase">
-                      This page theme
-                    </p>
-                    <p className="mt-0.5 mb-0 text-xs text-slate-500">
-                      Overrides for{" "}
-                      <span className="font-semibold text-slate-700 dark:text-slate-200">
-                        {entityLabel || "this page"}
-                      </span>{" "}
-                      only. Empty fields use the template theme (then site).
-                    </p>
+                <div className="rounded-xl border border-slate-200 p-3 dark:border-slate-800">
+                  <div className="mb-3 flex flex-wrap items-start justify-between gap-2">
+                    <div>
+                      <p className="m-0 text-[11px] font-semibold tracking-wide text-slate-500 uppercase">
+                        This page theme
+                      </p>
+                      <p className="mt-0.5 mb-0 text-xs text-slate-500">
+                        Overrides for{" "}
+                        <span className="font-semibold text-slate-700 dark:text-slate-200">
+                          {entityLabel || "this page"}
+                        </span>{" "}
+                        only. Empty fields use the template theme (then site).
+                      </p>
+                    </div>
+                    <div className="flex flex-wrap gap-1.5">
+                      <Link
+                        href="/cms/site-theme"
+                        className="rounded-md border border-slate-200 px-2 py-1 text-[11px] font-semibold text-slate-600 no-underline hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300"
+                      >
+                        Site theme
+                      </Link>
+                      <Link
+                        href={`/cms/pages/${pageKey}`}
+                        className="rounded-md border border-slate-200 px-2 py-1 text-[11px] font-semibold text-slate-600 no-underline hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300"
+                      >
+                        Template theme
+                      </Link>
+                    </div>
                   </div>
-                  <div className="flex flex-wrap gap-1.5">
-                    <Link
-                      href="/cms/site-theme"
-                      className="rounded-md border border-slate-200 px-2 py-1 text-[11px] font-semibold text-slate-600 no-underline hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300"
-                    >
-                      Site theme
-                    </Link>
-                    <Link
-                      href={`/cms/pages/${pageKey}`}
-                      className="rounded-md border border-slate-200 px-2 py-1 text-[11px] font-semibold text-slate-600 no-underline hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300"
-                    >
-                      Template theme
-                    </Link>
-                  </div>
+                  <CmsThemeEditor
+                    mode="page"
+                    inheritFrom="template"
+                    inheritedTheme={mergeTheme(siteThemeDoc, templateTheme)}
+                    value={entityThemeDraft}
+                    onChange={(next) => {
+                      setEntityThemeDraft(next);
+                      setPageTheme(
+                        mergeTheme(siteThemeDoc, templateTheme, next)
+                      );
+                    }}
+                    onSave={async () => {
+                      if (!entityId) return;
+                      setSaving(true);
+                      setError(null);
+                      try {
+                        await upsertEntityPageTheme({
+                          page_key: pageKey,
+                          entity_id: entityId,
+                          theme: entityThemeDraft,
+                        });
+                        await loadThemes(
+                          (
+                            await getPage(pageKey).catch(() => null)
+                          )?.data
+                        );
+                      } catch (err) {
+                        setError(err.message || "Could not save page theme");
+                      } finally {
+                        setSaving(false);
+                      }
+                    }}
+                    saving={saving}
+                    saveLabel="Save this page theme"
+                  />
+                  <button
+                    type="button"
+                    disabled={saving}
+                    onClick={async () => {
+                      if (!entityId) return;
+                      setSaving(true);
+                      setError(null);
+                      try {
+                        await deleteEntityPageTheme({
+                          page_key: pageKey,
+                          entity_id: entityId,
+                        });
+                        setEntityThemeDraft(emptyPageTheme());
+                        await loadThemes(
+                          (
+                            await getPage(pageKey).catch(() => null)
+                          )?.data
+                        );
+                      } catch (err) {
+                        setError(err.message || "Could not clear page theme");
+                      } finally {
+                        setSaving(false);
+                      }
+                    }}
+                    className="mt-3 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50 disabled:opacity-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300"
+                  >
+                    Use template theme (clear this page)
+                  </button>
                 </div>
-                <CmsThemeEditor
-                  mode="page"
-                  inheritFrom="template"
-                  inheritedTheme={mergeTheme(siteThemeDoc, templateTheme)}
-                  value={entityThemeDraft}
-                  onChange={(next) => {
-                    setEntityThemeDraft(next);
-                    setPageTheme(
-                      mergeTheme(siteThemeDoc, templateTheme, next)
-                    );
-                  }}
-                  onSave={async () => {
-                    if (!entityId) return;
-                    setSaving(true);
-                    setError(null);
-                    try {
-                      await upsertEntityPageTheme({
-                        page_key: pageKey,
-                        entity_id: entityId,
-                        theme: entityThemeDraft,
-                      });
-                      await loadThemes(
-                        (
-                          await getPage(pageKey).catch(() => null)
-                        )?.data
-                      );
-                    } catch (err) {
-                      setError(err.message || "Could not save page theme");
-                    } finally {
-                      setSaving(false);
-                    }
-                  }}
-                  saving={saving}
-                  saveLabel="Save this page theme"
-                />
-                <button
-                  type="button"
-                  disabled={saving}
-                  onClick={async () => {
-                    if (!entityId) return;
-                    setSaving(true);
-                    setError(null);
-                    try {
-                      await deleteEntityPageTheme({
-                        page_key: pageKey,
-                        entity_id: entityId,
-                      });
-                      setEntityThemeDraft(emptyPageTheme());
-                      await loadThemes(
-                        (
-                          await getPage(pageKey).catch(() => null)
-                        )?.data
-                      );
-                    } catch (err) {
-                      setError(err.message || "Could not clear page theme");
-                    } finally {
-                      setSaving(false);
-                    }
-                  }}
-                  className="mt-3 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50 disabled:opacity-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300"
-                >
-                  Use template theme (clear this page)
-                </button>
-              </div>
               ) : null}
 
               {panelTab === "add" ? (
-              <form onSubmit={addOnThisPage} className="space-y-3">
-                <p className="m-0 text-[11px] font-semibold tracking-wide text-slate-500 uppercase">
-                  Add on this page
-                </p>
+                <form onSubmit={addOnThisPage} className="space-y-3">
+                  <p className="m-0 text-[11px] font-semibold tracking-wide text-slate-500 uppercase">
+                    Add on this page
+                  </p>
 
-                <input
-                  className={inputClass}
-                  value={addSearch}
-                  onChange={(e) => setAddSearch(e.target.value)}
-                  placeholder="Search by name or key…"
-                />
-
-                <div className="rounded-lg border border-slate-200 bg-white p-3 dark:border-slate-800 dark:bg-slate-950">
-                  <FilterGroup
-                    title="Category"
-                    search={addCategorySearch}
-                    onSearch={setAddCategorySearch}
-                    placeholder="Search Category"
-                    options={categoryOptions}
-                    value={addCategoryFilter}
-                    onChange={setAddCategoryFilter}
-                    maxHeightClass="max-h-36"
+                  <input
+                    className={inputClass}
+                    value={addSearch}
+                    onChange={(e) => setAddSearch(e.target.value)}
+                    placeholder="Search by name or key…"
                   />
-                </div>
 
-                <FilterChipRow
-                  label="Scope"
-                  value={addScopeFilter}
-                  onChange={setAddScopeFilter}
-                  options={[
-                    { value: "all", label: "All scopes" },
-                    { value: "global", label: "Global" },
-                    { value: "template", label: "Template" },
-                    { value: "page", label: "Page" },
-                  ].map((opt) => ({
-                    ...opt,
-                    count: addFilterCounts.scope[opt.value] ?? 0,
-                  }))}
-                />
-
-                <FilterChipRow
-                  label="Type"
-                  value={addKindFilter}
-                  onChange={setAddKindFilter}
-                  activeClass="bg-ink text-white"
-                  options={[
-                    { value: "all", label: "All types" },
-                    { value: "hero", label: "Hero" },
-                    { value: "cards", label: "Cards" },
-                    { value: "content", label: "Content" },
-                    { value: "nav", label: "Nav" },
-                    { value: "other", label: "Other" },
-                  ].map((opt) => ({
-                    ...opt,
-                    count: addFilterCounts.kind[opt.value] ?? 0,
-                  }))}
-                />
-
-                <FilterChipRow
-                  label="On page"
-                  value={addPlacedFilter}
-                  onChange={setAddPlacedFilter}
-                  activeClass="bg-teal-700 text-white"
-                  options={[
-                    { value: "all", label: "All sections" },
-                    { value: "available", label: "Not on page" },
-                    { value: "placed", label: "Already on page" },
-                  ].map((opt) => ({
-                    ...opt,
-                    count: addFilterCounts.placed[opt.value] ?? 0,
-                  }))}
-                />
-
-                {!filteredAddOptions.length ? (
-                  <EmptyState message="No sections match these filters." />
-                ) : (
-                  <div className="grid max-h-56 grid-cols-2 gap-2 overflow-y-auto">
-                    {filteredAddOptions.map((s) => {
-                      const selected = addKey === s.key;
-                      const onPage = placedKeys.has(s.key);
-                      return (
-                        <div
-                          key={s.key}
-                          role="button"
-                          tabIndex={0}
-                          onClick={() => setAddKey(s.key)}
-                          onKeyDown={(e) => {
-                            if (e.key === "Enter" || e.key === " ") {
-                              e.preventDefault();
-                              setAddKey(s.key);
-                            }
-                          }}
-                          className={`flex cursor-pointer flex-col overflow-hidden rounded-lg border text-left transition ${
-                            selected
-                              ? "border-brand ring-2 ring-brand/30"
-                              : "border-slate-200 hover:border-slate-300 dark:border-slate-800"
-                          }`}
-                        >
-                          <SectionPreviewThumb
-                            src={s.section_preview_img}
-                            alt={s.name}
-                            className="h-16 w-full"
-                            rounded="rounded-none"
-                          />
-                          <div className="flex flex-wrap gap-1 px-2 pt-1">
-                            <ScopeBadge scope={s.content_scope} />
-                            {onPage ? (
-                              <span className="rounded-full bg-amber-100 px-1.5 py-0.5 text-[10px] font-semibold text-amber-800 dark:bg-amber-950 dark:text-amber-300">
-                                On page
-                              </span>
-                            ) : null}
-                          </div>
-                          <span className="truncate px-2 py-1 text-[11px] font-medium text-slate-700 dark:text-slate-200">
-                            {s.name}
-                          </span>
-                        </div>
-                      );
-                    })}
+                  <div className="rounded-lg border border-slate-200 bg-white p-3 dark:border-slate-800 dark:bg-slate-950">
+                    <FilterGroup
+                      title="Category"
+                      search={addCategorySearch}
+                      onSearch={setAddCategorySearch}
+                      placeholder="Search Category"
+                      options={categoryOptions}
+                      value={addCategoryFilter}
+                      onChange={setAddCategoryFilter}
+                      maxHeightClass="max-h-36"
+                    />
                   </div>
-                )}
 
-                <p className="m-0 text-[11px] text-slate-500">
-                  Showing {filteredAddOptions.length} of {sectionOptions.length}
-                  {addKey ? ` · selected: ${addKey}` : ""}
-                </p>
+                  <FilterChipRow
+                    label="Scope"
+                    value={addScopeFilter}
+                    onChange={setAddScopeFilter}
+                    options={[
+                      { value: "all", label: "All scopes" },
+                      { value: "global", label: "Global" },
+                      { value: "template", label: "Template" },
+                      { value: "page", label: "Page" },
+                    ].map((opt) => ({
+                      ...opt,
+                      count: addFilterCounts.scope[opt.value] ?? 0,
+                    }))}
+                  />
 
-                <button
-                  type="submit"
-                  disabled={!addKey || saving}
-                  className="w-full rounded-lg bg-brand px-3 py-2 text-sm font-semibold text-white disabled:opacity-50"
-                >
-                  Add (this page only)
-                </button>
-              </form>
+                  <FilterChipRow
+                    label="Type"
+                    value={addKindFilter}
+                    onChange={setAddKindFilter}
+                    activeClass="bg-ink text-white"
+                    options={[
+                      { value: "all", label: "All types" },
+                      { value: "hero", label: "Hero" },
+                      { value: "cards", label: "Cards" },
+                      { value: "content", label: "Content" },
+                      { value: "nav", label: "Nav" },
+                      { value: "other", label: "Other" },
+                    ].map((opt) => ({
+                      ...opt,
+                      count: addFilterCounts.kind[opt.value] ?? 0,
+                    }))}
+                  />
+
+                  <FilterChipRow
+                    label="On page"
+                    value={addPlacedFilter}
+                    onChange={setAddPlacedFilter}
+                    activeClass="bg-teal-700 text-white"
+                    options={[
+                      { value: "all", label: "All sections" },
+                      { value: "available", label: "Not on page" },
+                      { value: "placed", label: "Already on page" },
+                    ].map((opt) => ({
+                      ...opt,
+                      count: addFilterCounts.placed[opt.value] ?? 0,
+                    }))}
+                  />
+
+                  {!filteredAddOptions.length ? (
+                    <EmptyState message="No sections match these filters." />
+                  ) : (
+                    <div className="grid max-h-56 grid-cols-2 gap-2 overflow-y-auto">
+                      {filteredAddOptions.map((s) => {
+                        const selected = addKey === s.key;
+                        const onPage = placedKeys.has(s.key);
+                        return (
+                          <div
+                            key={s.key}
+                            role="button"
+                            tabIndex={0}
+                            onClick={() => setAddKey(s.key)}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter" || e.key === " ") {
+                                e.preventDefault();
+                                setAddKey(s.key);
+                              }
+                            }}
+                            className={`flex cursor-pointer flex-col overflow-hidden rounded-lg border text-left transition ${selected
+                                ? "border-brand ring-2 ring-brand/30"
+                                : "border-slate-200 hover:border-slate-300 dark:border-slate-800"
+                              }`}
+                          >
+                            <SectionPreviewThumb
+                              src={s.section_preview_img}
+                              alt={s.name}
+                              className="h-16 w-full"
+                              rounded="rounded-none"
+                            />
+                            <div className="flex flex-wrap gap-1 px-2 pt-1">
+                              <ScopeBadge scope={s.content_scope} />
+                              {onPage ? (
+                                <span className="rounded-full bg-amber-100 px-1.5 py-0.5 text-[10px] font-semibold text-amber-800 dark:bg-amber-950 dark:text-amber-300">
+                                  On page
+                                </span>
+                              ) : null}
+                            </div>
+                            <span className="truncate px-2 py-1 text-[11px] font-medium text-slate-700 dark:text-slate-200">
+                              {s.name}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+
+                  <p className="m-0 text-[11px] text-slate-500">
+                    Showing {filteredAddOptions.length} of {sectionOptions.length}
+                    {addKey ? ` · selected: ${addKey}` : ""}
+                  </p>
+
+                  <button
+                    type="submit"
+                    disabled={!addKey || saving}
+                    className="w-full rounded-lg bg-brand px-3 py-2 text-sm font-semibold text-white disabled:opacity-50"
+                  >
+                    Add (this page only)
+                  </button>
+                </form>
               ) : null}
 
               {panelTab === "mapped" ? (
-              <div>
-                <p className="mb-2 text-[11px] font-semibold tracking-wide text-slate-500 uppercase">
-                  {sortDisabled
-                    ? "Sections (template order + page mappings)"
-                    : "Sort sections"}
-                </p>
-                {sortDisabled ? (
-                  <p className="mb-2 text-[11px] text-slate-400">
-                    Template sections follow{" "}
-                    <Link
-                      href={`/cms/pages/${pageKey}`}
-                      className="font-semibold text-brand no-underline"
-                    >
-                      template CMS
-                    </Link>
-                    . Page-only (+page) sections use this page’s mapping sort —
-                    move those with ↑ ↓.
+                <div>
+                  <p className="mb-2 text-[11px] font-semibold tracking-wide text-slate-500 uppercase">
+                    {sortDisabled
+                      ? "Sections (template order + page mappings)"
+                      : "Sort sections"}
                   </p>
-                ) : (
-                  <p className="mb-2 text-[11px] text-slate-400">
-                    Order is stored on this page’s EntityPageSection mappings.
-                  </p>
-                )}
-                <ul className="m-0 list-none space-y-1.5 p-0">
-                  {sections.map((s, index) => {
-                    const pid = placementKey(s);
-                    const canMove = !sortDisabled || s.is_entity_extra;
-                    const hidden = s.status === false;
-                    return (
-                      <li
-                        key={pid}
-                        className={`flex items-center gap-2 rounded-lg border border-slate-200 px-2 py-1.5 dark:border-slate-800 ${
-                          hidden ? "opacity-50" : ""
-                        }`}
+                  {sortDisabled ? (
+                    <p className="mb-2 text-[11px] text-slate-400">
+                      Template sections follow{" "}
+                      <Link
+                        href={`/cms/pages/${pageKey}`}
+                        className="font-semibold text-brand no-underline"
                       >
-                        <SectionPreviewThumb
-                          src={previewSrc(s, catalog)}
-                          alt={s.section_key}
-                          className="size-10"
-                        />
-                        <button
-                          type="button"
-                          className="min-w-0 flex-1 truncate text-left text-xs font-medium text-slate-800 dark:text-slate-100"
-                          onClick={() => {
-                            document
-                              .getElementById(`cms-section-${pid}`)
-                              ?.scrollIntoView({
-                                behavior: "smooth",
-                                block: "center",
-                              });
-                            setPanelOpen(false);
-                          }}
+                        template CMS
+                      </Link>
+                      . Page-only (+page) sections use this page’s mapping sort —
+                      move those with ↑ ↓.
+                    </p>
+                  ) : (
+                    <p className="mb-2 text-[11px] text-slate-400">
+                      Order is stored on this page’s EntityPageSection mappings.
+                    </p>
+                  )}
+                  <ul className="m-0 list-none space-y-1.5 p-0">
+                    {sections.map((s, index) => {
+                      const pid = placementKey(s);
+                      const canMove = !sortDisabled || s.is_entity_extra;
+                      const hidden = s.status === false;
+                      return (
+                        <li
+                          key={pid}
+                          className={`flex items-center gap-2 rounded-lg border border-slate-200 px-2 py-1.5 dark:border-slate-800 ${hidden ? "opacity-50" : ""
+                            }`}
                         >
-                          <span className="mr-1 text-slate-400">
-                            #{s.sort_order}
-                          </span>
-                          {s.section_key}
-                          <ScopeBadge
-                            scope={s.content_scope}
-                            className="ml-1 align-middle"
+                          <SectionPreviewThumb
+                            src={previewSrc(s, catalog)}
+                            alt={s.section_key}
+                            className="size-10"
                           />
-                          {s.is_entity_extra ? (
-                            <span className="ml-1 text-[10px] text-emerald-600">
-                              +page
-                            </span>
-                          ) : null}
-                          {hidden ? (
-                            <span className="ml-1 text-[10px] text-rose-600">
-                              hidden
-                            </span>
-                          ) : null}
-                        </button>
-                        <button
-                          type="button"
-                          className="rounded px-1.5 py-0.5 text-[11px] font-semibold text-slate-600 hover:bg-slate-100 disabled:opacity-30 dark:hover:bg-slate-800"
-                          disabled={saving}
-                          onClick={() => toggleVisibility(s)}
-                          title={
-                            hidden
-                              ? "Show section on this page"
-                              : "Hide section on this page"
-                          }
-                        >
-                          {hidden ? "Show" : "Hide"}
-                        </button>
-                        {s.is_entity_extra ? (
                           <button
                             type="button"
-                            className="rounded px-1.5 py-0.5 text-[11px] font-semibold text-rose-600 hover:bg-rose-50 disabled:opacity-30 dark:hover:bg-rose-950/40"
-                            disabled={saving}
-                            onClick={() => removeExtra(s)}
-                            title="Remove this page-only mapping"
+                            className="min-w-0 flex-1 truncate text-left text-xs font-medium text-slate-800 dark:text-slate-100"
+                            onClick={() => {
+                              document
+                                .getElementById(`cms-section-${pid}`)
+                                ?.scrollIntoView({
+                                  behavior: "smooth",
+                                  block: "center",
+                                });
+                              setPanelOpen(false);
+                            }}
                           >
-                            Remove
+                            <span className="mr-1 text-slate-400">
+                              #{s.sort_order}
+                            </span>
+                            {s.section_key}
+                            <ScopeBadge
+                              scope={s.content_scope}
+                              className="ml-1 align-middle"
+                            />
+                            {s.is_entity_extra ? (
+                              <span className="ml-1 text-[10px] text-emerald-600">
+                                +page
+                              </span>
+                            ) : null}
+                            {hidden ? (
+                              <span className="ml-1 text-[10px] text-rose-600">
+                                hidden
+                              </span>
+                            ) : null}
                           </button>
-                        ) : null}
-                        {canMove ? (
-                          <>
+                          <button
+                            type="button"
+                            className="rounded px-1.5 py-0.5 text-[11px] font-semibold text-slate-600 hover:bg-slate-100 disabled:opacity-30 dark:hover:bg-slate-800"
+                            disabled={saving}
+                            onClick={() => toggleVisibility(s)}
+                            title={
+                              hidden
+                                ? "Show section on this page"
+                                : "Hide section on this page"
+                            }
+                          >
+                            {hidden ? "Show" : "Hide"}
+                          </button>
+                          {s.is_entity_extra ? (
                             <button
                               type="button"
-                              className="rounded px-1.5 py-0.5 text-xs text-slate-600 hover:bg-slate-100 disabled:opacity-30 dark:hover:bg-slate-800"
-                              disabled={index === 0 || saving}
-                              onClick={() => move(index, -1)}
+                              className="rounded px-1.5 py-0.5 text-[11px] font-semibold text-rose-600 hover:bg-rose-50 disabled:opacity-30 dark:hover:bg-rose-950/40"
+                              disabled={saving}
+                              onClick={() => removeExtra(s)}
+                              title="Remove this page-only mapping"
                             >
-                              ↑
+                              Remove
                             </button>
-                            <button
-                              type="button"
-                              className="rounded px-1.5 py-0.5 text-xs text-slate-600 hover:bg-slate-100 disabled:opacity-30 dark:hover:bg-slate-800"
-                              disabled={index === sections.length - 1 || saving}
-                              onClick={() => move(index, 1)}
-                            >
-                              ↓
-                            </button>
-                          </>
-                        ) : null}
-                      </li>
-                    );
-                  })}
-                </ul>
-              </div>
+                          ) : null}
+                          {canMove ? (
+                            <>
+                              <button
+                                type="button"
+                                className="rounded px-1.5 py-0.5 text-xs text-slate-600 hover:bg-slate-100 disabled:opacity-30 dark:hover:bg-slate-800"
+                                disabled={index === 0 || saving}
+                                onClick={() => move(index, -1)}
+                              >
+                                ↑
+                              </button>
+                              <button
+                                type="button"
+                                className="rounded px-1.5 py-0.5 text-xs text-slate-600 hover:bg-slate-100 disabled:opacity-30 dark:hover:bg-slate-800"
+                                disabled={index === sections.length - 1 || saving}
+                                onClick={() => move(index, 1)}
+                              >
+                                ↓
+                              </button>
+                            </>
+                          ) : null}
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
               ) : null}
 
               {panelTab === "preview" ? (
@@ -1548,7 +1734,31 @@ export default function CmsLivePageSections({
                     </p>
                   </div>
                 </div>
-                {contentLockedAtLayer(editing.section.content_scope, "page") ? (
+                {meta.input === "section_band" ? (
+                  <CmsSectionBandEditor
+                    draft={bandDraft}
+                    onChange={setBandDraft}
+                    showBgImage={sectionUsesBg(editing.section.section_key)}
+                    showBgColor={sectionUsesBgColor(editing.section.section_key)}
+                    inheritedSurfaceTone={bandEditorPlacement.inheritedSurfaceTone}
+                    pageSurfaceMode={pageTheme?.surface_mode}
+                    pageInk={pageTheme?.ink}
+                    bgFieldsLocked={contentLockedAtLayer(
+                      editing.section.content_scope,
+                      "page"
+                    )}
+                    bgLockedMessage={lockedContentMessage(
+                      editing.section.content_scope,
+                      "page"
+                    )}
+                    saving={saving}
+                    onSubmit={saveField}
+                    onCancel={closeDrawer}
+                  />
+                ) : contentLockedAtLayer(
+                  editing.section.content_scope,
+                  "page"
+                ) ? (
                   <div className="space-y-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-3 text-sm text-amber-950 dark:border-amber-900 dark:bg-amber-950/40 dark:text-amber-100">
                     <p className="m-0">
                       {lockedContentMessage(
@@ -1566,7 +1776,7 @@ export default function CmsLivePageSections({
                     >
                       Edit at{" "}
                       {normalizeContentScope(editing.section.content_scope) ===
-                      "template"
+                        "template"
                         ? "template"
                         : "global"}{" "}
                       level →
@@ -1574,158 +1784,171 @@ export default function CmsLivePageSections({
                   </div>
                 ) : (
                   <>
-                <p className="m-0 text-xs text-slate-500">{meta.hint}</p>
-                {meta.input === "buttons" ? (
-                  <CmsButtonsEditor
-                    value={buttonsDraft}
-                    onChange={setButtonsDraft}
-                  />
-                ) : meta.input === "items" ? (
-                  <CmsItemsEditor
-                    value={itemsDraft}
-                    onChange={setItemsDraft}
-                    sectionKey={editing.section.section_key}
-                    expandItemButtons={Boolean(editing.expandItemButtons)}
-                  />
-                ) : meta.input === "bg_color" ? (
-                  <form onSubmit={saveField} className="space-y-3">
-                    <div>
-                      <span className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200">
-                        {meta.label}
-                      </span>
-                      <CmsBgColorPicker
-                        value={fieldValueState}
-                        onChange={setFieldValueState}
-                        variant="theme"
-                        defaultLabel="Default"
+                    <p className="m-0 text-xs text-slate-500">{meta.hint}</p>
+                    {meta.input === "buttons" ? (
+                      <CmsButtonsEditor
+                        value={buttonsDraft}
+                        onChange={setButtonsDraft}
                       />
-                    </div>
-                    <div className="flex gap-2">
-                      <button
-                        type="submit"
-                        disabled={saving}
-                        className="inline-flex items-center rounded-lg border-0 bg-brand px-3 py-2 text-sm font-semibold text-white hover:bg-brand-hover disabled:opacity-60"
+                    ) : meta.input === "items" ? (
+                      <CmsItemsEditor
+                        value={itemsDraft}
+                        onChange={setItemsDraft}
+                        sectionKey={editing.section.section_key}
+                        expandItemButtons={Boolean(editing.expandItemButtons)}
+                      />
+                    ) : meta.input === "bg_color" ? (
+                      <form onSubmit={saveField} className="space-y-3">
+                        <div>
+                          <span className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200">
+                            {meta.label}
+                          </span>
+                          <CmsBgColorPicker
+                            value={fieldValueState}
+                            onChange={setFieldValueState}
+                            variant="theme"
+                            defaultLabel="Default"
+                          />
+                        </div>
+                        <div className="flex gap-2">
+                          <button
+                            type="submit"
+                            disabled={saving}
+                            className="inline-flex items-center rounded-lg border-0 bg-brand px-3 py-2 text-sm font-semibold text-white hover:bg-brand-hover disabled:opacity-60"
+                          >
+                            {saving ? "Saving…" : "Save"}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={closeDrawer}
+                            className="inline-flex items-center rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </form>
+                    ) : (
+                      <form
+                        onSubmit={saveField}
+                        className="space-y-3"
                       >
-                        {saving ? "Saving…" : "Save"}
-                      </button>
+                        <div className="block text-sm">
+                          <span className="mb-1 block font-medium text-slate-700 dark:text-slate-200">
+                            {meta.label}
+                          </span>
+                          {meta.input === "richtext" ? (
+                            <CmsRichTextEditor
+                              value={fieldValueState}
+                              onChange={setFieldValueState}
+                              placeholder={`Write ${meta.label.toLowerCase()}…`}
+                            />
+                          ) : meta.input === "textarea" ? (
+                            <textarea
+                              className={`${inputClass} min-h-[120px]`}
+                              value={fieldValueState}
+                              onChange={(e) => setFieldValueState(e.target.value)}
+                              autoFocus
+                            />
+                          ) : meta.input === "select" ? (
+                            <select
+                              className={inputClass}
+                              value={fieldValueState || meta.options?.[0]?.value || ""}
+                              onChange={(e) => setFieldValueState(e.target.value)}
+                              autoFocus
+                            >
+                              {(meta.options || []).map((opt) => (
+                                <option key={opt.value} value={opt.value}>
+                                  {opt.label}
+                                </option>
+                              ))}
+                            </select>
+                          ) : meta.input === "image" ? (
+                            <div className="space-y-3">
+                              {fieldValueState ? (
+                                // eslint-disable-next-line @next/next/no-img-element
+                                <img
+                                  src={mediaUrl(fieldValueState)}
+                                  alt="Background preview"
+                                  className="h-28 w-full rounded-lg object-cover"
+                                />
+                              ) : null}
+                              <input
+                                className={inputClass}
+                                value={fieldValueState}
+                                onChange={(e) => setFieldValueState(e.target.value)}
+                                placeholder="https://… or /uploads/…"
+                                autoFocus
+                              />
+                              <input
+                                type="file"
+                                accept="image/jpeg,image/png,image/webp,image/gif"
+                                className="block w-full text-xs text-slate-600"
+                                onChange={async (e) => {
+                                  const file = e.target.files?.[0];
+                                  e.target.value = "";
+                                  if (!file) return;
+                                  setSaving(true);
+                                  setError(null);
+                                  try {
+                                    const dataUrl = await new Promise(
+                                      (resolve, reject) => {
+                                        const reader = new FileReader();
+                                        reader.onload = () => resolve(reader.result);
+                                        reader.onerror = () =>
+                                          reject(new Error("Could not read file"));
+                                        reader.readAsDataURL(file);
+                                      }
+                                    );
+                                    const res = await uploadCmsImage(
+                                      dataUrl,
+                                      "sections"
+                                    );
+                                    setFieldValueState(res.data?.url || "");
+                                  } catch (err) {
+                                    setError(err.message || "Upload failed");
+                                  } finally {
+                                    setSaving(false);
+                                  }
+                                }}
+                              />
+                              {fieldValueState ? (
+                                <button
+                                  type="button"
+                                  className="text-xs font-semibold text-rose-600"
+                                  onClick={() => setFieldValueState("")}
+                                >
+                                  Clear image
+                                </button>
+                              ) : null}
+                            </div>
+                          ) : (
+                            <input
+                              className={inputClass}
+                              value={fieldValueState}
+                              onChange={(e) => setFieldValueState(e.target.value)}
+                              autoFocus
+                            />
+                          )}
+                        </div>
+                        <button
+                          type="submit"
+                          disabled={saving}
+                          className="w-full rounded-lg bg-brand px-3 py-2.5 text-sm font-semibold text-white disabled:opacity-50"
+                        >
+                          {saving ? "Saving…" : "Save for this page"}
+                        </button>
+                      </form>
+                    )}
+                    {meta.input === "buttons" || meta.input === "items" ? (
                       <button
                         type="button"
-                        onClick={closeDrawer}
-                        className="inline-flex items-center rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
+                        disabled={saving}
+                        onClick={() => saveField({ preventDefault() { } })}
+                        className="w-full rounded-lg bg-brand px-3 py-2.5 text-sm font-semibold text-white disabled:opacity-50"
                       >
-                        Cancel
+                        {saving ? "Saving…" : "Save for this page"}
                       </button>
-                    </div>
-                  </form>
-                ) : (
-                  <form
-                    onSubmit={saveField}
-                    className="space-y-3"
-                  >
-                    <div className="block text-sm">
-                      <span className="mb-1 block font-medium text-slate-700 dark:text-slate-200">
-                        {meta.label}
-                      </span>
-                      {meta.input === "richtext" ? (
-                        <CmsRichTextEditor
-                          value={fieldValueState}
-                          onChange={setFieldValueState}
-                          placeholder={`Write ${meta.label.toLowerCase()}…`}
-                        />
-                      ) : meta.input === "textarea" ? (
-                        <textarea
-                          className={`${inputClass} min-h-[120px]`}
-                          value={fieldValueState}
-                          onChange={(e) => setFieldValueState(e.target.value)}
-                          autoFocus
-                        />
-                      ) : meta.input === "image" ? (
-                        <div className="space-y-3">
-                          {fieldValueState ? (
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <img
-                              src={mediaUrl(fieldValueState)}
-                              alt="Background preview"
-                              className="h-28 w-full rounded-lg object-cover"
-                            />
-                          ) : null}
-                          <input
-                            className={inputClass}
-                            value={fieldValueState}
-                            onChange={(e) => setFieldValueState(e.target.value)}
-                            placeholder="https://… or /uploads/…"
-                            autoFocus
-                          />
-                          <input
-                            type="file"
-                            accept="image/jpeg,image/png,image/webp,image/gif"
-                            className="block w-full text-xs text-slate-600"
-                            onChange={async (e) => {
-                              const file = e.target.files?.[0];
-                              e.target.value = "";
-                              if (!file) return;
-                              setSaving(true);
-                              setError(null);
-                              try {
-                                const dataUrl = await new Promise(
-                                  (resolve, reject) => {
-                                    const reader = new FileReader();
-                                    reader.onload = () => resolve(reader.result);
-                                    reader.onerror = () =>
-                                      reject(new Error("Could not read file"));
-                                    reader.readAsDataURL(file);
-                                  }
-                                );
-                                const res = await uploadCmsImage(
-                                  dataUrl,
-                                  "sections"
-                                );
-                                setFieldValueState(res.data?.url || "");
-                              } catch (err) {
-                                setError(err.message || "Upload failed");
-                              } finally {
-                                setSaving(false);
-                              }
-                            }}
-                          />
-                          {fieldValueState ? (
-                            <button
-                              type="button"
-                              className="text-xs font-semibold text-rose-600"
-                              onClick={() => setFieldValueState("")}
-                            >
-                              Clear image
-                            </button>
-                          ) : null}
-                        </div>
-                      ) : (
-                        <input
-                          className={inputClass}
-                          value={fieldValueState}
-                          onChange={(e) => setFieldValueState(e.target.value)}
-                          autoFocus
-                        />
-                      )}
-                    </div>
-                    <button
-                      type="submit"
-                      disabled={saving}
-                      className="w-full rounded-lg bg-brand px-3 py-2.5 text-sm font-semibold text-white disabled:opacity-50"
-                    >
-                      {saving ? "Saving…" : "Save for this page"}
-                    </button>
-                  </form>
-                )}
-                {meta.input === "buttons" || meta.input === "items" ? (
-                  <button
-                    type="button"
-                    disabled={saving}
-                    onClick={() => saveField({ preventDefault() {} })}
-                    className="w-full rounded-lg bg-brand px-3 py-2.5 text-sm font-semibold text-white disabled:opacity-50"
-                  >
-                    {saving ? "Saving…" : "Save for this page"}
-                  </button>
-                ) : null}
+                    ) : null}
                   </>
                 )}
               </div>

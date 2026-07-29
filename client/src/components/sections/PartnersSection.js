@@ -1,2 +1,2 @@
 /** @deprecated use partners/PartnersMarqueeSection — kept for old imports */
-export { default } from "./partners/PartnersMarqueeSection";
+export { default } from "./social_proof/partners/PartnersMarqueeSection";

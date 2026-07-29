@@ -16,15 +16,13 @@ export default function BlogCard({ blog, featured = false }) {
 
   return (
     <article
-      className={`group relative overflow-hidden rounded-[1.75rem] border border-slate-200/80 bg-white shadow-[0_16px_50px_-35px_rgba(15,23,42,0.45)] transition duration-300 hover:-translate-y-1 hover:border-brand/25 hover:shadow-[0_24px_60px_-32px_rgba(15,23,42,0.5)] dark:border-slate-800 dark:bg-slate-900 ${
-        featured ? "grid min-h-full md:grid-cols-[1.08fr_0.92fr]" : "flex h-full flex-col"
-      }`}
+      className={`group relative overflow-hidden rounded-[1.75rem] border border-slate-200/80 bg-white shadow-[0_16px_50px_-35px_rgba(15,23,42,0.45)] transition duration-300 hover:-translate-y-1 hover:border-brand/25 hover:shadow-[0_24px_60px_-32px_rgba(15,23,42,0.5)] dark:border-slate-800 dark:bg-slate-900 ${featured ? "grid min-h-full md:grid-cols-[1.08fr_0.92fr]" : "flex h-full flex-col"
+        }`}
     >
       <Link
         href={`/blog/${blog.slug}`}
-        className={`relative block overflow-hidden bg-slate-100 dark:bg-slate-800 ${
-          featured ? "min-h-64 md:min-h-[25rem]" : "aspect-[16/10]"
-        }`}
+        className={`relative block overflow-hidden bg-slate-100 dark:bg-slate-800 ${featured ? "min-h-64 md:min-h-[25rem]" : "aspect-[16/10]"
+          }`}
         aria-label={`Read ${blog.title}`}
       >
         {image ? (
@@ -51,9 +49,8 @@ export default function BlogCard({ blog, featured = false }) {
           <span>{blog.readingTime || 1} min read</span>
         </div>
         <h3
-          className={`m-0 font-[family-name:var(--font-display)] leading-tight font-semibold tracking-tight text-ink dark:text-white ${
-            featured ? "text-2xl sm:text-3xl" : "text-xl"
-          }`}
+          className={`m-0 font-[family-name:var(--font-display)] leading-tight font-semibold tracking-tight text-ink dark:text-white ${featured ? "text-2xl sm:text-3xl" : "text-xl"
+            }`}
         >
           <Link
             href={`/blog/${blog.slug}`}

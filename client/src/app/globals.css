@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "./section-theme.css";
 
 @custom-variant dark (&:where(.dark, .dark *));
 
@@ -281,6 +282,283 @@ body {
 
 .theme-link:hover {
   color: var(--brand-hover);
+}
+
+/* Section CTAs — follow data-section-theme / data-btn-surface / data-light-surface */
+.section-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.25;
+  text-decoration: none;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.section-btn:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--brand) 65%, transparent);
+  outline-offset: 2px;
+}
+
+.section-btn--link,
+.section-btn--cms-manage {
+  padding-left: 0.25rem;
+  padding-right: 0.25rem;
+  border-color: transparent;
+  background: transparent;
+}
+
+/* —— Light band (default) —— */
+.section-btn--primary {
+  background-color: var(--brand);
+  color: #fff;
+  border-color: transparent;
+}
+
+.section-btn--primary:hover {
+  background-color: var(--brand-hover);
+}
+
+.section-btn--secondary {
+  border-color: rgb(203 213 225);
+  background-color: #fff;
+  color: rgb(30 41 59);
+}
+
+.section-btn--secondary:hover {
+  background-color: rgb(248 250 252);
+  border-color: rgb(148 163 184);
+}
+
+.section-btn--outline {
+  border-width: 2px;
+  border-color: var(--brand);
+  background-color: transparent;
+  color: var(--brand);
+}
+
+.section-btn--outline:hover {
+  background-color: color-mix(in srgb, var(--brand) 10%, transparent);
+}
+
+.section-btn--ghost {
+  background-color: transparent;
+  color: rgb(51 65 85);
+  border-color: transparent;
+}
+
+.section-btn--ghost:hover {
+  background-color: rgb(241 245 249);
+}
+
+.section-btn--link {
+  color: var(--brand);
+}
+
+.section-btn--link:hover {
+  color: var(--brand-hover);
+  text-decoration: underline;
+}
+
+.section-btn--inverse {
+  background-color: #fff;
+  color: var(--ink);
+  border-color: transparent;
+}
+
+.section-btn--inverse:hover {
+  background-color: rgb(241 245 249);
+}
+
+.section-btn--cms-manage {
+  border-style: dashed;
+  border-color: rgb(203 213 225);
+  background-color: rgb(255 255 255 / 0.85);
+  color: rgb(71 85 105);
+  padding: 0.375rem 0.75rem;
+  font-size: 0.6875rem;
+}
+
+.section-btn--cms-manage:hover {
+  border-color: var(--brand);
+  color: var(--brand);
+}
+
+/* Site dark mode (no forced section band) */
+.dark .section-btn--secondary:not([data-light-surface] *) {
+  border-color: rgb(71 85 105);
+  background-color: rgb(15 23 42);
+  color: rgb(241 245 249);
+}
+
+.dark .section-btn--secondary:not([data-light-surface] *):hover {
+  background-color: rgb(30 41 59);
+}
+
+.dark .section-btn--ghost:not([data-light-surface] *) {
+  color: rgb(226 232 240);
+}
+
+.dark .section-btn--ghost:not([data-light-surface] *):hover {
+  background-color: rgb(30 41 59);
+}
+
+/* Forced light section band — ink buttons even when site is dark */
+[data-section-theme="light"] .section-btn--secondary,
+[data-section-surface="light-card"] .section-btn--secondary,
+[data-light-surface] .section-btn--secondary,
+[data-btn-surface="light"] .section-btn--secondary {
+  border-color: rgb(203 213 225);
+  background-color: #fff;
+  color: rgb(30 41 59);
+}
+
+[data-section-theme="light"] .section-btn--secondary:hover,
+[data-light-surface] .section-btn--secondary:hover,
+[data-btn-surface="light"] .section-btn--secondary:hover {
+  background-color: rgb(248 250 252);
+  border-color: rgb(148 163 184);
+}
+
+[data-section-theme="light"] .section-btn--ghost,
+[data-light-surface] .section-btn--ghost,
+[data-btn-surface="light"] .section-btn--ghost {
+  background-color: transparent;
+  border-color: transparent;
+  color: rgb(51 65 85);
+}
+
+[data-section-theme="light"] .section-btn--ghost:hover,
+[data-light-surface] .section-btn--ghost:hover,
+[data-btn-surface="light"] .section-btn--ghost:hover {
+  background-color: rgb(241 245 249);
+}
+
+[data-section-theme="light"] .section-btn--outline,
+[data-light-surface] .section-btn--outline,
+[data-btn-surface="light"] .section-btn--outline {
+  background-color: transparent;
+  border-color: var(--brand);
+  color: var(--brand);
+}
+
+[data-section-theme="light"] .section-btn--link,
+[data-light-surface] .section-btn--link,
+[data-btn-surface="light"] .section-btn--link {
+  color: var(--brand);
+}
+
+[data-section-theme="light"] .section-btn--inverse,
+[data-light-surface] .section-btn--inverse,
+[data-btn-surface="light"] .section-btn--inverse {
+  background-color: #fff;
+  color: var(--ink);
+  border-color: transparent;
+}
+
+[data-section-theme="light"] .section-btn--cms-manage,
+[data-btn-surface="light"] .section-btn--cms-manage {
+  border-color: rgb(203 213 225);
+  background-color: rgb(255 255 255 / 0.85);
+  color: rgb(71 85 105);
+}
+
+/* Dark section band or explicit on-dark surface */
+[data-section-theme="dark"] .section-btn--primary:not([data-light-surface] *):not([data-btn-surface="light"]),
+[data-btn-surface="dark"] .section-btn--primary {
+  background-color: var(--brand);
+  color: #fff;
+}
+
+[data-section-theme="dark"] .section-btn--primary:not([data-light-surface] *):not([data-btn-surface="light"]):hover,
+[data-btn-surface="dark"] .section-btn--primary:hover {
+  background-color: var(--brand-hover);
+}
+
+[data-section-theme="dark"] .section-btn--secondary:not([data-light-surface] *):not([data-btn-surface="light"]),
+[data-section-theme="dark"] .section-btn--outline:not([data-light-surface] *):not([data-btn-surface="light"]),
+[data-section-theme="dark"] .section-btn--ghost:not([data-light-surface] *):not([data-btn-surface="light"]),
+[data-btn-surface="dark"] .section-btn--secondary,
+[data-btn-surface="dark"] .section-btn--outline,
+[data-btn-surface="dark"] .section-btn--ghost {
+  border-color: rgb(255 255 255 / 0.45);
+  background-color: rgb(255 255 255 / 0.1);
+  color: #fff;
+}
+
+[data-section-theme="dark"] .section-btn--secondary:not([data-light-surface] *):not([data-btn-surface="light"]):hover,
+[data-section-theme="dark"] .section-btn--outline:not([data-light-surface] *):not([data-btn-surface="light"]):hover,
+[data-section-theme="dark"] .section-btn--ghost:not([data-light-surface] *):not([data-btn-surface="light"]):hover,
+[data-btn-surface="dark"] .section-btn--secondary:hover,
+[data-btn-surface="dark"] .section-btn--outline:hover,
+[data-btn-surface="dark"] .section-btn--ghost:hover {
+  background-color: rgb(255 255 255 / 0.2);
+  border-color: rgb(255 255 255 / 0.55);
+}
+
+[data-section-theme="dark"] .section-btn--outline:not([data-light-surface] *):not([data-btn-surface="light"]),
+[data-btn-surface="dark"] .section-btn--outline {
+  border-width: 2px;
+  background-color: transparent;
+}
+
+[data-section-theme="dark"] .section-btn--outline:not([data-light-surface] *):not([data-btn-surface="light"]):hover,
+[data-btn-surface="dark"] .section-btn--outline:hover {
+  background-color: rgb(255 255 255 / 0.1);
+}
+
+[data-section-theme="dark"] .section-btn--link:not([data-light-surface] *):not([data-btn-surface="light"]),
+[data-btn-surface="dark"] .section-btn--link {
+  color: #fff;
+}
+
+[data-section-theme="dark"] .section-btn--link:not([data-light-surface] *):not([data-btn-surface="light"]):hover,
+[data-btn-surface="dark"] .section-btn--link:hover {
+  color: rgb(255 255 255 / 0.85);
+}
+
+[data-section-theme="dark"] .section-btn--inverse:not([data-light-surface] *):not([data-btn-surface="light"]),
+[data-btn-surface="dark"] .section-btn--inverse {
+  background-color: #fff;
+  color: var(--ink);
+  border-color: transparent;
+}
+
+[data-section-theme="dark"] .section-btn--inverse:not([data-light-surface] *):not([data-btn-surface="light"]):hover,
+[data-btn-surface="dark"] .section-btn--inverse:hover {
+  background-color: rgb(241 245 249);
+}
+
+[data-section-theme="dark"] .section-btn--cms-manage:not([data-light-surface] *),
+[data-btn-surface="dark"] .section-btn--cms-manage {
+  border-color: rgb(255 255 255 / 0.4);
+  background-color: rgb(255 255 255 / 0.1);
+  color: #fff;
+}
+
+[data-section-theme="dark"] .section-btn--cms-manage:not([data-light-surface] *):hover,
+[data-btn-surface="dark"] .section-btn--cms-manage:hover {
+  background-color: rgb(255 255 255 / 0.2);
+}
+
+[data-light-surface] .section-btn--primary,
+[data-btn-surface="light"] .section-btn--primary {
+  background-color: var(--brand);
+  color: #fff;
+}
+
+[data-light-surface] .section-btn--primary:hover,
+[data-btn-surface="light"] .section-btn--primary:hover {
+  background-color: var(--brand-hover);
 }
 
 @keyframes megaIn {

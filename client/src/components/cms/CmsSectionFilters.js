@@ -10,11 +10,12 @@ import {
 } from "@/lib/content-scope";
 
 export function sectionCategory(section) {
+  const fromApi = String(
+    section?.category_key || section?.category || ""
+  ).toLowerCase();
+  if (fromApi) return fromApi;
   const catalog = getSectionCatalogMeta(section?.key);
-  return (
-    String(section?.category || catalog?.category || "").toLowerCase() ||
-    "uncategorized"
-  );
+  return String(catalog?.category || "").toLowerCase() || "uncategorized";
 }
 
 /** Legacy type buckets used by add-section pickers */
@@ -145,7 +146,11 @@ export function FilterGroup({
   );
 }
 
-export function buildCategoryOptions(sections = []) {
+export function buildCategoryOptions(sections = [], categories = null) {
+  const catList =
+    categories && categories.length
+      ? categories.map((c) => ({ key: c.key, name: c.name }))
+      : SECTION_CATEGORIES;
   const counts = { all: sections.length, uncategorized: 0 };
   for (const section of sections) {
     const category = sectionCategory(section);
@@ -153,7 +158,7 @@ export function buildCategoryOptions(sections = []) {
   }
   const options = [
     { value: "all", label: "All categories", count: counts.all },
-    ...SECTION_CATEGORIES.map((category) => ({
+    ...catList.map((category) => ({
       value: category.key,
       label: category.name,
       count: counts[category.key] || 0,

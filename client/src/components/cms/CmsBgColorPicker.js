@@ -121,10 +121,17 @@ export default function CmsBgColorPicker({
   onChange,
   variant = "theme",
   defaultLabel = "Default",
+  /** When set, only show presets for this band tone (light or dark). */
+  toneFilter = null,
 }) {
   const current = String(value || "");
-  const showLight = variant === "theme" || variant === "band";
-  const showDark = variant === "theme" || variant === "banner";
+  const filter = toneFilter === "light" || toneFilter === "dark" ? toneFilter : null;
+  const showLight =
+    filter === "light" ||
+    (!filter && (variant === "theme" || variant === "band"));
+  const showDark =
+    filter === "dark" ||
+    (!filter && (variant === "theme" || variant === "banner"));
   const showBoth = showLight && showDark;
 
   const lightSolids =
@@ -135,11 +142,15 @@ export default function CmsBgColorPicker({
   return (
     <div className="block space-y-3 text-sm">
       <p className="m-0 text-[11px] text-slate-500">
-        {showBoth
-          ? "Pick by light or dark look — section text should contrast with the bg."
-          : variant === "band"
-            ? "Light / bright bands — usually with white titles."
-            : "Dark backgrounds — usually with white text."}
+        {filter === "light"
+          ? "Light-band presets — pair with dark text on the band."
+          : filter === "dark"
+            ? "Dark-band presets — pair with light text on the band."
+            : showBoth
+              ? "Pick by light or dark look — section text should contrast with the bg."
+              : variant === "band"
+                ? "Light / bright bands — usually with white titles."
+                : "Dark backgrounds — usually with white text."}
       </p>
 
       <button

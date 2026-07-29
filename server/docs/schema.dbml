@@ -149,11 +149,23 @@ Table pages {
   Note: 'Page templates (product, course, vendor, home, …)'
 }
 
+Table section_categories {
+  id varchar [primary key, note: 'ObjectId']
+  key varchar [unique, not null]
+  name varchar [not null]
+  description text
+  sort_order integer
+  status boolean [default: true]
+  createdAt timestamp
+  updatedAt timestamp
+}
+
 Table sections {
   id varchar [primary key, note: 'ObjectId']
   key varchar [unique, not null, note: 'snake_case section key']
   name varchar [not null]
   description text [default: '']
+  section_category varchar [note: 'ObjectId → section_categories']
   section_title varchar
   sub_title varchar
   in_page_nav_title varchar
@@ -183,7 +195,6 @@ Table section_page_tags {
   in_page_nav_title varchar
   section_bg_img varchar
   section_img_url varchar
-  section_preview_img varchar
   data jsonb
   status boolean [default: true]
 
@@ -196,7 +207,6 @@ Table entity_page_sections {
   entity_id varchar [not null, note: 'ObjectId of vendor|product|course|…']
   page_tag_id varchar [note: 'Section.pages[]._id — null = entity-only extra']
   section varchar [not null, note: 'ObjectId → sections']
-  section_key varchar [not null]
   sort_order integer
   section_title varchar
   sub_title varchar

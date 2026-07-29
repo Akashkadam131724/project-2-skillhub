@@ -1,28 +1,33 @@
 import Section, { normalizeContentScope } from "./section.model.js";
 import Page from "./page.model.js";
+import SectionCategory from "./section-category.model.js";
+import { getSectionCatalogMeta } from "./section.catalog.js";
 import {
-  getSectionCatalogMeta,
-  normalizeSectionTags,
-} from "./section.catalog.js";
+  formatSectionJson,
+  formatSectionsJson,
+  resolveSectionCategoryId,
+} from "./section-category.utils.js";
 import { formatMongooseError } from "../../utils/formatMongooseError.js";
+
+async function applyCategoryFromBody(rest) {
+  const categoryKey =
+    rest.category_key ||
+    rest.category ||
+    getSectionCatalogMeta(rest.key)?.category ||
+    "";
+  delete rest.category;
+  delete rest.category_key;
+  delete rest.tags;
+
+  const catId = await resolveSectionCategoryId(categoryKey);
+  if (catId) rest.section_category = catId;
+}
 
 export const createSection = async (req, res) => {
   try {
     const { pages: pageTags, ...rest } = req.body;
 
-    // Default category/tags from catalog when creating a known section key
-    const catalog = getSectionCatalogMeta(rest.key);
-    if (catalog) {
-      if (rest.category === undefined || rest.category === "") {
-        rest.category = catalog.category;
-      }
-      if (rest.tags === undefined) {
-        rest.tags = catalog.tags;
-      }
-    }
-    if (rest.tags !== undefined) {
-      rest.tags = normalizeSectionTags(rest.tags);
-    }
+    await applyCategoryFromBody(rest);
 
     const section = new Section(rest);
 
@@ -45,7 +50,7 @@ export const createSection = async (req, res) => {
           section_bg_color: tag.section_bg_color ?? null,
           in_page_nav_title: tag.in_page_nav_title ?? null,
           section_img_url: tag.section_img_url ?? null,
-          section_preview_img: section.section_preview_img || null,
+          section_theme: tag.section_theme ?? null,
           data: tag.data ?? null,
           status: tag.status !== false,
         };
@@ -56,7 +61,8 @@ export const createSection = async (req, res) => {
     }
 
     await section.save();
-    res.status(201).json({ success: true, data: section });
+    await section.populate("section_category", "key name");
+    res.status(201).json({ success: true, data: formatSectionJson(section) });
   } catch (err) {
     const formatted = formatMongooseError(err);
     res.status(formatted.status).json(formatted);
@@ -88,35 +94,37 @@ export const getSections = async (req, res) => {
           ...(filter.$and || []),
           {
             $or: [
-              { category: "" },
-              { category: null },
-              { category: { $exists: false } },
+              { section_category: null },
+              { section_category: { $exists: false } },
             ],
           },
         ];
       } else {
-        filter.category = category;
+        const cat = await SectionCategory.findByKey(category).select("_id").lean();
+        filter.section_category = cat?._id || null;
       }
-    }
-    if (req.query.tag) {
-      filter.tags = String(req.query.tag).toLowerCase().trim();
     }
     if (req.query.q) {
       const q = { $regex: req.query.q, $options: "i" };
       filter.$and = [
         ...(filter.$and || []),
         {
-          $or: [{ name: q }, { key: q }, { category: q }, { tags: q }],
+          $or: [{ name: q }, { key: q }],
         },
       ];
     }
 
     const sections = await Section.find(filter)
       .populate("pages.page", "key name status entity_type")
+      .populate("section_category", "key name sort_order")
       .sort({ name: 1 })
       .lean();
 
-    res.json({ success: true, count: sections.length, data: sections });
+    res.json({
+      success: true,
+      count: sections.length,
+      data: formatSectionsJson(sections),
+    });
   } catch (err) {
     const formatted = formatMongooseError(err);
     res.status(formatted.status).json(formatted);
@@ -125,14 +133,13 @@ export const getSections = async (req, res) => {
 
 export const getSectionByKey = async (req, res) => {
   try {
-    const section = await Section.findByKey(req.params.key).populate(
-      "pages.page",
-      "key name status entity_type"
-    );
+    const section = await Section.findByKey(req.params.key)
+      .populate("pages.page", "key name status entity_type")
+      .populate("section_category", "key name sort_order");
     if (!section) {
       return res.status(404).json({ success: false, message: "Section not found" });
     }
-    res.json({ success: true, data: section });
+    res.json({ success: true, data: formatSectionJson(section) });
   } catch (err) {
     const formatted = formatMongooseError(err);
     res.status(formatted.status).json(formatted);
@@ -145,8 +152,8 @@ export const updateSection = async (req, res) => {
     const allowed = [
       "name",
       "description",
-      "category",
-      "tags",
+      "section_category",
+      "category_key",
       "section_title",
       "sub_title",
       "in_page_nav_title",
@@ -155,6 +162,7 @@ export const updateSection = async (req, res) => {
       "section_bg_img",
       "section_bg_color",
       "section_img_url",
+      "section_theme",
       "section_preview_img",
       "data",
       "buttons",
@@ -175,13 +183,10 @@ export const updateSection = async (req, res) => {
     if (patch.content_scope !== undefined) {
       patch.content_scope = normalizeContentScope(patch.content_scope);
     }
-    if (patch.tags !== undefined) {
-      patch.tags = normalizeSectionTags(patch.tags);
-    }
-    if (patch.category !== undefined) {
-      patch.category = String(patch.category || "")
-        .toLowerCase()
-        .trim();
+    if (patch.category_key !== undefined) {
+      const catId = await resolveSectionCategoryId(patch.category_key);
+      patch.section_category = catId;
+      delete patch.category_key;
     }
 
     if (Object.keys(patch).length === 0) {
@@ -195,12 +200,13 @@ export const updateSection = async (req, res) => {
       { key: String(req.params.key).toLowerCase() },
       { $set: patch },
       { new: true, runValidators: true }
-    ).populate("pages.page", "key name status entity_type");
+    ).populate("pages.page", "key name status entity_type")
+      .populate("section_category", "key name sort_order");
 
     if (!section) {
       return res.status(404).json({ success: false, message: "Section not found" });
     }
-    res.json({ success: true, data: section });
+    res.json({ success: true, data: formatSectionJson(section) });
   } catch (err) {
     const formatted = formatMongooseError(err);
     res.status(formatted.status).json(formatted);
@@ -275,7 +281,7 @@ export const setSectionPages = async (req, res) => {
         section_bg_img: tag.section_bg_img ?? null,
         section_bg_color: tag.section_bg_color ?? null,
         section_img_url: tag.section_img_url ?? null,
-        section_preview_img: section.section_preview_img || null,
+        section_theme: tag.section_theme ?? null,
         data: tag.data ?? null,
         status: tag.status !== false,
       };
@@ -326,7 +332,7 @@ export const tagSectionPage = async (req, res) => {
       section_bg_color: req.body.section_bg_color ?? null,
       in_page_nav_title: req.body.in_page_nav_title ?? null,
       section_img_url: req.body.section_img_url ?? null,
-      section_preview_img: section.section_preview_img || null,
+      section_theme: req.body.section_theme ?? null,
       data: req.body.data ?? null,
       status: req.body.status !== false,
     };
@@ -368,6 +374,7 @@ export const updateSectionPageTag = async (req, res) => {
       "section_bg_color",
       "in_page_nav_title",
       "section_img_url",
+      "section_theme",
       "buttons",
       "items",
       "data",

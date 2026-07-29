@@ -38,7 +38,7 @@ export default function HeroCenteredSection({
             section_title={section_title}
             cmsMode={cmsMode}
             onEditField={onEditField}
-            className="m-0 text-3xl leading-tight font-bold tracking-tight text-ink sm:text-4xl lg:text-5xl dark:text-white"
+            className="m-0 text-3xl leading-tight font-bold tracking-tight section-theme-heading sm:text-4xl lg:text-5xl"
           />
           <HeroSubtitle
             sub_title={sub_title}

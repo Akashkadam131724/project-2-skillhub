@@ -23,10 +23,10 @@ export default function CmsSectionItemsBar({
     <div
       className={`mb-3 flex flex-wrap items-center justify-between gap-2 ${className}`.trim()}
     >
-      <p className="m-0 text-[11px] font-semibold tracking-wide text-slate-500 uppercase">
+      <p className="section-theme-muted m-0 text-[11px] font-semibold tracking-wide uppercase">
         {config.label}
         {itemCount ? (
-          <span className="ml-1.5 font-normal normal-case text-slate-400">
+          <span className="section-theme-subtle ml-1.5 font-normal normal-case">
             · {itemCount}
           </span>
         ) : null}
@@ -38,7 +38,7 @@ export default function CmsSectionItemsBar({
           e.stopPropagation();
           onEditField?.("items");
         }}
-        className="inline-flex items-center gap-1.5 rounded-lg border border-dashed border-slate-300 bg-white px-3 py-1.5 text-[11px] font-semibold text-slate-700 transition hover:border-brand hover:text-brand dark:border-slate-600 dark:bg-slate-900 dark:text-slate-200"
+        className="inline-flex items-center gap-1.5 rounded-lg border border-dashed border-slate-300 bg-white px-3 py-1.5 text-[11px] font-semibold text-slate-700 transition hover:border-brand hover:text-brand dark:text-slate-200"
       >
         <span aria-hidden>{itemCount ? "✎" : "+"}</span>
         {itemCount ? `Edit ${label}` : `Add ${label}`}

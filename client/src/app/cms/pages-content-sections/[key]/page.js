@@ -55,7 +55,7 @@ export default function CmsSectionDetailPage() {
       setMeta({
         name: data.name || "",
         description: data.description || "",
-        category: data.category || "",
+        category: data.category_key || data.category || "",
         content_scope: normalizeContentScope(data.content_scope),
         section_preview_img: data.section_preview_img || "",
       });
@@ -78,7 +78,7 @@ export default function CmsSectionDetailPage() {
         setMeta({
           name: data.name || "",
           description: data.description || "",
-          category: data.category || "",
+          category: data.category_key || data.category || "",
           content_scope: normalizeContentScope(data.content_scope),
           section_preview_img: data.section_preview_img || "",
         });
@@ -106,7 +106,7 @@ export default function CmsSectionDetailPage() {
       await updateSection(sectionKey, {
         name: meta.name,
         description: meta.description,
-        category: meta.category || "",
+        category_key: meta.category || "",
         content_scope: meta.content_scope,
         section_preview_img: meta.section_preview_img || "",
       });
@@ -400,6 +400,7 @@ export default function CmsSectionDetailPage() {
       <CmsSectionLiveEditor
         section={liveSection}
         onSavePatch={saveContentPatch}
+        onAfterFieldSave={load}
         layerLabel="Global"
         saveLabel="Save global content"
         showVisibilityToggle

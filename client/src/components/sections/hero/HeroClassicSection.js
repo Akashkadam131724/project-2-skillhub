@@ -51,7 +51,7 @@ function TrustRow() {
       {TRUST_STATS.map((stat) => (
         <div key={stat.label}>
           <dt className="sr-only">{stat.label}</dt>
-          <dd className="m-0 font-[family-name:var(--font-display)] text-xl font-semibold tracking-tight text-ink sm:text-2xl dark:text-white">
+          <dd className="m-0 font-[family-name:var(--font-display)] text-xl font-semibold tracking-tight section-theme-heading sm:text-2xl">
             {stat.value}
           </dd>
           <dd className="mt-1 text-[11px] font-medium tracking-wide text-slate-500 uppercase sm:text-xs dark:text-slate-400">
@@ -77,7 +77,7 @@ function HeroVisualPanel({ imageUrl, cmsMode, onEditField, section_img_url, sect
         className="absolute top-8 -left-6 size-36 rounded-full bg-ink/5 blur-3xl"
       />
 
-      <div className="relative overflow-hidden rounded-[1.75rem] border border-slate-200/80 bg-white p-2 shadow-[0_32px_80px_-32px_color-mix(in_srgb,var(--ink)_28%,transparent)] dark:border-slate-800 dark:bg-slate-950">
+      <div className="relative overflow-hidden rounded-[1.75rem] border border-slate-200/80 bg-white p-2 shadow-[0_32px_80px_-32px_color-mix(in_srgb,var(--ink)_28%,transparent)]">
         {cmsMode && !hasMediaUrl(section_img_url) ? (
           <div className="absolute top-4 left-4 z-10">
             <HeroImage
@@ -95,26 +95,26 @@ function HeroVisualPanel({ imageUrl, cmsMode, onEditField, section_img_url, sect
         />
 
         <div className="absolute inset-x-4 bottom-4 grid gap-2 sm:grid-cols-2">
-          <div className="rounded-xl border border-white/60 bg-white/90 p-3 shadow-lg backdrop-blur-md dark:border-slate-700/60 dark:bg-slate-950/90">
+          <div className="rounded-xl border border-white/60 bg-white/90 p-3 shadow-lg backdrop-blur-md">
             <p className="m-0 text-[10px] font-semibold tracking-[0.16em] text-slate-400 uppercase">
               Active paths
             </p>
-            <p className="mt-1 mb-0 text-sm font-semibold text-ink dark:text-white">
+            <p className="mt-1 mb-0 text-sm font-semibold section-theme-heading">
               Cloud · Security · Data
             </p>
           </div>
-          <div className="rounded-xl border border-white/60 bg-white/90 p-3 shadow-lg backdrop-blur-md dark:border-slate-700/60 dark:bg-slate-950/90">
+          <div className="rounded-xl border border-white/60 bg-white/90 p-3 shadow-lg backdrop-blur-md">
             <p className="m-0 text-[10px] font-semibold tracking-[0.16em] text-slate-400 uppercase">
               Outcome focus
             </p>
-            <p className="mt-1 mb-0 text-sm font-semibold text-ink dark:text-white">
+            <p className="mt-1 mb-0 text-sm font-semibold section-theme-heading">
               Role-based learning tracks
             </p>
           </div>
         </div>
       </div>
 
-      <div className="absolute -top-3 -right-2 hidden rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-ink shadow-md sm:inline-flex dark:border-slate-700 dark:bg-slate-900 dark:text-white">
+      <div className="absolute -top-3 -right-2 hidden rounded-full section-ui-card border px-3 py-1.5 text-xs font-semibold section-theme-heading shadow-md sm:inline-flex">
         <span className="mr-1.5 inline-block size-2 rounded-full bg-emerald-500" />
         Live catalog
       </div>
@@ -179,7 +179,7 @@ export default function HeroClassicSection({
               visible ? "translate-y-0 opacity-100" : "translate-y-5 opacity-0"
             }`}
           >
-            <p className="m-0 mb-4 inline-flex w-fit items-center gap-2 rounded-full border border-slate-200/80 bg-white/80 px-3 py-1 text-[11px] font-semibold tracking-[0.18em] text-slate-500 uppercase shadow-sm backdrop-blur-sm dark:border-slate-700 dark:bg-slate-900/80 dark:text-slate-300">
+            <p className="m-0 mb-4 inline-flex w-fit items-center gap-2 rounded-full section-ui-card border px-3 py-1 text-[11px] font-semibold tracking-[0.18em] text-slate-500 uppercase shadow-sm backdrop-blur-sm dark:text-slate-300">
               <span className="size-1.5 rounded-full bg-brand" />
               Workforce learning platform
             </p>
@@ -189,7 +189,7 @@ export default function HeroClassicSection({
                 section_title={section_title}
                 cmsMode={cmsMode}
                 onEditField={onEditField}
-                className="m-0 font-[family-name:var(--font-display)] text-[2.15rem] leading-[1.06] font-semibold tracking-tight text-ink sm:text-[2.75rem] lg:text-[3.5rem] dark:text-white"
+                className="m-0 font-[family-name:var(--font-display)] text-[2.15rem] leading-[1.06] font-semibold tracking-tight section-theme-heading sm:text-[2.75rem] lg:text-[3.5rem]"
               />
               <HeroSubtitle
                 sub_title={sub_title}

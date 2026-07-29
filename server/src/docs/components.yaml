@@ -405,7 +405,7 @@ Section:
 
 EntityPageSection:
   type: object
-  required: [page_key, entity_id, section, section_key]
+  required: [page_key, entity_id, section]
   properties:
     _id:
       type: string
@@ -417,8 +417,6 @@ EntityPageSection:
       type: string
       nullable: true
     section:
-      type: string
-    section_key:
       type: string
     sort_order:
       type: integer

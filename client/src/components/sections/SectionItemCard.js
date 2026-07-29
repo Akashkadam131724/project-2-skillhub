@@ -18,38 +18,48 @@ import {
 import {
   AwardCard,
   TrainingOptionCard,
-} from "@/components/sections/cards/CardItems";
-import { TestimonialSlide } from "@/components/sections/testimonials";
+} from "@/components/sections/features/cards/CardItems";
+import { TestimonialSlide } from "@/components/sections/social_proof/testimonials";
 
 function Placeholder({ children }) {
-  return <span className="text-slate-300 italic dark:text-slate-600">{children}</span>;
+  return (
+    <span className="section-theme-placeholder italic">{children}</span>
+  );
 }
 
 /** Shared FAQ accordion row — used on page + CMS preview */
-export function FaqItemCard({ item, preview = false, index = 0 }) {
+export function FaqItemCard({ item, preview = false, index = 0, onDarkBand = false }) {
   const q = itemQuestion(item);
   const a = itemAnswer(item);
   const hasButtons = Array.isArray(item.buttons) && item.buttons.length > 0;
   const n = String((index ?? 0) + 1).padStart(2, "0");
 
   return (
-    <div className="overflow-hidden rounded-[1.25rem] border border-slate-200/80 bg-white shadow-[0_12px_40px_-32px_color-mix(in_srgb,var(--ink)_35%,transparent)] dark:border-slate-800 dark:bg-slate-950">
+    <div
+      {...(onDarkBand
+        ? { "data-section-surface": "glass-card" }
+        : { "data-section-surface": "light-card", "data-light-surface": "" })}
+      className={`section-ui-card overflow-hidden rounded-[1.25rem] border shadow-[0_12px_40px_-32px_rgba(0,0,0,0.45)] ${onDarkBand ? "section-glass-card-shell" : "section-light-card"
+        }`}
+    >
       <details open={preview || undefined} className="group/faq">
         <summary
-          className={`flex list-none items-start justify-between gap-4 px-5 py-5 text-left outline-none marker:content-none sm:px-6 [&::-webkit-details-marker]:hidden ${
-            preview ? "cursor-default" : "cursor-pointer"
-          }`}
+          className={`flex list-none items-start justify-between gap-4 px-5 py-5 text-left outline-none marker:content-none sm:px-6 [&::-webkit-details-marker]:hidden ${preview ? "cursor-default" : "cursor-pointer"
+            }`}
         >
           <span className="flex min-w-0 flex-1 items-start gap-4">
-            <span className="mt-0.5 shrink-0 font-[family-name:var(--font-display)] text-lg font-semibold text-brand/70">
+            <span className="section-faq-index mt-0.5 shrink-0 font-[family-name:var(--font-display)] text-lg font-semibold">
               {n}
             </span>
-            <span className="min-w-0 flex-1 text-base font-semibold leading-snug tracking-tight text-ink sm:text-lg dark:text-white">
+            <span className="min-w-0 flex-1 text-base font-semibold leading-snug tracking-tight section-theme-heading sm:text-lg">
               {q || (preview ? <Placeholder>Question…</Placeholder> : null)}
             </span>
           </span>
           <span
-            className="mt-0.5 inline-flex size-8 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-slate-50 text-lg leading-none font-light text-ink transition group-open/faq:border-brand group-open/faq:bg-brand group-open/faq:text-white dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
+            className={`mt-0.5 inline-flex size-8 shrink-0 items-center justify-center rounded-full border text-lg leading-none font-light transition group-open/faq:border-brand group-open/faq:bg-brand group-open/faq:text-white ${onDarkBand
+                ? "border-[color:var(--card-border)] bg-[color:color-mix(in_srgb,var(--card-bg)_80%,transparent)] text-[color:var(--card-fg)]"
+                : "border-[color:var(--card-border)] bg-[color:var(--ds-light-field-bg)] text-[color:var(--ds-light-card-fg)]"
+              }`}
             aria-hidden
           >
             <span className="group-open/faq:hidden">+</span>
@@ -57,15 +67,17 @@ export function FaqItemCard({ item, preview = false, index = 0 }) {
           </span>
         </summary>
         {(!isRichTextEmpty(a) || preview || hasButtons) && (
-          <div className="border-t border-slate-200/80 px-5 pb-5 sm:px-6 sm:pb-6 dark:border-slate-800">
+          <div
+            className={`border-t px-5 pb-5 sm:px-6 sm:pb-6 border-[color:var(--card-border)]`}
+          >
             <div className="pt-4 pl-10 sm:pl-12">
               {!isRichTextEmpty(a) || preview ? (
                 <CmsRichText
                   html={a}
-                  className="text-[15px] leading-relaxed text-slate-600 sm:text-base dark:text-slate-300"
+                  className="section-theme-muted text-[15px] leading-relaxed sm:text-base"
                   empty={
                     preview ? (
-                      <p className="m-0 text-[15px] leading-relaxed text-slate-600 sm:text-base dark:text-slate-300">
+                      <p className="section-theme-muted m-0 text-[15px] leading-relaxed sm:text-base">
                         <Placeholder>Answer…</Placeholder>
                       </p>
                     ) : null
@@ -76,6 +88,7 @@ export function FaqItemCard({ item, preview = false, index = 0 }) {
                 <div className="mt-4">
                   <SectionButtons
                     buttons={item.buttons}
+                    inverted={onDarkBand}
                     className="flex flex-wrap items-center gap-2"
                   />
                 </div>
@@ -95,7 +108,11 @@ export function BenefitItemCard({ item, preview = false }) {
   const showImage = Boolean(imgSrc) || preview;
 
   return (
-    <article className="flex h-full flex-col overflow-hidden rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-950">
+    <article
+      data-section-surface="light-card"
+      data-light-surface=""
+      className="section-light-card section-ui-card flex h-full flex-col overflow-hidden rounded-xl border"
+    >
       {showImage ? (
         <div className="relative h-56 w-full shrink-0 overflow-hidden sm:aspect-[16/10] sm:h-auto">
           {imgSrc ? (
@@ -113,16 +130,16 @@ export function BenefitItemCard({ item, preview = false }) {
         </div>
       ) : null}
       <div className="flex flex-1 flex-col gap-2 px-4 py-4 sm:px-5 sm:py-5">
-        <h3 className="m-0 text-base font-bold leading-snug tracking-tight text-ink sm:text-[1.05rem] dark:text-white">
+        <h3 className="m-0 text-base font-bold leading-snug tracking-tight section-theme-heading sm:text-[1.05rem]">
           {title || (preview ? <Placeholder>Benefit…</Placeholder> : null)}
         </h3>
         {!isRichTextEmpty(desc) || preview ? (
           <CmsRichText
             html={desc}
-            className="text-sm leading-relaxed text-slate-600 dark:text-slate-300"
+            className="text-sm leading-relaxed section-theme-muted"
             empty={
               preview ? (
-                <p className="m-0 text-sm leading-relaxed text-slate-600 dark:text-slate-300">
+                <p className="m-0 text-sm leading-relaxed section-theme-muted">
                   <Placeholder>Description…</Placeholder>
                 </p>
               ) : null
@@ -140,17 +157,38 @@ export function BenefitItemCard({ item, preview = false }) {
   );
 }
 
-export function StatItemCard({ item, preview = false, className = "" }) {
+export function StatItemCard({
+  item,
+  preview = false,
+  className = "",
+  variant = "dark",
+}) {
   const value = itemStatValue(item);
   const label = itemStatLabel(item);
+  const light = variant === "light";
+
   return (
     <div
-      className={`flex h-full flex-col items-center justify-center px-4 py-8 text-center sm:px-6 sm:py-10 ${className}`.trim()}
+      data-light-surface={light ? "" : undefined}
+      className={`flex h-full flex-col items-center justify-center px-4 py-8 text-center sm:px-6 sm:py-10 ${light ? "rounded-xl section-ui-card border" : ""
+        } ${className}`.trim()}
     >
-      <p className="m-0 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl dark:text-white">
+      <p
+        className={
+          light
+            ? "m-0 text-3xl font-bold tracking-tight text-ink sm:text-4xl"
+            : "m-0 text-3xl font-bold tracking-tight section-theme-heading sm:text-4xl"
+        }
+      >
         {value || (preview ? <Placeholder>0</Placeholder> : null)}
       </p>
-      <p className="mt-2 mb-0 max-w-[12rem] text-sm leading-snug text-slate-500 sm:max-w-[14rem] sm:text-[15px] dark:text-slate-400">
+      <p
+        className={
+          light
+            ? "mt-2 mb-0 max-w-[14rem] text-sm leading-snug text-slate-600 sm:max-w-[14rem] sm:text-[15px]"
+            : "mt-2 mb-0 max-w-[12rem] text-sm leading-snug text-slate-500 sm:max-w-[14rem] sm:text-[15px] dark:text-slate-400"
+        }
+      >
         {label || (preview ? <Placeholder>Label</Placeholder> : null)}
       </p>
     </div>
@@ -161,7 +199,7 @@ export function TestimonialItemCard({ item, preview = false }) {
   const quote = itemQuote(item);
   const author = itemAuthor(item);
   return (
-    <blockquote className="m-0 rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-950">
+    <blockquote className="m-0 rounded-xl section-ui-card border p-4">
       {!isRichTextEmpty(quote) || preview ? (
         <CmsRichText
           html={quote}
@@ -187,7 +225,10 @@ export function TestimonialItemCard({ item, preview = false }) {
 /** Carousel-style customer testimonial (stars + quote + author + logo) */
 export function CustomerTestimonialItemCard({ item, preview = false }) {
   return (
-    <div className="rounded-xl border border-slate-200 bg-white px-4 py-4 dark:border-slate-800 dark:bg-slate-950">
+    <div
+      data-light-surface
+      className="rounded-xl section-ui-card border px-4 py-4"
+    >
       <TestimonialSlide item={item} preview={preview} />
     </div>
   );
@@ -233,7 +274,7 @@ export function TextMediaItemCard({ item, preview = false }) {
   const src = mediaUrl(item?.image_url || "");
   const side = String(item?.value || "").trim() || "auto";
   return (
-    <div className="flex gap-3 rounded-lg border border-slate-200 bg-white p-3 dark:border-slate-800 dark:bg-slate-950">
+    <div className="flex gap-3 rounded-lg section-ui-card border p-3">
       {src ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img src={src} alt={mediaAlt(item, "Media")} className="h-14 w-20 shrink-0 object-cover" />
@@ -243,7 +284,7 @@ export function TextMediaItemCard({ item, preview = false }) {
         </div>
       ) : null}
       <div className="min-w-0 flex-1">
-        <p className="m-0 text-sm font-semibold text-ink dark:text-white">
+        <p className="m-0 text-sm font-semibold section-theme-heading">
           {title || (preview ? <Placeholder>Headline…</Placeholder> : null)}
         </p>
         {richTextPlainPreview(item?.body) ? (
@@ -266,12 +307,63 @@ export function CurriculumItemCard({ item, preview = false }) {
   );
 }
 
-export function WhyChooseItemCard({ item, preview = false, index = 0 }) {
+export function WhyChooseItemCard({
+  item,
+  preview = false,
+  index = 0,
+  variant = "dark",
+}) {
   const title = itemTitle(item);
   const desc = item.body || item.subtitle;
   const imgSrc = mediaUrl(item.image_url || item.icon || "");
   const showIcon = Boolean(imgSrc) || preview;
   const n = String((index ?? 0) + 1).padStart(2, "0");
+  const light = variant === "light";
+
+  if (light) {
+    return (
+      <article
+        data-light-surface
+        className="group relative flex h-full flex-col overflow-hidden rounded-[1.35rem] border border-slate-200/90 bg-white p-6 shadow-[0_12px_40px_-28px_color-mix(in_srgb,var(--ink)_25%,transparent)] transition hover:border-brand/25 hover:shadow-md sm:p-7"
+      >
+        <div className="relative mb-5 flex items-start justify-between gap-3">
+          {showIcon ? (
+            <div className="flex size-14 items-center justify-center rounded-2xl bg-brand-soft ring-1 ring-brand/10">
+              {imgSrc ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={imgSrc}
+                  alt={mediaAlt(item, "Feature icon")}
+                  className="max-h-8 max-w-8 object-contain"
+                />
+              ) : (
+                <div className="size-8 rounded-xl bg-brand/20" />
+              )}
+            </div>
+          ) : null}
+          <span className="font-[family-name:var(--font-display)] text-2xl font-semibold text-slate-200">
+            {n}
+          </span>
+        </div>
+        <h3 className="relative m-0 text-lg leading-snug font-semibold tracking-tight text-ink sm:text-xl">
+          {title || (preview ? <Placeholder>Feature title…</Placeholder> : null)}
+        </h3>
+        {!isRichTextEmpty(desc) || preview ? (
+          <CmsRichText
+            html={desc}
+            className="relative mt-3 text-sm leading-relaxed text-slate-600 sm:text-[15px] [&_p]:text-slate-600"
+            empty={
+              preview ? (
+                <p className="relative mt-3 mb-0 text-sm leading-relaxed text-slate-500">
+                  <Placeholder>Description…</Placeholder>
+                </p>
+              ) : null
+            }
+          />
+        ) : null}
+      </article>
+    );
+  }
 
   return (
     <article className="group relative flex h-full flex-col overflow-hidden rounded-[1.35rem] border border-white/12 bg-white/[0.06] p-6 backdrop-blur-sm transition hover:border-white/25 hover:bg-white/[0.1] sm:p-7">
@@ -387,9 +479,8 @@ export function HeroBannerItemCard({ item, preview = false }) {
       ) : null}
 
       <div
-        className={`relative z-[2] flex min-h-[14rem] flex-col justify-end gap-3 p-5 sm:min-h-[16rem] sm:p-6 ${
-          hasSide ? "sm:pr-[50%]" : ""
-        }`}
+        className={`relative z-[2] flex min-h-[14rem] flex-col justify-end gap-3 p-5 sm:min-h-[16rem] sm:p-6 ${hasSide ? "sm:pr-[50%]" : ""
+          }`}
       >
         <h3 className="m-0 text-xl leading-tight font-bold tracking-tight text-white sm:text-2xl">
           {title ||
@@ -431,28 +522,58 @@ export default function SectionItemCard({
   preview = false,
   className,
   index = 0,
+  variant,
+  onDarkBand = false,
 }) {
   if (!item && !preview) return null;
 
   switch (type) {
     case "faq":
-      return <FaqItemCard item={item} preview={preview} index={index} />;
+      return (
+        <FaqItemCard
+          item={item}
+          preview={preview}
+          index={index}
+          onDarkBand={onDarkBand}
+        />
+      );
     case "benefit":
       return <BenefitItemCard item={item} preview={preview} />;
     case "why_choose":
       return (
-        <WhyChooseItemCard item={item} preview={preview} index={index} />
+        <WhyChooseItemCard
+          item={item}
+          preview={preview}
+          index={index}
+          variant={variant || "dark"}
+        />
       );
     case "stat":
       if (preview) {
         return (
-          <div className="rounded-xl border border-slate-200 bg-white px-4 py-3 dark:border-slate-800 dark:bg-slate-950">
-            <StatItemCard item={item} preview className={className} />
+          <div
+            className={
+              variant === "light"
+                ? "rounded-xl section-ui-card border px-4 py-3"
+                : "rounded-xl section-ui-card border px-4 py-3"
+            }
+          >
+            <StatItemCard
+              item={item}
+              preview
+              className={className}
+              variant={variant || "dark"}
+            />
           </div>
         );
       }
       return (
-        <StatItemCard item={item} preview={preview} className={className} />
+        <StatItemCard
+          item={item}
+          preview={preview}
+          className={className}
+          variant={variant || "dark"}
+        />
       );
     case "testimonial":
       return <TestimonialItemCard item={item} preview={preview} />;
@@ -474,7 +595,7 @@ export default function SectionItemCard({
       const src = mediaUrl(item?.image_url || item?.icon || "");
       const name = itemTitle(item) || item?.title || "";
       return (
-        <div className="flex items-center gap-3 rounded-lg border border-slate-200 bg-white px-3 py-2 dark:border-slate-800 dark:bg-slate-950">
+        <div className="flex items-center gap-3 rounded-lg section-ui-card border px-3 py-2">
           {src ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img

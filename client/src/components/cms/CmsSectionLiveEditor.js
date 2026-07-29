@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import Drawer from "@/components/ui/Drawer";
 import { SectionPreviewThumb } from "@/components/cms/CmsUi";
@@ -24,6 +24,12 @@ import { FallbackSection } from "@/components/sections";
 import { mediaUrl, uploadCmsImage } from "@/lib/cms-api";
 import { mediaAlt } from "@/lib/media-alt";
 import { normalizeContentScope } from "@/lib/content-scope";
+import { mergePlacementData } from "@/lib/placement-data";
+import { computePlacementSurface, SECTION_THEME_BAND_SKIP_KEYS } from "@/lib/section-theme";
+import { saveSectionBandForPlacement } from "@/lib/placement-save";
+import { bandDraftFromSection } from "@/lib/section-band-cms";
+import CmsSectionBandEditor from "@/components/cms/CmsSectionBandEditor";
+import SectionThemeWrap from "@/components/sections/SectionThemeWrap";
 import CmsSectionToolbar from "@/components/cms/CmsSectionToolbar";
 import SectionSurface from "@/components/sections/SectionSurface";
 import CmsBgColorPicker from "@/components/cms/CmsBgColorPicker";
@@ -76,6 +82,20 @@ export const CMS_FIELD_META = {
     input: "items",
     hint: "Structured cards — fields follow the section layout",
   },
+  faq_header_side: {
+    label: "Title column",
+    input: "select",
+    hint: "Title on left or right; FAQs stack on the opposite side",
+    options: [
+      { value: "left", label: "Title left · FAQs right" },
+      { value: "right", label: "Title right · FAQs left" },
+    ],
+  },
+  section_band: {
+    label: "Section band",
+    input: "section_band",
+    hint: "Background image or color — band light/dark comes from page theme",
+  },
 };
 
 const inputClass =
@@ -83,6 +103,10 @@ const inputClass =
 
 function fieldValue(section, field) {
   if (field === "body") return section?.data?.body || "";
+  if (field === "faq_header_side") {
+    const side = section?.data?.header_side;
+    return side === "right" ? "right" : "left";
+  }
   if (field === "section_bg_color") {
     return section?.section_bg_color || section?.data?.bg_color || "";
   }
@@ -103,6 +127,9 @@ function fieldValue(section, field) {
  * @param {boolean} [props.showVisibilityToggle]
  * @param {(next: boolean) => Promise<void>} [props.onToggleStatus]
  * @param {object} [props.pageContext]
+ * @param {string} [props.pageKey] - For routing theme to page tag / entity
+ * @param {string} [props.entityId] - Set on entity page CMS only
+ * @param {() => Promise<void>} [props.onAfterFieldSave] - Reload after save (e.g. theme)
  */
 export default function CmsSectionLiveEditor({
   section,
@@ -115,6 +142,9 @@ export default function CmsSectionLiveEditor({
   showVisibilityToggle = false,
   onToggleStatus,
   pageContext = null,
+  pageKey = "",
+  entityId = null,
+  onAfterFieldSave,
   saveLabel = "Save",
 }) {
   const [editingField, setEditingField] = useState(null);
@@ -125,6 +155,7 @@ export default function CmsSectionLiveEditor({
   const itemsDraftRef = useRef(itemsDraft);
   buttonsDraftRef.current = buttonsDraft;
   itemsDraftRef.current = itemsDraft;
+  const [bandDraft, setBandDraft] = useState(() => bandDraftFromSection(null));
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [error, setError] = useState(null);
   const [saving, setSaving] = useState(false);
@@ -134,6 +165,14 @@ export default function CmsSectionLiveEditor({
     setDrawerOpen(false);
     setError(null);
   }, [section?.section_key, section?.placement_id, section?._id]);
+
+  const { sectionTheme, surfaceTone } = useMemo(
+    () =>
+      section
+        ? computePlacementSurface(section)
+        : { sectionTheme: "inherit", surfaceTone: undefined },
+    [section]
+  );
 
   if (!section) return null;
 
@@ -147,16 +186,29 @@ export default function CmsSectionLiveEditor({
   const drawerTitle =
     editingField === "items"
       ? `Edit ${itemsConfig?.label || "cards"} · ${key}`
-      : `Edit ${meta?.label || "field"} · ${key}`;
+      : editingField === "section_band"
+        ? `Section band · ${key}`
+        : `Edit ${meta?.label || "field"} · ${key}`;
 
   function openFieldEdit(field) {
+    if (
+      field === "section_bg_img" ||
+      field === "section_bg_color"
+    ) {
+      field = "section_band";
+    }
     if (!CMS_FIELD_META[field]) return;
     if (field === "items" && !sectionUsesItems(key, renderKey)) return;
     if (field === "section_img_url" && !sectionUsesImage(key, renderKey)) return;
     if (field === "section_bg_img" && !sectionUsesBg(key)) return;
 
     setEditingField(field);
-    if (field === "buttons") {
+    if (field === "section_band") {
+      setBandDraft(bandDraftFromSection(section));
+      setButtonsDraft([]);
+      setItemsDraft([]);
+      setFieldValueState("");
+    } else if (field === "buttons") {
       setButtonsDraft(normalizeButtonsDraft(section.buttons));
       setItemsDraft([]);
       setFieldValueState("");
@@ -179,21 +231,32 @@ export default function CmsSectionLiveEditor({
     setFieldValueState("");
     setButtonsDraft([]);
     setItemsDraft([]);
+    setBandDraft(bandDraftFromSection(null));
   }
 
   async function saveField(e) {
     e?.preventDefault?.();
     if (!editingField) return;
-    if (contentLocked) {
+    if (contentLocked && editingField !== "section_band") {
       setError(
         contentLockedMessage ||
-          "Content is locked at this layer. Edit it at the global section instead."
+        "Content is locked at this layer. Edit it at the global section instead."
       );
       return;
     }
     setSaving(true);
     setError(null);
     try {
+      if (editingField === "section_band") {
+        await saveSectionBandForPlacement(section, {
+          draft: bandDraft,
+          savePlacement: onSavePatch,
+          contentLocked,
+        });
+        if (onAfterFieldSave) await onAfterFieldSave();
+        closeDrawer();
+        return;
+      }
       let patch = {};
       if (editingField === "buttons") {
         patch = { buttons: serializeButtonsDraft(buttonsDraftRef.current) };
@@ -209,6 +272,11 @@ export default function CmsSectionLiveEditor({
       } else if (editingField === "section_bg_color") {
         const value = fieldValueState.trim();
         patch = { section_bg_color: value || null };
+      } else if (editingField === "faq_header_side") {
+        const side = fieldValueState === "right" ? "right" : "left";
+        patch = {
+          data: { ...(section.data || {}), header_side: side },
+        };
       } else {
         const value = fieldValueState.trim();
         patch = { [editingField]: value || null };
@@ -232,9 +300,8 @@ export default function CmsSectionLiveEditor({
       {toolbarExtra}
 
       <div
-        className={`overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-950 ${
-          hidden ? "opacity-50" : ""
-        }`}
+        className={`overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-950 ${hidden ? "opacity-50" : ""
+          }`}
       >
         <CmsSectionToolbar
           section={section}
@@ -250,29 +317,32 @@ export default function CmsSectionLiveEditor({
           }
         />
 
-        {String(key || "").toLowerCase() === "in_page_nav" ? (
-          <Comp
-            {...sectionProps}
-            section_key={key || _catalogKey}
-            cmsMode
-            onEditField={openFieldEdit}
-            surfaceTone="white"
-            pageContext={pageContext}
-          />
+        {SECTION_THEME_BAND_SKIP_KEYS.has(String(key || "").toLowerCase()) ? (
+          <SectionThemeWrap theme={sectionTheme} sectionKey={key}>
+            <Comp
+              {...sectionProps}
+              section_key={key || _catalogKey}
+              cmsMode
+              onEditField={openFieldEdit}
+              surfaceTone={surfaceTone}
+              pageContext={pageContext}
+            />
+          </SectionThemeWrap>
         ) : (
           <SectionSurface
             sectionKey={key || _catalogKey}
             section_bg_color={section.section_bg_color}
             section_bg_img={section.section_bg_img}
             legacy_bg_color={section.data?.bg_color}
-            surfaceTone="white"
+            surfaceTone={surfaceTone}
+            sectionTheme={sectionTheme}
           >
             <Comp
               {...sectionProps}
               section_key={key || _catalogKey}
               cmsMode
               onEditField={openFieldEdit}
-              surfaceTone="white"
+              surfaceTone={surfaceTone}
               pageContext={pageContext}
             />
           </SectionSurface>
@@ -316,7 +386,26 @@ export default function CmsSectionLiveEditor({
               </div>
             </div>
 
-            {contentLocked ? (
+            {meta.input === "section_band" ? (
+              <CmsSectionBandEditor
+                draft={bandDraft}
+                onChange={setBandDraft}
+                showBgImage={sectionUsesBg(key)}
+                showBgColor={sectionUsesBgColor(key)}
+                inheritedSurfaceTone={surfaceTone}
+                pageSurfaceMode={pageContext?.surface_mode}
+                pageInk={pageContext?.ink}
+                bgFieldsLocked={contentLocked}
+                bgLockedMessage={
+                  contentLockedMessage ||
+                  "Background fields are locked at this layer. Edit the global section instead."
+                }
+                saving={saving}
+                onSubmit={saveField}
+                onCancel={closeDrawer}
+                saveLabel={saveLabel}
+              />
+            ) : contentLocked ? (
               <div className="space-y-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-3 text-sm text-amber-950 dark:border-amber-900 dark:bg-amber-950/40 dark:text-amber-100">
                 <p className="m-0">
                   {contentLockedMessage ||
@@ -394,6 +483,19 @@ export default function CmsSectionLiveEditor({
                           onChange={(e) => setFieldValueState(e.target.value)}
                           autoFocus
                         />
+                      ) : meta.input === "select" ? (
+                        <select
+                          className={inputClass}
+                          value={fieldValueState || meta.options?.[0]?.value || ""}
+                          onChange={(e) => setFieldValueState(e.target.value)}
+                          autoFocus
+                        >
+                          {(meta.options || []).map((opt) => (
+                            <option key={opt.value} value={opt.value}>
+                              {opt.label}
+                            </option>
+                          ))}
+                        </select>
                       ) : meta.input === "image" ? (
                         <div className="space-y-2">
                           {fieldValueState ? (
@@ -476,7 +578,7 @@ export default function CmsSectionLiveEditor({
                   <button
                     type="button"
                     disabled={saving}
-                    onClick={() => saveField({ preventDefault() {} })}
+                    onClick={() => saveField({ preventDefault() { } })}
                     className="w-full rounded-lg bg-brand px-3 py-2.5 text-sm font-semibold text-white disabled:opacity-50"
                   >
                     {saving ? "Saving…" : saveLabel}
@@ -502,6 +604,7 @@ export function sectionDocToLiveProps(doc) {
     buttons: Array.isArray(doc.buttons) ? doc.buttons : [],
     items: Array.isArray(doc.items) ? doc.items : [],
     data: doc.data || {},
+    section_theme: doc.section_theme ?? "",
     status: doc.status !== false,
     content_scope: normalizeContentScope(doc.content_scope),
   };
@@ -555,11 +658,11 @@ export function templatePlacementToLiveProps(tag, sectionDoc) {
     section_bg_img: pick("section_bg_img"),
     section_bg_color: pick("section_bg_color"),
     section_img_url: pick("section_img_url"),
-    section_preview_img:
-      tag.section_preview_img || base.section_preview_img || "",
+    section_theme: pick("section_theme"),
+    section_preview_img: base.section_preview_img || "",
     buttons: pickArr("buttons"),
     items: pickArr("items"),
-    data: tag.data ?? base.data ?? {},
+    data: mergePlacementData(base.data, tag.data),
     status: tag.status !== false,
     content_scope: scope,
   };

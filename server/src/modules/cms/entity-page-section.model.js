@@ -43,14 +43,6 @@ const entityPageSectionSchema = new Schema(
       index: true,
     },
 
-    section_key: {
-      type: String,
-      required: true,
-      lowercase: true,
-      trim: true,
-      index: true,
-    },
-
     /** null = keep template sort_order (only used when Page.is_sort_disabled is false) */
     sort_order: {
       type: Number,
@@ -63,6 +55,8 @@ const entityPageSectionSchema = new Schema(
     section_bg_img: { type: String, trim: true, default: null },
     section_bg_color: { type: String, trim: true, default: null, maxlength: 400 },
     section_img_url: { type: String, trim: true, default: null },
+    /** light | dark — null/empty = inherit template / catalog */
+    section_theme: { type: String, trim: true, lowercase: true, default: null },
     data: { type: Schema.Types.Mixed, default: null },
 
     /**

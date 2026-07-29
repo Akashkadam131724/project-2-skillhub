@@ -13,7 +13,7 @@ export const PROJECT_NAV_LINKS = [
   { name: "How it works", href: "/how-it-works" },
   { name: "Catalog guide", href: "/catalog-guide" },
   { name: "CMS preview", href: "/cms-preview" },
-  { name: "Sections", href: "/sections" },
+  { name: "Sections", href: "/cms/section" },
   { name: "The Odyssey", href: "/odyssey" },
 ];
 

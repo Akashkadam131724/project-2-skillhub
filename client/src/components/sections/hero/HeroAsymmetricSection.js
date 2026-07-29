@@ -40,7 +40,7 @@ export default function HeroAsymmetricSection({
               section_title={section_title}
               cmsMode={cmsMode}
               onEditField={onEditField}
-              className="m-0 text-4xl leading-[1.05] font-bold tracking-tight text-ink sm:text-5xl lg:text-6xl dark:text-white"
+              className="m-0 text-4xl leading-[1.05] font-bold tracking-tight section-theme-heading sm:text-5xl lg:text-6xl"
             />
             <HeroSubtitle
               sub_title={sub_title}

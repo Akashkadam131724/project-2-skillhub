@@ -184,7 +184,7 @@ export default function CmsPagePlacementDetailPage() {
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start">
         <SectionPreviewThumb
           src={
-            tag.section_preview_img || sectionDoc?.section_preview_img || ""
+            sectionDoc?.section_preview_img || ""
           }
           alt={tag.section_key}
           className="h-28 w-44"
@@ -269,6 +269,8 @@ export default function CmsPagePlacementDetailPage() {
       <CmsSectionLiveEditor
         section={liveSection}
         onSavePatch={saveContentPatch}
+        pageKey={pageKey}
+        onAfterFieldSave={load}
         layerLabel="Template"
         saveLabel="Save template content"
         contentLocked={contentLocked}

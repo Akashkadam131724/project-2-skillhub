@@ -20,7 +20,7 @@ export default function EmptyItemsHint({
         e.stopPropagation();
         onEditField?.("items");
       }}
-      className="m-0 w-full cursor-pointer rounded-lg border border-dashed border-slate-300 bg-transparent px-4 py-6 text-center text-sm text-slate-400 transition hover:border-brand hover:text-brand dark:border-slate-700"
+      className="section-theme-subtle m-0 w-full cursor-pointer rounded-lg border border-dashed border-slate-300 bg-transparent px-4 py-6 text-center text-sm transition hover:border-brand hover:text-brand dark:border-slate-700"
     >
       No {name} yet — click to add
     </button>

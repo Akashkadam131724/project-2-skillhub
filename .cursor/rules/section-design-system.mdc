@@ -1,0 +1,40 @@
+---
+description: CMS section band theme — tokens, primitives, and forbidden patterns
+globs: client/src/components/sections/**/*,client/src/app/section-theme.css,client/src/lib/section-{theme,design-system}.js
+alwaysApply: false
+---
+
+# Section design system
+
+Source of truth: `client/src/lib/section-design-system.js` + `client/src/app/section-theme.css`.
+
+## Token layers
+
+| Token | Light band | Dark band | Light-card preset | Glass-card preset |
+|-------|------------|-----------|-------------------|-------------------|
+| `--band-bg` | `#fff` | `var(--ink)` | (inherits band) | (inherits band) |
+| `--band-fg` | `var(--ink)` | `#fff` | — | — |
+| `--card-bg` | `--ds-light-card-bg` | `--ds-glass-card-bg` | **always** `--ds-light-card-bg` | `--ds-glass-card-bg` |
+| `--field-bg` | light fields | glass fields | **always** light fields | glass fields |
+
+Fixed palettes (`--ds-light-*`, `--ds-glass-*`) are declared on `:root` and applied via `data-section-theme` or surface presets — **never** hardcode `bg-white` / `dark:bg-slate-*` on cards.
+
+## Components
+
+- `SectionSurface` — only place that sets band background (`section-band-bg` + `data-section-theme`).
+- `SectionBand` — transparent section root.
+- `SectionLightCard` — white card on any band (forms, team, trust badges).
+- `SectionMediaOverlay` — light text on photos.
+
+## Classes
+
+- `DS_TEXT.heading|muted|subtle|placeholder|eyebrow`
+- `DS_FIELD.input|label`
+- `DS_CARD.ui` → `section-ui-card` (+ Tailwind `border`, radius, padding)
+- `DS_CARD.chip` → `section-ui-chip`
+
+## Do not
+
+- `bg-white` / `dark:bg-slate-*` on cards (use `section-ui-card` + surface preset).
+- `text-slate-*` / `text-ink` / `text-white` for band copy (use `DS_TEXT.*`).
+- Opaque `bg-white` on the outer `<section>` of a CMS placement.

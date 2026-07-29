@@ -5,6 +5,10 @@ import EntityPageSection from "./entity-page-section.model.js";
 import SiteTheme from "./site-theme.model.js";
 import EntityPageTheme from "./entity-page-theme.model.js";
 import { mergeTheme } from "./theme.utils.js";
+import {
+  mergePlacementData,
+  normalizePlacementDataPatch,
+} from "./placement-data.utils.js";
 
 /** Overridable on page tags / entity mappings */
 const MAPPING_CONTENT_KEYS = [
@@ -14,6 +18,7 @@ const MAPPING_CONTENT_KEYS = [
   "section_bg_img",
   "section_bg_color",
   "section_img_url",
+  "section_theme",
   "data",
 ];
 
@@ -53,6 +58,7 @@ function pickPlacementContent(override, tag, section) {
 
   if (scope === "global") {
     const content = pickMappingContent(section, null);
+    content.data = mergePlacementData(section?.data);
     content.buttons = Array.isArray(section.buttons) ? section.buttons : [];
     content.items = Array.isArray(section.items) ? section.items : [];
     content.content_scope = "global";
@@ -63,6 +69,7 @@ function pickPlacementContent(override, tag, section) {
     // Template + Section only — ignore entity content overrides
     const fromSection = pickMappingContent(section, null);
     const content = pickMappingContent(tag, fromSection);
+    content.data = mergePlacementData(section?.data, tag?.data);
     content.buttons = pickArrayField("buttons", tag, section);
     content.items = pickArrayField("items", tag, section);
     content.content_scope = "template";
@@ -73,6 +80,11 @@ function pickPlacementContent(override, tag, section) {
   const fromSection = pickMappingContent(section, null);
   const fromTag = pickMappingContent(tag, fromSection);
   const content = pickMappingContent(override, fromTag);
+  content.data = mergePlacementData(
+    section?.data,
+    tag?.data,
+    override?.data
+  );
   content.buttons = pickArrayField("buttons", override, tag, section);
   content.items = pickArrayField("items", override, tag, section);
   content.content_scope = "page";
@@ -84,12 +96,7 @@ function withSectionMeta(content, section, tag = null) {
   for (const key of SECTION_ONLY_KEYS) {
     out[key] = section?.[key] ?? "";
   }
-  // Copied onto page tag at map time; fall back to live section default
-  const copied = tag?.section_preview_img;
-  out.section_preview_img =
-    copied !== null && copied !== undefined && copied !== ""
-      ? copied
-      : section?.section_preview_img ?? "";
+  out.section_preview_img = section?.section_preview_img ?? "";
   return out;
 }
 
@@ -158,10 +165,25 @@ export async function resolvePageSections(pageKey, entityId = null) {
   );
   const entityExtras = entityDocs.filter((o) => !o.page_tag_id);
 
-  // Ensure section docs for extras are loaded
+  // Entity-only extras reference Section by _id — not always on the page template tag list
+  const missingSectionIds = entityExtras
+    .map((e) => e.section)
+    .filter((id) => id && !sectionById.has(String(id)));
+
+  if (missingSectionIds.length) {
+    const extraSections = await Section.find({
+      _id: { $in: [...new Set(missingSectionIds.map((id) => String(id)))] },
+    }).lean();
+    for (const s of extraSections) {
+      sectionById.set(String(s._id), s);
+      sectionByKey.set(s.key, s);
+    }
+  }
+
+  // Legacy: extras that still carry section_key (if any)
   const missingKeys = entityExtras
     .map((e) => e.section_key)
-    .filter((k) => !sectionByKey.has(k));
+    .filter((k) => k && !sectionByKey.has(k));
   if (missingKeys.length) {
     const extraSections = await Section.find({
       key: { $in: [...new Set(missingKeys)] },
@@ -238,7 +260,6 @@ export async function resolvePageSections(pageKey, entityId = null) {
     if (extra.status === false) continue;
 
     const section =
-      sectionByKey.get(extra.section_key) ||
       sectionById.get(String(extra.section));
     if (!section || !section.status) continue;
 

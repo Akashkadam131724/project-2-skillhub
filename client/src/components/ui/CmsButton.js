@@ -9,31 +9,15 @@ import {
 } from "@/lib/button-types";
 import YoutubeModal from "./YoutubeModal";
 
-const VARIANT_CLASS = {
-  primary:
-    "inline-flex items-center justify-center gap-2 rounded-lg bg-brand px-5 py-2.5 text-sm font-semibold text-white no-underline transition hover:bg-brand-hover",
-  secondary:
-    "inline-flex items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white px-5 py-2.5 text-sm font-semibold text-slate-800 no-underline transition hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:hover:bg-slate-800",
-  outline:
-    "inline-flex items-center justify-center gap-2 rounded-lg border-2 border-brand bg-transparent px-5 py-2.5 text-sm font-semibold text-brand no-underline transition hover:bg-brand/10",
-  ghost:
-    "inline-flex items-center justify-center gap-2 rounded-lg bg-transparent px-5 py-2.5 text-sm font-semibold text-slate-700 no-underline transition hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800",
-  link: "inline-flex items-center justify-center gap-1.5 px-1 py-0.5 text-sm font-semibold text-brand no-underline transition hover:underline",
-  inverse:
-    "inline-flex items-center justify-center gap-2 rounded-lg bg-white px-5 py-2.5 text-sm font-semibold text-ink no-underline transition hover:bg-slate-100",
-};
+const BASE_CLASS = "section-btn";
 
-/** Variants remapped for dark surfaces (CTA strip, etc.) */
-const INVERTED_VARIANT_CLASS = {
-  primary: VARIANT_CLASS.inverse,
-  inverse: VARIANT_CLASS.inverse,
-  secondary:
-    "inline-flex items-center justify-center gap-2 rounded-lg border border-white/50 bg-white/10 px-5 py-2.5 text-sm font-semibold text-white no-underline transition hover:bg-white/20",
-  outline:
-    "inline-flex items-center justify-center gap-2 rounded-lg border-2 border-white bg-transparent px-5 py-2.5 text-sm font-semibold text-white no-underline transition hover:bg-white/10",
-  ghost:
-    "inline-flex items-center justify-center gap-2 rounded-lg bg-transparent px-5 py-2.5 text-sm font-semibold text-white no-underline transition hover:bg-white/10",
-  link: "inline-flex items-center justify-center gap-1.5 px-1 py-0.5 text-sm font-semibold text-white no-underline transition hover:underline",
+const VARIANT_CLASS = {
+  primary: "section-btn--primary",
+  secondary: "section-btn--secondary",
+  outline: "section-btn--outline",
+  ghost: "section-btn--ghost",
+  link: "section-btn--link",
+  inverse: "section-btn--inverse",
 };
 
 function ButtonIcon({ kind, className = "size-4 shrink-0" }) {
@@ -152,18 +136,22 @@ function resolveNavHref(href) {
     return { mode: "internal", href: raw };
   }
 
-  // Absolute http(s), mailto:, tel:, //cdn… → external <a>
   if (/^([a-z][a-z0-9+.-]*:|\/\/)/i.test(raw)) {
     return { mode: "external", href: raw };
   }
 
-  // Slash-less app path: "courses" → "/courses"
   return { mode: "internal", href: `/${raw.replace(/^\.\//, "")}` };
+}
+
+function buttonSurfaceProps(inverted) {
+  if (inverted === true) return { "data-btn-surface": "dark" };
+  if (inverted === false) return {};
+  return {};
 }
 
 /**
  * One CMS-driven button. Handles url / anchor / form / youtube.
- * Icons are inferred from action type and link (pdf, video, external, …).
+ * Styling follows section theme (globals.css .section-btn) and optional inverted surface.
  */
 export default function CmsButton({
   button,
@@ -177,12 +165,11 @@ export default function CmsButton({
   if (!button?.label) return null;
 
   const variant = String(button.variant || "primary").toLowerCase();
-  const baseClass = inverted
-    ? INVERTED_VARIANT_CLASS[variant] || INVERTED_VARIANT_CLASS.primary
-    : VARIANT_CLASS[variant] || VARIANT_CLASS.primary;
+  const variantClass = VARIANT_CLASS[variant] || VARIANT_CLASS.primary;
+  const classes = `${BASE_CLASS} ${variantClass} ${className}`.trim();
+  const surfaceProps = buttonSurfaceProps(inverted);
   const action = resolveButtonAction(button);
   const icon = showIcon ? resolveButtonIcon(button, action) : null;
-  const classes = `${baseClass} ${className}`.trim();
 
   if (action.kind === "form") {
     if (!action.formKey) return null;
@@ -191,6 +178,7 @@ export default function CmsButton({
         type="button"
         className={classes}
         onClick={() => onFormOpen?.(action.formKey, button)}
+        {...surfaceProps}
       >
         <ButtonLabel icon={icon}>{button.label}</ButtonLabel>
       </button>
@@ -210,6 +198,7 @@ export default function CmsButton({
             else if (action.href)
               window.open(action.href, "_blank", "noopener,noreferrer");
           }}
+          {...surfaceProps}
         >
           <ButtonLabel icon={icon}>{button.label}</ButtonLabel>
         </button>
@@ -231,7 +220,7 @@ export default function CmsButton({
 
   if (action.kind === "anchor") {
     return (
-      <a href={action.href} className={classes}>
+      <a href={action.href} className={classes} {...surfaceProps}>
         {label}
       </a>
     );
@@ -240,10 +229,9 @@ export default function CmsButton({
   const nav = resolveNavHref(action.href);
   if (!nav) return null;
 
-  // Soft client navigation for in-app routes (unless "open in new tab")
   if (nav.mode === "internal" && !openInNewTab) {
     return (
-      <Link href={nav.href} className={classes}>
+      <Link href={nav.href} className={classes} {...surfaceProps}>
         {label}
       </Link>
     );
@@ -253,6 +241,7 @@ export default function CmsButton({
     <a
       href={nav.href}
       className={classes}
+      {...surfaceProps}
       {...(openInNewTab
         ? { target: "_blank", rel: "noopener noreferrer" }
         : nav.mode === "external"

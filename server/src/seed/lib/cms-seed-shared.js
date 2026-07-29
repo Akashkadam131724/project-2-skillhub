@@ -913,7 +913,6 @@ export function overridesToDocs(pageKey, entityId, overrides, tagIndex) {
       entity_id: entityId,
       page_tag_id: meta.tagId,
       section: meta.sectionId,
-      section_key: sectionKey,
       status: true,
     };
     applyContent(doc, patch);

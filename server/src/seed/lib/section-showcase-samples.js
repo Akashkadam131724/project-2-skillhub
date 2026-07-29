@@ -1,5 +1,5 @@
 /**
- * Sample placements for /sections/* showcase content pages.
+ * Sample placements for /cms/section/* public library pages.
  */
 import mongoose from "mongoose";
 import {
@@ -77,6 +77,16 @@ export const SECTION_NAMES = {
   hero_stats: "Hero — Stats",
   hero_asymmetric: "Hero — Asymmetric",
   hero_dual_cta: "Hero — Dual CTA",
+  promo_modal: "Promo Modal",
+  newsletter_band: "Newsletter Band",
+  form_split: "Form — Split column",
+  comparison_table: "Comparison Table",
+  media_mosaic: "Media Mosaic",
+  timeline_vertical: "Timeline — Vertical",
+  trust_badges: "Trust Badges",
+  split_cta: "Split CTA",
+  learning_path: "Learning Path",
+  faq_two_column: "FAQ — Two column",
 };
 
 /** URL slug per category key */
@@ -90,6 +100,15 @@ export const CATEGORY_SLUG = {
   social_proof: "social-proof",
   data: "data",
   navigation: "navigation",
+  overlays: "overlays",
+  forms: "forms",
+  comparison: "comparison",
+  media: "media",
+  timeline: "timeline",
+  pricing: "pricing",
+  trust: "trust",
+  cta: "cta",
+  learning: "learning",
 };
 
 /** Preferred render order within each category */
@@ -112,16 +131,13 @@ export const SECTIONS_BY_CATEGORY = {
   content: [
     "overview",
     "text_media",
-    "cta_band",
     "horizon_gallery",
     "split_narrative",
-    "pricing_tiers",
     "template_gallery",
     "domain_search_band",
     "website_build_steps",
     "latest_blogs",
     "contact_us",
-    "contact_form",
   ],
   features: [
     "key_benefits",
@@ -143,7 +159,7 @@ export const SECTIONS_BY_CATEGORY = {
     "tabs_underline",
     "tabs_success_stories",
   ],
-  accordion: ["faq"],
+  accordion: ["faq", "faq_two_column"],
   catalog: [
     "related_courses",
     "curriculum",
@@ -163,6 +179,15 @@ export const SECTIONS_BY_CATEGORY = {
   ],
   data: ["stats", "metric_rail"],
   navigation: ["in_page_nav"],
+  overlays: ["promo_modal"],
+  forms: ["contact_form", "newsletter_band", "form_split"],
+  comparison: ["comparison_table"],
+  media: ["media_mosaic"],
+  timeline: ["timeline_vertical"],
+  pricing: ["pricing_tiers"],
+  trust: ["trust_badges"],
+  cta: ["cta_band", "split_cta"],
+  learning: ["learning_path"],
 };
 
 function defaultItems(n = 3) {
@@ -394,7 +419,7 @@ function sampleForKey(key) {
         in_page_nav_title: "Spotlight",
         items: [
           item({ title: "Live CMS mode", subtitle: "Edit on the real page", body: "<p>Emerald toolbar unlocks section editing.</p>", image_url: IMG.gallery, href: "/?cms=true" }, 0),
-          item({ title: "Section library", subtitle: "58 registered layouts", body: "<p>Filter by category and preview screenshots.</p>", image_url: IMG.hero, href: "/cms/sections" }, 1),
+          item({ title: "Section library", subtitle: "58 registered layouts", body: "<p>Filter by category and preview screenshots.</p>", image_url: IMG.hero, href: "/cms/section" }, 1),
         ],
       };
 
@@ -542,7 +567,7 @@ function sampleForKey(key) {
         in_page_nav_title: "FAQ",
         items: [
           item({ title: "How do I add a section to a content page?", body: "<p>Open the page in CMS mode and use Page settings → Add section.</p>" }, 0),
-          item({ title: "Can I preview all section types?", body: "<p>Yes — browse <strong>/sections</strong> and each category page.</p>" }, 1),
+          item({ title: "Can I preview all section types?", body: "<p>Yes — browse <strong>/cms/section</strong> and each category page.</p>" }, 1),
         ],
       };
 
@@ -732,6 +757,266 @@ function sampleForKey(key) {
         ],
       };
 
+    case "faq_two_column":
+      return {
+        section_title: "FAQ — two columns",
+        sub_title: "Title on one side, all questions stacked on the other. Set header_side to left or right.",
+        in_page_nav_title: "FAQ 2-col",
+        data: { header_side: "left" },
+        buttons: [btn("Contact support", { variant: "outline", target_url: "/contact-us" })],
+        items: [
+          item(
+            {
+              title: "Can I use card-level buttons?",
+              body: "<p>Yes — add buttons on each FAQ item for deep links.</p>",
+              buttons: [btn("Docs", { variant: "link", target_url: "/cms" })],
+            },
+            0
+          ),
+          item(
+            {
+              title: "Where are previews?",
+              body: "<p>Browse <strong>/cms/section</strong> by category.</p>",
+            },
+            1
+          ),
+          item(
+            {
+              title: "How do modals work?",
+              body: "<p>See the Overlays category — timed promo modal with session dismiss.</p>",
+            },
+            2
+          ),
+          item(
+            {
+              title: "Section vs card CTAs?",
+              body: "<p>Most item-driven sections support both section buttons and per-item buttons.</p>",
+            },
+            3
+          ),
+        ],
+      };
+
+    case "promo_modal":
+      return {
+        section_title: "Spring skill fest — 20% off cohorts",
+        sub_title: "Limited-time offer for enterprise teams.",
+        in_page_nav_title: "Modal",
+        data: {
+          body: "<p>Book a planning call this month and save on instructor-led delivery.</p>",
+          open_delay_ms: 1200,
+          storage_key: "showcase_promo_modal",
+        },
+        buttons: [
+          btn("Claim offer", { target_url: "/contact-us" }),
+          btn("Maybe later", { variant: "secondary", action_type: "anchor", target_id: "cms-section" }),
+        ],
+      };
+
+    case "newsletter_band":
+      return {
+        section_title: "Product updates for L&D leaders",
+        sub_title: "Monthly digest — no spam.",
+        in_page_nav_title: "Newsletter",
+        data: { email_placeholder: "you@company.com" },
+        buttons: [btn("Subscribe", { target_url: "/contact-us" })],
+      };
+
+    case "form_split":
+      return {
+        section_title: "Talk to a learning advisor",
+        sub_title:
+          "Content on one side, a short static form on the other — flip columns in CMS.",
+        in_page_nav_title: "Form",
+        data: {
+          content_side: "left",
+          form_key: "lead",
+          form_title: "Request a callback",
+          form_subtitle: "Share a few details and we will reach out.",
+          submit_label: "Send message",
+          success_message:
+            "Thanks — your message is in. We will respond within one business day.",
+          body: "<p>Prefer a call? Mention your timezone in the message field.</p>",
+        },
+        buttons: [
+          btn("View catalog", { variant: "outline", target_url: "/courses" }),
+        ],
+        items: [
+          item(
+            {
+              title: "Enterprise rollouts",
+              subtitle: "Cohort planning & vendor alignment",
+            },
+            0
+          ),
+          item(
+            {
+              title: "CMS & content pages",
+              subtitle: "Live editing on public URLs",
+            },
+            1
+          ),
+        ],
+      };
+
+    case "comparison_table":
+      return {
+        section_title: "Delivery formats compared",
+        in_page_nav_title: "Compare",
+        buttons: [btn("Talk to an advisor", { target_url: "/contact-us" })],
+        items: [
+          item(
+            {
+              title: "Instructor-led",
+              value: "Best for cohorts",
+              body: "<p>Live facilitation, Q&A, and labs.</p>",
+              buttons: [btn("ILT catalog", { variant: "link", target_url: "/courses" })],
+            },
+            0
+          ),
+          item(
+            {
+              title: "Self-paced",
+              value: "Flexible",
+              body: "<p>On-demand modules with knowledge checks.</p>",
+              buttons: [btn("Browse", { variant: "link", target_url: "/courses" })],
+            },
+            1
+          ),
+          item(
+            {
+              title: "Blended",
+              value: "Recommended",
+              body: "<p>Mix live sessions with async practice.</p>",
+            },
+            2
+          ),
+        ],
+      };
+
+    case "media_mosaic":
+      return {
+        section_title: "Moments from the field",
+        sub_title: "Image mosaic with optional tile CTAs.",
+        in_page_nav_title: "Mosaic",
+        items: [
+          item(
+            {
+              title: "Cohort kickoff",
+              subtitle: "Enterprise rollout",
+              image_url: IMG.team,
+              buttons: [btn("Case study", { variant: "inverse", target_url: "/blogs" })],
+            },
+            0
+          ),
+          item({ title: "Lab day", subtitle: "Hands-on", image_url: IMG.gallery }, 1),
+          item({ title: "Certification", subtitle: "Exam prep", image_url: IMG.story }, 2),
+        ],
+      };
+
+    case "timeline_vertical":
+      return {
+        section_title: "How we onboard your team",
+        in_page_nav_title: "Timeline",
+        items: [
+          item(
+            {
+              subtitle: "Week 1",
+              title: "Discovery",
+              body: "<p>Align on roles, timelines, and success metrics.</p>",
+              buttons: [btn("Workshop", { variant: "outline", target_url: "/contact-us" })],
+            },
+            0
+          ),
+          item(
+            {
+              subtitle: "Week 2–3",
+              title: "Curate paths",
+              body: "<p>Map vendors, products, and delivery format.</p>",
+            },
+            1
+          ),
+          item(
+            {
+              subtitle: "Week 4+",
+              title: "Launch & measure",
+              body: "<p>Go live with reporting and advisor check-ins.</p>",
+              buttons: [btn("View analytics", { variant: "link", target_url: "/cms" })],
+            },
+            2
+          ),
+        ],
+      };
+
+    case "trust_badges":
+      return {
+        section_title: "Enterprise-ready",
+        sub_title: "Compliance and security signals.",
+        in_page_nav_title: "Trust",
+        buttons: [btn("Security pack", { variant: "outline", target_url: "/contact-us" })],
+        items: [
+          item({ title: "SOC 2", subtitle: "Type II", value: "SOC2" }, 0),
+          item({ title: "GDPR", subtitle: "EU ready", value: "GDPR" }, 1),
+          item({ title: "ISO 27001", subtitle: "Certified", value: "ISO" }, 2),
+          item({ title: "WCAG", subtitle: "AA target", value: "A11y" }, 3),
+        ],
+      };
+
+    case "split_cta":
+      return {
+        section_title: "Accelerate growth with structured learning",
+        sub_title:
+          "Build expertise across AI, cloud, security, and data with vendor-aligned paths — outcomes for teams and enterprises.",
+        in_page_nav_title: "Contact",
+        section_img_url:
+          "https://images.netcomlearning.com/cms/images/cloud-connect.webp",
+        data: { image_side: "right" },
+        buttons: [
+          btn("Contact Us", {
+            target_url: "/contact-us",
+            variant: "primary",
+          }),
+        ],
+      };
+
+    case "learning_path":
+      return {
+        section_title: "Azure administrator path",
+        in_page_nav_title: "Path",
+        buttons: [btn("Enroll team", { target_url: "/courses" })],
+        items: [
+          item(
+            {
+              value: "1",
+              title: "Cloud fundamentals",
+              subtitle: "8 hrs · self-paced",
+              body: "<p>Core Azure concepts and governance.</p>",
+              buttons: [btn("Start", { variant: "outline", target_url: "/courses" })],
+            },
+            0
+          ),
+          item(
+            {
+              value: "2",
+              title: "Compute & networking",
+              subtitle: "16 hrs · blended",
+              body: "<p>VMs, VNets, and load balancing labs.</p>",
+            },
+            1
+          ),
+          item(
+            {
+              value: "3",
+              title: "Certification prep",
+              subtitle: "ILT · exam voucher",
+              body: "<p>Instructor-led review and practice tests.</p>",
+              buttons: [btn("Schedule", { target_url: "/contact-us" })],
+            },
+            2
+          ),
+        ],
+      };
+
     case "hero_classic":
     case "hero_split":
     case "hero_centered":
@@ -774,8 +1059,8 @@ function sampleForKey(key) {
         ...heroCopy,
         in_page_nav_title: "Stats hero",
         items: [
-          item({ value: "58", label: "Section types" }, 0),
-          item({ value: "9", label: "Categories" }, 1),
+          item({ value: "67+", label: "Section types" }, 0),
+          item({ value: "18", label: "Categories" }, 1),
           item({ value: "Live", label: "CMS mode" }, 2),
         ],
       };
@@ -835,10 +1120,10 @@ export function buildCategoryPagePlacements(categoryKey) {
       section_title: `${cat?.name || categoryKey} sections`,
       sub_title: `${keys.length} registered layouts in the SkillHub section library. Scroll to preview each component with sample content.`,
       buttons: [
-        btn("All categories", { target_url: "/sections" }),
+        btn("All categories", { target_url: "/cms/section" }),
         btn("Section admin", {
           variant: "secondary",
-          target_url: `/cms/sections?category=${categoryKey}`,
+          target_url: `/cms/pages-content-sections?category=${categoryKey}`,
         }),
       ],
     },
@@ -853,12 +1138,12 @@ export function buildCategoryPagePlacements(categoryKey) {
     sort_order: placements.length,
     in_page_nav_title: "More",
     section_title: "Explore other categories",
-    sub_title: "Every section type has a dedicated showcase page under /sections.",
+    sub_title: "Every section type has a dedicated showcase page under /cms/section.",
     buttons: [
-      btn("Section library home", { target_url: "/sections" }),
+      btn("Section library home", { target_url: "/cms/section" }),
       btn("Edit this page", {
         variant: "secondary",
-        target_url: `/sections/${CATEGORY_SLUG[categoryKey] || categoryKey}?cms=true`,
+        target_url: `/cms/section/${CATEGORY_SLUG[categoryKey] || categoryKey}?cms=true`,
       }),
     ],
   });
@@ -875,7 +1160,7 @@ export function buildIndexPagePlacements() {
         title: cat.name,
         subtitle: `${count} section${count === 1 ? "" : "s"}`,
         value: String(count),
-        href: `/sections/${slug}`,
+        href: `/cms/section/${slug}`,
         body: `<p>Browse live previews for every <strong>${cat.name}</strong> layout.</p>`,
       },
       i
@@ -890,9 +1175,9 @@ export function buildIndexPagePlacements() {
       in_page_nav_title: "Overview",
       section_title: "SkillHub section library",
       sub_title:
-        "58 CMS section components across 9 categories — each with a live preview on a content page. Pick a category below or open the admin library to map sections onto your pages.",
+        "CMS section components across 18 categories — each with a live preview on a content page. Pick a category below or open the admin library to map sections onto your pages.",
       buttons: [
-        btn("Open CMS sections", { target_url: "/cms/sections" }),
+        btn("Open CMS sections", { target_url: "/cms/pages-content-sections" }),
         btn("Tabs showcase", {
           variant: "secondary",
           target_url: "/tabs-showcase",
@@ -909,7 +1194,7 @@ export function buildIndexPagePlacements() {
           {
             value: String(sectionsInCategory(cat.key).length),
             title: cat.name,
-            subtitle: `/sections/${CATEGORY_SLUG[cat.key] || cat.key}`,
+            subtitle: `/cms/section/${CATEGORY_SLUG[cat.key] || cat.key}`,
           },
           i
         )
@@ -920,7 +1205,7 @@ export function buildIndexPagePlacements() {
       sort_order: 3,
       in_page_nav_title: "Categories",
       section_title: "Browse by category",
-      sub_title: "Content pages under /sections/* — one page per CMS category.",
+      sub_title: "Public previews under /cms/section/* — one page per CMS category.",
       items: categoryCards,
     },
     {

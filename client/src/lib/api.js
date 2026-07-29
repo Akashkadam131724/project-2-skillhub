@@ -161,3 +161,15 @@ export async function fetchBlogBySlug(slug, options = {}) {
     ...options,
   });
 }
+
+export async function fetchSectionLibraryCategories(options = {}) {
+  return apiGet("/section-library/categories", options);
+}
+
+export async function fetchSectionLibraryShowcase(showcaseKey, options = {}) {
+  const key = showcaseKey || "index";
+  return apiGet(`/section-library/showcase/${encodeURIComponent(key)}`, {
+    notFoundMessage: "Section library showcase not found",
+    ...options,
+  });
+}

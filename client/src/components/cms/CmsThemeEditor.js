@@ -108,11 +108,10 @@ export default function CmsThemeEditor({
             <button
               type="button"
               onClick={clearPresetToInherit}
-              className={`rounded-md border px-2.5 py-1.5 text-[11px] font-semibold ${
-                !theme.preset
+              className={`rounded-md border px-2.5 py-1.5 text-[11px] font-semibold ${!theme.preset
                   ? "border-brand bg-brand/10 text-brand"
                   : "border-slate-200 text-slate-600 dark:border-slate-700"
-              }`}
+                }`}
             >
               Inherit
             </button>
@@ -125,11 +124,10 @@ export default function CmsThemeEditor({
                 type="button"
                 title={preset.label}
                 onClick={() => applyPreset(key)}
-                className={`inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-[11px] font-semibold ${
-                  active
+                className={`inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-[11px] font-semibold ${active
                     ? "border-brand ring-2 ring-brand/25"
                     : "border-slate-200 dark:border-slate-700"
-                }`}
+                  }`}
               >
                 <span
                   className="size-3 rounded-full"

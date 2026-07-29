@@ -30,6 +30,7 @@ const ENTITY_TYPES = [
   { value: "industry", label: "industry" },
   { value: "skilling_area", label: "skilling_area" },
   { value: "content", label: "content" },
+  { value: "webinar", label: "webinar" },
 ];
 
 const emptyForm = {

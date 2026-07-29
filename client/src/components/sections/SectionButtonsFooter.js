@@ -55,11 +55,8 @@ export default function SectionButtonsFooter({
               e.stopPropagation();
               onEditField?.(editField);
             }}
-            className={`inline-flex items-center gap-1.5 rounded-lg border border-dashed px-3 py-1.5 text-[11px] font-semibold transition ${
-              inverted
-                ? "border-white/40 bg-white/10 text-white hover:bg-white/20"
-                : "border-slate-300 bg-white/80 text-slate-600 hover:border-brand hover:text-brand dark:border-slate-600 dark:bg-slate-900/80 dark:text-slate-300"
-            }`}
+            className="section-btn section-btn--cms-manage"
+            {...(inverted ? { "data-btn-surface": "dark" } : {})}
           >
             <span aria-hidden>{list.length ? "✎" : "+"}</span>
             {list.length
@@ -69,7 +66,7 @@ export default function SectionButtonsFooter({
           {!list.length ? (
             <span
               className={`text-[11px] ${
-                inverted ? "text-white/50" : "text-slate-400"
+                inverted ? "text-white/50" : "section-theme-subtle"
               }`}
             >
               Links, on-page targets, or forms

@@ -18,6 +18,8 @@ import pageSectionRoutes from "./src/modules/cms/page-section.routes.js";
 import siteThemeRoutes from "./src/modules/cms/site-theme.routes.js";
 import entityPageThemeRoutes from "./src/modules/cms/entity-page-theme.routes.js";
 import navigationRoutes from "./src/modules/navigation/navigation.routes.js";
+import sectionCategoryRoutes from "./src/modules/cms/section-category.routes.js";
+import sectionLibraryRoutes from "./src/modules/cms/section-library.routes.js";
 import uploadRoutes, {
   UPLOADS_ROOT,
 } from "./src/modules/uploads/upload.routes.js";
@@ -46,6 +48,8 @@ app.use("/contents", contentRoutes);
 app.use("/blogs", blogRoutes);
 app.use("/search", searchRoutes);
 app.use("/sections", sectionRoutes);
+app.use("/section-categories", sectionCategoryRoutes);
+app.use("/section-library", sectionLibraryRoutes);
 app.use("/pages", pageRoutes);
 app.use("/page-sections", pageSectionRoutes);
 app.use("/site-theme", siteThemeRoutes);

@@ -3,6 +3,10 @@ import Page from "./page.model.js";
 import Section, { normalizeContentScope } from "./section.model.js";
 import EntityPageSection from "./entity-page-section.model.js";
 import { formatMongooseError } from "../../utils/formatMongooseError.js";
+import {
+  mergePlacementData,
+  normalizePlacementDataPatch,
+} from "./placement-data.utils.js";
 
 async function resolvePageAndSection(pageKey, sectionKey) {
   const page = await Page.findByKey(pageKey);
@@ -12,6 +16,80 @@ async function resolvePageAndSection(pageKey, sectionKey) {
   if (!section) return { error: { status: 404, message: "Section not found" } };
 
   return { page, section };
+}
+
+/** Merge `data` patches; strip legacy `data.section_theme` when using top-level field. */
+function finalizeEntityPageSectionUpdate($set, existing, body) {
+  const $unset = {};
+
+  if ($set.data !== undefined) {
+    const merged = mergePlacementData(existing?.data, $set.data);
+    if (
+      body.section_theme !== undefined &&
+      merged &&
+      typeof merged === "object" &&
+      !Array.isArray(merged)
+    ) {
+      delete merged.section_theme;
+    }
+    $set.data = normalizePlacementDataPatch(merged);
+  } else if (
+    body.section_theme !== undefined &&
+    existing?.data &&
+    typeof existing.data === "object" &&
+    !Array.isArray(existing.data) &&
+    Object.prototype.hasOwnProperty.call(existing.data, "section_theme")
+  ) {
+    $unset["data.section_theme"] = "";
+  }
+
+  const update = { $set };
+  if (Object.keys($unset).length) update.$unset = $unset;
+  return update;
+}
+
+/** API shape: section id + computed section_key (not stored on EntityPageSection). */
+async function serializeEntityDocs(docs) {
+  const list = Array.isArray(docs) ? docs : [docs];
+  if (!list.length) return [];
+
+  const missingIds = new Set();
+  for (const doc of list) {
+    const sec = doc.section;
+    if (!sec || (typeof sec === "object" && sec.key)) continue;
+    const id = sec?._id ?? sec;
+    if (id) missingIds.add(String(id));
+  }
+
+  const keyById = new Map();
+  if (missingIds.size) {
+    const sections = await Section.find({ _id: { $in: [...missingIds] } })
+      .select("key")
+      .lean();
+    for (const s of sections) {
+      keyById.set(String(s._id), s.key);
+    }
+  }
+
+  return list.map((doc) => {
+    const plain = doc.toObject ? doc.toObject({ virtuals: true }) : { ...doc };
+    const sec = plain.section;
+    let sectionId;
+    let sectionKey = "";
+    if (sec && typeof sec === "object" && sec.key) {
+      sectionId = sec._id;
+      sectionKey = sec.key;
+    } else {
+      sectionId = sec?._id ?? sec;
+      sectionKey = keyById.get(String(sectionId)) || "";
+    }
+    return {
+      ...plain,
+      id: plain._id ?? plain.id,
+      section: sectionId,
+      section_key: sectionKey,
+    };
+  });
 }
 
 function serializeTag(section, tag) {
@@ -31,8 +109,8 @@ function serializeTag(section, tag) {
     section_bg_color: tag.section_bg_color,
     in_page_nav_title: tag.in_page_nav_title,
     section_img_url: tag.section_img_url,
-    section_preview_img:
-      tag.section_preview_img || section.section_preview_img || null,
+    section_theme: tag.section_theme ?? null,
+    section_preview_img: section.section_preview_img || null,
     buttons: Array.isArray(tag.buttons) ? tag.buttons : undefined,
     items: Array.isArray(tag.items) ? tag.items : undefined,
     data: tag.data,
@@ -53,6 +131,7 @@ export const tagSectionToPage = async (req, res) => {
       section_bg_color = null,
       in_page_nav_title = null,
       section_img_url = null,
+      section_theme = null,
       buttons,
       items,
       data = null,
@@ -89,8 +168,7 @@ export const tagSectionToPage = async (req, res) => {
       section_bg_color,
       in_page_nav_title,
       section_img_url,
-      // Snapshot from section — not editable on the mapping
-      section_preview_img: section.section_preview_img || null,
+      section_theme,
       data,
       status,
     };
@@ -160,8 +238,8 @@ export const getPageSections = async (req, res) => {
           section_bg_color: tag.section_bg_color,
           in_page_nav_title: tag.in_page_nav_title,
           section_img_url: tag.section_img_url,
-          section_preview_img:
-            tag.section_preview_img || section.section_preview_img || null,
+          section_theme: tag.section_theme ?? null,
+          section_preview_img: section.section_preview_img || null,
           buttons: Array.isArray(tag.buttons) ? tag.buttons : undefined,
           items: Array.isArray(tag.items) ? tag.items : undefined,
           data: tag.data,
@@ -193,6 +271,7 @@ export const updatePageSection = async (req, res) => {
       "section_bg_color",
       "in_page_nav_title",
       "section_img_url",
+      "section_theme",
       "buttons",
       "items",
       "data",
@@ -374,6 +453,7 @@ export const upsertEntityPageSection = async (req, res) => {
       "section_bg_color",
       "in_page_nav_title",
       "section_img_url",
+      "section_theme",
       "buttons",
       "items",
       "data",
@@ -429,12 +509,14 @@ export const upsertEntityPageSection = async (req, res) => {
       const $set = pickEntityFields(req.body, {
         allowSort: !sortDisabled || isExtra,
       });
+      const update = finalizeEntityPageSectionUpdate($set, existing, req.body);
       const doc = await EntityPageSection.findOneAndUpdate(
         { _id: id, page_key: page.key, entity_id },
-        { $set },
+        update,
         { new: true, runValidators: true }
       );
-      return res.json({ success: true, data: doc });
+      const [data] = await serializeEntityDocs(doc);
+      return res.json({ success: true, data });
     }
 
     // 2) Template override (page_tag_id required — must exist on section.pages)
@@ -464,14 +546,20 @@ export const upsertEntityPageSection = async (req, res) => {
         });
       }
 
+      const existing = await EntityPageSection.findOne({
+        page_key: page.key,
+        entity_id,
+        page_tag_id: tag._id,
+      }).lean();
+
       const $set = {
         page_key: page.key,
         entity_id,
         page_tag_id: tag._id,
         section: section._id,
-        section_key: section.key,
         ...pickEntityFields(req.body, { allowSort: !sortDisabled }),
       };
+      const update = finalizeEntityPageSectionUpdate($set, existing, req.body);
 
       const doc = await EntityPageSection.findOneAndUpdate(
         {
@@ -479,11 +567,12 @@ export const upsertEntityPageSection = async (req, res) => {
           entity_id,
           page_tag_id: tag._id,
         },
-        { $set },
+        update,
         { new: true, upsert: true, runValidators: true, setDefaultsOnInsert: true }
       );
 
-      return res.json({ success: true, data: doc });
+      const [data] = await serializeEntityDocs(doc);
+      return res.json({ success: true, data });
     }
 
     // 3) Create entity-only extra (this page only — no template change)
@@ -521,7 +610,6 @@ export const upsertEntityPageSection = async (req, res) => {
       entity_id,
       page_tag_id: null,
       section: section._id,
-      section_key: section.key,
       sort_order: extraSort,
       section_title: req.body.section_title ?? null,
       sub_title: req.body.sub_title ?? null,
@@ -529,6 +617,7 @@ export const upsertEntityPageSection = async (req, res) => {
       section_bg_color: req.body.section_bg_color ?? null,
       in_page_nav_title: req.body.in_page_nav_title ?? null,
       section_img_url: req.body.section_img_url ?? null,
+      section_theme: req.body.section_theme ?? null,
       data: req.body.data ?? null,
       status: req.body.status !== false,
     };
@@ -536,7 +625,8 @@ export const upsertEntityPageSection = async (req, res) => {
     if (Array.isArray(req.body.items)) createDoc.items = req.body.items;
 
     const doc = await EntityPageSection.create(createDoc);
-    res.status(201).json({ success: true, data: doc, is_entity_extra: true });
+    const [data] = await serializeEntityDocs(doc);
+    res.status(201).json({ success: true, data, is_entity_extra: true });
   } catch (err) {
     const formatted = formatMongooseError(err);
     res.status(formatted.status).json(formatted);
@@ -557,10 +647,12 @@ export const getEntityPageSections = async (req, res) => {
       page_key: String(page_key).toLowerCase(),
       entity_id,
     })
+      .populate("section", "key")
       .sort({ sort_order: 1 })
       .lean();
 
-    res.json({ success: true, count: docs.length, data: docs });
+    const data = await serializeEntityDocs(docs);
+    res.json({ success: true, count: data.length, data });
   } catch (err) {
     const formatted = formatMongooseError(err);
     res.status(formatted.status).json(formatted);

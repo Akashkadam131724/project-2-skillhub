@@ -107,6 +107,147 @@ export const LIGHT_GRADIENT_PRESETS = [
   },
 ];
 
+/**
+ * Band surface gradients — curated for CMS section backgrounds.
+ * best = strong single-section fills; alternate = subtle pairs for A/B rows on a page.
+ */
+export const BAND_SURFACE_GRADIENTS = {
+  light: {
+    best: [
+      {
+        id: "grad_soft_mint",
+        label: "Soft mint",
+        value: "linear-gradient(145deg, #f8fafc 0%, #ecfdf5 50%, #d1fae5 100%)",
+        hint: "Best single — calm, editorial",
+      },
+      {
+        id: "grad_cyan_wash",
+        label: "Cyan wash",
+        value: "linear-gradient(135deg, #67e8f9 0%, #5ec8e8 45%, #22d3ee 100%)",
+        hint: "Best single — brand energy",
+      },
+      {
+        id: "grad_paper_wash",
+        label: "Paper wash",
+        value: "linear-gradient(180deg, #ffffff 0%, #f1f5f9 100%)",
+        hint: "Best single — minimal",
+      },
+      {
+        id: "grad_ocean_light",
+        label: "Ocean light",
+        value: "linear-gradient(145deg, #5eead4 0%, #5ec8e8 50%, #3b82f6 100%)",
+        hint: "Best single — bold light band",
+      },
+      {
+        id: "grad_sky_band",
+        label: "Sky band",
+        value: "linear-gradient(160deg, #7dd3fc 0%, #38bdf8 50%, #0ea5e9 100%)",
+        hint: "Best single — bright hero",
+      },
+    ],
+    alternate: [
+      {
+        id: "alt_soft_mint",
+        label: "Soft mint",
+        value: "linear-gradient(145deg, #f8fafc 0%, #ecfdf5 50%, #d1fae5 100%)",
+        hint: "Alternate · pair with Paper wash or Soft blue",
+      },
+      {
+        id: "alt_paper_wash",
+        label: "Paper wash",
+        value: "linear-gradient(180deg, #ffffff 0%, #f1f5f9 100%)",
+        hint: "Alternate · pair with Soft mint or Lavender",
+      },
+      {
+        id: "alt_soft_blue",
+        label: "Soft blue",
+        value: "linear-gradient(135deg, #f8fafc 0%, #e0f2fe 55%, #dbeafe 100%)",
+        hint: "Alternate · pair with Soft mint",
+      },
+      {
+        id: "alt_soft_lavender",
+        label: "Soft lavender",
+        value: "linear-gradient(125deg, #faf5ff 0%, #f5f3ff 45%, #ede9fe 100%)",
+        hint: "Alternate · pair with Paper wash",
+      },
+      {
+        id: "alt_blush_fade",
+        label: "Blush fade",
+        value: "linear-gradient(180deg, #fff7ed 0%, #ffedd5 45%, #ffffff 100%)",
+        hint: "Alternate · warm row between cool rows",
+      },
+      {
+        id: "alt_cool_stripe",
+        label: "Cool stripe",
+        value:
+          "linear-gradient(180deg, #ffffff 0%, #f1f5f9 48%, #ffffff 100%)",
+        hint: "Alternate · mimics white/grey rhythm",
+      },
+    ],
+  },
+  dark: {
+    best: [
+      {
+        id: "grad_midnight",
+        label: "Midnight",
+        value: "linear-gradient(135deg, #0f172a 0%, #1e3a8a 55%, #0b1f4d 100%)",
+        hint: "Best single — classic dark band",
+      },
+      {
+        id: "grad_skillhub",
+        label: "SkillHub",
+        value:
+          "linear-gradient(157.967deg, rgb(15, 23, 42) 0%, rgb(0, 35, 109) 50%, rgb(15, 23, 42) 100%)",
+        hint: "Best single — brand navy",
+      },
+      {
+        id: "grad_ocean_depth",
+        label: "Ocean depth",
+        value: "linear-gradient(160deg, #082f49 0%, #0e7490 50%, #164e63 100%)",
+        hint: "Best single — teal depth",
+      },
+      {
+        id: "grad_aurora",
+        label: "Aurora",
+        value: "linear-gradient(125deg, #0f172a 0%, #1e1b4b 40%, #4c1d95 100%)",
+        hint: "Best single — purple night",
+      },
+    ],
+    alternate: [
+      {
+        id: "alt_midnight",
+        label: "Midnight",
+        value: "linear-gradient(135deg, #0f172a 0%, #1e3a8a 55%, #0b1f4d 100%)",
+        hint: "Alternate · pair with Steel or Forest mist",
+      },
+      {
+        id: "alt_steel",
+        label: "Steel",
+        value: "linear-gradient(180deg, #0f172a 0%, #334155 55%, #1e293b 100%)",
+        hint: "Alternate · pair with Midnight",
+      },
+      {
+        id: "alt_forest_mist",
+        label: "Forest mist",
+        value: "linear-gradient(150deg, #052e16 0%, #14532d 50%, #0f766e 100%)",
+        hint: "Alternate · green row between navy rows",
+      },
+      {
+        id: "alt_twilight",
+        label: "Twilight",
+        value: "linear-gradient(120deg, #020617 0%, #312e81 50%, #6d28d9 100%)",
+        hint: "Alternate · pair with Steel",
+      },
+      {
+        id: "alt_ember",
+        label: "Ember",
+        value: "linear-gradient(145deg, #1c1917 0%, #7f1d1d 45%, #9a3412 100%)",
+        hint: "Alternate · warm accent dark row",
+      },
+    ],
+  },
+};
+
 /** @deprecated use DARK_SOLID_PRESETS */
 export const BANNER_SOLID_PRESETS = DARK_SOLID_PRESETS;
 

@@ -6,3 +6,8 @@ export { default as HeroMediaSection } from "./HeroMediaSection";
 export { default as HeroStatsSection } from "./HeroStatsSection";
 export { default as HeroAsymmetricSection } from "./HeroAsymmetricSection";
 export { default as HeroDualCtaSection } from "./HeroDualCtaSection";
+export { default as EditorialBannerSection } from "./EditorialBannerSection";
+export { default as StatementBandSection } from "./StatementBandSection";
+export { default as OrbitHeroSection } from "./OrbitHeroSection";
+export { default as SiteBuilderHeroSection } from "./SiteBuilderHeroSection";
+export { default as VideoBannerSection } from "./VideoBannerSection";

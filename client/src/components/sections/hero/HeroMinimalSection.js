@@ -37,13 +37,13 @@ export default function HeroMinimalSection({
             section_title={section_title}
             cmsMode={cmsMode}
             onEditField={onEditField}
-            className="m-0 text-2xl leading-snug font-bold tracking-tight text-ink sm:text-3xl dark:text-white"
+            className="m-0 text-2xl leading-snug font-bold tracking-tight section-theme-heading sm:text-3xl"
           />
           <HeroSubtitle
             sub_title={sub_title}
             cmsMode={cmsMode}
             onEditField={onEditField}
-            className="text-[15px] leading-relaxed text-slate-600 dark:text-slate-300"
+            className="text-[15px] leading-relaxed section-theme-muted"
           />
         </div>
         <SectionButtonsFooter

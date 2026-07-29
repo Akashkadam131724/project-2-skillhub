@@ -1,18 +1,31 @@
-import OverviewSection from "@/components/sections/OverviewSection";
-import KeyBenefitsSection from "@/components/sections/KeyBenefitsSection";
-import WhyChooseSection from "@/components/sections/WhyChooseSection";
-import StatsSection from "@/components/sections/StatsSection";
-import RelatedCoursesSection from "@/components/sections/RelatedCoursesSection";
-import CurriculumSection from "@/components/sections/CurriculumSection";
-import TestimonialsSection from "@/components/sections/TestimonialsSection";
-import { CustomerTestimonialsCarousel } from "@/components/sections/testimonials";
-import FaqSection from "@/components/sections/FaqSection";
-import ResourcesSection from "@/components/sections/ResourcesSection";
-import ProductsSection from "@/components/sections/ProductsSection";
-import CatalogSection from "@/components/sections/CatalogSection";
-import EntityDirectorySection from "@/components/sections/EntityDirectorySection";
-import LatestBlogsSection from "@/components/sections/LatestBlogsSection";
-import BlogDirectorySection from "@/components/sections/BlogDirectorySection";
+import {
+  OverviewSection,
+  CtaBandSection,
+  ContactUsSection,
+  ContactFormSection,
+  HorizonGallerySection,
+  SplitNarrativeSection,
+  PricingTiersSection,
+  TemplateGallerySection,
+  DomainSearchBandSection,
+  WebsiteBuildStepsSection,
+  LatestBlogsSection,
+  TextMediaSection,
+} from "@/components/sections/content";
+import {
+  KeyBenefitsSection,
+  TeamSection,
+  FeatureSpotlightSection,
+  ProcessStepsSection,
+  BentoGridSection,
+  PillarDestinationsSection,
+  CardStackSection,
+  BuilderFeatureCardsSection,
+  CastProfilesSection,
+  WhyChooseSection,
+  TrainingOptionsSection,
+  AwardsSection,
+} from "@/components/sections/features";
 import {
   HeroClassicSection,
   HeroSplitSection,
@@ -22,42 +35,44 @@ import {
   HeroStatsSection,
   HeroAsymmetricSection,
   HeroDualCtaSection,
+  EditorialBannerSection,
+  StatementBandSection,
+  OrbitHeroSection,
+  SiteBuilderHeroSection,
+  VideoBannerSection,
 } from "@/components/sections/hero";
-import { PartnersMarqueeSection } from "@/components/sections/partners";
 import {
-  TrainingOptionsSection,
-  AwardsSection,
-} from "@/components/sections/cards";
-import InPageNavSection from "@/components/sections/InPageNavSection";
-import TextMediaSection from "@/components/sections/text-media/TextMediaSection";
-import TeamSection from "@/components/sections/TeamSection";
-import EditorialBannerSection from "@/components/sections/EditorialBannerSection";
-import FeatureSpotlightSection from "@/components/sections/FeatureSpotlightSection";
-import ProcessStepsSection from "@/components/sections/ProcessStepsSection";
-import CtaBandSection from "@/components/sections/CtaBandSection";
-import ContactUsSection from "@/components/sections/ContactUsSection";
-import ContactFormSection from "@/components/sections/ContactFormSection";
-import StatementBandSection from "@/components/sections/StatementBandSection";
-import BentoGridSection from "@/components/sections/BentoGridSection";
-import HorizonGallerySection from "@/components/sections/HorizonGallerySection";
-import SplitNarrativeSection from "@/components/sections/SplitNarrativeSection";
-import PillarDestinationsSection from "@/components/sections/PillarDestinationsSection";
-import OrbitHeroSection from "@/components/sections/OrbitHeroSection";
-import CardStackSection from "@/components/sections/CardStackSection";
-import FeatureTabsSection from "@/components/sections/FeatureTabsSection";
-import TabsHorizontalSection from "@/components/sections/TabsHorizontalSection";
-import TabsUnderlineSection from "@/components/sections/TabsUnderlineSection";
-import TabsSuccessStoriesSection from "@/components/sections/TabsSuccessStoriesSection";
-import PricingTiersSection from "@/components/sections/PricingTiersSection";
-import MasonryQuotesSection from "@/components/sections/MasonryQuotesSection";
-import MetricRailSection from "@/components/sections/MetricRailSection";
-import SiteBuilderHeroSection from "@/components/sections/SiteBuilderHeroSection";
-import TemplateGallerySection from "@/components/sections/TemplateGallerySection";
-import BuilderFeatureCardsSection from "@/components/sections/BuilderFeatureCardsSection";
-import DomainSearchBandSection from "@/components/sections/DomainSearchBandSection";
-import WebsiteBuildStepsSection from "@/components/sections/WebsiteBuildStepsSection";
-import VideoBannerSection from "@/components/sections/VideoBannerSection";
-import CastProfilesSection from "@/components/sections/CastProfilesSection";
+  FeatureTabsSection,
+  TabsHorizontalSection,
+  TabsUnderlineSection,
+  TabsSuccessStoriesSection,
+} from "@/components/sections/tabs";
+import { FaqSection, FaqTwoColumnSection } from "@/components/sections/accordion";
+import {
+  RelatedCoursesSection,
+  CurriculumSection,
+  ResourcesSection,
+  ProductsSection,
+  CatalogSection,
+  EntityDirectorySection,
+  BlogDirectorySection,
+} from "@/components/sections/catalog";
+import {
+  MasonryQuotesSection,
+  TestimonialsSection,
+  CustomerTestimonialsCarousel,
+  PartnersMarqueeSection,
+} from "@/components/sections/social_proof";
+import { StatsSection, MetricRailSection } from "@/components/sections/data";
+import { InPageNavSection } from "@/components/sections/navigation";
+import { PromoModalSection } from "@/components/sections/overlays";
+import { NewsletterBandSection, FormSplitSection } from "@/components/sections/forms";
+import { ComparisonTableSection } from "@/components/sections/comparison";
+import { MediaMosaicSection } from "@/components/sections/media";
+import { TimelineVerticalSection } from "@/components/sections/timeline";
+import { TrustBadgesSection } from "@/components/sections/trust";
+import { SplitCtaSection } from "@/components/sections/cta";
+import { LearningPathSection } from "@/components/sections/learning";
 import {
   SECTION_ITEMS_CONFIG,
   sectionUsesItems,
@@ -126,6 +141,16 @@ export const SECTION_COMPONENTS = {
   hero_stats: HeroStatsSection,
   hero_asymmetric: HeroAsymmetricSection,
   hero_dual_cta: HeroDualCtaSection,
+  promo_modal: PromoModalSection,
+  newsletter_band: NewsletterBandSection,
+  form_split: FormSplitSection,
+  comparison_table: ComparisonTableSection,
+  media_mosaic: MediaMosaicSection,
+  timeline_vertical: TimelineVerticalSection,
+  trust_badges: TrustBadgesSection,
+  split_cta: SplitCtaSection,
+  learning_path: LearningPathSection,
+  faq_two_column: FaqTwoColumnSection,
 };
 
 /**
@@ -192,6 +217,16 @@ export const SECTION_SURFACE = {
   hero_stats: "fixed",
   hero_asymmetric: "fixed",
   hero_dual_cta: "fixed",
+  promo_modal: "fixed",
+  newsletter_band: "alt",
+  form_split: "alt",
+  comparison_table: "alt",
+  media_mosaic: "alt",
+  timeline_vertical: "alt",
+  trust_badges: "alt",
+  split_cta: "fixed",
+  learning_path: "alt",
+  faq_two_column: "alt",
 };
 
 export function sectionUsesAltSurface(key, renderKey) {
@@ -213,6 +248,7 @@ export const SECTION_USES_IMAGE = new Set([
   "split_narrative",
   "orbit_hero",
   "site_builder_hero",
+  "split_cta",
 ]);
 
 /**
@@ -268,9 +304,12 @@ export const SECTION_CATALOG = [
   { key: "editorial_banner", name: "Editorial Banner", category: "hero", tags: ["hero", "full-bleed"] },
   { key: "feature_spotlight", name: "Feature Spotlight", category: "features", tags: ["cards", "spotlight"] },
   { key: "process_steps", name: "Process Steps", category: "features", tags: ["steps", "process"] },
-  { key: "cta_band", name: "CTA Band", category: "content", tags: ["cta", "band"] },
+  { key: "cta_band", name: "CTA Band", category: "cta", tags: ["cta", "band"] },
+  { key: "split_cta", name: "CTA — Gradient split", category: "cta", tags: ["cta", "gradient", "image"] },
   { key: "contact_us", name: "Contact Us", category: "content", tags: ["contact", "global"] },
-  { key: "contact_form", name: "Contact Form", category: "content", tags: ["contact", "form", "enterprise"] },
+  { key: "contact_form", name: "Contact Form", category: "forms", tags: ["contact", "form", "enterprise"] },
+  { key: "newsletter_band", name: "Newsletter Band", category: "forms", tags: ["newsletter", "capture"] },
+  { key: "form_split", name: "Form — Split column", category: "forms", tags: ["form", "split", "lead"] },
   { key: "statement_band", name: "Statement Band", category: "hero", tags: ["hero", "typography"] },
   { key: "bento_grid", name: "Bento Grid", category: "features", tags: ["bento", "mosaic"] },
   { key: "horizon_gallery", name: "Horizon Gallery", category: "content", tags: ["gallery", "slider"] },
@@ -283,7 +322,7 @@ export const SECTION_CATALOG = [
   { key: "tabs_horizontal", name: "Tabs — Horizontal", category: "tabs", tags: ["tabs", "horizontal", "pills"] },
   { key: "tabs_underline", name: "Tabs — Underline", category: "tabs", tags: ["tabs", "underline", "editorial"] },
   { key: "tabs_success_stories", name: "Tabs — Success Stories", category: "tabs", tags: ["tabs", "horizontal", "icons", "case-study"] },
-  { key: "pricing_tiers", name: "Pricing Tiers", category: "content", tags: ["pricing", "plans"] },
+  { key: "pricing_tiers", name: "Pricing Tiers", category: "pricing", tags: ["pricing", "plans"] },
   { key: "masonry_quotes", name: "Masonry Quotes", category: "social_proof", tags: ["testimonials", "masonry"] },
   { key: "metric_rail", name: "Metric Rail", category: "data", tags: ["metrics", "proof"] },
   { key: "site_builder_hero", name: "Site Builder Hero", category: "hero", tags: ["builder", "hero"] },
@@ -313,6 +352,13 @@ export const SECTION_CATALOG = [
     content_scope: "page",
   },
   { key: "faq", name: "FAQ", category: "accordion", tags: ["accordion", "questions"] },
+  { key: "faq_two_column", name: "FAQ — Split column", category: "accordion", tags: ["accordion", "split", "title-side"] },
+  { key: "promo_modal", name: "Promo Modal", category: "overlays", tags: ["modal", "delay", "overlay"] },
+  { key: "comparison_table", name: "Comparison Table", category: "comparison", tags: ["table", "compare"] },
+  { key: "media_mosaic", name: "Media Mosaic", category: "media", tags: ["gallery", "mosaic", "images"] },
+  { key: "timeline_vertical", name: "Timeline — Vertical", category: "timeline", tags: ["timeline", "journey"] },
+  { key: "trust_badges", name: "Trust Badges", category: "trust", tags: ["trust", "badges", "compliance"] },
+  { key: "learning_path", name: "Learning Path", category: "learning", tags: ["learning", "path", "steps"] },
   { key: "resources", name: "Resources", category: "catalog", tags: ["resources", "cards"] },
   { key: "products", name: "Products Grid", category: "catalog", tags: ["products", "grid"] },
   { key: "catalog", name: "Course Catalog", category: "catalog", tags: ["courses", "filters"] },
@@ -356,6 +402,15 @@ export const SECTION_CATEGORIES = [
   { key: "social_proof", name: "Social proof" },
   { key: "data", name: "Data & stats" },
   { key: "navigation", name: "Navigation" },
+  { key: "overlays", name: "Overlays & modals" },
+  { key: "forms", name: "Forms & capture" },
+  { key: "comparison", name: "Compare & choose" },
+  { key: "media", name: "Media & galleries" },
+  { key: "timeline", name: "Timeline & journey" },
+  { key: "pricing", name: "Pricing & packages" },
+  { key: "trust", name: "Trust & compliance" },
+  { key: "cta", name: "Calls to action" },
+  { key: "learning", name: "Learning experience" },
 ];
 
 /** Fixed metadata for a registered section component. */

@@ -103,6 +103,15 @@ export function deleteEntityPageTheme({ page_key, entity_id }) {
   );
 }
 
+/* ─── Section categories ─── */
+export function listSectionCategories(params) {
+  return request(`/section-categories${toQuery(params)}`);
+}
+
+export function getSectionCategory(key) {
+  return request(`/section-categories/${encodeURIComponent(key)}`);
+}
+
 /* ─── Sections ─── */
 export function listSections(params) {
   return request(`/sections${toQuery(params)}`);

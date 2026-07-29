@@ -4,8 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import { SectionPreviewThumb } from "@/components/cms/CmsUi";
 import {
   SECTION_CATALOG,
-  sectionUsesBg,
-  sectionUsesBgColor,
   sectionUsesImage,
 } from "@/lib/section-registry";
 
@@ -27,11 +25,10 @@ function MenuItem({ children, onClick, danger = false }) {
         stopBubble(e);
         onClick?.(e);
       }}
-      className={`flex w-full items-center rounded-md px-3 py-2 text-left text-sm font-medium transition ${
-        danger
+      className={`flex w-full items-center rounded-md px-3 py-2 text-left text-sm font-medium transition ${danger
           ? "text-rose-700 hover:bg-rose-50 dark:text-rose-300 dark:hover:bg-rose-950/40"
           : "text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-800"
-      }`}
+        }`}
     >
       {children}
     </button>
@@ -68,8 +65,6 @@ export default function CmsSectionToolbar({
   const sectionKey = section?.section_key || section?.key;
   const renderKey = section?.render_key || "";
   const showImage = sectionUsesImage(sectionKey, renderKey);
-  const showBg = sectionUsesBg(sectionKey);
-  const showBgColor = sectionUsesBgColor(sectionKey);
   const previewSrc = preview ?? section?.section_preview_img;
 
   function editField(field) {
@@ -179,20 +174,11 @@ export default function CmsSectionToolbar({
                   Edit section image
                 </MenuItem>
               ) : null}
-              {showBg ? (
-                <MenuItem
-                  onClick={() => runAction(() => editField("section_bg_img"))}
-                >
-                  Edit background image
-                </MenuItem>
-              ) : null}
-              {showBgColor ? (
-                <MenuItem
-                  onClick={() => runAction(() => editField("section_bg_color"))}
-                >
-                  Edit background color
-                </MenuItem>
-              ) : null}
+              <MenuItem
+                onClick={() => runAction(() => editField("section_band"))}
+              >
+                Section band…
+              </MenuItem>
               {onToggleVisibility ? (
                 <>
                   <div className="my-1 border-t border-slate-100 dark:border-slate-800" />
