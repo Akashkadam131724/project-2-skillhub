@@ -92,7 +92,7 @@ export default function CmsVendorsPage() {
       setForm(emptyForm);
       setShowForm(false);
       await load();
-      window.location.href = `/cms/vendor/${res.data.slug}`;
+      window.location.href = `/cms/vendors/${res.data.slug}`;
     } catch (err) {
       setError(err);
     } finally {
@@ -234,7 +234,7 @@ export default function CmsVendorsPage() {
                   </p>
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  <Link href={`/cms/vendor/${vendor.slug}`} className={btnSecondary}>
+                  <Link href={`/cms/vendors/${vendor.slug}`} className={btnSecondary}>
                     Edit
                   </Link>
                   <Link

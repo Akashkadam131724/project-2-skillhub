@@ -1,0 +1,16 @@
+[
+  {
+    "id": 102,
+    "name": "ContentpageTicker",
+    "template": 14,
+    "title": "Ticker",
+    "image_url": "https://images.netcomlearning.com/cms/images/contentpageticker.png"
+  },
+  {
+    "id": 103,
+    "name": "BannerOne",
+    "template": 14,
+    "title": "BannerOne",
+    "image_url": "https://images.netcomlearning.com/cms/images/bannerone.png"
+  }
+]

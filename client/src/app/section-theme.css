@@ -10,6 +10,9 @@
 
 /* —— Fixed palettes (never swap with band — only applied via presets / theme blocks) —— */
 :root {
+  --surface-dark-bg: #0f172a;
+  --surface-dark-bg-soft: #1e293b;
+
   --ds-light-card-bg: #ffffff;
   --ds-light-card-fg: var(--ink);
   --ds-light-card-muted: rgb(71 85 105);
@@ -73,10 +76,10 @@
   --section-card-border: var(--card-border);
 }
 
-/* —— Dark band —— */
+/* —— Dark band (charcoal — default page dark surface) —— */
 [data-section-theme="dark"] {
   color: rgb(255 255 255 / 0.92);
-  --band-bg: var(--ink);
+  --band-bg: var(--surface-dark-bg);
   --band-fg: #fff;
   --band-muted: var(--ds-glass-card-muted);
   --band-subtle: var(--ds-glass-card-subtle);
@@ -106,8 +109,76 @@
   --band-bg: rgb(241 245 249);
 }
 
+.section-band-bg--soft-warm {
+  --band-bg: #faf8f5;
+}
+
+.section-band-bg--soft-cool {
+  --band-bg: #f3f6f9;
+}
+
+.section-band-bg--soft-sky {
+  --band-bg: #eef6fc;
+}
+
+.section-band-bg--soft-mint {
+  --band-bg: #eef9f4;
+}
+
+.section-band-bg--soft-lavender {
+  --band-bg: #f5f3ff;
+}
+
+.section-band-bg--soft-sand {
+  --band-bg: #faf6f0;
+}
+
+.section-band-bg--soft-slate {
+  --band-bg: #eef2f6;
+}
+
+.section-band-bg--soft-brand {
+  --band-bg: color-mix(in srgb, var(--brand-soft, #e8eeff) 42%, white);
+}
+
+/* Charcoal dark surface (site surface_mode: dark) */
+.section-band-bg--dark {
+  color: rgb(255 255 255 / 0.92);
+  --band-bg: var(--surface-dark-bg);
+  --band-fg: #fff;
+  --band-muted: var(--ds-glass-card-muted);
+  --band-subtle: var(--ds-glass-card-subtle);
+  --band-border: var(--ds-glass-card-border);
+  --card-fg: var(--ds-glass-card-fg);
+  --card-muted: var(--ds-glass-card-muted);
+  --card-subtle: var(--ds-glass-card-subtle);
+  --card-bg: var(--ds-glass-card-bg);
+  --card-border: var(--ds-glass-card-border);
+}
+
+/* Brand ink dark surface (site surface_mode: dark_ink) */
+.section-band-bg--dark-ink {
+  color: rgb(255 255 255 / 0.92);
+  --band-bg: var(--ink);
+  --band-fg: #fff;
+  --band-muted: var(--ds-glass-card-muted);
+  --band-subtle: var(--ds-glass-card-subtle);
+  --band-border: var(--ds-glass-card-border);
+  --card-fg: var(--ds-glass-card-fg);
+  --card-muted: var(--ds-glass-card-muted);
+  --card-subtle: var(--ds-glass-card-subtle);
+  --card-bg: var(--ds-glass-card-bg);
+  --card-border: var(--ds-glass-card-border);
+}
+
 [data-section-theme="dark"].section-band-bg--muted,
 [data-section-theme="dark"] .section-band-bg--muted {
+  --band-bg: var(--surface-dark-bg-soft);
+}
+
+[data-section-theme="dark"].section-band-bg--dark-ink,
+[data-section-theme="dark"] .section-band-bg--dark-ink,
+.section-band-bg--dark-ink.section-band-bg--muted {
   --band-bg: color-mix(in srgb, var(--ink) 88%, white);
 }
 

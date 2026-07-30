@@ -136,6 +136,23 @@ export async function fetchContents(params = {}) {
   return apiGet(`/contents${toQuery(params)}`);
 }
 
+/** Fetch every active content row (paginates API limit of 100). */
+export async function fetchAllContents(params = {}) {
+  const limit = 100;
+  let page = 1;
+  let totalPages = 1;
+  const all = [];
+
+  while (page <= totalPages) {
+    const res = await fetchContents({ ...params, page, limit, status: "active" });
+    all.push(...(res.data || []));
+    totalPages = res.totalPages || 1;
+    page += 1;
+  }
+
+  return all;
+}
+
 export async function fetchContentBySlug(slug, options = {}) {
   return apiGet(`/contents/${encodeURIComponent(slug)}`, {
     notFoundMessage: "Content not found",

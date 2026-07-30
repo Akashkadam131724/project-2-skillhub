@@ -115,6 +115,14 @@ export const SECTION_CATALOG_META = {
   hero_dual_cta: { category: "hero" },
 };
 
+/** Reserved for optional seed hints — bands inherit site `surface_mode` by default. */
+export const SECTION_DEFAULT_THEME = {};
+
+export function getSectionDefaultTheme(key) {
+  const normalized = String(key || "").toLowerCase();
+  return SECTION_DEFAULT_THEME[normalized] || "";
+}
+
 export function normalizeSectionTag(value) {
   return String(value || "")
     .toLowerCase()

@@ -8,6 +8,7 @@ import MobileCardPeekRow from "@/components/sections/MobileCardPeekRow";
 import CmsRichText from "@/components/cms/CmsRichText";
 import { mediaUrl } from "@/lib/cms-api";
 import { resolveItemsForSection } from "@/lib/item-types";
+import { isRichTextEmpty } from "@/lib/rich-text";
 import { SectionMediaOverlay } from "@/components/sections/design";
 import { DS_BADGE, DS_TEXT } from "@/lib/section-design-system";
 

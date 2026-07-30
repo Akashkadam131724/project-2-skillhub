@@ -9,7 +9,6 @@ import { resolveItemsForSection } from "@/lib/item-types";
 import { isRichTextEmpty } from "@/lib/rich-text";
 import {
   isSectionThemeDarkBand,
-  sectionSoftLightGradientClass,
   SECTION_ITEM_MUTED_CLASS,
   SECTION_ITEM_TITLE_CLASS,
 } from "@/lib/section-theme";
@@ -36,10 +35,6 @@ export default function ProcessStepsSection({
     section_theme: section_theme ?? sectionTheme,
   };
   const darkBand = isSectionThemeDarkBand(themePlacement);
-  const decorClass = sectionSoftLightGradientClass(
-    themePlacement.section_theme,
-    surfaceTone
-  );
 
   useEffect(() => {
     const el = ref.current;
@@ -57,7 +52,7 @@ export default function ProcessStepsSection({
   if (!items.length && !cmsMode) return null;
 
   return (
-    <div ref={ref} className={decorClass}>
+    <div ref={ref}>
       <SectionFrame
         title={section_title}
         subtitle={sub_title}

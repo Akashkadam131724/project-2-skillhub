@@ -1,7 +1,7 @@
 import Page from "./page.model.js";
 import { formatMongooseError } from "../../utils/formatMongooseError.js";
 import { resolvePageSections } from "./resolve.js";
-import { emptyPageTheme, pickThemePatch } from "./theme.utils.js";
+import { emptyPageTheme, mergePageThemeSave, pickThemePatch } from "./theme.utils.js";
 
 export const createPage = async (req, res) => {
   try {
@@ -53,6 +53,12 @@ export const getPageByKey = async (req, res) => {
 
 export const updatePage = async (req, res) => {
   try {
+    const pageKey = String(req.params.key).toLowerCase();
+    const existing = await Page.findByKey(pageKey);
+    if (!existing) {
+      return res.status(404).json({ success: false, message: "Page not found" });
+    }
+
     const allowed = [
       "name",
       "description",
@@ -65,11 +71,7 @@ export const updatePage = async (req, res) => {
     for (const key of allowed) {
       if (req.body[key] === undefined) continue;
       if (key === "theme") {
-        // Allow clearing individual fields back to inherit (null)
-        patch.theme = {
-          ...emptyPageTheme(),
-          ...pickThemePatch(req.body.theme || {}),
-        };
+        patch.theme = mergePageThemeSave(existing.theme, req.body.theme || {});
         continue;
       }
       patch[key] = req.body[key];
@@ -83,7 +85,7 @@ export const updatePage = async (req, res) => {
     }
 
     const page = await Page.findOneAndUpdate(
-      { key: String(req.params.key).toLowerCase() },
+      { key: pageKey },
       { $set: patch },
       { new: true, runValidators: true }
     );

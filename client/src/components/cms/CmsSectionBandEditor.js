@@ -3,14 +3,15 @@
 import { useMemo } from "react";
 import CmsBgColorPicker from "@/components/cms/CmsBgColorPicker";
 import {
-  SECTION_BAND_PRIORITY_LINES,
   activeBandSummary,
   effectiveBandThemeInfo,
   effectiveBandToneForDraft,
 } from "@/lib/section-band-cms";
+import { SECTION_THEME_OPTIONS } from "@/lib/section-theme";
 import { mediaUrl, uploadCmsImage } from "@/lib/cms-api";
 import { mediaAlt } from "@/lib/media-alt";
 import { isBannerGradient } from "@/lib/banner-bg";
+import CmsOverrideGuide from "@/components/cms/CmsOverrideGuide";
 
 const inputClass =
   "w-full rounded-lg border border-slate-300 bg-white px-2.5 py-2 text-sm outline-none focus:border-brand dark:border-slate-700 dark:bg-slate-900";
@@ -44,6 +45,8 @@ export default function CmsSectionBandEditor({
   bgFieldsLocked = false,
   bgLockedMessage = "",
   inheritedSurfaceTone,
+  inheritedSurfaceBand,
+  pageTheme,
   pageSurfaceMode = "alternating",
   pageInk = "",
   saving = false,
@@ -57,13 +60,19 @@ export default function CmsSectionBandEditor({
     () =>
       effectiveBandThemeInfo(draft, {
         inheritedSurfaceTone,
+        inheritedSurfaceBand,
+        pageTheme,
         pageSurfaceMode,
         pageInk,
       }),
-    [draft, inheritedSurfaceTone, pageSurfaceMode, pageInk]
+    [draft, inheritedSurfaceTone, inheritedSurfaceBand, pageTheme, pageSurfaceMode, pageInk]
   );
 
-  const bandTone = effectiveBandToneForDraft(draft, inheritedSurfaceTone);
+  const bandTone = effectiveBandToneForDraft(
+    draft,
+    inheritedSurfaceBand,
+    inheritedSurfaceTone
+  );
   const previewStyle = bandPreviewStyle(draft, themeInfo);
   const customBgActive = Boolean(draft.bgImg || draft.bgColor?.trim());
   const sampleTitleClass = draft.bgImg
@@ -75,23 +84,42 @@ export default function CmsSectionBandEditor({
 
   return (
     <form onSubmit={onSubmit} className="space-y-4">
-      <div className="rounded-lg border border-slate-200 bg-slate-50/80 px-3 py-3 text-xs leading-relaxed text-slate-600 dark:border-slate-700 dark:bg-slate-900/50 dark:text-slate-300">
-        <p className="m-0 font-semibold text-slate-800 dark:text-slate-100">
-          Priority (top wins for the band look)
-        </p>
-        <ol className="mb-0 mt-2 list-decimal space-y-1 pl-4">
-          {SECTION_BAND_PRIORITY_LINES.map((line) => (
-            <li key={line}>{line}</li>
-          ))}
-        </ol>
-        <p className="mb-0 mt-3 text-[11px] font-medium text-slate-500 dark:text-slate-400">
+      <div className="flex flex-wrap items-start justify-between gap-2">
+        <div className="min-w-0 flex-1">
+          <CmsOverrideGuide variant="band" />
+        </div>
+        <CmsOverrideGuide variant="drawer-button" />
+      </div>
+      <div className="rounded-lg border border-slate-200 bg-slate-50/80 px-3 py-2.5 text-xs text-slate-600 dark:border-slate-700 dark:bg-slate-900/50 dark:text-slate-300">
+        <p className="m-0 font-medium text-slate-800 dark:text-slate-100">
           Active: {activeBandSummary(draft)}
         </p>
-        <p className="mb-0 mt-2 text-[10px] text-slate-400">
-          Light/dark bands and surfaces are set under{" "}
-          <strong>Page settings → Theme</strong> (site, template, or this page).
+        <p className="mb-0 mt-1.5 text-[10px] text-slate-400">
+          Page surfaces: <strong>Theme → Surface</strong>. Band theme: catalog →
+          template → page.
         </p>
       </div>
+
+      <fieldset className="space-y-2 rounded-lg border border-slate-200 p-3 dark:border-slate-700">
+        <legend className="px-1 text-sm font-medium text-slate-700 dark:text-slate-200">
+          Band theme
+          <span className="ml-1 font-normal text-slate-500">
+            (at this layer — inherit uses parent default)
+          </span>
+        </legend>
+        <select
+          className={inputClass}
+          value={draft.theme || "inherit"}
+          disabled={saving}
+          onChange={(e) => set({ theme: e.target.value })}
+        >
+          {SECTION_THEME_OPTIONS.map((opt) => (
+            <option key={opt.value} value={opt.value}>
+              {opt.label}
+            </option>
+          ))}
+        </select>
+      </fieldset>
 
       <div
         className="overflow-hidden rounded-xl border border-slate-200 dark:border-slate-700"

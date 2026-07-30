@@ -29,6 +29,8 @@ import {
   emptyPageTheme,
   mergeTheme,
   normalizePageTheme,
+  surfacePatternLabel,
+  themeForApiSave,
 } from "@/lib/theme";
 import {
   normalizeSectionTheme,
@@ -36,7 +38,7 @@ import {
   SECTION_THEME_BAND_SKIP_KEYS,
 } from "@/lib/section-theme";
 import SectionThemeWrap from "@/components/sections/SectionThemeWrap";
-import { mergePlacementData } from "@/lib/placement-data";
+import { mergePlacementData, pickPlacementArrayField } from "@/lib/placement-data";
 import {
   saveSectionBandForPlacement,
 } from "@/lib/placement-save";
@@ -55,17 +57,16 @@ import CmsItemsEditor, {
 import { shouldRenderPlacement } from "@/lib/item-types";
 import {
   deleteEntityPageSection,
-  deleteEntityPageTheme,
   getEntityPageSections,
-  getEntityPageTheme,
   getPage,
+  getPageSectionsResolved,
   getSiteTheme,
   listPageSections,
   listSections,
   mediaUrl,
+  updatePage,
   uploadCmsImage,
   upsertEntityPageSection,
-  upsertEntityPageTheme,
 } from "@/lib/cms-api";
 import {
   contentLockedAtLayer,
@@ -191,10 +192,7 @@ function fieldValue(section, field) {
 }
 
 function pickArrayField(field, ...sources) {
-  for (const source of sources) {
-    if (source != null && Array.isArray(source[field])) return source[field];
-  }
-  return [];
+  return pickPlacementArrayField(field, ...sources);
 }
 
 function mergePlacements(tags, overrides, entityId, catalog = [], sortDisabled = true) {
@@ -288,6 +286,12 @@ function mergePlacements(tags, overrides, entityId, catalog = [], sortDisabled =
       section_bg_color: pick("section_bg_color"),
       section_img_url: pick("section_img_url"),
       section_theme: pick("section_theme"),
+      section_theme_local:
+        override != null
+          ? override.section_theme ?? null
+          : entityId
+            ? null
+            : tag.section_theme ?? null,
       section_preview_img: catalogSection?.section_preview_img || "",
       buttons: pickButtons(),
       items: pickItems(),
@@ -363,7 +367,16 @@ function mergePlacements(tags, overrides, entityId, catalog = [], sortDisabled =
       section_theme:
         content_scope === "global"
           ? catalogSection?.section_theme || ""
-          : extra.section_theme || catalogSection?.section_theme || "",
+          : (() => {
+              const v = extra.section_theme;
+              if (v !== null && v !== undefined && String(v).trim() !== "")
+                return v;
+              return catalogSection?.section_theme || "";
+            })(),
+      section_theme_local:
+        content_scope === "global"
+          ? catalogSection?.section_theme || ""
+          : extra.section_theme ?? null,
       buttons:
         content_scope === "global"
           ? Array.isArray(catalogSection?.buttons)
@@ -395,6 +408,7 @@ function SectionRender({
   section,
   cmsMode,
   surfaceTone,
+  surfaceBand,
   sectionTheme = "inherit",
   pageTheme,
   pageContext,
@@ -428,6 +442,7 @@ function SectionRender({
     section_key: key || _catalogKey,
     ...cmsProps,
     surfaceTone,
+    surfaceBand,
     sectionTheme,
     lightBand: sectionTheme === "light",
     pageContext,
@@ -439,14 +454,19 @@ function SectionRender({
   // makes sticky appear broken.
   let body;
   const fullBleedKeys = SECTION_THEME_BAND_SKIP_KEYS;
+  const pageSurfaceMode = pageTheme?.surface_mode;
   if (fullBleedKeys.has(key)) {
     body = (
-      <SectionThemeWrap theme={sectionTheme} sectionKey={key}>
+      <SectionThemeWrap
+        theme={sectionTheme}
+        sectionKey={key}
+        pageSurfaceMode={pageSurfaceMode}
+      >
         <Comp {...compProps} />
       </SectionThemeWrap>
     );
   } else {
-    const pageBandFill = resolvePageBandFill(pageTheme, surfaceTone);
+    const pageBandFill = resolvePageBandFill(pageTheme, surfaceBand, surfaceTone);
     body = (
       <SectionSurface
         sectionKey={key || _catalogKey}
@@ -454,7 +474,10 @@ function SectionRender({
         section_bg_img={section.section_bg_img}
         legacy_bg_color={section.data?.bg_color}
         surfaceTone={surfaceTone}
+        surfaceBand={surfaceBand}
         sectionTheme={sectionTheme}
+        pageTheme={pageTheme}
+        pageSurfaceMode={pageSurfaceMode}
         pageBandFill={pageBandFill}
       >
         <Comp {...compProps} />
@@ -540,13 +563,37 @@ export default function CmsLivePageSections({
   const [pageTheme, setPageTheme] = useState(
     () => initialTheme || defaultSiteTheme()
   );
-  const [entityThemeDraft, setEntityThemeDraft] = useState(emptyPageTheme());
-  const [templateTheme, setTemplateTheme] = useState(null);
+  const [templateThemeDraft, setTemplateThemeDraft] = useState(emptyPageTheme());
   const [siteThemeDoc, setSiteThemeDoc] = useState(null);
+  const templateThemeDirtyRef = useRef(false);
 
   useEffect(() => {
     if (initialTheme) setPageTheme(initialTheme);
   }, [initialTheme]);
+
+  // Pick up site / template theme changes after save (not while editing).
+  useEffect(() => {
+    if (!pageKey) return;
+    let alive = true;
+
+    async function refreshResolvedTheme() {
+      if (templateThemeDirtyRef.current) return;
+      try {
+        const res = await getPageSectionsResolved(pageKey, entityId || undefined);
+        if (!alive || !res?.page?.theme) return;
+        setPageTheme(res.page.theme);
+      } catch {
+        /* keep SSR / initial theme */
+      }
+    }
+
+    refreshResolvedTheme();
+    window.addEventListener("focus", refreshResolvedTheme);
+    return () => {
+      alive = false;
+      window.removeEventListener("focus", refreshResolvedTheme);
+    };
+  }, [pageKey, entityId]);
 
   const [catalog, setCatalog] = useState([]);
   const [addKey, setAddKey] = useState("");
@@ -572,22 +619,37 @@ export default function CmsLivePageSections({
   const [panelTab, setPanelTab] = useState("mapped");
   const [sortDisabled, setSortDisabled] = useState(true);
 
-  async function loadThemes(pageDoc) {
-    const [siteRes, entityRes] = await Promise.all([
-      getSiteTheme().catch(() => null),
-      entityId
-        ? getEntityPageTheme({ page_key: pageKey, entity_id: entityId }).catch(
-          () => null
-        )
-        : Promise.resolve(null),
-    ]);
+  async function loadThemes(pageDoc, { force = false } = {}) {
+    const siteRes = await getSiteTheme().catch(() => null);
     const site = siteRes?.data || null;
-    const entityTheme = normalizePageTheme(entityRes?.data?.theme);
+    const tpl = normalizePageTheme(pageDoc?.theme);
     setSiteThemeDoc(site);
-    setTemplateTheme(normalizePageTheme(pageDoc?.theme));
-    setEntityThemeDraft(entityTheme);
-    setPageTheme(mergeTheme(site, pageDoc?.theme, entityTheme));
+    if (force || !templateThemeDirtyRef.current) {
+      setTemplateThemeDraft(tpl);
+    }
   }
+
+  useEffect(() => {
+    if (!cmsMode || !pageKey) return;
+    let alive = true;
+    (async () => {
+      try {
+        const pageRes = await getPage(pageKey).catch(() => null);
+        if (!alive) return;
+        await loadThemes(pageRes?.data);
+      } catch {
+        /* keep resolved theme from SSR */
+      }
+    })();
+    return () => {
+      alive = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- load once per page in CMS mode
+  }, [cmsMode, pageKey]);
+
+  useEffect(() => {
+    setPageTheme(mergeTheme(siteThemeDoc, templateThemeDraft));
+  }, [siteThemeDoc, templateThemeDraft]);
 
   useEffect(() => {
     if (!cmsMode || !entityId) return;
@@ -603,7 +665,6 @@ export default function CmsLivePageSections({
         if (!alive) return;
         const disabled = pageRes?.data?.is_sort_disabled !== false;
         setSortDisabled(disabled);
-        await loadThemes(pageRes?.data);
         setCatalog(sectionsRes.data || []);
         setSections(
           mergePlacements(
@@ -682,15 +743,14 @@ export default function CmsLivePageSections({
 
   const visibleWithSurface = useMemo(() => {
     const altIndex = { current: 0 };
-    const mode = pageTheme?.surface_mode || "alternating";
     return visible.map((section) => ({
       section,
       ...computePlacementSurface(section, {
-        pageSurfaceMode: mode,
+        pageTheme,
         altIndex,
       }),
     }));
-  }, [visible, pageTheme?.surface_mode]);
+  }, [visible, pageTheme]);
 
   function openFieldEdit(section, field, options = {}) {
     if (
@@ -955,6 +1015,8 @@ export default function CmsLivePageSections({
           draft: bandDraft,
           savePlacement,
           contentLocked: pageContentLocked,
+          pageKey,
+          entityId,
         });
       } else {
         const value = fieldValueState.trim();
@@ -1132,11 +1194,16 @@ export default function CmsLivePageSections({
     : "Edit field";
 
   const bandEditorPlacement = useMemo(() => {
-    if (!editing?.section) return { inheritedSurfaceTone: undefined };
+    if (!editing?.section) {
+      return { inheritedSurfaceTone: undefined, inheritedSurfaceBand: undefined };
+    }
     const row = visibleWithSurface.find(
       ({ section: s }) => placementKey(s) === placementKey(editing.section)
     );
-    return { inheritedSurfaceTone: row?.surfaceTone };
+    return {
+      inheritedSurfaceTone: row?.surfaceTone,
+      inheritedSurfaceBand: row?.surfaceBand,
+    };
   }, [editing, visibleWithSurface]);
 
   return (
@@ -1158,7 +1225,7 @@ export default function CmsLivePageSections({
                 Edits save live · use ⋮ on each section to edit fields
               </p>
             </div>
-            <div className="flex shrink-0 items-center gap-2">
+            <div className="flex shrink-0 flex-wrap items-center gap-2">
               <CmsModeToggle variant="bar" />
               <button
                 type="button"
@@ -1216,7 +1283,7 @@ export default function CmsLivePageSections({
             );
 
             const renderPlacements = (rows, baseIndex) =>
-              rows.map(({ section, surfaceTone, sectionTheme }, relIndex) => {
+              rows.map(({ section, surfaceTone, surfaceBand, sectionTheme }, relIndex) => {
                 const index = baseIndex + relIndex;
                 const navSections =
                   section.section_key === "in_page_nav"
@@ -1231,6 +1298,7 @@ export default function CmsLivePageSections({
                     section={section}
                     cmsMode={cmsMode}
                     surfaceTone={surfaceTone}
+                    surfaceBand={surfaceBand}
                     sectionTheme={sectionTheme}
                     pageTheme={pageTheme}
                     pageContext={pageContext}
@@ -1313,98 +1381,83 @@ export default function CmsLivePageSections({
               </div>
 
               {panelTab === "theme" ? (
-                <div className="rounded-xl border border-slate-200 p-3 dark:border-slate-800">
-                  <div className="mb-3 flex flex-wrap items-start justify-between gap-2">
-                    <div>
-                      <p className="m-0 text-[11px] font-semibold tracking-wide text-slate-500 uppercase">
-                        This page theme
-                      </p>
-                      <p className="mt-0.5 mb-0 text-xs text-slate-500">
-                        Overrides for{" "}
-                        <span className="font-semibold text-slate-700 dark:text-slate-200">
-                          {entityLabel || "this page"}
-                        </span>{" "}
-                        only. Empty fields use the template theme (then site).
-                      </p>
-                    </div>
-                    <div className="flex flex-wrap gap-1.5">
-                      <Link
-                        href="/cms/site-theme"
-                        className="rounded-md border border-slate-200 px-2 py-1 text-[11px] font-semibold text-slate-600 no-underline hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300"
-                      >
-                        Site theme
-                      </Link>
-                      <Link
-                        href={`/cms/pages/${pageKey}`}
-                        className="rounded-md border border-slate-200 px-2 py-1 text-[11px] font-semibold text-slate-600 no-underline hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300"
-                      >
-                        Template theme
-                      </Link>
-                    </div>
+                <div className="space-y-4 rounded-xl border border-slate-200 p-3 dark:border-slate-800">
+                  <div>
+                    <p className="m-0 text-[11px] font-semibold tracking-wide text-slate-500 uppercase">
+                      Template theme · {pageKey}
+                    </p>
+                    <p className="mt-1 mb-0 text-xs text-slate-500">
+                      Overrides for every{" "}
+                      <span className="font-semibold text-slate-700 dark:text-slate-200">
+                        {pageKey}
+                      </span>{" "}
+                      page. Empty fields inherit the site theme. Section bands
+                      set to Inherit follow surface mode below.
+                    </p>
                   </div>
+                  <dl className="m-0 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1.5 text-xs">
+                    <dt className="text-slate-500">Resolved surface</dt>
+                    <dd className="m-0 font-semibold text-slate-800 dark:text-slate-100">
+                      {surfacePatternLabel(pageTheme) || "Repeating · White → Grey"}
+                    </dd>
+                  </dl>
                   <CmsThemeEditor
                     mode="page"
-                    inheritFrom="template"
-                    inheritedTheme={mergeTheme(siteThemeDoc, templateTheme)}
-                    value={entityThemeDraft}
+                    inheritFrom="site"
+                    inheritedTheme={mergeTheme(siteThemeDoc)}
+                    value={templateThemeDraft}
                     onChange={(next) => {
-                      setEntityThemeDraft(next);
-                      setPageTheme(
-                        mergeTheme(siteThemeDoc, templateTheme, next)
-                      );
+                      templateThemeDirtyRef.current = true;
+                      setTemplateThemeDraft(next);
                     }}
                     onSave={async () => {
-                      if (!entityId) return;
                       setSaving(true);
                       setError(null);
                       try {
-                        await upsertEntityPageTheme({
-                          page_key: pageKey,
-                          entity_id: entityId,
-                          theme: entityThemeDraft,
+                        await updatePage(pageKey, {
+                          theme: themeForApiSave(templateThemeDraft),
                         });
-                        await loadThemes(
-                          (
-                            await getPage(pageKey).catch(() => null)
-                          )?.data
-                        );
+                        templateThemeDirtyRef.current = false;
+                        const pageRes = await getPage(pageKey).catch(() => null);
+                        await loadThemes(pageRes?.data, { force: true });
                       } catch (err) {
-                        setError(err.message || "Could not save page theme");
+                        setError(err.message || "Could not save template theme");
                       } finally {
                         setSaving(false);
                       }
                     }}
                     saving={saving}
-                    saveLabel="Save this page theme"
+                    saveLabel={`Save ${pageKey} template theme`}
                   />
                   <button
                     type="button"
                     disabled={saving}
                     onClick={async () => {
-                      if (!entityId) return;
                       setSaving(true);
                       setError(null);
                       try {
-                        await deleteEntityPageTheme({
-                          page_key: pageKey,
-                          entity_id: entityId,
-                        });
-                        setEntityThemeDraft(emptyPageTheme());
-                        await loadThemes(
-                          (
-                            await getPage(pageKey).catch(() => null)
-                          )?.data
-                        );
+                        const cleared = emptyPageTheme();
+                        templateThemeDirtyRef.current = false;
+                        setTemplateThemeDraft(cleared);
+                        await updatePage(pageKey, { theme: themeForApiSave(cleared) });
+                        const pageRes = await getPage(pageKey).catch(() => null);
+                        await loadThemes(pageRes?.data, { force: true });
                       } catch (err) {
-                        setError(err.message || "Could not clear page theme");
+                        setError(err.message || "Could not clear template theme");
                       } finally {
                         setSaving(false);
                       }
                     }}
-                    className="mt-3 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50 disabled:opacity-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300"
+                    className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-600 hover:bg-slate-50 disabled:opacity-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300"
                   >
-                    Use template theme (clear this page)
+                    Use site theme only (clear template overrides)
                   </button>
+                  <Link
+                    href="/cms/site-theme"
+                    className="inline-block text-[11px] font-semibold text-brand no-underline hover:underline"
+                  >
+                    Edit site theme + all templates →
+                  </Link>
                 </div>
               ) : null}
 
@@ -1741,6 +1794,8 @@ export default function CmsLivePageSections({
                     showBgImage={sectionUsesBg(editing.section.section_key)}
                     showBgColor={sectionUsesBgColor(editing.section.section_key)}
                     inheritedSurfaceTone={bandEditorPlacement.inheritedSurfaceTone}
+                    inheritedSurfaceBand={bandEditorPlacement.inheritedSurfaceBand}
+                    pageTheme={pageTheme}
                     pageSurfaceMode={pageTheme?.surface_mode}
                     pageInk={pageTheme?.ink}
                     bgFieldsLocked={contentLockedAtLayer(

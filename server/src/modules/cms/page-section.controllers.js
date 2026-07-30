@@ -463,11 +463,33 @@ export const upsertEntityPageSection = async (req, res) => {
     function pickEntityFields(source = req.body, { allowSort = !sortDisabled } = {}) {
       const $set = {};
       for (const key of optional) {
+        if (key === "items" || key === "buttons") continue;
         if (source[key] === undefined) continue;
         if (key === "sort_order" && !allowSort) continue;
         $set[key] = source[key];
       }
+      if (source.items !== undefined) {
+        $set.items = source.items;
+        $set.items_override = true;
+      }
+      if (source.buttons !== undefined) {
+        $set.buttons = source.buttons;
+        $set.buttons_override = true;
+      }
       return $set;
+    }
+
+    async function finalizeEntityDoc(doc, body) {
+      if (!doc?._id) return doc;
+      const unset = {};
+      if (body.items === undefined) unset.items = "";
+      if (body.buttons === undefined) unset.buttons = "";
+      if (Object.keys(unset).length) {
+        await EntityPageSection.updateOne({ _id: doc._id }, { $unset: unset });
+        if (unset.items) doc.items = undefined;
+        if (unset.buttons) doc.buttons = undefined;
+      }
+      return doc;
     }
 
     // 1) Update existing entity doc by id (override or extra)
@@ -515,6 +537,7 @@ export const upsertEntityPageSection = async (req, res) => {
         update,
         { new: true, runValidators: true }
       );
+      await finalizeEntityDoc(doc, req.body);
       const [data] = await serializeEntityDocs(doc);
       return res.json({ success: true, data });
     }
@@ -571,6 +594,7 @@ export const upsertEntityPageSection = async (req, res) => {
         { new: true, upsert: true, runValidators: true, setDefaultsOnInsert: true }
       );
 
+      await finalizeEntityDoc(doc, req.body);
       const [data] = await serializeEntityDocs(doc);
       return res.json({ success: true, data });
     }
@@ -621,8 +645,14 @@ export const upsertEntityPageSection = async (req, res) => {
       data: req.body.data ?? null,
       status: req.body.status !== false,
     };
-    if (Array.isArray(req.body.buttons)) createDoc.buttons = req.body.buttons;
-    if (Array.isArray(req.body.items)) createDoc.items = req.body.items;
+    if (Array.isArray(req.body.buttons)) {
+      createDoc.buttons = req.body.buttons;
+      createDoc.buttons_override = true;
+    }
+    if (Array.isArray(req.body.items)) {
+      createDoc.items = req.body.items;
+      createDoc.items_override = true;
+    }
 
     const doc = await EntityPageSection.create(createDoc);
     const [data] = await serializeEntityDocs(doc);

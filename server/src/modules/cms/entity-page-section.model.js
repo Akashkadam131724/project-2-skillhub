@@ -65,6 +65,8 @@ const entityPageSectionSchema = new Schema(
      * Ignored when Section.content_scope === "global".
      */
     buttons: { type: [createCmsButtonSchema()] },
+    /** Set when buttons[] is saved on this entity row (distinguishes inherit vs cleared). */
+    buttons_override: { type: Boolean, default: false },
 
     /**
      * Item-driven lists (FAQ, benefits, stats, …).
@@ -72,6 +74,8 @@ const entityPageSectionSchema = new Schema(
      * Ignored when Section.content_scope === "global".
      */
     items: { type: [createCmsItemSchema()] },
+    /** Set when items[] is saved on this entity row (distinguishes inherit vs cleared). */
+    items_override: { type: Boolean, default: false },
 
     /**
      * null  = inherit template placement status (overrides only)

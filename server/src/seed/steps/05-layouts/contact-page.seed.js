@@ -12,6 +12,13 @@ import Section from "../../../modules/cms/section.model.js";
 import EntityPageSection from "../../../modules/cms/entity-page-section.model.js";
 import { getSectionCatalogMeta } from "../../../modules/cms/section.catalog.js";
 import { replaceEntityExtras } from "../../lib/replace-entity-extras.js";
+import { pickUploadImage } from "../../lib/entity-upload-images.js";
+
+const contactHero = pickUploadImage("contact-hero", 0);
+const contactImg1 = pickUploadImage("contact-tab-1", 1);
+const contactImg2 = pickUploadImage("contact-tab-2", 2);
+const contactImg3 = pickUploadImage("contact-tab-3", 3);
+const contactImg4 = pickUploadImage("contact-tab-4", 4);
 
 function btn(label, opts = {}) {
   return {
@@ -63,15 +70,14 @@ const PLACEMENTS = [
     section_title: "Let’s build your next learning story",
     sub_title:
       "Whether you need a publishing walkthrough, a catalog pilot, or a partnership conversation — the SkillHub team is ready.",
-    section_img_url:
-      "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?auto=format&fit=crop&w=2000&q=80",
+    section_img_url: contactHero,
     data: {
       eyebrow: "Contact SkillHub",
       body: "<p>Enterprise response within one business day. Prefer a call? Use the form and pick a time window in your message.</p>",
     },
     buttons: [
-      btn("How it works", {
-        target_url: "/how-it-works",
+      btn("Get started", {
+        target_url: "/get-started",
         variant: "inverse",
         sort_order: 0,
       }),
@@ -151,8 +157,7 @@ const PLACEMENTS = [
           title: "Publishing & CMS",
           subtitle: "Pages, sections, campaigns",
           body: "<p>Help composing content pages, section layouts, and live edit workflows without waiting on a redeploy.</p>",
-          image_url:
-            "https://images.unsplash.com/photo-1553877522-43269d4ea984?auto=format&fit=crop&w=1400&q=80",
+          image_url: contactImg1,
           label: "Publish",
         },
         0
@@ -162,8 +167,7 @@ const PLACEMENTS = [
           title: "Catalog & courses",
           subtitle: "Vendors · products · paths",
           body: "<p>Map roles to courses, review vendor portfolios, or plan a filtered academy for your industry.</p>",
-          image_url:
-            "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1400&q=80",
+          image_url: contactImg2,
           label: "Catalog",
         },
         1
@@ -173,8 +177,7 @@ const PLACEMENTS = [
           title: "Partnerships",
           subtitle: "Vendors & channel",
           body: "<p>Join the marketplace shelf, co-brand a solution hub, or align on a joint go-to-market page.</p>",
-          image_url:
-            "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1400&q=80",
+          image_url: contactImg3,
           label: "Partners",
         },
         2
@@ -184,8 +187,7 @@ const PLACEMENTS = [
           title: "Demo & pilot",
           subtitle: "See SkillHub live",
           body: "<p>Book a guided tour of the catalog, CMS, and sample content pages tailored to your audience.</p>",
-          image_url:
-            "https://images.unsplash.com/photo-1600880292089-90a7e086ee0c?auto=format&fit=crop&w=1400&q=80",
+          image_url: contactImg4,
           label: "Demo",
         },
         3

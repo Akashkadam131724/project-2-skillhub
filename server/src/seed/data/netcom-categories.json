@@ -1,0 +1,431 @@
+{
+  "source": "homepage",
+  "fetched_at": "2026-07-30T21:25:25.459Z",
+  "navigation": [
+    {
+      "name": "Company",
+      "language": "EN",
+      "country": "US",
+      "sort_order": 5,
+      "columns": [
+        {
+          "name": "Our Team",
+          "links": [
+            {
+              "name": "Our Team",
+              "url": "/our-team",
+              "sort_order": 2
+            }
+          ]
+        },
+        {
+          "name": "Learning Movement",
+          "links": [
+            {
+              "name": "Learning Movement",
+              "url": "/learning-movement",
+              "sort_order": 5
+            }
+          ]
+        },
+        {
+          "name": "Culture and Values",
+          "links": [
+            {
+              "name": "Culture and Values",
+              "url": "/culture-and-values",
+              "sort_order": 4
+            }
+          ]
+        },
+        {
+          "name": "Partners and Awards",
+          "links": [
+            {
+              "name": "Partners and Awards",
+              "url": "/partner-and-awards",
+              "sort_order": 3
+            }
+          ]
+        },
+        {
+          "name": "About Us",
+          "links": [
+            {
+              "name": "About Us",
+              "url": "/about-us",
+              "sort_order": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Resources",
+      "language": "EN",
+      "country": "US",
+      "sort_order": 4,
+      "columns": [
+        {
+          "name": "e-Books",
+          "links": [
+            {
+              "name": "e-Books",
+              "url": "/ebooks",
+              "sort_order": 3
+            }
+          ]
+        },
+        {
+          "name": "Case Studies",
+          "links": [
+            {
+              "name": "Case Studies",
+              "url": "/case-studies",
+              "sort_order": 4
+            }
+          ]
+        },
+        {
+          "name": "Events & Free Courses",
+          "links": [
+            {
+              "name": "Events & Free Courses",
+              "url": "/webinars",
+              "sort_order": 1
+            },
+            {
+              "name": "Free Courses",
+              "url": "/webinars",
+              "sort_order": 1
+            },
+            {
+              "name": "Webinars",
+              "url": "/webinars",
+              "sort_order": 2
+            },
+            {
+              "name": "Masterclasses",
+              "url": "/webinars",
+              "sort_order": 3
+            },
+            {
+              "name": "Workshops",
+              "url": "/webinars",
+              "sort_order": 4
+            },
+            {
+              "name": "Podcasts",
+              "url": "/webinars",
+              "sort_order": 5
+            }
+          ]
+        },
+        {
+          "name": "Assessments",
+          "links": [
+            {
+              "name": "Assessments",
+              "url": "/assessments",
+              "sort_order": 5
+            }
+          ]
+        },
+        {
+          "name": "Media",
+          "links": [
+            {
+              "name": "Media",
+              "url": "/media",
+              "sort_order": 6
+            }
+          ]
+        },
+        {
+          "name": "Blogs",
+          "links": [
+            {
+              "name": "Blogs",
+              "url": "/blogs",
+              "sort_order": 2
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Solutions",
+      "language": "EN",
+      "country": "US",
+      "sort_order": 3,
+      "columns": [
+        {
+          "name": "NetCom Solutions",
+          "links": [
+            {
+              "name": "NetCom 365",
+              "url": "/solutions/netcom365",
+              "sort_order": 1
+            },
+            {
+              "name": "Generative AI Training",
+              "url": "/solutions/generative-ai",
+              "sort_order": 2
+            },
+            {
+              "name": "Talents for Hire",
+              "url": "/solutions/talents-for-hire",
+              "sort_order": 3
+            },
+            {
+              "name": "Ed Assist",
+              "url": "/solutions/edassist",
+              "sort_order": 4
+            },
+            {
+              "name": "Learning Passport",
+              "url": "/solutions/learning-passport",
+              "sort_order": 5
+            },
+            {
+              "name": "Executive AI & Gemini Starter",
+              "url": "/solutions/generative-ai-training-bundle-aws-google-workspace",
+              "sort_order": 6
+            },
+            {
+              "name": "NetCom Learning Academy",
+              "url": "/solutions/netcom-learning-academy",
+              "sort_order": 7
+            }
+          ]
+        },
+        {
+          "name": "Solutions by Industry",
+          "links": [
+            {
+              "name": "Technology",
+              "url": "/industry/technology",
+              "sort_order": 1
+            },
+            {
+              "name": "Financial Services",
+              "url": "/industry/financial",
+              "sort_order": 2
+            },
+            {
+              "name": "Healthcare",
+              "url": "/industry/healthcare",
+              "sort_order": 3
+            },
+            {
+              "name": "Solutions by Industry",
+              "url": "/industry",
+              "sort_order": 4
+            },
+            {
+              "name": "State & Local Government",
+              "url": "/industry/SLG",
+              "sort_order": 4
+            },
+            {
+              "name": "Federal Government",
+              "url": "/industry/federal-government",
+              "sort_order": 5
+            },
+            {
+              "name": "Retail",
+              "url": "/industry/retail",
+              "sort_order": 6
+            },
+            {
+              "name": "Manufacturing",
+              "url": "/industry/manufacturing",
+              "sort_order": 7
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Trainings",
+      "language": "EN",
+      "country": "US",
+      "sort_order": 1,
+      "columns": [
+        {
+          "name": "Training by Skilling",
+          "links": [
+            {
+              "name": "AI & Data",
+              "url": "/skilling-page/ai-and-data",
+              "sort_order": 1
+            },
+            {
+              "name": "Training by Skilling",
+              "url": "/skilling",
+              "sort_order": 2
+            },
+            {
+              "name": "Cloud",
+              "url": "/skilling-page/cloud",
+              "sort_order": 2
+            },
+            {
+              "name": "Security",
+              "url": "/skilling-page/security",
+              "sort_order": 3
+            },
+            {
+              "name": "Networking",
+              "url": "/skilling-page/networking",
+              "sort_order": 4
+            },
+            {
+              "name": "App Development",
+              "url": "/skilling-page/application-development",
+              "sort_order": 5
+            },
+            {
+              "name": "Architecture & Design",
+              "url": "/skilling-page/architecture-and-design",
+              "sort_order": 6
+            },
+            {
+              "name": "Business Application",
+              "url": "/skilling-page/business-applications",
+              "sort_order": 7
+            },
+            {
+              "name": "Business Process",
+              "url": "/skilling-page/business-process",
+              "sort_order": 8
+            },
+            {
+              "name": "Business & Leadership",
+              "url": "/skilling-page/business-and-leadership",
+              "sort_order": 9
+            }
+          ]
+        },
+        {
+          "name": "Training by Vendor",
+          "links": [
+            {
+              "name": "Microsoft",
+              "url": "/vendor/microsoft-training",
+              "sort_order": 1
+            },
+            {
+              "name": "Explore All Vendors",
+              "url": "/our-vendors",
+              "sort_order": 1
+            },
+            {
+              "name": "AI CERTs™",
+              "url": "/vendor/ai-certs-training",
+              "sort_order": 2
+            },
+            {
+              "name": "Cisco",
+              "url": "/vendor/cisco-training",
+              "sort_order": 3
+            },
+            {
+              "name": "Google Cloud",
+              "url": "/vendor/google-cloud-training",
+              "sort_order": 4
+            },
+            {
+              "name": "Amazon Web Services",
+              "url": "/vendor/aws-training",
+              "sort_order": 5
+            },
+            {
+              "name": "PMI",
+              "url": "/vendor/PMI-training",
+              "sort_order": 6
+            },
+            {
+              "name": "EC-Council",
+              "url": "/vendor/ec-council-training",
+              "sort_order": 7
+            },
+            {
+              "name": "CompTIA",
+              "url": "/vendor/comptia-training",
+              "sort_order": 8
+            },
+            {
+              "name": "Autodesk",
+              "url": "/vendor/Autodesk-training",
+              "sort_order": 9
+            },
+            {
+              "name": "ISC2",
+              "url": "/vendor/isc2-training",
+              "sort_order": 10
+            },
+            {
+              "name": "ITIL®",
+              "url": "/vendor/ITIL-training",
+              "sort_order": 11
+            }
+          ]
+        },
+        {
+          "name": "Subscriptions",
+          "links": [
+            {
+              "name": "N+",
+              "url": "/solutions/nplus",
+              "sort_order": 1
+            },
+            {
+              "name": "AWS Skill Builder",
+              "url": "/solutions/aws-skill-builder",
+              "sort_order": 2
+            },
+            {
+              "name": "Cisco U.",
+              "url": "/solutions/cisco-u",
+              "sort_order": 3
+            },
+            {
+              "name": "AWS Blended Learning",
+              "url": "/solutions/blended-learning",
+              "sort_order": 4
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Services",
+      "language": "EN",
+      "country": "US",
+      "sort_order": 2,
+      "columns": [
+        {
+          "name": "AdoptifyAI®",
+          "links": [
+            {
+              "name": "AdoptifyAI®",
+              "url": "/solutions/adoptifyai",
+              "sort_order": 1
+            }
+          ]
+        },
+        {
+          "name": "Managed Learning Services",
+          "links": [
+            {
+              "name": "Managed Learning Services",
+              "url": "/solutions/managed-learning-services",
+              "sort_order": 2
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

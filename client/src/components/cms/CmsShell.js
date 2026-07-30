@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import SkillHubLogo from "@/components/SkillHubLogo";
+import CmsMainLinksNewTab from "@/components/cms/CmsMainLinksNewTab";
 
 const NAV = [
   { href: "/cms", label: "Dashboard", exact: true },
@@ -181,7 +182,7 @@ export default function CmsShell({ children }) {
           </div>
         ) : null}
 
-        <div className="min-w-0 flex-1">{children}</div>
+        <CmsMainLinksNewTab>{children}</CmsMainLinksNewTab>
       </div>
     </div>
   );

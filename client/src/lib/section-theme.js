@@ -4,7 +4,13 @@
  */
 
 import { sectionUsesAltSurface } from "@/lib/section-registry";
-import { surfaceToneForMode } from "@/lib/theme";
+import {
+  isPageSurfaceTransparent,
+  resolveSurfacePattern,
+  surfaceBandAtIndex,
+} from "@/lib/theme";
+
+export { isPageSurfaceTransparent };
 
 export {
   SECTION_SURFACE_LIGHT_CARD,
@@ -22,15 +28,57 @@ export {
 export const SECTION_THEME_VALUES = ["inherit", "light", "dark"];
 
 export const SECTION_THEME_OPTIONS = [
-  { value: "inherit", label: "Inherit (page theme)" },
+  { value: "inherit", label: "Inherit (site page theme)" },
   { value: "light", label: "Light band" },
   { value: "dark", label: "Dark band" },
 ];
 
-/** @param {object} placement — section / resolved placement (optional `.data`) */
-export function normalizeSectionTheme(_placement) {
-  // Band light/dark is controlled by page theme (surface mode) only — not per-section overrides.
+/** UI / API raw value → canonical theme token. */
+export function parseSectionThemeRaw(raw) {
+  const v = String(raw ?? "")
+    .trim()
+    .toLowerCase();
+  if (!v || v === "inherit") return "inherit";
+  if (v === "light" || v === "dark") return v;
   return "inherit";
+}
+
+/** Value stored at the current edit layer (null/"" = inherit at this layer). */
+export function sectionThemeUiValue(raw) {
+  return parseSectionThemeRaw(raw);
+}
+
+/**
+ * Resolved placement `section_theme` after catalog → template → page cascade.
+ * @param {object} placement
+ */
+export function normalizeSectionTheme(placement) {
+  if (!placement) return "inherit";
+  const raw =
+    placement.section_theme ??
+    placement.sectionTheme ??
+    placement.data?.section_theme;
+  return parseSectionThemeRaw(raw);
+}
+
+/**
+ * Registry fallback when every layer is inherit (code default before DB seed).
+ */
+export function getRegistryDefaultBandTheme(sectionKey, renderKey) {
+  const key = String(renderKey || sectionKey || "")
+    .trim()
+    .toLowerCase();
+  if (!key) return "inherit";
+  if (SECTION_INHERIT_DARK_BAND_KEYS.has(key)) return "dark";
+  return "inherit";
+}
+
+/**
+ * Theme used for rendering bands / tokens — placement cascade only.
+ * Registry defaults (SECTION_INHERIT_DARK_BAND_KEYS) are seed hints, not runtime overrides.
+ */
+export function resolveEffectiveSectionTheme(placement) {
+  return normalizeSectionTheme(placement);
 }
 
 /** Maps section theme to SectionSurface tone (null = keep computed tone). */
@@ -39,8 +87,6 @@ export function surfaceToneForSectionTheme(theme) {
   if (theme === "light") return "white";
   return null;
 }
-
-/** True when CMS section theme forces a light band (white surface + ink text). */
 export function isSectionThemeLightBand(placement) {
   return normalizeSectionTheme(placement) === "light";
 }
@@ -50,33 +96,33 @@ export function isSectionThemeDarkBand(placement) {
   return normalizeSectionTheme(placement) === "dark";
 }
 
-/** Dark band from CMS theme and/or page alternation (surfaceTone). */
+/** True when surface tone is a dark band (charcoal or brand ink). */
+export function isSurfaceToneDark(surfaceTone) {
+  return surfaceTone === "dark" || surfaceTone === "dark_ink";
+}
+
+/** Dark band from CMS theme and/or page alternation (surfaceBand / surfaceTone). */
 export function isPlacementDarkBand({
   section_theme,
   sectionTheme,
   surfaceTone,
+  surfaceBand,
 } = {}) {
   const t = normalizeSectionTheme({
     section_theme: section_theme ?? sectionTheme,
   });
   if (t === "dark") return true;
   if (t === "light") return false;
-  return surfaceTone === "dark";
+  if (surfaceBand?.theme === "dark") return true;
+  if (surfaceBand?.theme === "light") return false;
+  return isSurfaceToneDark(surfaceTone);
 }
 
 /**
- * Soft top gradient for alt sections — only on inherit + non-dark page band.
- * Forced light/dark themes rely on SectionSurface; dark bands must stay clear.
+ * @deprecated Band background comes from SectionSurface / page theme only.
  */
-export function sectionSoftLightGradientClass(sectionTheme, surfaceTone) {
-  const t = normalizeSectionTheme(
-    typeof sectionTheme === "string"
-      ? { section_theme: sectionTheme }
-      : sectionTheme || {}
-  );
-  if (t === "dark" || t === "light") return "";
-  if (surfaceTone === "dark") return "";
-  return "bg-[linear-gradient(180deg,#f8fafc_0%,#ffffff_40%,#ffffff_100%)] dark:bg-none";
+export function sectionSoftLightGradientClass() {
+  return "";
 }
 
 /** Item / card titles inside SectionFrame sections — see DS_TEXT in section-design-system.js */
@@ -130,7 +176,7 @@ export const SECTION_INHERIT_DARK_BAND_KEYS = new Set([
  */
 export function computePlacementSurface(
   section,
-  { pageSurfaceMode = "alternating", altIndex = { current: 0 } } = {}
+  { pageTheme, pageSurfaceMode, altIndex = { current: 0 } } = {}
 ) {
   const themePref = normalizeSectionTheme(section);
   const themeTone = surfaceToneForSectionTheme(themePref);
@@ -139,27 +185,39 @@ export function computePlacementSurface(
     section?.section_bg_color ||
     section?.data?.bg_color
   );
-  const mode = pageSurfaceMode || "alternating";
-  const isTransparent =
-    String(mode).toLowerCase() === "transparent" ||
-    String(mode).toLowerCase() === "none";
+  const resolvedTheme =
+    pageTheme && typeof pageTheme === "object"
+      ? pageTheme
+      : { surface_mode: pageSurfaceMode || "alternating" };
+  const pattern = resolveSurfacePattern(resolvedTheme);
+  const isTransparent = isPageSurfaceTransparent(pattern);
   const usesAlt =
     !hasCustomBg &&
     !isTransparent &&
     sectionUsesAltSurface(section?.section_key, section?.render_key);
 
+  let surfaceBand;
   let surfaceTone;
-  if (themeTone) {
-    surfaceTone = themeTone;
-  } else if (isTransparent && !hasCustomBg) {
+  if (isTransparent && !hasCustomBg) {
+    surfaceBand = null;
     surfaceTone = null;
-  } else if (usesAlt) {
-    surfaceTone = surfaceToneForMode(mode, altIndex.current);
-    altIndex.current += 1;
+  } else if (themeTone) {
+    surfaceTone = themeTone;
+    surfaceBand = null;
+  } else if (!hasCustomBg) {
+    const index = altIndex.current;
+    surfaceBand = surfaceBandAtIndex(pattern, index, {
+      ink: resolvedTheme.ink,
+    });
+    if (usesAlt) {
+      altIndex.current += 1;
+    }
+    surfaceTone = undefined;
   }
 
   return {
     sectionTheme: themePref,
+    surfaceBand: hasCustomBg && !themeTone ? undefined : surfaceBand,
     surfaceTone: hasCustomBg && !themeTone ? undefined : surfaceTone,
   };
 }

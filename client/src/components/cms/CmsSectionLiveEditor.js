@@ -166,12 +166,18 @@ export default function CmsSectionLiveEditor({
     setError(null);
   }, [section?.section_key, section?.placement_id, section?._id]);
 
-  const { sectionTheme, surfaceTone } = useMemo(
+  const { sectionTheme, surfaceTone, surfaceBand } = useMemo(
     () =>
       section
-        ? computePlacementSurface(section)
-        : { sectionTheme: "inherit", surfaceTone: undefined },
-    [section]
+        ? computePlacementSurface(section, {
+            pageTheme: pageContext?.pageTheme || pageContext,
+          })
+        : {
+            sectionTheme: "inherit",
+            surfaceTone: undefined,
+            surfaceBand: undefined,
+          },
+    [section, pageContext]
   );
 
   if (!section) return null;
@@ -252,6 +258,8 @@ export default function CmsSectionLiveEditor({
           draft: bandDraft,
           savePlacement: onSavePatch,
           contentLocked,
+          pageKey,
+          entityId,
         });
         if (onAfterFieldSave) await onAfterFieldSave();
         closeDrawer();
@@ -325,6 +333,7 @@ export default function CmsSectionLiveEditor({
               cmsMode
               onEditField={openFieldEdit}
               surfaceTone={surfaceTone}
+              surfaceBand={surfaceBand}
               pageContext={pageContext}
             />
           </SectionThemeWrap>
@@ -335,7 +344,9 @@ export default function CmsSectionLiveEditor({
             section_bg_img={section.section_bg_img}
             legacy_bg_color={section.data?.bg_color}
             surfaceTone={surfaceTone}
+            surfaceBand={surfaceBand}
             sectionTheme={sectionTheme}
+            pageTheme={pageContext?.pageTheme || pageContext}
           >
             <Comp
               {...sectionProps}
@@ -343,6 +354,7 @@ export default function CmsSectionLiveEditor({
               cmsMode
               onEditField={openFieldEdit}
               surfaceTone={surfaceTone}
+              surfaceBand={surfaceBand}
               pageContext={pageContext}
             />
           </SectionSurface>
@@ -393,6 +405,8 @@ export default function CmsSectionLiveEditor({
                 showBgImage={sectionUsesBg(key)}
                 showBgColor={sectionUsesBgColor(key)}
                 inheritedSurfaceTone={surfaceTone}
+                inheritedSurfaceBand={surfaceBand}
+                pageTheme={pageContext?.pageTheme || pageContext}
                 pageSurfaceMode={pageContext?.surface_mode}
                 pageInk={pageContext?.ink}
                 bgFieldsLocked={contentLocked}

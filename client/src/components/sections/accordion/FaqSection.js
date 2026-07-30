@@ -15,6 +15,7 @@ export default function FaqSection({
   sectionTheme,
   section_theme,
   surfaceTone,
+  surfaceBand,
   cmsMode,
   onEditField,
   buttons,
@@ -28,6 +29,7 @@ export default function FaqSection({
     section_theme,
     sectionTheme,
     surfaceTone,
+    surfaceBand,
   });
 
   if (!items.length && !cmsMode) return null;

@@ -1,0 +1,639 @@
+[
+  {
+    "id": 102,
+    "name": "ContentpageTicker",
+    "template": 14,
+    "title": "Ticker",
+    "image_url": "https://images.netcomlearning.com/cms/images/contentpageticker.png"
+  },
+  {
+    "id": 103,
+    "name": "BannerOne",
+    "template": 14,
+    "title": "BannerOne",
+    "image_url": "https://images.netcomlearning.com/cms/images/bannerone.png"
+  },
+  {
+    "id": 104,
+    "name": "BannerTwo",
+    "template": 14,
+    "title": "BannerTwo",
+    "image_url": "https://images.netcomlearning.com/cms/images/bannertwo.png"
+  },
+  {
+    "id": 105,
+    "name": "MiniBannerOne",
+    "template": 14,
+    "title": "MiniBannerOne",
+    "image_url": "https://images.netcomlearning.com/cms/images/minibannerone.png"
+  },
+  {
+    "id": 106,
+    "name": "MiniBannerTwo",
+    "template": 14,
+    "title": "MiniBannerTwo",
+    "image_url": "https://images.netcomlearning.com/cms/images/minibannertwo.png"
+  },
+  {
+    "id": 107,
+    "name": "MiniBannerThree",
+    "template": 14,
+    "title": "MiniBannerThree",
+    "image_url": "https://images.netcomlearning.com/cms/images/minibannerthree.png"
+  },
+  {
+    "id": 108,
+    "name": "OverviewOne",
+    "template": 14,
+    "title": "OverviewOne",
+    "image_url": "https://images.netcomlearning.com/cms/images/overviewone.png"
+  },
+  {
+    "id": 109,
+    "name": "OverviewTwo",
+    "template": 14,
+    "title": "OverviewTwo",
+    "image_url": "https://images.netcomlearning.com/cms/images/overviewtwo.png"
+  },
+  {
+    "id": 110,
+    "name": "OverviewThree",
+    "template": 14,
+    "title": "OverviewThree",
+    "image_url": "https://images.netcomlearning.com/cms/images/overviewthree.png"
+  },
+  {
+    "id": 111,
+    "name": "ExtendedOverview",
+    "template": 14,
+    "title": "ExtendedOverview",
+    "image_url": "https://images.netcomlearning.com/cms/images/extendedoverview.png"
+  },
+  {
+    "id": 112,
+    "name": "PopularCoursesOne",
+    "template": 14,
+    "title": "PopularCoursesOne",
+    "image_url": "https://images.netcomlearning.com/cms/images/popularcoursesone.png"
+  },
+  {
+    "id": 113,
+    "name": "PopularCoursesTwo",
+    "template": 14,
+    "title": "PopularCoursesTwo",
+    "image_url": "https://images.netcomlearning.com/cms/images/popularcoursestwo.png"
+  },
+  {
+    "id": 114,
+    "name": "CourseCatalogue",
+    "template": 14,
+    "title": "CourseCatalogue",
+    "image_url": "https://images.netcomlearning.com/cms/images/coursecatalogue.png"
+  },
+  {
+    "id": 115,
+    "name": "FAQs",
+    "template": 14,
+    "title": "FAQs",
+    "image_url": "https://images.netcomlearning.com/cms/images/faqs.png"
+  },
+  {
+    "id": 116,
+    "name": "ResourcesOne",
+    "template": 14,
+    "title": "ResourcesOne",
+    "image_url": "https://images.netcomlearning.com/cms/images/resourcesone.png"
+  },
+  {
+    "id": 117,
+    "name": "ResourcesTwo",
+    "template": 14,
+    "title": "ResourcesTwo",
+    "image_url": "https://images.netcomlearning.com/cms/images/updatedresourcestwo.png"
+  },
+  {
+    "id": 118,
+    "name": "TrainingPartners",
+    "template": 14,
+    "title": "TrainingPartners",
+    "image_url": "https://images.netcomlearning.com/cms/images/trainingpartners.png"
+  },
+  {
+    "id": 119,
+    "name": "WhyNetComLearning",
+    "template": 14,
+    "title": "WhyNetComLearning",
+    "image_url": "https://images.netcomlearning.com/cms/images/whynetcomlearning.png"
+  },
+  {
+    "id": 120,
+    "name": "SuccessStoryOne",
+    "template": 14,
+    "title": "SuccessStoryOne",
+    "image_url": "https://images.netcomlearning.com/cms/images/successstoryone.png"
+  },
+  {
+    "id": 121,
+    "name": "SuccessStoryTwo",
+    "template": 14,
+    "title": "SuccessStoryTwo",
+    "image_url": "https://images.netcomlearning.com/cms/images/successstorytwo.png"
+  },
+  {
+    "id": 122,
+    "name": "TestimonialsOne",
+    "template": 14,
+    "title": "TestimonialsOne",
+    "image_url": "https://images.netcomlearning.com/cms/images/testimonialsone.png"
+  },
+  {
+    "id": 123,
+    "name": "TestimonialsTwo",
+    "template": 14,
+    "title": "TestimonialsTwo",
+    "image_url": "https://images.netcomlearning.com/cms/images/testimonialstwo.png"
+  },
+  {
+    "id": 124,
+    "name": "NudgeOne",
+    "template": 14,
+    "title": "NudgeOne",
+    "image_url": "https://images.netcomlearning.com/cms/images/nudgeone.png"
+  },
+  {
+    "id": 125,
+    "name": "NudgeTwo",
+    "template": 14,
+    "title": "NudgeTwo",
+    "image_url": "https://images.netcomlearning.com/cms/images/nudgetwo.png"
+  },
+  {
+    "id": 126,
+    "name": "CustomersOne",
+    "template": 14,
+    "title": "CustomersOne",
+    "image_url": "https://images.netcomlearning.com/cms/images/customersone.png"
+  },
+  {
+    "id": 127,
+    "name": "CustomersTwo",
+    "template": 14,
+    "title": "CustomersTwo",
+    "image_url": "https://images.netcomlearning.com/cms/images/customerstwo.png"
+  },
+  {
+    "id": 128,
+    "name": "ExplainerOne",
+    "template": 14,
+    "title": "ExplainerOne",
+    "image_url": "https://images.netcomlearning.com/cms/images/explainerone.png"
+  },
+  {
+    "id": 129,
+    "name": "ExplainerTwo",
+    "template": 14,
+    "title": "ExplainerTwo",
+    "image_url": "https://images.netcomlearning.com/cms/images/explainertwo.png"
+  },
+  {
+    "id": 130,
+    "name": "PromoBanner",
+    "template": 14,
+    "title": "PromoBanner",
+    "image_url": "https://images.netcomlearning.com/cms/images/promobanner.png"
+  },
+  {
+    "id": 131,
+    "name": "ValuePropositionsOne",
+    "template": 14,
+    "title": "ValuePropositionsOne",
+    "image_url": "https://images.netcomlearning.com/cms/images/valuepropositionsone.png"
+  },
+  {
+    "id": 132,
+    "name": "ValuePropositionsTwo",
+    "template": 14,
+    "title": "ValuePropositionsTwo",
+    "image_url": "https://images.netcomlearning.com/cms/images/valuepropositionstwo.png"
+  },
+  {
+    "id": 133,
+    "name": "DeliveryMethods",
+    "template": 14,
+    "title": "DeliveryMethods",
+    "image_url": "https://images.netcomlearning.com/cms/images/deliverymethods.png"
+  },
+  {
+    "id": 134,
+    "name": "SubscribeToNetcomPlus",
+    "template": 14,
+    "title": "SubscribeToNetcomPlus",
+    "image_url": "https://images.netcomlearning.com/cms/images/subscribetonetcomplus.png"
+  },
+  {
+    "id": 135,
+    "name": "Netcom365Products",
+    "template": 14,
+    "title": "Netcom365Products",
+    "image_url": "https://images.netcomlearning.com/cms/images/netcom365products.png"
+  },
+  {
+    "id": 136,
+    "name": "WhyChooseNetcomLearning",
+    "template": 14,
+    "title": "WhyChooseNetcomLearning",
+    "image_url": "https://images.netcomlearning.com/cms/images/whychoosenetcomlearning.png"
+  },
+  {
+    "id": 137,
+    "name": "ManageNetCom365",
+    "template": 14,
+    "title": "ManageNetCom365",
+    "image_url": "https://images.netcomlearning.com/cms/images/managenetcom365.png"
+  },
+  {
+    "id": 138,
+    "name": "UnlimitedLearningSubscriptions",
+    "template": 14,
+    "title": "UnlimitedLearningSubscriptions",
+    "image_url": "https://images.netcomlearning.com/cms/images/unlimitedlearningsubscriptions.png"
+  },
+  {
+    "id": 147,
+    "name": "BannerThree",
+    "template": 14,
+    "title": "BannerThree",
+    "image_url": "https://images.netcomlearning.com/cms/images/banner-three.jpg"
+  },
+  {
+    "id": 148,
+    "name": "WhatDifferentiateNetcomLearning",
+    "template": 14,
+    "title": "WhatDifferentiateNetcomLearning",
+    "image_url": "https://images.netcomlearning.com/cms/images/what-differentiate-netcom.png"
+  },
+  {
+    "id": 149,
+    "name": "BannerFour",
+    "template": 14,
+    "title": "BannerFour",
+    "image_url": "https://images.netcomlearning.com/cms/banners/banner-four.png"
+  },
+  {
+    "id": 150,
+    "name": "LearningPassport",
+    "template": 14,
+    "title": "LearningPassport",
+    "image_url": "https://images.netcomlearning.com/cms/images/learning-passport.png"
+  },
+  {
+    "id": 151,
+    "name": "ExploreTraining",
+    "template": 14,
+    "title": "ExploreTraining",
+    "image_url": "https://images.netcomlearning.com/cms/images/asdfhb.png"
+  },
+  {
+    "id": 152,
+    "name": "WhyLearningPassport",
+    "template": 14,
+    "title": "WhyLearningPassport",
+    "image_url": "https://images.netcomlearning.com/cms/images/whylearningpassport.png"
+  },
+  {
+    "id": 153,
+    "name": "BreadcrumbNav",
+    "template": 14,
+    "title": "BreadcrumbNav",
+    "image_url": "https://images.netcomlearning.com/cms/images/breadcrumb-nav.png"
+  },
+  {
+    "id": 154,
+    "name": "BannerFive",
+    "template": 14,
+    "title": "BannerFive",
+    "image_url": "https://images.netcomlearning.com/cms/images/banner-five_372f3eff.png"
+  },
+  {
+    "id": 155,
+    "name": "NudgeThree",
+    "template": 14,
+    "title": "NudgeThree",
+    "image_url": "https://images.netcomlearning.com/cms/images/nudge-three.png"
+  },
+  {
+    "id": 176,
+    "name": "CourseCatalog(Tabs)",
+    "template": 14,
+    "title": "Catalog with tabs",
+    "image_url": "https://images.netcomlearning.com/cms/images/lorem-ipsum.png"
+  },
+  {
+    "id": 177,
+    "name": "ListOfLinksSection",
+    "template": 12,
+    "title": "ListOfLinksSection",
+    "image_url": "https://images.netcomlearning.com/cms/images/listoflinkssection.png"
+  },
+  {
+    "id": 178,
+    "name": "ThreeColumnWithBulletPoints",
+    "template": 14,
+    "title": "ThreeColumnWithBulletPoints",
+    "image_url": "https://images.netcomlearning.com/cms/images/threecolumncardwithbulletpoints.png"
+  },
+  {
+    "id": 179,
+    "name": "PopularProductsForDomain",
+    "template": 14,
+    "title": "PopularProductsForDomain",
+    "image_url": "https://images.netcomlearning.com/cms/images/popularproductsfordomain.png"
+  },
+  {
+    "id": 180,
+    "name": "AccordionWithSixCards",
+    "template": 14,
+    "title": "AccordionWithSixCards",
+    "image_url": "https://images.netcomlearning.com/cms/images/accordionwithsixcards.png"
+  },
+  {
+    "id": 181,
+    "name": "Course catalog CLC",
+    "template": 14,
+    "title": "CLCs-Eligible Courses you are Looking for",
+    "image_url": "https://images.netcomlearning.com/cms/banners/course-catalog-clc-preview.png"
+  },
+  {
+    "id": 184,
+    "name": "LeadForm",
+    "template": 14,
+    "title": "LeadForm",
+    "image_url": "https://images.netcomlearning.com/cms/images/map-lead-form.png"
+  },
+  {
+    "id": 185,
+    "name": "NetCom365Section",
+    "template": 12,
+    "title": "NetCom365Section",
+    "image_url": "https://images.netcomlearning.com/cms/images/homepagenetcom365section.png"
+  },
+  {
+    "id": 186,
+    "name": "TrainingDeliveryMethod",
+    "template": 12,
+    "title": "TrainingDeliveryMethod",
+    "image_url": "https://images.netcomlearning.com/cms/images/homepagetrainingdeliverymethod.png"
+  },
+  {
+    "id": 202,
+    "name": "AWSBlendedLearning",
+    "template": 14,
+    "title": "AWS Blended Learning Packages",
+    "image_url": "https://images.netcomlearning.com/cms/images/aws-blended-learning-poster.png"
+  },
+  {
+    "id": 203,
+    "name": "CiscoU",
+    "template": 14,
+    "title": "Cisco U. Plan",
+    "image_url": "https://images.netcomlearning.com/cms/images/cisco-u-plan.png"
+  },
+  {
+    "id": 204,
+    "name": "Logo",
+    "template": 14,
+    "title": "About the course",
+    "image_url": "https://images.netcomlearning.com/cms/images/ai-executive.png"
+  },
+  {
+    "id": 208,
+    "name": "Types of Big Data",
+    "template": 10,
+    "title": "Types of Big Data",
+    "image_url": "https://images.netcomlearning.com/cms/images/types-of-big-data.png"
+  },
+  {
+    "id": 210,
+    "name": "TopTrainingPartners",
+    "template": 12,
+    "title": "TopTrainingPartners",
+    "image_url": "https://images.netcomlearning.com/cms/images/top-training-partners.png"
+  },
+  {
+    "id": 211,
+    "name": "What's New",
+    "template": 12,
+    "title": "What's New",
+    "image_url": "https://images.netcomlearning.com/cms/images/microsoft-award-section.png"
+  },
+  {
+    "id": 213,
+    "name": "Download App Nudge",
+    "template": 14,
+    "title": "Download App Nudge",
+    "image_url": "https://images.netcomlearning.com/cms/images/app-download-section.png"
+  },
+  {
+    "id": 214,
+    "name": "OurAuthors",
+    "template": 20,
+    "title": "Our Authors",
+    "image_url": "https://images.netcomlearning.com/cms/images/our-authors.png"
+  },
+  {
+    "id": 215,
+    "name": "GuestBloggers",
+    "template": 20,
+    "title": "GuestBloggers",
+    "image_url": "https://images.netcomlearning.com/cms/images/guest-bloggers.png"
+  },
+  {
+    "id": 216,
+    "name": "ContactUs",
+    "template": 20,
+    "title": "ContactUs",
+    "image_url": "https://images.netcomlearning.com/cms/images/contact-us.png"
+  },
+  {
+    "id": 217,
+    "name": "AuthorListBanner",
+    "template": 20,
+    "title": "AuthorListBanner",
+    "image_url": "https://images.netcomlearning.com/cms/images/author-page-banner.png"
+  },
+  {
+    "id": 218,
+    "name": "blogAuthorTicker",
+    "template": 19,
+    "title": "blogAuthorTicker",
+    "image_url": "https://images.netcomlearning.com/cms/images/contentpageticker.png"
+  },
+  {
+    "id": 219,
+    "name": "Latest Blogs",
+    "template": 19,
+    "title": "Latest Blogs",
+    "image_url": "https://images.netcomlearning.com/cms/images/blog-main-container.png"
+  },
+  {
+    "id": 220,
+    "name": "Explore Authors",
+    "template": 19,
+    "title": "Explore Authors",
+    "image_url": "https://images.netcomlearning.com/cms/images/netcom-writers.png"
+  },
+  {
+    "id": 225,
+    "name": "Banner-with-Marketo-Form",
+    "template": 14,
+    "title": "Banner-with-Marketo-Form",
+    "image_url": "https://images.netcomlearning.com/cms/images/banner-with-marketo-form.png"
+  },
+  {
+    "id": 233,
+    "name": "CareerOpportunity",
+    "template": 14,
+    "title": "Career Opportunities",
+    "image_url": "https://images.netcomlearning.com/cms/images/career-opportunities.png"
+  },
+  {
+    "id": 236,
+    "name": "Bundle Package Mapping",
+    "template": 14,
+    "title": "Bundle Package Mapping",
+    "image_url": "https://images.netcomlearning.com/cms/images/bundle-package-mapping.png"
+  },
+  {
+    "id": 237,
+    "name": "ValuePropositionsThree",
+    "template": 14,
+    "title": "Edit Section title",
+    "image_url": "https://images.netcomlearning.com/cms/images/value-proposition-three.png"
+  },
+  {
+    "id": 238,
+    "name": "cisco-all-in-one-guide-promo",
+    "template": 10,
+    "title": "Cisco all-in-one guide promo",
+    "image_url": "https://images.netcomlearning.com/cms/banners/cisco-all-in-one-guide-promo-banner.png"
+  },
+  {
+    "id": 242,
+    "name": "Explore the Cisco U. Catalog",
+    "template": 14,
+    "title": "Explore the Cisco U. Catalog",
+    "image_url": "https://images.netcomlearning.com/cms/images/cisco-u-catalogs.jpg"
+  },
+  {
+    "id": 244,
+    "name": "Blog Dynamic Interlinking Section",
+    "template": 10,
+    "title": "Blog Dynamic Interlinking Section",
+    "image_url": "https://images.netcomlearning.com/cms/banners/dynamic-interlinking-section.png"
+  },
+  {
+    "id": 245,
+    "name": "Certification Dynamic Interlinking Section",
+    "template": 8,
+    "title": "Certification Dynamic Interlinking Section",
+    "image_url": "https://images.netcomlearning.com/cms/banners/dynamic-interlinking-section.png"
+  },
+  {
+    "id": 246,
+    "name": "Product Dynamic Interlinking Section",
+    "template": 3,
+    "title": "Product Dynamic Interlinking Section",
+    "image_url": "https://images.netcomlearning.com/cms/banners/dynamic-interlinking-section.png"
+  },
+  {
+    "id": 247,
+    "name": "Vendor Dynamic Interlinking Section",
+    "template": 1,
+    "title": "Vendor Dynamic Interlinking Section",
+    "image_url": "https://images.netcomlearning.com/cms/banners/dynamic-interlinking-section.png"
+  },
+  {
+    "id": 248,
+    "name": "Dynamic Interlinking Section",
+    "template": 14,
+    "title": "Dynamic Interlinking Section",
+    "image_url": "https://images.netcomlearning.com/cms/banners/dynamic-interlinking-section.png"
+  },
+  {
+    "id": 249,
+    "name": "Ebook Dynamic Interlinking Section",
+    "template": 7,
+    "title": "Ebook Dynamic Interlinking Section",
+    "image_url": "https://images.netcomlearning.com/cms/banners/dynamic-interlinking-section.png"
+  },
+  {
+    "id": 250,
+    "name": "Webinar Dynamic Interlinking Section",
+    "template": 5,
+    "title": "Webinar Dynamic Interlinking Section",
+    "image_url": "https://images.netcomlearning.com/cms/banners/dynamic-interlinking-section.png"
+  },
+  {
+    "id": 251,
+    "name": "CaseStudy Dynamic Interlinking Section",
+    "template": 6,
+    "title": "CaseStudy Dynamic Interlinking Section",
+    "image_url": "https://images.netcomlearning.com/cms/banners/dynamic-interlinking-section.png"
+  },
+  {
+    "id": 252,
+    "name": "PracticeArea Dynamic Interlinking Section",
+    "template": 15,
+    "title": "PracticeArea Dynamic Interlinking Section",
+    "image_url": "https://images.netcomlearning.com/cms/banners/dynamic-interlinking-section.png"
+  },
+  {
+    "id": 253,
+    "name": "Industry Dynamic Interlinking Section",
+    "template": 17,
+    "title": "Industry Dynamic Interlinking Section",
+    "image_url": "https://images.netcomlearning.com/cms/banners/dynamic-interlinking-section.png"
+  },
+  {
+    "id": 255,
+    "name": "AI Essentials for Nonprofit Professionals",
+    "template": 14,
+    "title": "AI Essentials for Nonprofit Professionals",
+    "image_url": "https://images.netcomlearning.com/cms/images/home-page-bannerimage-2.webp"
+  },
+  {
+    "id": 256,
+    "name": "Our Subject Matter Experts",
+    "template": 14,
+    "title": "Our Subject Matter Experts",
+    "image_url": "https://images.netcomlearning.com/cms/images/our-sub-matter-section.png"
+  },
+  {
+    "id": 259,
+    "name": "Course and Certification Catalog",
+    "template": 14,
+    "title": "Course & certifications",
+    "image_url": "https://images.netcomlearning.com/cms/images/course-and-certifications-catalog.png"
+  },
+  {
+    "id": 270,
+    "name": "TrainingDeliveryMethodsOne",
+    "template": 14,
+    "title": "Flexible Training Options to Fit Every Learning Style",
+    "image_url": "https://images.netcomlearning.com/cms/images/delivery-method-section.jpeg"
+  },
+  {
+    "id": 271,
+    "name": "TrainingDeliveryMethodsTwo",
+    "template": 14,
+    "title": "Flexible Training Options to Fit Every Learning Style",
+    "image_url": "https://images.netcomlearning.com/cms/images/delivery-method-section-2.jpeg"
+  },
+  {
+    "id": 272,
+    "name": "Popular courses and bundles",
+    "template": 14,
+    "title": "Popular courses and bundles",
+    "image_url": "https://images.netcomlearning.com/cms/images/courses-bundles.jpeg"
+  }
+]

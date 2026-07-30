@@ -4,21 +4,16 @@ import { useState } from "react";
 import Link from "next/link";
 import Drawer, { HamburgerButton } from "@/components/ui/Drawer";
 
+import { PROJECT_NAV_LINKS } from "@/lib/project-nav-links";
+
+export { PROJECT_NAV_LINKS };
+
 /**
- * Temporary static project nav — useful SkillHub demo pages.
- * Dynamic mega-nav (SiteHeaderNav + getNavigationTree) is paused for now.
+ * Static project nav — SkillHub demo & showcase pages (code-defined, not API).
  */
-export const PROJECT_NAV_LINKS = [
-  { name: "Home", href: "/" },
-  { name: "How it works", href: "/how-it-works" },
-  { name: "Catalog guide", href: "/catalog-guide" },
-  { name: "CMS preview", href: "/cms-preview" },
-  { name: "Sections", href: "/cms/section" },
-  { name: "The Odyssey", href: "/odyssey" },
-];
 
 const linkClass =
-  "whitespace-nowrap rounded-lg px-2 py-1.5 text-[13px] font-semibold text-slate-600 no-underline transition hover:bg-slate-100 hover:text-ink dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white";
+  "whitespace-nowrap rounded-lg px-2 py-1.5 text-[12px] font-semibold text-slate-600 no-underline transition hover:bg-slate-100 hover:text-ink dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white";
 
 function DesktopProjectNav() {
   return (

@@ -85,7 +85,7 @@ export default function CmsSkillingAreasPage() {
       });
       setForm(emptyForm);
       setShowForm(false);
-      window.location.href = `/cms/skilling-area/${res.data.slug}`;
+      window.location.href = `/cms/skilling-areas/${res.data.slug}`;
     } catch (err) {
       setError(err);
     } finally {
@@ -202,7 +202,7 @@ export default function CmsSkillingAreasPage() {
                 </div>
                 <div className="flex flex-wrap gap-2">
                   <Link
-                    href={`/cms/skilling-area/${item.slug}`}
+                    href={`/cms/skilling-areas/${item.slug}`}
                     className={btnSecondary}
                   >
                     Edit

@@ -13,7 +13,12 @@ npm run seed:pipeline
 
 # Legacy destructive full core
 npm run seed:all
+
+# Feed pipeline only (manifest pages + skilling/industry CMS + template themes)
+npm run seed:feed
 ```
+
+Script definitions live in **`scripts/package-scripts.mjs`**. Run `npm run scripts:sync` to regenerate per-step `seed:<id>` aliases in `package.json` if you want them back.
 
 ## Profiles
 
@@ -29,7 +34,7 @@ npm run seed:all
 Set automatically for `npm run seed:replenish`, or on any step:
 
 ```bash
-SEED_SAFE=1 npm run seed:entity-cms
+SEED_SAFE=1 npm run seed:step -- entity-cms
 npm run seed:pipeline -- --safe --only=entity-cms,content-pages
 ```
 
@@ -80,6 +85,12 @@ src/seed/
 npm run seed:pipeline -- --only=entity-cms
 npm run seed:pipeline -- --profile=core --from=entity-cms
 npm run seed:pipeline -- --dry-run
+npm run seed:list
 ```
 
-Individual scripts still work, e.g. `npm run seed:entity-cms`.
+Single step:
+
+```bash
+npm run seed:step -- entity-cms
+npm run seed:step -- content-pages-from-manifest
+```

@@ -14,7 +14,7 @@ async function seed() {
   const defaults = defaultSiteTheme();
   const doc = await SiteTheme.findOneAndUpdate(
     { key: "default" },
-    { $set: { key: "default", ...defaults } },
+    { $setOnInsert: { key: "default", ...defaults } },
     { upsert: true, new: true, setDefaultsOnInsert: true }
   );
   console.log(

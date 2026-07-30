@@ -14,6 +14,8 @@ import {
   btnSecondary,
 } from "@/components/cms/CmsUi";
 import CmsThemeEditor from "@/components/cms/CmsThemeEditor";
+import CmsPageTemplateThemesPanel from "@/components/cms/CmsPageTemplateThemesPanel";
+import CmsOverrideGuide from "@/components/cms/CmsOverrideGuide";
 import PageThemeShell from "@/components/cms/PageThemeShell";
 
 export default function CmsSiteThemePage() {
@@ -61,12 +63,15 @@ export default function CmsSiteThemePage() {
   return (
     <div className="space-y-6">
       <CmsHeading
-        title="Site theme"
-        subtitle="Global look for the whole website. Page templates can override any field."
+        title="Themes"
+        subtitle="Site-wide defaults plus optional per-template overrides. Live pages use site theme, then the page template (home, course, …)."
         actions={
-          <Link href="/cms/pages" className={btnSecondary}>
-            Page templates
-          </Link>
+          <>
+            <CmsOverrideGuide variant="drawer-button" />
+            <Link href="/cms/pages" className={btnSecondary}>
+              Page templates
+            </Link>
+          </>
         }
       />
 
@@ -78,18 +83,29 @@ export default function CmsSiteThemePage() {
       ) : null}
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(16rem,20rem)]">
-        <CmsPanel title="Global defaults">
-          <CmsThemeEditor
-            mode="site"
-            value={theme}
-            onChange={setTheme}
-            onSave={save}
-            saving={saving}
-            saveLabel="Save site theme"
-          />
-        </CmsPanel>
+        <div className="space-y-6">
+          <CmsPanel title="How overrides work">
+            <CmsOverrideGuide variant="panel" />
+          </CmsPanel>
 
-        <CmsPanel title="Preview">
+          <CmsPanel title="Site theme (global)">
+            <CmsThemeEditor
+              mode="site"
+              value={theme}
+              onChange={setTheme}
+              onSave={save}
+              saving={saving}
+              saveLabel="Save site theme"
+              hideGuide
+            />
+          </CmsPanel>
+
+          <CmsPanel title="Page template themes">
+            <CmsPageTemplateThemesPanel siteTheme={theme} />
+          </CmsPanel>
+        </div>
+
+        <CmsPanel title="Site preview">
           <PageThemeShell theme={theme} className="overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800">
             <div className="space-y-0">
               <div className="bg-white px-4 py-6 dark:bg-slate-950">
@@ -122,12 +138,20 @@ export default function CmsSiteThemePage() {
                   No section bg — page background shows through
                 </p>
               </div>
-              <div className="bg-ink px-4 py-6 text-white">
+              <div className="px-4 py-6" style={{ backgroundColor: "#0f172a", color: "rgb(255 255 255 / 0.92)" }}>
                 <p className="m-0 text-xs font-semibold tracking-wide text-white/50 uppercase">
-                  Dark / ink
+                  Dark / charcoal
                 </p>
                 <p className="mt-2 mb-0 text-sm text-white/90">
-                  Used when surface mode is dark
+                  True neutral dark surface (#0f172a)
+                </p>
+              </div>
+              <div className="bg-ink px-4 py-6 text-white">
+                <p className="m-0 text-xs font-semibold tracking-wide text-white/50 uppercase">
+                  Dark / brand ink
+                </p>
+                <p className="mt-2 mb-0 text-sm text-white/90">
+                  Uses your theme ink color
                 </p>
               </div>
             </div>

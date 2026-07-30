@@ -6,54 +6,68 @@
  * 3. Inherit → page theme surface mode (e.g. alternating)
  */
 
-import { SURFACE_MODES } from "@/lib/theme";
+import {
+  surfaceBandPreviewBg,
+  surfaceBandPreviewLabel,
+  surfacePatternLabel,
+} from "@/lib/theme";
+import { parseSectionThemeRaw } from "@/lib/section-theme";
 
 export const SECTION_BAND_PRIORITY_LINES = [
   "Background image — highest visual priority; replaces the default band fill.",
-  "Section background color — overrides page surfaces for this section only.",
+  "Background color — overrides page surfaces for this section only.",
+  "Band theme — catalog default, then template, then page override (light / dark).",
   "Otherwise — follows page theme (surface mode, colors) from Page settings → Theme.",
 ];
 
-/** Light vs dark for presets / contrast (muted & white bands → light). */
-export function surfaceToneToBandTone(surfaceTone) {
-  if (surfaceTone === "dark") return "dark";
+/** Light vs dark for presets / contrast. */
+export function surfaceToneToBandTone(surfaceToneOrBand) {
+  if (surfaceToneOrBand?.theme === "dark") return "dark";
+  if (surfaceToneOrBand?.theme === "light") return "light";
+  if (surfaceToneOrBand === "dark") return "dark";
   return "light";
 }
 
 /**
  * Band tone used for text tokens and bg presets given draft + page placement.
  */
-export function effectiveBandToneForDraft(_draft, inheritedSurfaceTone) {
-  return surfaceToneToBandTone(inheritedSurfaceTone);
-}
-
-function surfaceModeLabel(mode) {
-  const key = String(mode || "alternating").toLowerCase();
-  return (
-    SURFACE_MODES.find((m) => m.value === key)?.label || "Alternating white / grey"
-  );
+export function effectiveBandToneForDraft(draft, inheritedSurfaceBand, inheritedSurfaceTone) {
+  const theme = parseSectionThemeRaw(draft?.theme);
+  if (theme === "dark") return "dark";
+  if (theme === "light") return "light";
+  return surfaceToneToBandTone(inheritedSurfaceBand || inheritedSurfaceTone);
 }
 
 /** Human-readable effective theme for the band editor header. */
 export function effectiveBandThemeInfo(
   draft,
-  { inheritedSurfaceTone, pageSurfaceMode, pageInk } = {}
+  { inheritedSurfaceBand, inheritedSurfaceTone, pageTheme, pageSurfaceMode, pageInk } = {}
 ) {
-  const tone = effectiveBandToneForDraft(draft, inheritedSurfaceTone);
-  const modeLabel = surfaceModeLabel(pageSurfaceMode);
-  const inherited = inheritedSurfaceTone;
-  let defaultBg = "#ffffff";
-  let detail = `Inherits page surface (${modeLabel}) · light band`;
+  const tone = effectiveBandToneForDraft(
+    draft,
+    inheritedSurfaceBand,
+    inheritedSurfaceTone
+  );
+  const modeLabel = surfacePatternLabel(pageTheme || { surface_mode: pageSurfaceMode });
+  const inherited = inheritedSurfaceBand || inheritedSurfaceTone;
+  let defaultBg = surfaceBandPreviewBg(inherited || { bg: "#ffffff" });
+  let detail = `Inherits page surface (${modeLabel}) · ${surfaceBandPreviewLabel(
+    inheritedSurfaceBand ||
+      (inheritedSurfaceTone
+        ? { label: inheritedSurfaceTone, bg: surfaceBandPreviewBg(inheritedSurfaceTone) }
+        : { label: "White", bg: "#ffffff" })
+  )}`;
 
-  if (inherited === "dark") {
-    defaultBg = pageInk || "#0b1f4d";
-    detail = `Inherits page surface (${modeLabel}) · dark band on this row`;
-  } else if (inherited === "muted") {
-    defaultBg = "#f1f5f9";
-    detail = `Inherits page surface (${modeLabel}) · muted grey band`;
-  } else if (inherited == null) {
+  if (inherited == null) {
     detail = `Inherits page surface (${modeLabel}) · transparent / page background`;
     defaultBg = "transparent";
+  } else if (inheritedSurfaceBand?.theme === "dark" || inheritedSurfaceTone === "dark") {
+    defaultBg = surfaceBandPreviewBg({ bg: "#0f172a" });
+  } else if (
+    inheritedSurfaceBand?.theme === "dark" ||
+    inheritedSurfaceTone === "dark_ink"
+  ) {
+    defaultBg = pageInk || surfaceBandPreviewBg({ bg: "var(--ink)" });
   }
 
   return {
@@ -67,16 +81,24 @@ export function effectiveBandThemeInfo(
 
 export function bandDraftFromSection(section) {
   const s = section || {};
+  const local =
+    s.section_theme_local !== undefined && s.section_theme_local !== null
+      ? s.section_theme_local
+      : s.section_theme;
   return {
     bgImg: String(s.section_bg_img || "").trim(),
     bgColor: String(s.section_bg_color || s.data?.bg_color || "").trim(),
+    theme: parseSectionThemeRaw(local),
   };
 }
 
 export function activeBandSummary(draft) {
   const parts = [];
+  if (draft.theme && draft.theme !== "inherit") {
+    parts.push(`Theme: ${draft.theme}`);
+  }
   if (draft.bgImg) parts.push("Image");
   if (draft.bgColor?.trim()) parts.push("Custom color");
-  if (!parts.length) return "Page theme (no custom band bg)";
+  if (!parts.length) return "Inherit page / catalog defaults";
   return parts.join(" · ");
 }

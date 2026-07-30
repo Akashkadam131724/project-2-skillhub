@@ -1,5 +1,11 @@
 import mongoose from "mongoose";
 import Section from "../../modules/cms/section.model.js";
+import {
+  pickCourseImages,
+  pickHomeExploreImage,
+  pickProductImages,
+  pickVendorImages,
+} from "./entity-upload-images.js";
 
 export function btn(label, opts = {}) {
   return {
@@ -435,21 +441,8 @@ function formatMetric(n, fallback = "50+") {
   return `${num}+`;
 }
 
-const VENDOR_OVERVIEW_IMAGES = [
-  "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1200&q=82",
-  "https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1200&q=82",
-  "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1200&q=82",
-  "https://images.unsplash.com/photo-1531403009284-440f080d1e12?auto=format&fit=crop&w=1200&q=82",
-  "https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=1200&q=82",
-  "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=1200&q=82",
-  "https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&w=1200&q=82",
-  "https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1200&q=82",
-];
-
 function vendorOverviewImage(vendor) {
-  const key = String(vendor.slug || vendor.name || "vendor");
-  const hash = [...key].reduce((sum, char) => sum + char.charCodeAt(0), 0);
-  return VENDOR_OVERVIEW_IMAGES[hash % VENDOR_OVERVIEW_IMAGES.length];
+  return pickVendorImages(vendor, 1)[0] || "";
 }
 
 /**
@@ -649,6 +642,7 @@ export function buildProductOverrides(product, vendor = null) {
   const name = product.name || "Product";
   const vendorName = vendor?.name || "";
   const category = product.category || "learning";
+  const imgs = pickProductImages(product, vendor, 3);
   const body =
     product.description?.trim() ||
     `${name} bundles role-aligned courses, labs, and certification prep${
@@ -660,10 +654,11 @@ export function buildProductOverrides(product, vendor = null) {
       section_title: `About ${name}`,
       sub_title: vendorName ? `${vendorName} learning product` : "Product overview",
       in_page_nav_title: "Overview",
+      section_img_url: imgs[0] || "",
       data: { body },
       buttons: [
         btn("View courses", { action_type: "anchor", target_id: "catalog" }),
-        btn("Contact us", { variant: "outline", target_url: "/contact" }),
+        btn("Contact us", { variant: "outline", target_url: "/contact-us" }),
       ],
     },
     key_benefits: {
@@ -674,6 +669,7 @@ export function buildProductOverrides(product, vendor = null) {
           {
             title: "Role-aligned paths",
             body: `Mapped to ${category} outcomes, not just exam objectives.`,
+            image_url: imgs[0] || "",
           },
           0
         ),
@@ -681,6 +677,7 @@ export function buildProductOverrides(product, vendor = null) {
           {
             title: "Hands-on labs",
             body: "Practice environments that mirror production scenarios.",
+            image_url: imgs[1] || imgs[0] || "",
           },
           1
         ),
@@ -688,6 +685,7 @@ export function buildProductOverrides(product, vendor = null) {
           {
             title: "Advisor support",
             body: "Guidance on sequencing modules for your cohort size.",
+            image_url: imgs[2] || imgs[1] || "",
           },
           2
         ),
@@ -765,6 +763,7 @@ export function buildCourseOverrides(course, product = null, vendor = null) {
   const name = course.name || "Course";
   const productName = product?.name || "";
   const vendorName = vendor?.name || "";
+  const imgs = pickCourseImages(course, product, vendor, 3);
   const body =
     course.description?.trim() ||
     `${name} is instructor-led training with official curriculum and hands-on labs${
@@ -776,10 +775,11 @@ export function buildCourseOverrides(course, product = null, vendor = null) {
       section_title: `${name} overview`,
       sub_title: productName || vendorName || "Course details",
       in_page_nav_title: "Overview",
+      section_img_url: imgs[0] || "",
       data: { body },
       buttons: [
         btn("Browse catalog", { variant: "outline", target_url: "/courses" }),
-        btn("Enroll", { target_url: "/contact" }),
+        btn("Enroll", { target_url: "/contact-us" }),
       ],
     },
     key_benefits: {
@@ -790,6 +790,7 @@ export function buildCourseOverrides(course, product = null, vendor = null) {
           {
             title: "Official curriculum",
             body: "Content aligned to current vendor exams and best practices.",
+            image_url: imgs[0] || "",
           },
           0
         ),
@@ -797,6 +798,7 @@ export function buildCourseOverrides(course, product = null, vendor = null) {
           {
             title: "Lab time",
             body: "Guided exercises that reinforce each module.",
+            image_url: imgs[1] || imgs[0] || "",
           },
           1
         ),
@@ -804,6 +806,7 @@ export function buildCourseOverrides(course, product = null, vendor = null) {
           {
             title: "Expert instructors",
             body: "Practitioners who teach what they ship.",
+            image_url: imgs[2] || imgs[1] || "",
           },
           2
         ),
@@ -949,14 +952,10 @@ function formatCatalogCount(n) {
 }
 
 const HOME_EXPLORE_IMAGES = {
-  vendors:
-    "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1600&q=80",
-  products:
-    "https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1600&q=80",
-  courses:
-    "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1600&q=80",
-  blogs:
-    "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1600&q=80",
+  vendors: pickHomeExploreImage("vendors"),
+  products: pickHomeExploreImage("products"),
+  courses: pickHomeExploreImage("courses"),
+  blogs: pickHomeExploreImage("blogs"),
 };
 
 /** Homepage Feature Tabs content from live catalog counts. */

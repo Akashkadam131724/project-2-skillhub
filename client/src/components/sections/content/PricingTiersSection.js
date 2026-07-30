@@ -12,7 +12,6 @@ import {
   DS_CARD,
   DS_TEXT,
   isPlacementDarkBand,
-  sectionSoftLightGradientClass,
 } from "@/lib/section-theme";
 
 /**
@@ -34,6 +33,7 @@ export default function PricingTiersSection({
   sectionTheme,
   section_theme,
   surfaceTone,
+  surfaceBand,
   ...frameProps
 }) {
   const items = resolveItemsForSection(section_key, mappingItems);
@@ -43,9 +43,8 @@ export default function PricingTiersSection({
   const darkBand = isPlacementDarkBand({
     sectionTheme: themePref,
     surfaceTone,
+    surfaceBand,
   });
-
-  const decorClass = sectionSoftLightGradientClass(themePref, surfaceTone);
 
   function isFeaturedPlan(item, index) {
     const label = String(item.label || "").toLowerCase();
@@ -55,8 +54,7 @@ export default function PricingTiersSection({
   }
 
   return (
-    <div className={decorClass}>
-      <SectionFrame
+    <SectionFrame
         title={section_title}
         subtitle={sub_title}
         cmsMode={cmsMode}
@@ -251,6 +249,5 @@ export default function PricingTiersSection({
           <EmptyItemsHint sectionKey={section_key} onEditField={onEditField} />
         )}
       </SectionFrame>
-    </div>
   );
 }

@@ -95,6 +95,32 @@ const nextConfig = {
         destination: "/blog/:slug",
         permanent: true,
       },
+      // CMS admin: singular → plural (legacy links)
+      {
+        source: "/cms/vendor/:slug",
+        destination: "/cms/vendors/:slug",
+        permanent: true,
+      },
+      {
+        source: "/cms/product/:slug",
+        destination: "/cms/products/:slug",
+        permanent: true,
+      },
+      {
+        source: "/cms/course/:slug",
+        destination: "/cms/courses/:slug",
+        permanent: true,
+      },
+      {
+        source: "/cms/industry/:slug",
+        destination: "/cms/industries/:slug",
+        permanent: true,
+      },
+      {
+        source: "/cms/skilling-area/:slug",
+        destination: "/cms/skilling-areas/:slug",
+        permanent: true,
+      },
     ];
   },
 };

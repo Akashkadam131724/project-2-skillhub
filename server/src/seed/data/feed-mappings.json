@@ -1,0 +1,116 @@
+{
+  "skillingFolderBySlug": {
+    "ai-and-data": "business-ai",
+    "cloud": "business-cloud",
+    "security": "business-security",
+    "networking": "business-networking",
+    "architecture-and-design": "business-architecture-design",
+    "app-development": "business-tech",
+    "business-and-leadership": "business-leadership",
+    "business-application": "business-tech",
+    "business-process": "business-leadership"
+  },
+  "industryFolderBySlug": {
+    "healthcare": "business-health",
+    "information-technology": "business-tech",
+    "finance-and-banking": "business-stock",
+    "education": "business-leadership",
+    "government": "business-security",
+    "retail-and-ecommerce": "business-web",
+    "manufacturing": "business-architecture-design",
+    "telecommunications": "business-networking"
+  },
+  "solutionCopy": {
+    "business-ai": {
+      "eyebrow": "AI & data capability",
+      "headline": "Build AI-ready teams with structured learning paths",
+      "subhead": "From foundations to production ML — labs, certifications, and coaching aligned to real delivery.",
+      "overview": "SkillHub helps enterprises stand up AI and data academies with role-based paths, hands-on labs, and measurable skill signals. Programs connect strategy to daily work for analysts, engineers, and product leaders.",
+      "catalogQuery": "/courses?skilling_area=ai-and-data"
+    },
+    "business-cloud": {
+      "eyebrow": "Cloud transformation",
+      "headline": "Cloud skills that ship — not just certificates",
+      "subhead": "Architecture, platform engineering, and FinOps programs for teams migrating and scaling on modern cloud.",
+      "overview": "Whether you are landing your first workloads or maturing a multi-account estate, SkillHub cloud academies combine vendor-authorized curriculum with practice environments your engineers recognize.",
+      "catalogQuery": "/courses?skilling_area=cloud"
+    },
+    "business-security": {
+      "eyebrow": "Security & compliance",
+      "headline": "Security training built for operators",
+      "subhead": "Zero-trust, identity, and secure SDLC — workshops that connect policy to engineering practice.",
+      "overview": "Close the gap between compliance mandates and day-to-day engineering with cohort-based security labs, incident drills, and certification-aligned paths.",
+      "catalogQuery": "/courses?skilling_area=security"
+    },
+    "business-networking": {
+      "eyebrow": "Networking & infrastructure",
+      "headline": "Modern network skills for hybrid estates",
+      "subhead": "Routing, automation, and observability for teams running complex connectivity.",
+      "overview": "SkillHub networking programs blend instructor depth with lab time on the stacks your NOC and platform teams actually run.",
+      "catalogQuery": "/courses?skilling_area=networking"
+    },
+    "business-architecture-design": {
+      "eyebrow": "Architecture & design",
+      "headline": "Design systems that scale with the business",
+      "subhead": "Solution architecture, API design, and enterprise patterns for senior ICs and leads.",
+      "overview": "Move architects from slide-ware to shippable reference implementations with facilitated design reviews and capstone labs.",
+      "catalogQuery": "/courses?skilling_area=architecture-and-design"
+    },
+    "business-leadership": {
+      "eyebrow": "Leadership & transformation",
+      "headline": "Leaders who can sponsor and sustain change",
+      "subhead": "Executive literacy, change leadership, and program governance for digital initiatives.",
+      "overview": "Equip sponsors and people leaders to fund the right skills, remove blockers, and measure adoption — not just attendance.",
+      "catalogQuery": "/courses?skilling_area=business-and-leadership"
+    },
+    "business-tech": {
+      "eyebrow": "Technology programs",
+      "headline": "Full-stack capability for product and platform teams",
+      "subhead": "Application delivery, DevOps, and modern engineering practices.",
+      "overview": "SkillHub technology paths help teams ship reliably — with curriculum mapped to roles from developer to engineering manager.",
+      "catalogQuery": "/courses"
+    },
+    "business-web": {
+      "eyebrow": "Digital experience",
+      "headline": "Web, product, and customer-facing delivery",
+      "subhead": "Front-end craft, performance, and design systems for digital teams.",
+      "overview": "Programs for teams building customer journeys — from accessibility and performance to experimentation and analytics.",
+      "catalogQuery": "/courses"
+    },
+    "business-health": {
+      "eyebrow": "Healthcare learning",
+      "headline": "Training for regulated, mission-critical environments",
+      "subhead": "Programs that respect compliance while building modern digital skills.",
+      "overview": "SkillHub healthcare industry paths connect clinical operations, IT, and security requirements with practical upskilling.",
+      "catalogQuery": "/industries/healthcare"
+    },
+    "business-stock": {
+      "eyebrow": "Enterprise resources",
+      "headline": "Professional learning imagery and program assets",
+      "subhead": "Stock visuals for campaigns, academies, and internal comms.",
+      "overview": "A curated library of business photography for SkillHub marketing and customer enablement teams.",
+      "catalogQuery": "/courses"
+    },
+    "business-pngs": {
+      "eyebrow": "Visual assets",
+      "headline": "PNG illustrations for learning campaigns",
+      "subhead": "Lightweight graphics for landing pages and academy hubs.",
+      "overview": "Use these assets across content pages, email, and internal portals.",
+      "catalogQuery": "/courses"
+    },
+    "business-ai-pngs": {
+      "eyebrow": "AI visuals",
+      "headline": "AI-themed PNG assets",
+      "subhead": "Illustrations for AI academy and data literacy pages.",
+      "overview": "Drop-in graphics for AI & data marketing surfaces.",
+      "catalogQuery": "/courses?skilling_area=ai-and-data"
+    },
+    "business-general-pngs": {
+      "eyebrow": "Business visuals",
+      "headline": "General business PNG library",
+      "subhead": "Icons and illustrations for enterprise learning pages.",
+      "overview": "Reusable PNG assets for SkillHub content authors.",
+      "catalogQuery": "/courses"
+    }
+  }
+}

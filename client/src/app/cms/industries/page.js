@@ -85,7 +85,7 @@ export default function CmsIndustriesPage() {
       });
       setForm(emptyForm);
       setShowForm(false);
-      window.location.href = `/cms/industry/${res.data.slug}`;
+      window.location.href = `/cms/industries/${res.data.slug}`;
     } catch (err) {
       setError(err);
     } finally {
@@ -202,7 +202,7 @@ export default function CmsIndustriesPage() {
                 </div>
                 <div className="flex flex-wrap gap-2">
                   <Link
-                    href={`/cms/industry/${item.slug}`}
+                    href={`/cms/industries/${item.slug}`}
                     className={btnSecondary}
                   >
                     Edit

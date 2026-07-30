@@ -1,10 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import CmsEditable from "@/components/cms/CmsEditable";
 import CmsSectionItemsBar from "@/components/sections/CmsSectionItemsBar";
 import EmptyItemsHint from "@/components/sections/EmptyItemsHint";
-import SectionWrapper from "@/components/sections/SectionWrapper";
+import SectionFrame from "@/components/sections/SectionFrame";
 import { resolveItemsForSection } from "@/lib/item-types";
 
 /**
@@ -17,6 +16,7 @@ export default function MetricRailSection({
   section_key = "metric_rail",
   cmsMode,
   onEditField,
+  ...frameProps
 }) {
   const ref = useRef(null);
   const [visible, setVisible] = useState(false);
@@ -38,28 +38,15 @@ export default function MetricRailSection({
   if (!items.length && !cmsMode) return null;
 
   return (
-    <section
-      ref={ref}
-      className="section-band-divider-top section-band-bg border-y py-10 sm:py-12"
-    >
-      <SectionWrapper>
-        {(section_title || sub_title || cmsMode) && (
-          <header className="mb-8 text-center">
-            <CmsEditable
-              cmsMode={cmsMode}
-              field="section_title"
-              label="Title"
-              onEditField={onEditField}
-              className="justify-center"
-            >
-              {section_title || cmsMode ? (
-                <p className="m-0 text-sm font-semibold tracking-[0.2em] text-slate-500 uppercase">
-                  {section_title || "Proof"}
-                </p>
-              ) : null}
-            </CmsEditable>
-          </header>
-        )}
+    <div ref={ref}>
+      <SectionFrame
+        title={section_title}
+        subtitle={sub_title}
+        cmsMode={cmsMode}
+        onEditField={onEditField}
+        buttonsFooter={false}
+        {...frameProps}
+      >
         <CmsSectionItemsBar
           sectionKey={section_key}
           cmsMode={cmsMode}
@@ -90,7 +77,7 @@ export default function MetricRailSection({
         ) : (
           <EmptyItemsHint sectionKey={section_key} onEditField={onEditField} />
         )}
-      </SectionWrapper>
-    </section>
+      </SectionFrame>
+    </div>
   );
 }

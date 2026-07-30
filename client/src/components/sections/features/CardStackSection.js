@@ -47,8 +47,7 @@ export default function CardStackSection({
   if (!items.length && !cmsMode) return null;
 
   return (
-    <div className="section-band-bg--muted section-band-bg">
-      <SectionFrame
+    <SectionFrame
         title={section_title}
         subtitle={sub_title}
         cmsMode={cmsMode}
@@ -109,7 +108,7 @@ export default function CardStackSection({
                             </h3>
                           ) : null}
                           {item.subtitle ? (
-                            <p className="mt-2 mb-0 text-sm font-medium text-slate-500 dark:text-slate-400">
+                            <p className="mt-2 mb-0 text-sm font-medium section-theme-muted">
                               {item.subtitle}
                             </p>
                           ) : null}
@@ -131,6 +130,5 @@ export default function CardStackSection({
           <EmptyItemsHint sectionKey={section_key} onEditField={onEditField} />
         )}
       </SectionFrame>
-    </div>
   );
 }

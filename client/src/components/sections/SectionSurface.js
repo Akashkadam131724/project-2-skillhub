@@ -4,33 +4,19 @@ import { mediaUrl } from "@/lib/cms-api";
 import { bannerBgStyle } from "@/lib/banner-bg";
 import { pageBandThemeForFill } from "@/lib/section-band-surfaces";
 import {
+  isPageSurfaceTransparent,
   normalizeSectionTheme,
   sectionThemeDataAttribute,
   surfaceToneForSectionTheme,
 } from "@/lib/section-theme";
-
-const SURFACE_CLASS = {
-  white: "section-band-bg",
-  muted: "section-band-bg section-band-bg--muted",
-  dark: "section-band-bg",
-};
-
-const SECTION_THEME_CLASS = {
-  why_choose: "bg-ink text-white",
-  stats: "bg-ink text-white",
-  hero_classic:
-    "bg-gradient-to-b from-white via-slate-50/90 to-white section-theme-heading dark:from-slate-950 dark:via-slate-950 dark:to-slate-900",
-  hero_split: "bg-white dark:bg-slate-950",
-  hero_centered: "bg-slate-50 dark:bg-slate-900",
-  hero_minimal: "bg-white dark:bg-slate-950",
-  hero_stats: "bg-ink text-white",
-  hero_asymmetric: "bg-white dark:bg-slate-950",
-  hero_dual_cta:
-    "bg-gradient-to-br from-slate-50 via-white to-brand-soft dark:from-slate-950 dark:via-slate-950 dark:to-slate-900",
-};
+import {
+  resolveSurfacePattern,
+  surfaceBandStyle,
+  surfaceToneBandClass,
+} from "@/lib/theme";
 
 /**
- * Global section shell — custom bg → forced section theme → built-in look → page alternation.
+ * Global section shell — page/section theme paints the band; sections stay transparent inside.
  */
 export default function SectionSurface({
   sectionKey,
@@ -38,71 +24,95 @@ export default function SectionSurface({
   section_bg_img,
   legacy_bg_color,
   surfaceTone,
+  surfaceBand,
   sectionTheme = "inherit",
+  pageTheme,
+  pageSurfaceMode,
   pageBandFill = "",
   children,
   className = "",
 }) {
   const bgUrl = mediaUrl(section_bg_img);
   const bgColor = String(section_bg_color || legacy_bg_color || "").trim();
-  const pageFill = String(pageBandFill || "").trim();
+  const pageFill = String(pageBandFill ?? "")
+    .trim()
+    .replace(/^(undefined|null)$/i, "");
   const hasCustomBg = Boolean(bgUrl || bgColor);
-  const hasPageFill = Boolean(!hasCustomBg && pageFill);
+  const resolvedPageTheme =
+    pageTheme && typeof pageTheme === "object"
+      ? pageTheme
+      : { surface_mode: pageSurfaceMode };
+  const isPageTransparent = isPageSurfaceTransparent(
+    resolveSurfacePattern(resolvedPageTheme)
+  );
+  const allowBandPaint = !isPageTransparent || hasCustomBg;
+  const hasPageFill = Boolean(allowBandPaint && !hasCustomBg && pageFill);
 
   const themePref = normalizeSectionTheme(
     typeof sectionTheme === "string"
       ? { section_theme: sectionTheme }
       : sectionTheme
   );
-  const forcedTone = surfaceToneForSectionTheme(themePref);
+  const forcedTone = allowBandPaint
+    ? surfaceToneForSectionTheme(themePref)
+    : null;
   const hasForcedTheme = forcedTone !== null;
 
-  const themeClass =
-    !hasCustomBg && !hasForcedTheme
-      ? SECTION_THEME_CLASS[sectionKey] || ""
-      : "";
-
   const tone =
-    surfaceTone && surfaceTone !== "transparent" && surfaceTone !== "none"
+    allowBandPaint &&
+    surfaceTone &&
+    surfaceTone !== "transparent" &&
+    surfaceTone !== "none"
       ? surfaceTone
       : null;
   const effectiveTone = hasForcedTheme ? forcedTone : tone;
+  const effectiveBand =
+    allowBandPaint && !hasForcedTheme && surfaceBand ? surfaceBand : null;
 
   const surfaceClass =
-    !hasCustomBg && !hasPageFill && effectiveTone && (hasForcedTheme || !themeClass)
-      ? SURFACE_CLASS[effectiveTone] || ""
-      : "";
+    allowBandPaint && !hasCustomBg && !hasPageFill && effectiveTone
+      ? surfaceToneBandClass(effectiveTone)
+      : allowBandPaint && !hasCustomBg && !hasPageFill && effectiveBand
+        ? "section-band-bg"
+        : "";
 
-  const builtInDarkBand =
-    !hasCustomBg &&
-    !hasForcedTheme &&
-    String(SECTION_THEME_CLASS[sectionKey] || "").includes("bg-ink");
-
-  const themeAttr = sectionThemeDataAttribute(themePref);
-  const fillTheme = pageBandThemeForFill(pageFill);
+  const themeAttr = allowBandPaint
+    ? sectionThemeDataAttribute(themePref)
+    : undefined;
+  const fillTheme = hasPageFill ? pageBandThemeForFill(pageFill) : null;
+  const isLightBandTone =
+    effectiveTone === "white" ||
+    effectiveTone === "muted" ||
+    String(effectiveTone || "").startsWith("soft_");
   const bandAttr =
-    themeAttr ??
-    (fillTheme === "dark"
-      ? "dark"
-      : fillTheme === "light"
-        ? "light"
-        : effectiveTone === "dark" || builtInDarkBand
+    allowBandPaint && !hasCustomBg
+      ? themeAttr ??
+        (fillTheme === "dark"
           ? "dark"
-          : effectiveTone === "white" || effectiveTone === "muted"
+          : fillTheme === "light"
             ? "light"
-            : undefined);
+            : effectiveBand?.theme
+              ? effectiveBand.theme
+              : effectiveTone === "dark" || effectiveTone === "dark_ink"
+                ? "dark"
+                : isLightBandTone
+                  ? "light"
+                  : undefined)
+      : undefined;
 
   const bandStyle =
     hasCustomBg && !bgUrl && bgColor
       ? bannerBgStyle(bgColor)
       : hasPageFill
         ? bannerBgStyle(pageFill)
-        : undefined;
+        : effectiveBand?.bg
+          ? surfaceBandStyle(effectiveBand)
+          : undefined;
 
   return (
     <div
-      data-section-theme={bandAttr}
-      className={`relative w-full ${themeClass} ${surfaceClass} ${className}`.trim()}
+      data-section-theme={bandAttr || undefined}
+      className={`relative w-full ${surfaceClass} ${className}`.trim()}
       style={bandStyle}
     >
       {bgUrl ? (

@@ -111,7 +111,7 @@ export default function CmsCoursesPage() {
       });
       setForm(emptyForm);
       setShowForm(false);
-      window.location.href = `/cms/course/${res.data.slug}`;
+      window.location.href = `/cms/courses/${res.data.slug}`;
     } catch (err) {
       setError(err);
     } finally {
@@ -281,7 +281,7 @@ export default function CmsCoursesPage() {
                 </div>
                 <div className="flex flex-wrap gap-2">
                   <Link
-                    href={`/cms/course/${course.slug}`}
+                    href={`/cms/courses/${course.slug}`}
                     className={btnSecondary}
                   >
                     Edit

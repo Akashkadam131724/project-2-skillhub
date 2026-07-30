@@ -8,18 +8,21 @@ import MobileCardPeekRow from "@/components/sections/MobileCardPeekRow";
 import SectionButtonsFooter from "@/components/sections/SectionButtonsFooter";
 import SectionWrapper from "@/components/sections/SectionWrapper";
 import { resolveItemsForSection } from "@/lib/item-types";
-import { isSectionThemeLightBand } from "@/lib/section-theme";
+import { isPlacementDarkBand } from "@/lib/section-theme";
 
 /**
- * “Why choose” band — dark ink + glass cards by default; light section theme uses white cards.
+ * “Why choose” band — glass cards on dark bands; white cards on light bands.
  */
 export default function WhyChooseSection({
   section_title,
   sub_title,
+  in_page_nav_title,
   items: mappingItems,
   section_key = "why_choose",
   section_theme,
   sectionTheme: sectionThemeProp,
+  surfaceTone,
+  surfaceBand,
   cmsMode,
   onEditField,
   buttons,
@@ -29,9 +32,13 @@ export default function WhyChooseSection({
   id,
 }) {
   const items = resolveItemsForSection(section_key, mappingItems);
-  const lightBand = isSectionThemeLightBand({
+  const onDarkBand = isPlacementDarkBand({
     section_theme: section_theme ?? sectionThemeProp,
+    surfaceTone,
+    surfaceBand,
   });
+  const lightBand = !onDarkBand;
+  const eyebrow = (in_page_nav_title || "").trim();
 
   if (!items.length && !cmsMode) return null;
 
@@ -62,22 +69,36 @@ export default function WhyChooseSection({
         />
       )}
       <SectionWrapper className="relative z-[1]">
-        {(section_title || sub_title || cmsMode) && (
+        {(section_title || sub_title || eyebrow || cmsMode) && (
           <header className="mb-10 flex max-w-3xl flex-col gap-3 sm:mb-12">
-            <p
-              className={`m-0 text-[11px] font-semibold tracking-[0.22em] uppercase ${
-                lightBand ? "text-brand" : "text-white/50"
-              }`}
-            >
-              Why choose us
-            </p>
+            {eyebrow || cmsMode ? (
+              <CmsEditable
+                cmsMode={cmsMode}
+                field="in_page_nav_title"
+                label="Eyebrow"
+                onEditField={onEditField}
+                inverted={onDarkBand}
+              >
+                <p
+                  className={`m-0 text-[11px] font-semibold tracking-[0.22em] uppercase ${
+                    lightBand ? "text-brand" : "text-white/50"
+                  }`}
+                >
+                  {eyebrow || (
+                    <span className={lightBand ? "italic opacity-60" : "italic text-white/35"}>
+                      Add eyebrow…
+                    </span>
+                  )}
+                </p>
+              </CmsEditable>
+            ) : null}
             {section_title || cmsMode ? (
               <CmsEditable
                 cmsMode={cmsMode}
                 field="section_title"
                 label="Title"
                 onEditField={onEditField}
-                inverted={!lightBand}
+                inverted={onDarkBand}
               >
                 {section_title ? (
                   <h2
@@ -108,7 +129,7 @@ export default function WhyChooseSection({
                 field="sub_title"
                 label="Subtitle"
                 onEditField={onEditField}
-                inverted={!lightBand}
+                inverted={onDarkBand}
               >
                 {sub_title ? (
                   <p

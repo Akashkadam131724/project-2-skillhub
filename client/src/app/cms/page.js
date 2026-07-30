@@ -11,7 +11,7 @@ import {
 } from "@/components/cms/CmsUi";
 
 const QUICK_LINKS = [
-  { href: "/cms/site-theme", label: "Site theme", hint: "Global brand & surfaces" },
+  { href: "/cms/site-theme", label: "Themes", hint: "Site + all page template themes" },
   { href: "/cms/contents", label: "Content pages", hint: "About us, our team, … free-form" },
   { href: "/cms/pages", label: "Page templates", hint: "Section placements by page type" },
   { href: "/cms/pages-content-sections", label: "Content sections", hint: "Global section defaults" },

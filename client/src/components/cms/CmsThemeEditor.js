@@ -1,14 +1,22 @@
 "use client";
 
+import { useState } from "react";
 import {
   THEME_PRESETS,
-  SURFACE_MODES,
   emptyPageTheme,
   defaultSiteTheme,
   applyPresetFill,
 } from "@/lib/theme";
 import { Field, inputClass, btnPrimary, btnSecondary } from "@/components/cms/CmsUi";
 import CmsBgColorPicker from "@/components/cms/CmsBgColorPicker";
+import CmsSurfacePatternEditor from "@/components/cms/CmsSurfacePatternEditor";
+import CmsOverrideGuide from "@/components/cms/CmsOverrideGuide";
+
+const THEME_TABS = [
+  { key: "colors", label: "Colors" },
+  { key: "surface", label: "Surface" },
+  { key: "background", label: "Background" },
+];
 
 /**
  * Shared theme editor for Site Theme (global), Page template overrides,
@@ -27,9 +35,14 @@ export default function CmsThemeEditor({
   onSave,
   saving = false,
   saveLabel = "Save theme",
+  hideGuide = false,
 }) {
+  const [activeTab, setActiveTab] = useState("colors");
   const isPage = mode === "page";
-  const theme = value || (isPage ? emptyPageTheme() : defaultSiteTheme());
+  const theme = {
+    ...(isPage ? emptyPageTheme() : defaultSiteTheme()),
+    ...(value || {}),
+  };
   const parent = applyPresetFill({
     ...defaultSiteTheme(),
     ...(inheritedTheme || {}),
@@ -98,165 +111,198 @@ export default function CmsThemeEditor({
       ) : (
         <p className="m-0 text-xs text-slate-500">
           Global defaults for the whole site. Page templates can override any
-          field; entity pages can override further.
+          field on the Themes screen.
         </p>
       )}
 
-      <Field label="Color preset">
-        <div className="flex flex-wrap gap-1.5">
-          {isPage ? (
-            <button
-              type="button"
-              onClick={clearPresetToInherit}
-              className={`rounded-md border px-2.5 py-1.5 text-[11px] font-semibold ${!theme.preset
-                  ? "border-brand bg-brand/10 text-brand"
-                  : "border-slate-200 text-slate-600 dark:border-slate-700"
-                }`}
-            >
-              Inherit
-            </button>
-          ) : null}
-          {Object.entries(THEME_PRESETS).map(([key, preset]) => {
-            const active = theme.preset === key;
-            return (
-              <button
-                key={key}
-                type="button"
-                title={preset.label}
-                onClick={() => applyPreset(key)}
-                className={`inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-[11px] font-semibold ${active
-                    ? "border-brand ring-2 ring-brand/25"
-                    : "border-slate-200 dark:border-slate-700"
-                  }`}
-              >
-                <span
-                  className="size-3 rounded-full"
-                  style={{ backgroundColor: preset.brand_primary }}
-                  aria-hidden
-                />
-                {preset.label}
-              </button>
-            );
-          })}
-        </div>
-      </Field>
+      {!hideGuide ? <CmsOverrideGuide variant="compact" /> : null}
 
-      <div className="grid gap-3 sm:grid-cols-3">
-        {[
-          { key: "brand_primary", label: "Brand", fallback: "#1b4de4" },
-          { key: "brand_hover", label: "Brand hover", fallback: "#153fc0" },
-          { key: "ink", label: "Ink", fallback: "#0b1f4d" },
-        ].map(({ key, label, fallback }) => (
-          <Field
-            key={key}
-            label={isPage ? `${label} (or inherit)` : label}
+      <div className="flex gap-1 rounded-lg border border-slate-200 bg-slate-50 p-1 dark:border-slate-800 dark:bg-slate-900">
+        {THEME_TABS.map((tab) => (
+          <button
+            key={tab.key}
+            type="button"
+            onClick={() => setActiveTab(tab.key)}
+            className={`flex-1 rounded-md px-2 py-2 text-[11px] font-semibold transition sm:px-3 sm:text-xs ${
+              activeTab === tab.key
+                ? "bg-white text-brand shadow-sm dark:bg-slate-950 dark:text-white"
+                : "text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-100"
+            }`}
           >
-            <input
-              type="color"
-              className="h-10 w-full cursor-pointer rounded-lg border border-slate-300 bg-white dark:border-slate-700"
-              value={colorDisplay(key, fallback)}
-              onChange={(e) => setField(key, e.target.value)}
-            />
-            <input
-              className={`${inputClass} mt-1`}
-              value={theme[key] || ""}
-              placeholder={
-                isPage
-                  ? parent[key]
-                    ? `Inherit (${parent[key]})`
-                    : "Inherit"
-                  : fallback
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      {activeTab === "colors" ? (
+        <div className="space-y-4">
+          <Field label="Color preset">
+            <div className="flex flex-wrap gap-1.5">
+              {isPage ? (
+                <button
+                  type="button"
+                  onClick={clearPresetToInherit}
+                  className={`rounded-md border px-2.5 py-1.5 text-[11px] font-semibold ${
+                    !theme.preset
+                      ? "border-brand bg-brand/10 text-brand"
+                      : "border-slate-200 text-slate-600 dark:border-slate-700"
+                  }`}
+                >
+                  Inherit
+                </button>
+              ) : null}
+              {Object.entries(THEME_PRESETS).map(([key, preset]) => {
+                const active = theme.preset === key;
+                return (
+                  <button
+                    key={key}
+                    type="button"
+                    title={preset.label}
+                    onClick={() => applyPreset(key)}
+                    className={`inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-[11px] font-semibold ${
+                      active
+                        ? "border-brand ring-2 ring-brand/25"
+                        : "border-slate-200 dark:border-slate-700"
+                    }`}
+                  >
+                    <span
+                      className="size-3 rounded-full"
+                      style={{ backgroundColor: preset.brand_primary }}
+                      aria-hidden
+                    />
+                    {preset.label}
+                  </button>
+                );
+              })}
+            </div>
+          </Field>
+
+          <div className="grid gap-3 sm:grid-cols-3">
+            {[
+              { key: "brand_primary", label: "Brand", fallback: "#1b4de4" },
+              { key: "brand_hover", label: "Brand hover", fallback: "#153fc0" },
+              { key: "ink", label: "Ink", fallback: "#0b1f4d" },
+            ].map(({ key, label, fallback }) => (
+              <Field
+                key={key}
+                label={isPage ? `${label} (or inherit)` : label}
+              >
+                <input
+                  type="color"
+                  className="h-10 w-full cursor-pointer rounded-lg border border-slate-300 bg-white dark:border-slate-700"
+                  value={colorDisplay(key, fallback)}
+                  onChange={(e) => setField(key, e.target.value)}
+                />
+                <input
+                  className={`${inputClass} mt-1`}
+                  value={theme[key] || ""}
+                  placeholder={
+                    isPage
+                      ? parent[key]
+                        ? `Inherit (${parent[key]})`
+                        : "Inherit"
+                      : fallback
+                  }
+                  onChange={(e) => setField(key, e.target.value || null)}
+                />
+                {isPage ? (
+                  <button
+                    type="button"
+                    className="mt-1 text-[11px] font-semibold text-slate-500 underline-offset-2 hover:text-brand hover:underline"
+                    onClick={() => setField(key, null)}
+                  >
+                    Inherit {inheritShort}
+                  </button>
+                ) : null}
+              </Field>
+            ))}
+          </div>
+        </div>
+      ) : null}
+
+      {activeTab === "surface" ? (
+        <Field
+          label="Section band pattern"
+          hint="Build any repeating sequence of band colors. Add hex colors or gradients — no code changes needed."
+        >
+          <CmsSurfacePatternEditor
+            value={theme.surface_pattern}
+            inheritedTheme={parent}
+            isPage={isPage}
+            onInherit={
+              isPage
+                ? () =>
+                    onChange?.({
+                      ...theme,
+                      surface_mode: null,
+                      surface_pattern: null,
+                    })
+                : undefined
+            }
+            onChange={(pattern) =>
+              onChange?.({
+                ...theme,
+                surface_mode:
+                  pattern.layout === "transparent" ? "transparent" : "custom",
+                surface_pattern: pattern,
+              })
+            }
+          />
+        </Field>
+      ) : null}
+
+      {activeTab === "background" ? (
+        <div className="space-y-4">
+          <Field
+            label="Page background color"
+            hint="Shows behind transparent sections. Section-specific bg is unchanged."
+          >
+            <CmsBgColorPicker
+              value={theme.page_bg_color || ""}
+              onChange={(v) =>
+                setField("page_bg_color", v || (isPage ? null : ""))
               }
-              onChange={(e) => setField(key, e.target.value || null)}
+              variant="theme"
+              defaultLabel={isPage ? `Inherit ${inheritShort}` : "None"}
             />
             {isPage ? (
               <button
                 type="button"
                 className="mt-1 text-[11px] font-semibold text-slate-500 underline-offset-2 hover:text-brand hover:underline"
-                onClick={() => setField(key, null)}
+                onClick={() => setField("page_bg_color", null)}
               >
                 Inherit {inheritShort}
               </button>
             ) : null}
           </Field>
-        ))}
-      </div>
 
-      <Field
-        label="Section surface mode"
-        hint="Default bands for sections without their own bg. Use “No surface” so the page background shows through. Section bg color/image always wins."
-      >
-        <div className="flex flex-wrap gap-1.5">
-          {isPage ? (
-            <button
-              type="button"
-              onClick={() => setField("surface_mode", null)}
-              className={`rounded-md border px-2.5 py-1.5 text-[11px] font-semibold ${
-                !theme.surface_mode
-                  ? "border-brand bg-brand/10 text-brand"
-                  : "border-slate-200 text-slate-600 dark:border-slate-700"
-              }`}
-            >
-              Inherit
-            </button>
-          ) : null}
-          {SURFACE_MODES.map((opt) => {
-            const active = theme.surface_mode === opt.value;
-            return (
+          <Field label="Page background image URL">
+            <input
+              className={inputClass}
+              value={theme.page_bg_img || ""}
+              placeholder={
+                isPage
+                  ? parent.page_bg_img
+                    ? `Inherit (${parent.page_bg_img})`
+                    : "Inherit / empty"
+                  : "/uploads/… or https://…"
+              }
+              onChange={(e) =>
+                setField("page_bg_img", e.target.value || (isPage ? null : ""))
+              }
+            />
+            {isPage && theme.page_bg_img ? (
               <button
-                key={opt.value}
                 type="button"
-                onClick={() => setField("surface_mode", opt.value)}
-                className={`rounded-md border px-2.5 py-1.5 text-[11px] font-semibold ${
-                  active
-                    ? "border-brand bg-brand/10 text-brand"
-                    : "border-slate-200 text-slate-600 dark:border-slate-700"
-                }`}
+                className="mt-1 text-[11px] font-semibold text-slate-500 underline-offset-2 hover:text-brand hover:underline"
+                onClick={() => setField("page_bg_img", null)}
               >
-                {opt.label}
+                Inherit {inheritShort}
               </button>
-            );
-          })}
+            ) : null}
+          </Field>
         </div>
-      </Field>
-
-      <Field
-        label="Page background color"
-        hint="Shows behind transparent sections. Section-specific bg is unchanged."
-      >
-        <CmsBgColorPicker
-          value={theme.page_bg_color || ""}
-          onChange={(v) => setField("page_bg_color", v || (isPage ? null : ""))}
-          variant="theme"
-          defaultLabel={isPage ? `Inherit ${inheritShort}` : "None"}
-        />
-      </Field>
-
-      <Field label="Page background image URL">
-        <input
-          className={inputClass}
-          value={theme.page_bg_img || ""}
-          placeholder={
-            isPage
-              ? parent.page_bg_img
-                ? `Inherit (${parent.page_bg_img})`
-                : "Inherit / empty"
-              : "/uploads/… or https://…"
-          }
-          onChange={(e) =>
-            setField("page_bg_img", e.target.value || (isPage ? null : ""))
-          }
-        />
-        {isPage && theme.page_bg_img ? (
-          <button
-            type="button"
-            className="mt-1 text-[11px] font-semibold text-slate-500 underline-offset-2 hover:text-brand hover:underline"
-            onClick={() => setField("page_bg_img", null)}
-          >
-            Inherit {inheritShort}
-          </button>
-        ) : null}
-      </Field>
+      ) : null}
 
       {onSave ? (
         <button

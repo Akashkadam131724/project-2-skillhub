@@ -34,6 +34,7 @@ export default function FaqTwoColumnSection({
   sectionTheme,
   section_theme,
   surfaceTone,
+  surfaceBand,
 }) {
   const items = resolveItemsForSection(section_key, mappingItems);
   const headerSide = normalizeFaqHeaderSide(data);
@@ -41,6 +42,7 @@ export default function FaqTwoColumnSection({
     section_theme,
     sectionTheme,
     surfaceTone,
+    surfaceBand,
   });
 
   if (!items.length && !cmsMode) return null;

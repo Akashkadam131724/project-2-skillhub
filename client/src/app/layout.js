@@ -43,7 +43,7 @@ export default function RootLayout({ children }) {
         <SiteHeaderGate>
           <SiteHeader />
         </SiteHeaderGate>
-        <div className="flex min-h-0 flex-1 flex-col">{children}</div>
+        {children}
         <SiteFooterGate>
           <SiteFooter />
         </SiteFooterGate>

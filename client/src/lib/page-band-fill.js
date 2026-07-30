@@ -2,37 +2,35 @@
  * Resolve page-theme band fill for a section row (no section override).
  */
 
-export function resolvePageBandFill(pageTheme, surfaceTone) {
-  const theme = pageTheme || {};
-  const mode = String(theme.surface_mode || "alternating").toLowerCase();
-  const isDarkRow = mode === "dark" || surfaceTone === "dark";
+import { isPageSurfaceTransparent, resolveSurfacePattern } from "@/lib/theme";
 
-  const primary = String(
+function themeBandFillValue(raw) {
+  if (raw === null || raw === undefined) return "";
+  const value = String(raw).trim();
+  if (!value || value === "undefined" || value === "null") return "";
+  return value;
+}
+
+export function resolvePageBandFill(pageTheme, surfaceBand, surfaceTone) {
+  const theme = pageTheme || {};
+  const pattern = resolveSurfacePattern(theme);
+  if (isPageSurfaceTransparent(pattern)) return "";
+
+  const isDarkRow =
+    surfaceBand?.theme === "dark" ||
+    surfaceTone === "dark" ||
+    surfaceTone === "dark_ink" ||
+    (pattern.layout === "solid" &&
+      pattern.bands[0] &&
+      String(pattern.bands[0].bg).includes("ink"));
+
+  const primary = themeBandFillValue(
     isDarkRow ? theme.surface_band_dark_fill : theme.surface_band_fill
-  ).trim();
-  const alt = String(
+  );
+  const alt = themeBandFillValue(
     isDarkRow ? theme.surface_band_dark_fill_alt : theme.surface_band_fill_alt
-  ).trim();
+  );
 
   if (!primary && !alt) return "";
-
-  if (isDarkRow) {
-    if (mode === "alternating" && surfaceTone === "dark") {
-      return primary || alt;
-    }
-    return primary || alt;
-  }
-
-  if (mode === "light" || surfaceTone === "white") {
-    return primary || alt;
-  }
-  if (mode === "muted" || surfaceTone === "muted") {
-    return alt || primary;
-  }
-  if (mode === "alternating") {
-    if (surfaceTone === "muted") return alt || primary;
-    if (surfaceTone === "white") return primary || alt;
-  }
-
   return primary || alt;
 }

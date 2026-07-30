@@ -3,8 +3,8 @@ import { logFetchResult } from "@/lib/cache-log";
 
 const NAV_API_URL =
   process.env.NAV_API_URL ||
-  process.env.NEXT_PUBLIC_NAV_API_URL ||
   process.env.NEXT_PUBLIC_API_URL ||
+  process.env.NEXT_PUBLIC_NAV_API_URL ||
   "http://localhost:3005";
 
 const navCache = navFetchOptions();

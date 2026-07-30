@@ -63,14 +63,20 @@ export async function saveSectionThemeForPlacement(
   });
 }
 
-/** Save band background fields on the placement layer (theme is page-level only). */
+/** Save band background + theme on the placement layer (theme is page-level only). */
 export async function saveSectionBandForPlacement(
   section,
-  { draft, savePlacement, contentLocked = false }
+  { draft, savePlacement, contentLocked = false, pageKey, entityId }
 ) {
-  if (contentLocked) return;
-  await savePlacement(section, {
-    section_bg_img: draft.bgImg?.trim() || null,
-    section_bg_color: draft.bgColor?.trim() || null,
+  if (!contentLocked) {
+    await savePlacement(section, {
+      section_bg_img: draft.bgImg?.trim() || null,
+      section_bg_color: draft.bgColor?.trim() || null,
+    });
+  }
+  await saveSectionThemeForPlacement(section, {
+    pageKey,
+    entityId,
+    rawValue: draft.theme ?? "inherit",
   });
 }

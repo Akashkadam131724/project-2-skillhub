@@ -3,6 +3,8 @@
  * Empty / null page fields inherit from the site theme.
  */
 
+import { Schema } from "mongoose";
+
 export const THEME_PRESETS = {
   // Existing
   blue: { brand_primary: "#1b4de4", brand_hover: "#153fc0", ink: "#0b1f4d" },
@@ -52,10 +54,22 @@ export const THEME_PRESETS = {
 };
 
 export const SURFACE_MODES = [
+  "custom",
   "alternating",
+  "alt_2x2",
+  "alt_3x3",
+  "alt_warm",
+  "alt_cool",
+  "alt_sky",
+  "alt_mint",
+  "alt_lavender",
+  "alt_sand",
+  "alt_slate",
+  "alt_brand",
   "light",
-  "dark",
   "muted",
+  "dark",
+  "dark_ink",
   "transparent",
 ];
 
@@ -67,7 +81,68 @@ export const THEME_FIELD_KEYS = [
   "page_bg_color",
   "page_bg_img",
   "surface_mode",
+  "surface_pattern",
 ];
+
+function newBandId() {
+  return `band_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 7)}`;
+}
+
+export function defaultSurfacePattern() {
+  return normalizeSurfacePattern({
+    layout: "cycle",
+    bands: [
+      { id: "white", label: "White", bg: "#ffffff" },
+      { id: "grey", label: "Grey", bg: "#f1f5f9" },
+    ],
+  });
+}
+
+export function normalizeSurfacePattern(raw) {
+  if (!raw || typeof raw !== "object") {
+    return defaultSurfacePattern();
+  }
+
+  const layout = ["cycle", "solid", "transparent"].includes(raw.layout)
+    ? raw.layout
+    : "cycle";
+
+  if (layout === "transparent") {
+    return { layout: "transparent", bands: [] };
+  }
+
+  const bands = Array.isArray(raw.bands)
+    ? raw.bands
+        .map((band, index) => {
+          const bg = String(band?.bg ?? "").trim();
+          if (!bg) return null;
+          return {
+            id: String(band?.id || "").trim() || newBandId(),
+            label: String(band?.label || "").trim() || `Band ${index + 1}`,
+            bg,
+            fg: String(band?.fg || "").trim() || "",
+          };
+        })
+        .filter(Boolean)
+    : [];
+
+  if (layout === "solid") {
+    return {
+      layout: "solid",
+      bands: bands.length ? [bands[0]] : [{ id: "white", label: "White", bg: "#ffffff" }],
+    };
+  }
+
+  return {
+    layout: "cycle",
+    bands: bands.length
+      ? bands
+      : [
+          { id: "white", label: "White", bg: "#ffffff" },
+          { id: "grey", label: "Grey", bg: "#f1f5f9" },
+        ],
+  };
+}
 
 export function defaultSiteTheme() {
   return {
@@ -75,7 +150,8 @@ export function defaultSiteTheme() {
     ...THEME_PRESETS.blue,
     page_bg_color: "",
     page_bg_img: "",
-    surface_mode: "alternating",
+    surface_mode: "custom",
+    surface_pattern: defaultSurfacePattern(),
   };
 }
 
@@ -89,6 +165,7 @@ export function emptyPageTheme() {
     page_bg_color: null,
     page_bg_img: null,
     surface_mode: null,
+    surface_pattern: null,
   };
 }
 
@@ -122,6 +199,13 @@ export function mergeTheme(...layers) {
     const override = layer;
 
     for (const key of THEME_FIELD_KEYS) {
+      if (key === "surface_pattern") {
+        if (override.surface_pattern !== undefined && override.surface_pattern !== null) {
+          out.surface_pattern = normalizeSurfacePattern(override.surface_pattern);
+          out.surface_mode = "custom";
+        }
+        continue;
+      }
       if (hasValue(override[key])) {
         out[key] = override[key];
       }
@@ -168,7 +252,11 @@ export function themeSchemaFields({ nullable = false } = {}) {
     surface_mode: {
       type: String,
       enum: nullable ? [...SURFACE_MODES, null] : SURFACE_MODES,
-      default: nullable ? null : "alternating",
+      default: nullable ? null : "custom",
+    },
+    surface_pattern: {
+      type: Schema.Types.Mixed,
+      default: nullable ? null : defaultSurfacePattern(),
     },
   };
 }
@@ -178,7 +266,41 @@ export function pickThemePatch(body = {}) {
   if (!body || typeof body !== "object") return {};
   const patch = {};
   for (const key of THEME_FIELD_KEYS) {
-    if (body[key] !== undefined) patch[key] = body[key];
+    if (body[key] === undefined) continue;
+    if (key === "surface_pattern") {
+      patch.surface_pattern =
+        body.surface_pattern === null
+          ? null
+          : normalizeSurfacePattern(body.surface_pattern);
+      if (patch.surface_pattern) patch.surface_mode = "custom";
+      continue;
+    }
+    patch[key] = body[key];
   }
   return patch;
+}
+
+/** Normalize stored page template theme (null = inherit). */
+export function normalizePageTheme(theme) {
+  const out = { ...emptyPageTheme() };
+  if (!theme || typeof theme !== "object") return out;
+  for (const key of THEME_FIELD_KEYS) {
+    const v = theme[key];
+    if (key === "surface_pattern") {
+      out.surface_pattern =
+        v && typeof v === "object" ? normalizeSurfacePattern(v) : null;
+      continue;
+    }
+    out[key] = hasValue(v) ? v : null;
+  }
+  return out;
+}
+
+/** Merge existing page theme with a save patch. */
+export function mergePageThemeSave(existing, patch) {
+  return {
+    ...emptyPageTheme(),
+    ...normalizePageTheme(existing),
+    ...pickThemePatch(patch || {}),
+  };
 }

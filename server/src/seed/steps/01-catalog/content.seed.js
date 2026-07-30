@@ -50,6 +50,30 @@ const CONTENTS = [
     status: "active",
     sortOrder: 30,
   },
+  {
+    name: "Solutions",
+    slug: "solutions",
+    path: "/solutions",
+    description: "Enterprise learning solutions across cloud, security, data, and transformation.",
+    status: "active",
+    sortOrder: 35,
+  },
+  {
+    name: "Get Started",
+    slug: "get-started",
+    path: "/get-started",
+    description: "Launch a SkillHub pilot — discovery to measurable outcomes.",
+    status: "active",
+    sortOrder: 40,
+  },
+  {
+    name: "Contact Us",
+    slug: "contact-us",
+    path: "/contact-us",
+    description: "Get in touch with SkillHub.",
+    status: "active",
+    sortOrder: 50,
+  },
 ];
 
 async function seed() {

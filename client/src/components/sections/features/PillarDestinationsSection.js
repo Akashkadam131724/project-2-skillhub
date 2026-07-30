@@ -10,7 +10,6 @@ import { mediaUrl } from "@/lib/cms-api";
 import { mediaAlt } from "@/lib/media-alt";
 import { resolveItemsForSection } from "@/lib/item-types";
 import { isRichTextEmpty } from "@/lib/rich-text";
-import { sectionSoftLightGradientClass } from "@/lib/section-theme";
 
 function Pillar({ item, index, visible }) {
   const photo = mediaUrl(item.image_url);
@@ -126,13 +125,8 @@ export default function PillarDestinationsSection({
 
   if (!items.length && !cmsMode) return null;
 
-  const decorClass = sectionSoftLightGradientClass(
-    section_theme ?? sectionTheme,
-    surfaceTone
-  );
-
   return (
-    <div ref={ref} className={decorClass}>
+    <div ref={ref}>
       <SectionFrame
         title={section_title}
         subtitle={sub_title}

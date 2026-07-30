@@ -3,11 +3,11 @@ import Page from "./page.model.js";
 import Section, { normalizeContentScope } from "./section.model.js";
 import EntityPageSection from "./entity-page-section.model.js";
 import SiteTheme from "./site-theme.model.js";
-import EntityPageTheme from "./entity-page-theme.model.js";
 import { mergeTheme } from "./theme.utils.js";
 import {
   mergePlacementData,
   normalizePlacementDataPatch,
+  pickPlacementArrayField,
 } from "./placement-data.utils.js";
 
 /** Overridable on page tags / entity mappings */
@@ -25,25 +25,24 @@ const MAPPING_CONTENT_KEYS = [
 /** Legacy single-CTA — still exposed from Section defaults for fallback UI */
 const SECTION_ONLY_KEYS = ["button_title", "target_url"];
 
-/**
- * Array fields: present array wins (including []); missing → fallback.
- */
-function pickArrayField(field, ...sources) {
-  for (const source of sources) {
-    if (source != null && Array.isArray(source[field])) return source[field];
+function pickMappingField(source, fallback, key) {
+  const value = source?.[key];
+  if (key === "section_theme") {
+    if (value !== null && value !== undefined && String(value).trim() !== "") {
+      return value;
+    }
+    return fallback?.[key] ?? "";
   }
-  return [];
+  if (value !== null && value !== undefined) {
+    return value;
+  }
+  return fallback?.[key] ?? (key === "data" ? {} : "");
 }
 
 function pickMappingContent(source, fallback) {
   const out = {};
   for (const key of MAPPING_CONTENT_KEYS) {
-    const value = source?.[key];
-    if (value !== null && value !== undefined) {
-      out[key] = value;
-    } else {
-      out[key] = fallback?.[key] ?? (key === "data" ? {} : "");
-    }
+    out[key] = pickMappingField(source, fallback, key);
   }
   return out;
 }
@@ -70,8 +69,8 @@ function pickPlacementContent(override, tag, section) {
     const fromSection = pickMappingContent(section, null);
     const content = pickMappingContent(tag, fromSection);
     content.data = mergePlacementData(section?.data, tag?.data);
-    content.buttons = pickArrayField("buttons", tag, section);
-    content.items = pickArrayField("items", tag, section);
+    content.buttons = pickPlacementArrayField("buttons", tag, section);
+    content.items = pickPlacementArrayField("items", tag, section);
     content.content_scope = "template";
     return content;
   }
@@ -85,8 +84,8 @@ function pickPlacementContent(override, tag, section) {
     tag?.data,
     override?.data
   );
-  content.buttons = pickArrayField("buttons", override, tag, section);
-  content.items = pickArrayField("items", override, tag, section);
+  content.buttons = pickPlacementArrayField("buttons", override, tag, section);
+  content.items = pickPlacementArrayField("items", override, tag, section);
   content.content_scope = "page";
   return content;
 }
@@ -132,16 +131,7 @@ export async function resolvePageSections(pageKey, entityId = null) {
     ? siteThemeDoc.toObject()
     : siteThemeDoc;
 
-  let entityTheme = null;
-  if (entityId && mongoose.Types.ObjectId.isValid(entityId)) {
-    const entityThemeDoc = await EntityPageTheme.findForEntity(
-      key,
-      entityId
-    ).lean();
-    entityTheme = entityThemeDoc?.theme || null;
-  }
-
-  const resolvedTheme = mergeTheme(siteTheme, page.theme, entityTheme);
+  const resolvedTheme = mergeTheme(siteTheme, page.theme);
 
   const sections = await Section.find({
     "pages.page_key": key,
@@ -305,7 +295,6 @@ export async function resolvePageSections(pageKey, entityId = null) {
       theme_source: {
         site: siteTheme,
         page: page.theme || null,
-        entity: entityTheme,
       },
     },
     entity_id: entityId || null,

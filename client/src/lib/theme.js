@@ -2,6 +2,39 @@
  * Client-side theme helpers — keep in sync with server theme.utils.js
  */
 
+import {
+  defaultSurfacePattern,
+  normalizeSurfacePattern,
+  resolveSurfacePattern,
+  isPageSurfaceTransparent,
+} from "@/lib/surface-patterns";
+
+export {
+  SURFACE_MODES,
+  SURFACE_MODE_GROUPS,
+  SURFACE_MODE_VALUES,
+  surfaceModeLabel,
+  surfacePatternLabel,
+  isPageSurfaceTransparent,
+  isSurfacePatternTransparent,
+  surfaceToneForMode,
+  isSurfaceToneLight,
+  isSurfaceBandLight,
+  surfaceToneBandClass,
+  surfaceTonePreviewBg,
+  surfaceTonePreviewLabel,
+  surfaceBandPreviewBg,
+  surfaceBandPreviewLabel,
+  surfaceBandStyle,
+  defaultSurfacePattern,
+  normalizeSurfacePattern,
+  resolveSurfacePattern,
+  legacyPatternFromMode,
+  surfaceBandAtIndex,
+  resolveSurfaceBand,
+  bandThemeFromBg,
+} from "@/lib/surface-patterns";
+
 export const THEME_PRESETS = {
   // Existing
   blue: { brand_primary: "#1b4de4", brand_hover: "#153fc0", ink: "#0b1f4d", label: "Blue" },
@@ -50,13 +83,8 @@ export const THEME_PRESETS = {
   lagoon: { brand_primary: "#0f7a6a", brand_hover: "#0c6155", ink: "#062820", label: "Lagoon" },
 };
 
-export const SURFACE_MODES = [
-  { value: "alternating", label: "Alternating white / grey" },
-  { value: "light", label: "All light" },
-  { value: "muted", label: "All muted grey" },
-  { value: "dark", label: "All dark (ink)" },
-  { value: "transparent", label: "No surface (transparent)" },
-];
+export const SURFACE_DARK_BG = "#0f172a";
+export const SURFACE_DARK_BG_SOFT = "#1e293b";
 
 export const THEME_FIELD_KEYS = [
   "preset",
@@ -66,6 +94,7 @@ export const THEME_FIELD_KEYS = [
   "page_bg_color",
   "page_bg_img",
   "surface_mode",
+  "surface_pattern",
 ];
 
 export function defaultSiteTheme() {
@@ -74,7 +103,8 @@ export function defaultSiteTheme() {
     ...THEME_PRESETS.blue,
     page_bg_color: "",
     page_bg_img: "",
-    surface_mode: "alternating",
+    surface_mode: "custom",
+    surface_pattern: defaultSurfacePattern(),
   };
 }
 
@@ -87,6 +117,7 @@ export function emptyPageTheme() {
     page_bg_color: null,
     page_bg_img: null,
     surface_mode: null,
+    surface_pattern: null,
   };
 }
 
@@ -102,9 +133,19 @@ export function normalizePageTheme(theme) {
   if (!theme || typeof theme !== "object") return out;
   for (const key of THEME_FIELD_KEYS) {
     const v = theme[key];
+    if (key === "surface_pattern") {
+      out.surface_pattern =
+        v && typeof v === "object" ? normalizeSurfacePattern(v) : null;
+      continue;
+    }
     out[key] = hasValue(v) ? v : null;
   }
   return out;
+}
+
+/** Full theme payload for API save (always sends every field). */
+export function themeForApiSave(theme) {
+  return normalizePageTheme(theme);
 }
 
 export function applyPresetFill(theme) {
@@ -125,6 +166,13 @@ export function mergeTheme(...layers) {
     const override = layer;
 
     for (const key of THEME_FIELD_KEYS) {
+      if (key === "surface_pattern") {
+        if (override.surface_pattern !== undefined && override.surface_pattern !== null) {
+          out.surface_pattern = normalizeSurfacePattern(override.surface_pattern);
+          out.surface_mode = "custom";
+        }
+        continue;
+      }
       if (hasValue(override[key])) out[key] = override[key];
     }
 
@@ -155,7 +203,7 @@ export function themeCssVars(theme) {
 
 /** Inline page background from theme (color or image) */
 export function pageBgStyle(theme) {
-  const t = theme || {};
+  const t = applyPresetFill({ ...defaultSiteTheme(), ...(theme || {}) });
   const img = String(t.page_bg_img || "").trim();
   const color = String(t.page_bg_color || "").trim();
   if (img) {
@@ -172,20 +220,20 @@ export function pageBgStyle(theme) {
     }
     return { backgroundColor: color };
   }
+  const pattern = resolveSurfacePattern(t);
+  if (isPageSurfaceTransparent(pattern)) {
+    return undefined;
+  }
+  const solidBand = pattern.layout === "solid" ? pattern.bands[0] : null;
+  if (solidBand?.bg) {
+    const bg = String(solidBand.bg).trim();
+    if (bg.toLowerCase().includes("gradient(")) {
+      return { backgroundImage: bg };
+    }
+    if (bg === "var(--ink)") {
+      return { backgroundColor: t.ink || SURFACE_DARK_BG };
+    }
+    return { backgroundColor: bg };
+  }
   return undefined;
-}
-
-/**
- * Resolve section surface tone from page theme surface_mode.
- * Returns null for transparent / none — section stays clear so page bg shows
- * (unless the section has its own section_bg_*).
- */
-export function surfaceToneForMode(surfaceMode, altIndex) {
-  const mode = String(surfaceMode || "alternating").toLowerCase();
-  if (mode === "transparent" || mode === "none") return null;
-  if (mode === "light") return "white";
-  if (mode === "muted") return "muted";
-  if (mode === "dark") return "dark";
-  // alternating
-  return altIndex % 2 === 0 ? "white" : "muted";
 }

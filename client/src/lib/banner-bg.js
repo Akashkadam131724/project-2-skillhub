@@ -293,8 +293,9 @@ export function isBannerGradient(value) {
 }
 
 export function resolveBannerBg(value) {
-  const raw = String(value || "").trim();
-  return raw || DEFAULT_BANNER_BG;
+  const raw = String(value ?? "").trim();
+  if (!raw || raw === "undefined" || raw === "null") return DEFAULT_BANNER_BG;
+  return raw;
 }
 
 /** Inline style for a solid or gradient base layer */

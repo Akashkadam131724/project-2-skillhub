@@ -11,6 +11,7 @@ import {
   uploadCmsImage,
 } from "@/lib/cms-api";
 import { isKnownSectionKey, SECTION_CATEGORIES } from "@/lib/section-registry";
+import { SECTION_THEME_OPTIONS } from "@/lib/section-theme";
 import {
   contentScopeLabel,
   normalizeContentScope,
@@ -41,6 +42,7 @@ export default function CmsSectionDetailPage() {
     category: "",
     content_scope: "page",
     section_preview_img: "",
+    section_theme: "inherit",
   });
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -58,6 +60,7 @@ export default function CmsSectionDetailPage() {
         category: data.category_key || data.category || "",
         content_scope: normalizeContentScope(data.content_scope),
         section_preview_img: data.section_preview_img || "",
+        section_theme: data.section_theme || "inherit",
       });
     } catch (err) {
       setError(err);
@@ -81,6 +84,7 @@ export default function CmsSectionDetailPage() {
           category: data.category_key || data.category || "",
           content_scope: normalizeContentScope(data.content_scope),
           section_preview_img: data.section_preview_img || "",
+          section_theme: data.section_theme || "inherit",
         });
       } catch (err) {
         if (alive) setError(err);
@@ -109,6 +113,8 @@ export default function CmsSectionDetailPage() {
         category_key: meta.category || "",
         content_scope: meta.content_scope,
         section_preview_img: meta.section_preview_img || "",
+        section_theme:
+          meta.section_theme === "inherit" ? "" : meta.section_theme || "",
       });
       await load();
     } catch (err) {
@@ -316,6 +322,24 @@ export default function CmsSectionDetailPage() {
                   ? "Content is set per page type (e.g. all courses). Individual entity pages cannot override it."
                   : "Full cascade — entity pages can override template and global defaults."}
             </p>
+          </Field>
+          <Field
+            label="Default band theme"
+            hint="Catalog default — template and page placements can override"
+          >
+            <select
+              className={inputClass}
+              value={meta.section_theme || "inherit"}
+              onChange={(e) =>
+                setMeta((m) => ({ ...m, section_theme: e.target.value }))
+              }
+            >
+              {SECTION_THEME_OPTIONS.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
           </Field>
           <Field
             label="Catalog preview image"

@@ -36,8 +36,9 @@ import {
   contentScopeLabel,
   normalizeContentScope,
 } from "@/lib/content-scope";
-import { emptyPageTheme, mergeTheme, normalizePageTheme } from "@/lib/theme";
+import { emptyPageTheme, mergeTheme, normalizePageTheme, themeForApiSave } from "@/lib/theme";
 import CmsThemeEditor from "@/components/cms/CmsThemeEditor";
+import CmsOverrideGuide from "@/components/cms/CmsOverrideGuide";
 import CmsPagePreviewStack from "@/components/cms/CmsPagePreviewStack";
 import {
   FilterGroup,
@@ -302,7 +303,7 @@ export default function CmsPageDetailPage() {
     setSaving(true);
     setError(null);
     try {
-      await updatePage(pageKey, { theme: themeForm });
+      await updatePage(pageKey, { theme: themeForApiSave(themeForm) });
       await load();
     } catch (err) {
       setError(err);
@@ -317,7 +318,7 @@ export default function CmsPageDetailPage() {
     try {
       const cleared = emptyPageTheme();
       setThemeForm(cleared);
-      await updatePage(pageKey, { theme: cleared });
+      await updatePage(pageKey, { theme: themeForApiSave(cleared) });
       await load();
     } catch (err) {
       setError(err);
@@ -513,14 +514,17 @@ export default function CmsPageDetailPage() {
             <CmsPanel
               title="Template theme"
               actions={
-                <Link href="/cms/site-theme" className={`${btnSecondary} text-xs`}>
-                  Edit global site theme
-                </Link>
+                <>
+                  <CmsOverrideGuide variant="drawer-button" />
+                  <Link href="/cms/site-theme" className={`${btnSecondary} text-xs`}>
+                    Edit global site theme
+                  </Link>
+                </>
               }
             >
               <p className="mt-0 mb-3 text-xs text-slate-500">
                 Overrides for every page using this template. Empty fields use the
-                global site theme. Entity pages can override further.
+                global site theme.
               </p>
               <CmsThemeEditor
                 mode="page"

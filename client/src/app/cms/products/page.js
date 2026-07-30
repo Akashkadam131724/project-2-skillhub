@@ -98,7 +98,7 @@ export default function CmsProductsPage() {
       });
       setForm(emptyForm);
       setShowForm(false);
-      window.location.href = `/cms/product/${res.data.slug}`;
+      window.location.href = `/cms/products/${res.data.slug}`;
     } catch (err) {
       setError(err);
     } finally {
@@ -229,7 +229,7 @@ export default function CmsProductsPage() {
                 </div>
                 <div className="flex flex-wrap gap-2">
                   <Link
-                    href={`/cms/product/${product.slug}`}
+                    href={`/cms/products/${product.slug}`}
                     className={btnSecondary}
                   >
                     Edit

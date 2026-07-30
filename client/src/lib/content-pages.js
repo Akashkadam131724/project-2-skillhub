@@ -26,6 +26,7 @@ export const RESERVED_CONTENT_SEGMENTS = new Set([
   "course",
   "blog",
   "course-catalog",
+  "catalog",
   "_next",
   "favicon.ico",
   "robots.txt",
