@@ -2,6 +2,7 @@ import { Router } from "express";
 import {
   createBlog,
   deleteBlog,
+  restoreBlog,
   getBlogBySlug,
   getBlogs,
   updateBlog,
@@ -13,6 +14,7 @@ router.post("/", createBlog);
 router.get("/", getBlogs);
 router.get("/:slug", getBlogBySlug);
 router.put("/:slug", updateBlog);
+router.post("/:slug/restore", restoreBlog);
 router.delete("/:slug", deleteBlog);
 
 export default router;

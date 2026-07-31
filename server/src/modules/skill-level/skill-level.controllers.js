@@ -2,6 +2,16 @@ import SkillLevel from "./skill-level.model.js";
 import Course from "../course/course.model.js";
 import { formatMongooseError } from "../../utils/formatMongooseError.js";
 import mongoose from "mongoose";
+import { createSoftDeleteController } from "../../utils/softDelete.controller.js";
+import {
+  withCountQueryOptions,
+  withListQueryOptions,
+} from "../../utils/softDeleteQuery.js";
+
+const softDelete = createSoftDeleteController({
+  Model: SkillLevel,
+  label: "Skill level",
+});
 
 export const createSkillLevel = async (req, res) => {
   try {
@@ -29,12 +39,11 @@ export const getSkillLevels = async (req, res) => {
     }
 
     const [levels, total] = await Promise.all([
-      SkillLevel.find(filter)
-        .sort({ sortOrder: 1, name: 1 })
-        .skip(skip)
-        .limit(limit)
-        .lean(),
-      SkillLevel.countDocuments(filter),
+      withListQueryOptions(
+        SkillLevel.find(filter).sort({ sortOrder: 1, name: 1 }).skip(skip).limit(limit),
+        req
+      ).lean(),
+      withCountQueryOptions(SkillLevel.countDocuments(filter), req),
     ]);
 
     res.json({
@@ -131,15 +140,12 @@ export const updateSkillLevel = async (req, res) => {
 
 export const deleteSkillLevel = async (req, res) => {
   try {
-    const level = await SkillLevel.findOneAndDelete({
-      slug: String(req.params.slug).toLowerCase(),
-    });
-
+    const slug = String(req.params.slug).toLowerCase();
+    const level = await SkillLevel.softDeleteOne({ slug });
     if (!level) {
       return res.status(404).json({ success: false, message: "Skill level not found" });
     }
 
-    // Courses had one skill level — clear the ref
     await Course.updateMany(
       { skillLevel: level._id },
       { $unset: { skillLevel: 1 } }
@@ -151,3 +157,5 @@ export const deleteSkillLevel = async (req, res) => {
     res.status(formatted.status).json(formatted);
   }
 };
+
+export const restoreSkillLevel = softDelete.restoreBySlug;

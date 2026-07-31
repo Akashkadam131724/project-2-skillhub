@@ -1,4 +1,5 @@
 import { Schema, model } from "mongoose";
+import { softDeletePlugin } from "../../plugins/softDelete.plugin.js";
 
 const blogSchema = new Schema(
   {
@@ -161,6 +162,8 @@ blogSchema.index({ category: 1, status: 1, publishedAt: -1 });
 blogSchema.statics.findBySlug = function (slug) {
   return this.findOne({ slug: String(slug || "").toLowerCase() });
 };
+
+blogSchema.plugin(softDeletePlugin);
 
 const Blog = model("Blog", blogSchema);
 

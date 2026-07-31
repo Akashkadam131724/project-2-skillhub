@@ -1,11 +1,6 @@
 import { Fraunces, Manrope } from "next/font/google";
 import "./globals.css";
-import SiteHeader from "@/components/SiteHeader";
-import SiteHeaderGate from "@/components/SiteHeaderGate";
-import SiteFooter from "@/components/SiteFooter";
-import SiteFooterGate from "@/components/SiteFooterGate";
 import SiteThemeBootstrap from "@/components/cms/SiteThemeBootstrap";
-import CmsModeFab from "@/components/CmsModeFab";
 
 const display = Fraunces({
   subsets: ["latin"],
@@ -40,14 +35,7 @@ export default function RootLayout({ children }) {
     >
       <body className="flex min-h-full flex-col bg-white antialiased" suppressHydrationWarning>
         <SiteThemeBootstrap />
-        <SiteHeaderGate>
-          <SiteHeader />
-        </SiteHeaderGate>
         {children}
-        <SiteFooterGate>
-          <SiteFooter />
-        </SiteFooterGate>
-        <CmsModeFab />
       </body>
     </html>
   );

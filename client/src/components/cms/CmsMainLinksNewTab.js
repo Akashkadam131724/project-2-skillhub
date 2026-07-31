@@ -32,7 +32,7 @@ export default function CmsMainLinksNewTab({ children }) {
   }, []);
 
   return (
-    <div ref={rootRef} className="cms-main-content min-w-0">
+    <div ref={rootRef} className="cms-main-content min-w-0 w-full flex-1">
       {children}
     </div>
   );

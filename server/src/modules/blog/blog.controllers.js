@@ -1,5 +1,12 @@
 import Blog from "./blog.model.js";
 import { formatMongooseError } from "../../utils/formatMongooseError.js";
+import { createSoftDeleteController } from "../../utils/softDelete.controller.js";
+import {
+  buildTextSearchFilter,
+  paginatedCmsList,
+} from "../../utils/cmsList.js";
+
+const softDelete = createSoftDeleteController({ Model: Blog, label: "Blog" });
 
 function normalizeTags(value) {
   const values = Array.isArray(value)
@@ -44,48 +51,33 @@ export const createBlog = async (req, res) => {
 
 export const getBlogs = async (req, res) => {
   try {
-    const page = Math.max(Number(req.query.page) || 1, 1);
-    const limit = Math.min(Math.max(Number(req.query.limit) || 12, 1), 100);
-    const skip = (page - 1) * limit;
-    const filter = {};
-
-    if (req.query.status) filter.status = req.query.status;
-    if (req.query.category) {
-      filter.category = String(req.query.category).trim().toLowerCase();
-    }
-    if (req.query.tag) {
-      filter.tags = String(req.query.tag).trim().toLowerCase();
-    }
-    if (req.query.featured !== undefined) {
-      filter.featured = String(req.query.featured) === "true";
-    }
-    if (req.query.q) {
-      const q = String(req.query.q).trim();
-      filter.$or = [
-        { title: { $regex: q, $options: "i" } },
-        { excerpt: { $regex: q, $options: "i" } },
-        { tags: { $regex: q, $options: "i" } },
-      ];
-    }
-
     const sort =
       req.query.sort === "oldest"
         ? { publishedAt: 1, createdAt: 1 }
         : { featured: -1, publishedAt: -1, createdAt: -1 };
 
-    const [blogs, total] = await Promise.all([
-      Blog.find(filter).sort(sort).skip(skip).limit(limit).lean(),
-      Blog.countDocuments(filter),
-    ]);
-
-    res.json({
-      success: true,
-      total,
-      page,
-      limit,
-      totalPages: Math.ceil(total / limit) || 1,
-      count: blogs.length,
-      data: blogs,
+    await paginatedCmsList(req, res, {
+      Model: Blog,
+      defaultLimit: 12,
+      sort,
+      buildFilter(req) {
+        const filter = {};
+        if (req.query.category) {
+          filter.category = String(req.query.category).trim().toLowerCase();
+        }
+        if (req.query.tag) {
+          filter.tags = String(req.query.tag).trim().toLowerCase();
+        }
+        if (req.query.featured !== undefined) {
+          filter.featured = String(req.query.featured) === "true";
+        }
+        const search = buildTextSearchFilter(req.query.q, [
+          "title",
+          "excerpt",
+          "tags",
+        ]);
+        return { ...filter, ...search };
+      },
     });
   } catch (err) {
     const formatted = formatMongooseError(err);
@@ -136,17 +128,5 @@ export const updateBlog = async (req, res) => {
   }
 };
 
-export const deleteBlog = async (req, res) => {
-  try {
-    const blog = await Blog.findOneAndDelete({
-      slug: String(req.params.slug || "").toLowerCase(),
-    });
-    if (!blog) {
-      return res.status(404).json({ success: false, message: "Blog not found" });
-    }
-    res.json({ success: true, message: "Blog deleted", data: blog });
-  } catch (err) {
-    const formatted = formatMongooseError(err);
-    res.status(formatted.status).json(formatted);
-  }
-};
+export const deleteBlog = softDelete.deleteBySlug;
+export const restoreBlog = softDelete.restoreBySlug;

@@ -1,5 +1,15 @@
 import Vendor from "./vendor.model.js";
 import { formatMongooseError } from "../../utils/formatMongooseError.js";
+import { createSoftDeleteController } from "../../utils/softDelete.controller.js";
+import {
+  buildTextSearchFilter,
+  paginatedCmsList,
+} from "../../utils/cmsList.js";
+
+const softDelete = createSoftDeleteController({
+  Model: Vendor,
+  label: "Vendor",
+});
 
 export const createVendor = async (req, res) => {
   try {
@@ -13,37 +23,25 @@ export const createVendor = async (req, res) => {
 
 export const getvendors = async (req, res) => {
   try {
-    // Never Vendor.find() all docs — 1M rows will OOM / hang the API
-    const page = Math.max(Number(req.query.page) || 1, 1);
-    const limit = Math.min(Math.max(Number(req.query.limit) || 20, 1), 100);
-    const skip = (page - 1) * limit;
-
-    const filter = {};
-    if (req.query.status) filter.status = req.query.status;
-    if (typeof req.query.isVerified !== "undefined") {
-      filter.isVerified = req.query.isVerified === "true" || req.query.isVerified === true;
-    }
-    if (req.query.q) {
-      filter.$or = [
-        { name: { $regex: req.query.q, $options: "i" } },
-        { description: { $regex: req.query.q, $options: "i" } },
-        { shortDescription: { $regex: req.query.q, $options: "i" } },
-      ];
-    }
-
-    const [vendors, total] = await Promise.all([
-      Vendor.find(filter).sort({ courseCount: -1, name: 1 }).skip(skip).limit(limit).lean(),
-      Vendor.countDocuments(filter),
-    ]);
-
-    res.json({
-      success: true,
-      total,
-      page,
-      limit,
-      totalPages: Math.ceil(total / limit) || 1,
-      count: vendors.length,
-      data: vendors,
+    await paginatedCmsList(req, res, {
+      Model: Vendor,
+      defaultLimit: 20,
+      sort: { courseCount: -1, name: 1 },
+      buildFilter(req) {
+        const filter = {};
+        if (typeof req.query.isVerified !== "undefined") {
+          filter.isVerified =
+            req.query.isVerified === "true" || req.query.isVerified === true;
+        }
+        return {
+          ...filter,
+          ...buildTextSearchFilter(req.query.q, [
+            "name",
+            "description",
+            "shortDescription",
+          ]),
+        };
+      },
     });
   } catch (err) {
     const formatted = formatMongooseError(err);
@@ -90,19 +88,8 @@ export const updateVendor = async (req, res) => {
   }
 };
 
-export const deleteVendor = async (req, res) => {
-  try {
-    const slug = String(req.params.slug).toLowerCase();
-    const vendor = await Vendor.findOneAndDelete({ slug });
-    if (!vendor) {
-      return res.status(404).json({ success: false, message: "Vendor not found" });
-    }
-    res.json({ success: true, message: "Vendor deleted", data: { slug: vendor.slug } });
-  } catch (err) {
-    const formatted = formatMongooseError(err);
-    res.status(formatted.status).json(formatted);
-  }
-};
+export const deleteVendor = softDelete.deleteBySlug;
+export const restoreVendor = softDelete.restoreBySlug;
 
 export const searchVendors = async (req, res) => {
   try {
@@ -157,11 +144,11 @@ export const searchVendors = async (req, res) => {
     // If we did them one after another (await find, then await count), it would wait twice as long.
     // Instead, Promise.all runs both at once, and we await them both together.
     const [vendors, total] = await Promise.all([
-      Vendor.find(filter)
-        .sort({ createdAt: -1 })
-        .skip(skip)
-        .limit(limitNum),
-      Vendor.countDocuments(filter),
+      withListQueryOptions(
+        Vendor.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limitNum),
+        req
+      ),
+      withCountQueryOptions(Vendor.countDocuments(filter), req),
     ]);
 
     const totalPages = Math.ceil(total / limitNum);

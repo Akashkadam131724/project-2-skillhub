@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "node --watch --env-file=.env index.js",
     "migrate:remove-product-sku-price-stock": "node --env-file=.env src/migrations/2026-07-12-remove-product-sku-price-stock.js",
+    "migrate:course-status-active": "node --env-file=.env src/migrations/2026-07-30-course-status-active.js",
     "netcom:categories": "node scripts/fetch-netcom-categories.mjs",
     "scripts:sync": "node scripts/sync-package-scripts.mjs",
     "seed": "node --env-file=.env scripts/run-seed.mjs vendors",

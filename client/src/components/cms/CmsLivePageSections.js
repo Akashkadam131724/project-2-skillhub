@@ -534,12 +534,14 @@ export default function CmsLivePageSections({
   initialTheme = null,
   cmsMode: cmsModeProp = false,
   exitHref: exitHrefProp,
+  publicHref: publicHrefProp = null,
   pageContext = null,
 }) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const dedicatedEdit = cmsModeProp === true;
   const cmsMode =
-    cmsModeProp ||
+    dedicatedEdit ||
     String(searchParams.get("cms") || "").toLowerCase() === "true";
   const exitHref = useMemo(() => {
     if (exitHrefProp) return exitHrefProp;
@@ -1226,7 +1228,28 @@ export default function CmsLivePageSections({
               </p>
             </div>
             <div className="flex shrink-0 flex-wrap items-center gap-2">
-              <CmsModeToggle variant="bar" />
+              {dedicatedEdit ? (
+                <>
+                  {publicHrefProp ? (
+                    <Link
+                      href={publicHrefProp}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="rounded-lg border border-emerald-300/80 bg-white px-3 py-2 text-xs font-semibold text-emerald-900 no-underline hover:bg-emerald-100 dark:border-emerald-700 dark:bg-emerald-950 dark:text-emerald-100 dark:hover:bg-emerald-900/60"
+                    >
+                      View public page
+                    </Link>
+                  ) : null}
+                  <Link
+                    href="/cms"
+                    className="rounded-lg px-3 py-2 text-xs font-semibold text-emerald-900 no-underline hover:bg-emerald-100 dark:text-emerald-100 dark:hover:bg-emerald-900/60"
+                  >
+                    Admin
+                  </Link>
+                </>
+              ) : (
+                <CmsModeToggle variant="bar" />
+              )}
               <button
                 type="button"
                 onClick={openCmsPanel}

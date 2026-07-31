@@ -1,4 +1,5 @@
 import { Schema, model } from "mongoose";
+import { softDeletePlugin } from "../../plugins/softDelete.plugin.js";
 
 /**
  * SkillLevel → many Courses
@@ -93,6 +94,8 @@ skillLevelSchema.statics.findBySlug = function (slug) {
 skillLevelSchema.statics.findActive = function () {
   return this.find({ status: "active" }).sort({ sortOrder: 1, name: 1 });
 };
+
+skillLevelSchema.plugin(softDeletePlugin);
 
 const SkillLevel = model("SkillLevel", skillLevelSchema);
 

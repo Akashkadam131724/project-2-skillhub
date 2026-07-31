@@ -1,4 +1,5 @@
 import { Schema, model } from "mongoose";
+import { softDeletePlugin } from "../../plugins/softDelete.plugin.js";
 
 /**
  * Generic content pages — catalog entity for CMS-driven routes.
@@ -157,6 +158,8 @@ contentSchema.statics.findByPath = function (path) {
 contentSchema.statics.findActive = function () {
   return this.find({ status: "active" }).sort({ sortOrder: 1, name: 1 });
 };
+
+contentSchema.plugin(softDeletePlugin);
 
 const Content = model("Content", contentSchema);
 

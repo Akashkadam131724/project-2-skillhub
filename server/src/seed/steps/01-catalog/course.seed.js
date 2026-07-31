@@ -117,6 +117,7 @@ async function seed() {
         skillLevel: pickOne(levelIds, courseIndex),
         skillingAreas: pickMany(areaIds, courseIndex),
         industries: pickMany(industryIds, courseIndex),
+        status: "active",
       });
     }
   }

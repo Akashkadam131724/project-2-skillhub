@@ -1,4 +1,5 @@
 import { Schema, model } from "mongoose";
+import { softDeletePlugin } from "../../plugins/softDelete.plugin.js";
 
 const navLinkSchema = new Schema(
   {
@@ -33,6 +34,8 @@ navLinkSchema.pre("save", async function () {
     this.sort_order = (await NavigationLink.countDocuments()) + 1;
   }
 });
+
+navLinkSchema.plugin(softDeletePlugin);
 
 const NavigationLink = model("NavigationLink", navLinkSchema);
 export default NavigationLink;

@@ -5,6 +5,7 @@ import {
   getVendorBySlug,
   updateVendor,
   deleteVendor,
+  restoreVendor,
   searchVendors,
 } from "./vendor.controllers.js";
 
@@ -15,5 +16,6 @@ router.get("/", getvendors);
 router.get("/search/filters", searchVendors);
 router.get("/:slug", getVendorBySlug);
 router.put("/:slug", updateVendor);
+router.post("/:slug/restore", restoreVendor);
 router.delete("/:slug", deleteVendor);
 export default router;

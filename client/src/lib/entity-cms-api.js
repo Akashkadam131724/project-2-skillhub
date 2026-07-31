@@ -36,6 +36,9 @@ export function updateVendor(slug, body) {
 export function deleteVendor(slug) {
   return request(`/vendors/${enc(slug)}`, { method: "DELETE" });
 }
+export function restoreVendor(slug) {
+  return request(`/vendors/${enc(slug)}/restore`, { method: "POST" });
+}
 
 /* Products */
 export function createProduct(body) {
@@ -46,6 +49,9 @@ export function updateProduct(slug, body) {
 }
 export function deleteProduct(slug) {
   return request(`/products/${enc(slug)}`, { method: "DELETE" });
+}
+export function restoreProduct(slug) {
+  return request(`/products/${enc(slug)}/restore`, { method: "POST" });
 }
 
 /* Courses */
@@ -58,6 +64,9 @@ export function updateCourse(slug, body) {
 export function deleteCourse(slug) {
   return request(`/courses/${enc(slug)}`, { method: "DELETE" });
 }
+export function restoreCourse(slug) {
+  return request(`/courses/${enc(slug)}/restore`, { method: "POST" });
+}
 
 /* Industries */
 export function createIndustry(body) {
@@ -68,6 +77,9 @@ export function updateIndustry(slug, body) {
 }
 export function deleteIndustry(slug) {
   return request(`/industries/${enc(slug)}`, { method: "DELETE" });
+}
+export function restoreIndustry(slug) {
+  return request(`/industries/${enc(slug)}/restore`, { method: "POST" });
 }
 
 /* Skilling areas */
@@ -80,6 +92,9 @@ export function updateSkillingArea(slug, body) {
 export function deleteSkillingArea(slug) {
   return request(`/skilling-areas/${enc(slug)}`, { method: "DELETE" });
 }
+export function restoreSkillingArea(slug) {
+  return request(`/skilling-areas/${enc(slug)}/restore`, { method: "POST" });
+}
 
 /* Content pages (about-us, our-team, …) */
 export function createContent(body) {
@@ -91,6 +106,9 @@ export function updateContent(slug, body) {
 export function deleteContent(slug) {
   return request(`/contents/${enc(slug)}`, { method: "DELETE" });
 }
+export function restoreContent(slug) {
+  return request(`/contents/${enc(slug)}/restore`, { method: "POST" });
+}
 
 /* Blogs */
 export function createBlog(body) {
@@ -101,6 +119,9 @@ export function updateBlog(slug, body) {
 }
 export function deleteBlog(slug) {
   return request(`/blogs/${enc(slug)}`, { method: "DELETE" });
+}
+export function restoreBlog(slug) {
+  return request(`/blogs/${enc(slug)}/restore`, { method: "POST" });
 }
 
 /* Skill levels (for course form) */

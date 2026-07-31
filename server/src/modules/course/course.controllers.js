@@ -4,6 +4,13 @@ import SkillingArea from "../skilling-area/skilling-area.model.js";
 import SkillLevel from "../skill-level/skill-level.model.js";
 import Industry from "../industry/industry.model.js";
 import { formatMongooseError } from "../../utils/formatMongooseError.js";
+import { createSoftDeleteController } from "../../utils/softDelete.controller.js";
+import {
+  buildTextSearchFilter,
+  paginatedCmsList,
+} from "../../utils/cmsList.js";
+
+const softDelete = createSoftDeleteController({ Model: Course, label: "Course" });
 
 async function assertRefs(Model, ids, fieldLabel) {
   if (!ids?.length) return null;
@@ -87,43 +94,22 @@ export const createCourse = async (req, res) => {
 
 export const getCourses = async (req, res) => {
   try {
-    const page = Math.max(Number(req.query.page) || 1, 1);
-    const limit = Math.min(Math.max(Number(req.query.limit) || 20, 1), 100);
-    const skip = (page - 1) * limit;
-
-    const filter = {};
-    if (req.query.product) filter.product = req.query.product;
-    if (req.query.skillLevel) filter.skillLevel = req.query.skillLevel;
-    if (req.query.skillingArea) filter.skillingAreas = req.query.skillingArea;
-    if (req.query.industry) filter.industries = req.query.industry;
-    if (req.query.q) {
-      filter.$or = [
-        { name: { $regex: req.query.q, $options: "i" } },
-        { description: { $regex: req.query.q, $options: "i" } },
-      ];
-    }
-
-    const [courses, total] = await Promise.all([
-      Course.find(filter)
-        .populate("product", "name slug status category")
-        .populate("skillLevel", "name slug")
-        .populate("skillingAreas", "name slug")
-        .populate("industries", "name slug")
-        .sort({ createdAt: -1 })
-        .skip(skip)
-        .limit(limit)
-        .lean(),
-      Course.countDocuments(filter),
-    ]);
-
-    res.json({
-      success: true,
-      total,
-      page,
-      limit,
-      totalPages: Math.ceil(total / limit) || 1,
-      count: courses.length,
-      data: courses,
+    await paginatedCmsList(req, res, {
+      Model: Course,
+      defaultLimit: 20,
+      sort: { createdAt: -1 },
+      populate: coursePopulate,
+      buildFilter(req) {
+        const filter = {};
+        if (req.query.product) filter.product = req.query.product;
+        if (req.query.skillLevel) filter.skillLevel = req.query.skillLevel;
+        if (req.query.skillingArea) filter.skillingAreas = req.query.skillingArea;
+        if (req.query.industry) filter.industries = req.query.industry;
+        return {
+          ...filter,
+          ...buildTextSearchFilter(req.query.q, ["name", "description"]),
+        };
+      },
     });
   } catch (err) {
     const formatted = formatMongooseError(err);
@@ -244,19 +230,5 @@ export const updateCourse = async (req, res) => {
   }
 };
 
-export const deleteCourse = async (req, res) => {
-  try {
-    const course = await Course.findOneAndDelete({
-      slug: String(req.params.slug).toLowerCase(),
-    });
-
-    if (!course) {
-      return res.status(404).json({ success: false, message: "Course not found" });
-    }
-
-    res.json({ success: true, message: "Course deleted", data: course });
-  } catch (err) {
-    const formatted = formatMongooseError(err);
-    res.status(formatted.status).json(formatted);
-  }
-};
+export const deleteCourse = softDelete.deleteBySlug;
+export const restoreCourse = softDelete.restoreBySlug;

@@ -8,6 +8,8 @@
  * Other Content URLs use Page key `content` (blank / free-form).
  */
 
+import { cmsEditHref } from "@/lib/cms-edit-routes";
+
 export const CONTENT_PAGE_KEY = "content";
 export const HOME_PAGE_KEY = "home";
 
@@ -86,8 +88,8 @@ export function contentPublicHref(contentOrPath) {
 
 export function contentCmsHref(contentOrPath) {
   const href = contentPublicHref(contentOrPath);
-  const sep = href.includes("?") ? "&" : "?";
-  return `${href}${sep}cms=1`;
+  if (href === "/") return cmsEditHref("home");
+  return cmsEditHref("content", href.replace(/^\//, ""));
 }
 
 export function slugFromPath(path) {

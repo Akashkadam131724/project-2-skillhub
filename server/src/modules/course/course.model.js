@@ -1,4 +1,5 @@
 import { Schema, model } from "mongoose";
+import { softDeletePlugin } from "../../plugins/softDelete.plugin.js";
 
 /**
  * Course → belongs to ONE Product (required)
@@ -77,6 +78,16 @@ const courseSchema = new Schema(
         message: "A course can have at most 20 industries",
       },
     },
+
+    status: {
+      type: String,
+      enum: {
+        values: ["draft", "active", "inactive"],
+        message: "{VALUE} is not a valid status. Use draft | active | inactive",
+      },
+      default: "active",
+      index: true,
+    },
   },
   {
     timestamps: true,
@@ -144,6 +155,8 @@ courseSchema.statics.findBySkillLevel = function (skillLevelId) {
 courseSchema.statics.findByIndustry = function (industryId) {
   return this.find({ industries: industryId }).sort({ createdAt: -1 });
 };
+
+courseSchema.plugin(softDeletePlugin);
 
 const Course = model("Course", courseSchema);
 

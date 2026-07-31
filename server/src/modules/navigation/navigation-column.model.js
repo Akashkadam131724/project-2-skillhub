@@ -1,4 +1,5 @@
 import { Schema, model } from "mongoose";
+import { softDeletePlugin } from "../../plugins/softDelete.plugin.js";
 
 const navigationColumnSchema = new Schema(
   {
@@ -28,6 +29,8 @@ navigationColumnSchema.pre("save", async function () {
     this.sort_order = (await NavigationColumn.countDocuments()) + 1;
   }
 });
+
+navigationColumnSchema.plugin(softDeletePlugin);
 
 const NavigationColumn = model("NavigationColumn", navigationColumnSchema);
 export default NavigationColumn;

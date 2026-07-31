@@ -6,6 +6,7 @@ import {
   getCoursesByProduct,
   updateCourse,
   deleteCourse,
+  restoreCourse,
 } from "./course.controllers.js";
 import {
   catalogCourses,
@@ -24,6 +25,7 @@ router.get("/catalog/filters", getCatalogFilters);
 router.get("/product/:productId", getCoursesByProduct);
 router.get("/:slug", getCourseBySlug);
 router.put("/:slug", updateCourse);
+router.post("/:slug/restore", restoreCourse);
 router.delete("/:slug", deleteCourse);
 
 export default router;

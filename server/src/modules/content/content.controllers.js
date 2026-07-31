@@ -2,6 +2,26 @@ import Content, {
   normalizeContentPath,
 } from "./content.model.js";
 import { formatMongooseError } from "../../utils/formatMongooseError.js";
+import { createSoftDeleteController } from "../../utils/softDelete.controller.js";
+import {
+  buildTextSearchFilter,
+  paginatedCmsList,
+} from "../../utils/cmsList.js";
+
+const softDelete = createSoftDeleteController({
+  Model: Content,
+  label: "Content",
+  beforeDelete: async (existing, _req, res) => {
+    if (existing.path === "/") {
+      res.status(400).json({
+        success: false,
+        message: "Homepage Content is system-managed and cannot be deleted.",
+      });
+      return true;
+    }
+    return false;
+  },
+});
 
 export const createContent = async (req, res) => {
   try {
@@ -25,13 +45,6 @@ export const createContent = async (req, res) => {
 
 export const getContents = async (req, res) => {
   try {
-    const page = Math.max(Number(req.query.page) || 1, 1);
-    const limit = Math.min(Math.max(Number(req.query.limit) || 50, 1), 100);
-    const skip = (page - 1) * limit;
-
-    const filter = {};
-    if (req.query.status) filter.status = req.query.status;
-
     // Exact public-path lookup (used by catch-all route)
     if (req.query.path !== undefined && req.query.path !== "") {
       const content = await Content.findByPath(req.query.path);
@@ -43,32 +56,18 @@ export const getContents = async (req, res) => {
       return res.json({ success: true, data: content });
     }
 
-    if (req.query.q) {
-      filter.$or = [
-        { name: { $regex: req.query.q, $options: "i" } },
-        { description: { $regex: req.query.q, $options: "i" } },
-        { path: { $regex: req.query.q, $options: "i" } },
-        { slug: { $regex: req.query.q, $options: "i" } },
-      ];
-    }
-
-    const [contents, total] = await Promise.all([
-      Content.find(filter)
-        .sort({ sortOrder: 1, name: 1 })
-        .skip(skip)
-        .limit(limit)
-        .lean(),
-      Content.countDocuments(filter),
-    ]);
-
-    res.json({
-      success: true,
-      total,
-      page,
-      limit,
-      totalPages: Math.ceil(total / limit) || 1,
-      count: contents.length,
-      data: contents,
+    await paginatedCmsList(req, res, {
+      Model: Content,
+      defaultLimit: 50,
+      sort: { sortOrder: 1, name: 1 },
+      buildFilter(req) {
+        return buildTextSearchFilter(req.query.q, [
+          "name",
+          "description",
+          "path",
+          "slug",
+        ]);
+      },
     });
   } catch (err) {
     const formatted = formatMongooseError(err);
@@ -129,28 +128,5 @@ export const updateContent = async (req, res) => {
   }
 };
 
-export const deleteContent = async (req, res) => {
-  try {
-    const existing = await Content.findOne({
-      slug: String(req.params.slug).toLowerCase(),
-    });
-    if (!existing) {
-      return res.status(404).json({ success: false, message: "Content not found" });
-    }
-    if (existing.path === "/") {
-      return res.status(400).json({
-        success: false,
-        message: "Homepage Content is system-managed and cannot be deleted.",
-      });
-    }
-
-    const content = await Content.findOneAndDelete({
-      slug: String(req.params.slug).toLowerCase(),
-    });
-
-    res.json({ success: true, message: "Content deleted", data: content });
-  } catch (err) {
-    const formatted = formatMongooseError(err);
-    res.status(formatted.status).json(formatted);
-  }
-};
+export const deleteContent = softDelete.deleteBySlug;
+export const restoreContent = softDelete.restoreBySlug;

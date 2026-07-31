@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { cmsEditHrefFromPublicPath } from "@/lib/cms-edit-routes";
 
 /**
  * CMS On/Off + Admin — used in site header (when CMS off) and CMS top bar.
@@ -20,12 +21,16 @@ export default function CmsModeToggle({
 
   const on = String(searchParams.get("cms") || "").toLowerCase() === "true";
 
-  // Header: only when CMS is off (CMS bar owns the controls when on)
   if (variant === "header" && on) {
     return null;
   }
 
   function toggle() {
+    const editPath = cmsEditHrefFromPublicPath(pathname);
+    if (!on && editPath) {
+      router.push(editPath, { scroll: false });
+      return;
+    }
     const params = new URLSearchParams(searchParams.toString());
     if (on) params.delete("cms");
     else params.set("cms", "true");

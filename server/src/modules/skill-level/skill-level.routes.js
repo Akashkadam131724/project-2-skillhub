@@ -6,6 +6,7 @@ import {
   getCoursesBySkillLevel,
   updateSkillLevel,
   deleteSkillLevel,
+  restoreSkillLevel,
 } from "./skill-level.controllers.js";
 
 const router = Router();
@@ -15,6 +16,7 @@ router.get("/", getSkillLevels);
 router.get("/:idOrSlug/courses", getCoursesBySkillLevel);
 router.get("/:slug", getSkillLevelBySlug);
 router.put("/:slug", updateSkillLevel);
+router.post("/:slug/restore", restoreSkillLevel);
 router.delete("/:slug", deleteSkillLevel);
 
 export default router;

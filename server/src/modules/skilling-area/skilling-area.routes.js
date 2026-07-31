@@ -6,6 +6,7 @@ import {
   getCoursesBySkillingArea,
   updateSkillingArea,
   deleteSkillingArea,
+  restoreSkillingArea,
   mapCourseSkillingAreas,
 } from "./skilling-area.controllers.js";
 
@@ -17,6 +18,7 @@ router.put("/map/course/:courseId", mapCourseSkillingAreas);
 router.get("/:idOrSlug/courses", getCoursesBySkillingArea);
 router.get("/:slug", getSkillingAreaBySlug);
 router.put("/:slug", updateSkillingArea);
+router.post("/:slug/restore", restoreSkillingArea);
 router.delete("/:slug", deleteSkillingArea);
 
 export default router;

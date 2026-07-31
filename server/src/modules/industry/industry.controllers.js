@@ -2,6 +2,13 @@ import Industry from "./industry.model.js";
 import Course from "../course/course.model.js";
 import { formatMongooseError } from "../../utils/formatMongooseError.js";
 import mongoose from "mongoose";
+import { createSoftDeleteController } from "../../utils/softDelete.controller.js";
+import {
+  buildTextSearchFilter,
+  paginatedCmsList,
+} from "../../utils/cmsList.js";
+
+const softDelete = createSoftDeleteController({ Model: Industry, label: "Industry" });
 
 function parseIds(value) {
   if (!value) return [];
@@ -24,36 +31,13 @@ export const createIndustry = async (req, res) => {
 
 export const getIndustries = async (req, res) => {
   try {
-    const page = Math.max(Number(req.query.page) || 1, 1);
-    const limit = Math.min(Math.max(Number(req.query.limit) || 50, 1), 100);
-    const skip = (page - 1) * limit;
-
-    const filter = {};
-    if (req.query.status) filter.status = req.query.status;
-    if (req.query.q) {
-      filter.$or = [
-        { name: { $regex: req.query.q, $options: "i" } },
-        { description: { $regex: req.query.q, $options: "i" } },
-      ];
-    }
-
-    const [industries, total] = await Promise.all([
-      Industry.find(filter)
-        .sort({ sortOrder: 1, name: 1 })
-        .skip(skip)
-        .limit(limit)
-        .lean(),
-      Industry.countDocuments(filter),
-    ]);
-
-    res.json({
-      success: true,
-      total,
-      page,
-      limit,
-      totalPages: Math.ceil(total / limit) || 1,
-      count: industries.length,
-      data: industries,
+    await paginatedCmsList(req, res, {
+      Model: Industry,
+      defaultLimit: 50,
+      sort: { sortOrder: 1, name: 1 },
+      buildFilter(req) {
+        return buildTextSearchFilter(req.query.q, ["name", "description"]);
+      },
     });
   } catch (err) {
     const formatted = formatMongooseError(err);
@@ -140,10 +124,8 @@ export const updateIndustry = async (req, res) => {
 
 export const deleteIndustry = async (req, res) => {
   try {
-    const industry = await Industry.findOneAndDelete({
-      slug: String(req.params.slug).toLowerCase(),
-    });
-
+    const slug = String(req.params.slug).toLowerCase();
+    const industry = await Industry.softDeleteOne({ slug });
     if (!industry) {
       return res.status(404).json({ success: false, message: "Industry not found" });
     }
@@ -159,6 +141,8 @@ export const deleteIndustry = async (req, res) => {
     res.status(formatted.status).json(formatted);
   }
 };
+
+export const restoreIndustry = softDelete.restoreBySlug;
 
 /**
  * Replace industries on a course

@@ -1,4 +1,5 @@
 import { Schema, model } from "mongoose";
+import { softDeletePlugin } from "../../plugins/softDelete.plugin.js";
 
 /**
  * SkillingArea ↔ Course = many-to-many
@@ -95,6 +96,8 @@ skillingAreaSchema.statics.findBySlug = function (slug) {
 skillingAreaSchema.statics.findActive = function () {
   return this.find({ status: "active" }).sort({ sortOrder: 1, name: 1 });
 };
+
+skillingAreaSchema.plugin(softDeletePlugin);
 
 const SkillingArea = model("SkillingArea", skillingAreaSchema);
 

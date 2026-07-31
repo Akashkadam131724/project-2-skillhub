@@ -6,6 +6,7 @@ import {
   getCoursesByIndustry,
   updateIndustry,
   deleteIndustry,
+  restoreIndustry,
   mapCourseIndustries,
 } from "./industry.controllers.js";
 
@@ -17,6 +18,7 @@ router.put("/map/course/:courseId", mapCourseIndustries);
 router.get("/:idOrSlug/courses", getCoursesByIndustry);
 router.get("/:slug", getIndustryBySlug);
 router.put("/:slug", updateIndustry);
+router.post("/:slug/restore", restoreIndustry);
 router.delete("/:slug", deleteIndustry);
 
 export default router;

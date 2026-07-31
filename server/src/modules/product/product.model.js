@@ -1,4 +1,5 @@
 import { Schema, model } from "mongoose";
+import { softDeletePlugin } from "../../plugins/softDelete.plugin.js";
 
 /**
  * Product → belongs to ONE Vendor (required ref)
@@ -115,6 +116,8 @@ productSchema.statics.findBySlug = function (slug) {
 productSchema.statics.findByVendor = function (vendorId) {
   return this.find({ vendor: vendorId }).sort({ createdAt: -1 });
 };
+
+productSchema.plugin(softDeletePlugin);
 
 const Product = model("Product", productSchema);
 

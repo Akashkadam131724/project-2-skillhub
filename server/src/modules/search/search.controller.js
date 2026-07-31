@@ -50,12 +50,13 @@ const SEARCH_SOURCES = [
     detailPath: "course",
     Model: Course,
     fields: ["name", "slug", "description"],
-    select: "name slug description product",
+    select: "name slug description product status",
     populate: {
       path: "product",
       select: "name slug vendor",
       populate: { path: "vendor", select: "name slug logoUrl vendorCatalogueLogo" },
     },
+    statusFilter: { status: { $in: ["active", "draft"] } },
     mapItem: (doc) => ({
       id: String(doc._id),
       name: doc.name,

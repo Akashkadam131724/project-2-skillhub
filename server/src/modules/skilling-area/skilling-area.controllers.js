@@ -2,6 +2,16 @@ import SkillingArea from "./skilling-area.model.js";
 import Course from "../course/course.model.js";
 import { formatMongooseError } from "../../utils/formatMongooseError.js";
 import mongoose from "mongoose";
+import { createSoftDeleteController } from "../../utils/softDelete.controller.js";
+import {
+  buildTextSearchFilter,
+  paginatedCmsList,
+} from "../../utils/cmsList.js";
+
+const softDelete = createSoftDeleteController({
+  Model: SkillingArea,
+  label: "Skilling area",
+});
 
 function parseIds(value) {
   if (!value) return [];
@@ -24,36 +34,13 @@ export const createSkillingArea = async (req, res) => {
 
 export const getSkillingAreas = async (req, res) => {
   try {
-    const page = Math.max(Number(req.query.page) || 1, 1);
-    const limit = Math.min(Math.max(Number(req.query.limit) || 50, 1), 100);
-    const skip = (page - 1) * limit;
-
-    const filter = {};
-    if (req.query.status) filter.status = req.query.status;
-    if (req.query.q) {
-      filter.$or = [
-        { name: { $regex: req.query.q, $options: "i" } },
-        { description: { $regex: req.query.q, $options: "i" } },
-      ];
-    }
-
-    const [areas, total] = await Promise.all([
-      SkillingArea.find(filter)
-        .sort({ sortOrder: 1, name: 1 })
-        .skip(skip)
-        .limit(limit)
-        .lean(),
-      SkillingArea.countDocuments(filter),
-    ]);
-
-    res.json({
-      success: true,
-      total,
-      page,
-      limit,
-      totalPages: Math.ceil(total / limit) || 1,
-      count: areas.length,
-      data: areas,
+    await paginatedCmsList(req, res, {
+      Model: SkillingArea,
+      defaultLimit: 50,
+      sort: { sortOrder: 1, name: 1 },
+      buildFilter(req) {
+        return buildTextSearchFilter(req.query.q, ["name", "description"]);
+      },
     });
   } catch (err) {
     const formatted = formatMongooseError(err);
@@ -138,15 +125,12 @@ export const updateSkillingArea = async (req, res) => {
 
 export const deleteSkillingArea = async (req, res) => {
   try {
-    const area = await SkillingArea.findOneAndDelete({
-      slug: String(req.params.slug).toLowerCase(),
-    });
-
+    const slug = String(req.params.slug).toLowerCase();
+    const area = await SkillingArea.softDeleteOne({ slug });
     if (!area) {
       return res.status(404).json({ success: false, message: "Skilling area not found" });
     }
 
-    // Pull ref from courses (many-to-many cleanup)
     await Course.updateMany(
       { skillingAreas: area._id },
       { $pull: { skillingAreas: area._id } }
@@ -158,6 +142,8 @@ export const deleteSkillingArea = async (req, res) => {
     res.status(formatted.status).json(formatted);
   }
 };
+
+export const restoreSkillingArea = softDelete.restoreBySlug;
 
 /**
  * Map courses ↔ skilling areas (replace set on a course)

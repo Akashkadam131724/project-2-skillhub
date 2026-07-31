@@ -1,4 +1,5 @@
 import { Schema, model } from "mongoose";
+import { softDeletePlugin } from "../../plugins/softDelete.plugin.js";
 
 /**
  * Real-world Vendor schema (NetCom-style catalog fields)
@@ -180,6 +181,8 @@ vendorSchema.statics.findBySlug = function (slug) {
 vendorSchema.statics.findActive = function () {
   return this.find({ status: "active" }).sort({ createdAt: -1 });
 };
+
+vendorSchema.plugin(softDeletePlugin);
 
 const Vendor = model("Vendor", vendorSchema);
 

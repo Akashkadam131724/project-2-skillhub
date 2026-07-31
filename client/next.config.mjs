@@ -95,30 +95,35 @@ const nextConfig = {
         destination: "/blog/:slug",
         permanent: true,
       },
-      // CMS admin: singular → plural (legacy links)
+      // CMS admin: plural metadata → singular
       {
-        source: "/cms/vendor/:slug",
-        destination: "/cms/vendors/:slug",
+        source: "/cms/vendors/:slug",
+        destination: "/cms/vendor/:slug",
         permanent: true,
       },
       {
-        source: "/cms/product/:slug",
-        destination: "/cms/products/:slug",
+        source: "/cms/products/:slug",
+        destination: "/cms/product/:slug",
         permanent: true,
       },
       {
-        source: "/cms/course/:slug",
-        destination: "/cms/courses/:slug",
+        source: "/cms/courses/:slug",
+        destination: "/cms/course/:slug",
         permanent: true,
       },
       {
-        source: "/cms/industry/:slug",
-        destination: "/cms/industries/:slug",
+        source: "/cms/industries/:slug",
+        destination: "/cms/industry/:slug",
         permanent: true,
       },
       {
-        source: "/cms/skilling-area/:slug",
-        destination: "/cms/skilling-areas/:slug",
+        source: "/cms/skilling-areas/:slug",
+        destination: "/cms/skilling-area/:slug",
+        permanent: true,
+      },
+      {
+        source: "/cms/blogs/:slug",
+        destination: "/cms/blog/:slug",
         permanent: true,
       },
     ];
