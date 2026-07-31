@@ -5,17 +5,11 @@ import {
 } from "@/components/detail/DetailShell";
 import PublicPageSectionsSuspense from "@/components/cms/PublicPageSectionsSuspense";
 import ResolvedPageSections from "@/components/cms/ResolvedPageSections";
-import { isrFetchOptions } from "@/lib/isr";
-
-export const revalidate = 60;
 
 export async function generateMetadata({ params }) {
   const { slug } = await params;
   try {
-    const { data } = await fetchSkillingAreaBySlug(
-      slug,
-      isrFetchOptions({ tags: ["skilling-area", `skilling-area:${slug}`] })
-    );
+    const { data } = await fetchSkillingAreaBySlug(slug);
     return {
       title: `${data.name}`,
       description: data.description || data.name,
@@ -31,10 +25,7 @@ export default async function SkillingAreaDetailPage({ params }) {
   let area;
 
   try {
-    const areaRes = await fetchSkillingAreaBySlug(
-      slug,
-      isrFetchOptions({ tags: ["skilling-area", `skilling-area:${slug}`] })
-    );
+    const areaRes = await fetchSkillingAreaBySlug(slug);
     area = areaRes.data;
   } catch {
     return <NotFoundState entity="Skilling area" />;
@@ -58,7 +49,6 @@ export default async function SkillingAreaDetailPage({ params }) {
         <ResolvedPageSections
           pageKey="skilling_area"
           entityId={areaId}
-          cacheTags={[`skilling-area:${slug}`]}
           pageContext={{
             entityType: "skilling_area",
             entityId: areaId,

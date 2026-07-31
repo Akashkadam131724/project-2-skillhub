@@ -6,8 +6,6 @@ import {
 import PublicPageSectionsSuspense from "@/components/cms/PublicPageSectionsSuspense";
 import ResolvedPageSections from "@/components/cms/ResolvedPageSections";
 
-export const dynamic = "force-dynamic";
-
 export async function generateMetadata({ params }) {
   const { slug } = await params;
   try {
@@ -67,7 +65,6 @@ export default async function CourseDetailPage({ params }) {
         <ResolvedPageSections
           pageKey="course"
           entityId={courseId}
-          ssr
           pageContext={{
             entityType: "course",
             entityId: courseId,

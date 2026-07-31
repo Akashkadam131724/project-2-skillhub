@@ -5,9 +5,6 @@ import {
   contentPathFromParams,
   isReservedContentPath,
 } from "@/lib/content-pages";
-import { isrFetchOptions } from "@/lib/isr";
-
-export const revalidate = 60;
 
 export async function generateMetadata({ params }) {
   const { slug: slugParam } = await params;
@@ -16,10 +13,7 @@ export async function generateMetadata({ params }) {
   }
   const path = contentPathFromParams(slugParam);
   try {
-    const res = await fetchContentByPath(
-      path,
-      isrFetchOptions({ tags: ["content", `path:${path}`] })
-    );
+    const res = await fetchContentByPath(path);
     const content = res?.data;
     if (!content || content.status === "inactive") {
       return { title: "Not found" };

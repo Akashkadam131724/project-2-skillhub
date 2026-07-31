@@ -5,17 +5,11 @@ import {
 } from "@/components/detail/DetailShell";
 import PublicPageSectionsSuspense from "@/components/cms/PublicPageSectionsSuspense";
 import ResolvedPageSections from "@/components/cms/ResolvedPageSections";
-import { isrFetchOptions } from "@/lib/isr";
-
-export const revalidate = 60;
 
 export async function generateMetadata({ params }) {
   const { slug } = await params;
   try {
-    const { data } = await fetchVendorBySlug(
-      slug,
-      isrFetchOptions({ tags: ["vendor", `vendor:${slug}`] })
-    );
+    const { data } = await fetchVendorBySlug(slug);
     return {
       title: `${data.name}`,
       description: data.shortDescription || data.description || data.name,
@@ -31,10 +25,7 @@ export default async function VendorDetailPage({ params }) {
   let vendor;
 
   try {
-    const vendorRes = await fetchVendorBySlug(
-      slug,
-      isrFetchOptions({ tags: ["vendor", `vendor:${slug}`] })
-    );
+    const vendorRes = await fetchVendorBySlug(slug);
     vendor = vendorRes.data;
   } catch {
     return <NotFoundState entity="Vendor" />;
@@ -59,7 +50,6 @@ export default async function VendorDetailPage({ params }) {
         <ResolvedPageSections
           pageKey="vendor"
           entityId={vendorId}
-          cacheTags={[`vendor:${slug}`]}
           pageContext={{
             entityType: "vendor",
             entityId: vendorId,

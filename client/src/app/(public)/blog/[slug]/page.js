@@ -9,33 +9,6 @@ import PublicPageSectionsSuspense from "@/components/cms/PublicPageSectionsSuspe
 import ResolvedPageSections from "@/components/cms/ResolvedPageSections";
 import SectionWrapper from "@/components/sections/SectionWrapper";
 import { prepareBlogContentWithToc } from "@/lib/blog-toc";
-import { blogFetchOptions } from "@/lib/isr";
-
-export const revalidate = 60;
-
-export async function generateStaticParams() {
-  try {
-    let page = 1;
-    let totalPages = 1;
-    const slugs = [];
-
-    while (page <= totalPages) {
-      const response = await fetchBlogs(
-        { status: "active", page, limit: 100 },
-        blogFetchOptions(null, { list: true })
-      );
-      for (const blog of response.data || []) {
-        if (blog.slug) slugs.push({ slug: blog.slug });
-      }
-      totalPages = response.totalPages || 1;
-      page += 1;
-    }
-
-    return slugs;
-  } catch {
-    return [];
-  }
-}
 
 function formatDate(value) {
   if (!value) return "";
@@ -49,7 +22,7 @@ function formatDate(value) {
 export async function generateMetadata({ params }) {
   const { slug } = await params;
   try {
-    const { data: blog } = await fetchBlogBySlug(slug, blogFetchOptions(slug));
+    const { data: blog } = await fetchBlogBySlug(slug);
     return {
       title: blog.seoTitle || blog.title,
       description: blog.metaDescription || blog.excerpt,
@@ -71,7 +44,7 @@ export default async function BlogDetailPage({ params }) {
   let blog;
 
   try {
-    const response = await fetchBlogBySlug(slug, blogFetchOptions(slug));
+    const response = await fetchBlogBySlug(slug);
     blog = response.data;
   } catch {
     notFound();
@@ -80,14 +53,11 @@ export default async function BlogDetailPage({ params }) {
   if (blog.status !== "active") notFound();
 
   const blogId = String(blog._id || blog.id);
-  const relatedResponse = await fetchBlogs(
-    {
-      status: "active",
-      category: blog.category,
-      limit: 4,
-    },
-    blogFetchOptions(null, { list: true })
-  ).catch(() => ({ data: [] }));
+  const relatedResponse = await fetchBlogs({
+    status: "active",
+    category: blog.category,
+    limit: 4,
+  }).catch(() => ({ data: [] }));
 
   const related = (relatedResponse.data || [])
     .filter((item) => item.slug !== blog.slug)
@@ -211,7 +181,6 @@ export default async function BlogDetailPage({ params }) {
         <ResolvedPageSections
           pageKey="blog"
           entityId={blogId}
-          cacheTags={[`blog:${slug}`, `blog-sections:${slug}`]}
           pageContext={{
             entityType: "blog",
             entityId: blogId,

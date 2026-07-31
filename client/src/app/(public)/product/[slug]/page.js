@@ -8,9 +8,6 @@ import {
 } from "@/components/detail/DetailShell";
 import PublicPageSectionsSuspense from "@/components/cms/PublicPageSectionsSuspense";
 import ResolvedPageSections from "@/components/cms/ResolvedPageSections";
-import { isrFetchOptions } from "@/lib/isr";
-
-export const revalidate = 60;
 
 function resolveVendorId(product, vendor) {
   if (vendor?._id || vendor?.id) return String(vendor._id || vendor.id);
@@ -23,10 +20,7 @@ function resolveVendorId(product, vendor) {
 export async function generateMetadata({ params }) {
   const { slug } = await params;
   try {
-    const { data } = await fetchProductBySlug(
-      slug,
-      isrFetchOptions({ tags: ["product", `product:${slug}`] })
-    );
+    const { data } = await fetchProductBySlug(slug);
     return {
       title: `${data.name}`,
       description: data.description || data.name,
@@ -43,10 +37,7 @@ export default async function ProductDetailPage({ params }) {
   let vendor = null;
 
   try {
-    const productRes = await fetchProductBySlug(
-      slug,
-      isrFetchOptions({ tags: ["product", `product:${slug}`] })
-    );
+    const productRes = await fetchProductBySlug(slug);
     product = productRes.data;
 
     const linkedVendor = product.vendor;
@@ -54,10 +45,7 @@ export default async function ProductDetailPage({ params }) {
       typeof linkedVendor === "object" ? linkedVendor?.slug : null;
 
     if (vendorSlug) {
-      const vendorRes = await fetchVendorBySlug(
-        vendorSlug,
-        isrFetchOptions({ tags: ["vendor", `vendor:${vendorSlug}`] })
-      ).catch(() => null);
+      const vendorRes = await fetchVendorBySlug(vendorSlug).catch(() => null);
       vendor =
         vendorRes?.data ||
         (typeof linkedVendor === "object" ? linkedVendor : null);
@@ -94,7 +82,6 @@ export default async function ProductDetailPage({ params }) {
         <ResolvedPageSections
           pageKey="product"
           entityId={productId}
-          cacheTags={[`product:${slug}`]}
           pageContext={{
             entityType: "product",
             entityId: productId,

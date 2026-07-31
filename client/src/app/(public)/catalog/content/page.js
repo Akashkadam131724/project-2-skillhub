@@ -1,9 +1,6 @@
 import { fetchAllContents } from "@/lib/api";
 import { isGalleryContentPage } from "@/lib/content-catalog";
 import ContentPageGallery from "@/components/catalog/ContentPageGallery";
-import { isrFetchOptions } from "@/lib/isr";
-
-export const revalidate = 60;
 
 export const metadata = {
   title: "Content pages catalog",
@@ -14,10 +11,7 @@ export default async function ContentPagesCatalogPage() {
   let pages = [];
 
   try {
-    const all = await fetchAllContents(
-      {},
-      isrFetchOptions({ tags: ["contents", "contents-catalog"] })
-    );
+    const all = await fetchAllContents();
     pages = all.filter(isGalleryContentPage);
     pages.sort((a, b) => (a.path || "").localeCompare(b.path || ""));
   } catch {

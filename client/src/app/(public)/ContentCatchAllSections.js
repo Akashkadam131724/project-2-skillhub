@@ -8,7 +8,6 @@ import {
   contentPathFromParams,
   isReservedContentPath,
 } from "@/lib/content-pages";
-import { isrFetchOptions } from "@/lib/isr";
 
 export default async function ContentCatchAllSections({ params }) {
   const { slug: slugParam } = await params;
@@ -27,10 +26,7 @@ export default async function ContentCatchAllSections({ params }) {
   let pageTheme = null;
 
   try {
-    const res = await fetchContentByPath(
-      path,
-      isrFetchOptions({ tags: ["content", `path:${path}`] })
-    );
+    const res = await fetchContentByPath(path);
     content = res?.data || null;
   } catch {
     notFound();
@@ -43,13 +39,9 @@ export default async function ContentCatchAllSections({ params }) {
   const contentId = String(content._id || content.id);
 
   try {
-    const sectionsRes = await getPageSectionsResolved(
-      CONTENT_PAGE_KEY,
-      contentId,
-      isrFetchOptions({
-        tags: ["page-sections", CONTENT_PAGE_KEY, contentId, `path:${path}`],
-      })
-    ).catch(() => ({ sections: [] }));
+    const sectionsRes = await getPageSectionsResolved(CONTENT_PAGE_KEY, contentId, {
+      cache: "no-store",
+    }).catch(() => ({ sections: [] }));
     cmsSections = sectionsRes.sections || [];
     pageTheme = sectionsRes.page?.theme || null;
   } catch {

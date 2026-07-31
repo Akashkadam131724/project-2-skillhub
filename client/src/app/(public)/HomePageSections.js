@@ -1,7 +1,6 @@
 import PublicPageSections from "@/components/cms/PublicPageSections";
 import { fetchContentByPath } from "@/lib/api";
 import { getPageSectionsResolved } from "@/lib/cms-api";
-import { isrFetchOptions } from "@/lib/isr";
 
 export default async function HomePageSections() {
   let content = null;
@@ -9,20 +8,13 @@ export default async function HomePageSections() {
   let pageTheme = null;
 
   try {
-    const res = await fetchContentByPath(
-      "/",
-      isrFetchOptions({ tags: ["content", "content:home", "path:/"] })
-    );
+    const res = await fetchContentByPath("/");
     content = res?.data || null;
     if (content) {
       const contentId = String(content._id || content.id);
-      const sectionsRes = await getPageSectionsResolved(
-        "home",
-        contentId,
-        isrFetchOptions({
-          tags: ["page-sections", "home", contentId],
-        })
-      ).catch(() => ({ sections: [] }));
+      const sectionsRes = await getPageSectionsResolved("home", contentId, {
+        cache: "no-store",
+      }).catch(() => ({ sections: [] }));
       cmsSections = sectionsRes.sections || [];
       pageTheme = sectionsRes.page?.theme || null;
     }
