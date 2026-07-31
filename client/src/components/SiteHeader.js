@@ -1,6 +1,6 @@
 import Link from "next/link";
 import ProjectNav from "@/components/ProjectNav";
-import HeaderSearch from "@/components/HeaderSearch";
+import HeaderSearch from "@/components/HeaderSearchLazy";
 import SkillHubLogo from "@/components/SkillHubLogo";
 import SectionWrapper from "@/components/sections/SectionWrapper";
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import CmsEditable from "@/components/cms/CmsEditable";
 import CmsRichText from "@/components/cms/CmsRichText";
 import SectionButtonsFooter from "@/components/sections/SectionButtonsFooter";
@@ -25,23 +25,10 @@ export default function OrbitHeroSection({
   onFormOpen,
 }) {
   const ref = useRef(null);
-  const [visible, setVisible] = useState(false);
+  const [visible] = useState(true);
   const img = mediaUrl(section_img_url || data?.image_url);
   const badge = data?.label || data?.eyebrow || "";
   const body = data?.body || "";
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const io = new IntersectionObserver(
-      ([e]) => {
-        if (e.isIntersecting) setVisible(true);
-      },
-      { threshold: 0.15 }
-    );
-    io.observe(el);
-    return () => io.disconnect();
-  }, []);
 
   if (!cmsMode && !section_title && !sub_title && !img) return null;
 

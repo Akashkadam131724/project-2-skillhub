@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
 import SectionWrapper from "../SectionWrapper";
 import SectionButtonsFooter from "../SectionButtonsFooter";
+import SectionImage from "../SectionImage";
 import {
   HeroTitle,
   HeroSubtitle,
@@ -15,7 +15,7 @@ import { mediaUrl } from "@/lib/cms-api";
 import { mediaAlt } from "@/lib/media-alt";
 
 const DEFAULT_HERO_IMAGE =
-  "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&w=1400&q=80";
+  "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&w=1200&q=75";
 
 const TRUST_STATS = [
   { value: "8,500+", label: "Learners yearly" },
@@ -63,7 +63,13 @@ function TrustRow() {
   );
 }
 
-function HeroVisualPanel({ imageUrl, cmsMode, onEditField, section_img_url, section_title }) {
+function HeroVisualPanel({
+  imageUrl,
+  cmsMode,
+  onEditField,
+  section_img_url,
+  section_title,
+}) {
   const resolved = imageUrl || DEFAULT_HERO_IMAGE;
 
   return (
@@ -87,12 +93,14 @@ function HeroVisualPanel({ imageUrl, cmsMode, onEditField, section_img_url, sect
             />
           </div>
         ) : null}
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={resolved}
-          alt={mediaAlt(section_title, "Hero image")}
-          className="aspect-[5/4] w-full rounded-[1.35rem] object-cover"
-        />
+        <div className="relative aspect-[5/4] w-full overflow-hidden rounded-[1.35rem]">
+          <SectionImage
+            src={resolved}
+            alt={mediaAlt(section_title, "Hero image")}
+            fill
+            className="object-cover"
+          />
+        </div>
 
         <div className="absolute inset-x-4 bottom-4 grid gap-2 sm:grid-cols-2">
           <div className="rounded-xl border border-white/60 bg-white/90 p-3 shadow-lg backdrop-blur-md">
@@ -135,22 +143,6 @@ export default function HeroClassicSection({
   onEditField,
   onFormOpen,
 }) {
-  const ref = useRef(null);
-  const [visible, setVisible] = useState(false);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const io = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) setVisible(true);
-      },
-      { threshold: 0.12 }
-    );
-    io.observe(el);
-    return () => io.disconnect();
-  }, []);
-
   if (
     shouldHideEmptyHero("hero_classic", {
       section_title,
@@ -170,15 +162,11 @@ export default function HeroClassicSection({
   const hasImage = hasMediaUrl(section_img_url);
 
   return (
-    <section ref={ref} className="relative overflow-hidden">
+    <section className="relative overflow-hidden">
       <Atmosphere />
       <SectionWrapper className="relative z-10 py-14 sm:py-16 lg:py-20">
         <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:gap-14 xl:gap-16">
-          <div
-            className={`flex min-w-0 flex-col transition duration-700 ease-out ${
-              visible ? "translate-y-0 opacity-100" : "translate-y-5 opacity-0"
-            }`}
-          >
+          <div className="flex min-w-0 flex-col">
             <p className="m-0 mb-4 inline-flex w-fit items-center gap-2 rounded-full section-ui-card border px-3 py-1 text-[11px] font-semibold tracking-[0.18em] text-slate-500 uppercase shadow-sm backdrop-blur-sm dark:text-slate-300">
               <span className="size-1.5 rounded-full bg-brand" />
               Workforce learning platform
@@ -219,11 +207,7 @@ export default function HeroClassicSection({
             <TrustRow />
           </div>
 
-          <div
-            className={`transition duration-700 delay-150 ease-out ${
-              visible ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0"
-            }`}
-          >
+          <div>
             {hasImage ? (
               <div className="relative mx-auto w-full max-w-lg lg:max-w-none">
                 <HeroImage
@@ -232,7 +216,6 @@ export default function HeroClassicSection({
                   onEditField={onEditField}
                   title={section_title}
                   className="w-full"
-                  imgClassName="aspect-[5/4] w-full rounded-[1.75rem] object-cover shadow-[0_32px_80px_-32px_color-mix(in_srgb,var(--ink)_28%,transparent)] ring-1 ring-slate-200/80 dark:ring-slate-800"
                 />
               </div>
             ) : (

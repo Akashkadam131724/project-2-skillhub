@@ -1,16 +1,21 @@
-import { Suspense } from "react";
 import { fetchSkillingAreaBySlug } from "@/lib/api";
-import { getPageSectionsResolved } from "@/lib/cms-api";
 import {
   DetailShell,
   NotFoundState,
 } from "@/components/detail/DetailShell";
-import CmsLivePageSections from "@/components/cms/CmsLivePageSections";
+import PublicPageSectionsSuspense from "@/components/cms/PublicPageSectionsSuspense";
+import ResolvedPageSections from "@/components/cms/ResolvedPageSections";
+import { isrFetchOptions } from "@/lib/isr";
+
+export const revalidate = 60;
 
 export async function generateMetadata({ params }) {
   const { slug } = await params;
   try {
-    const { data } = await fetchSkillingAreaBySlug(slug);
+    const { data } = await fetchSkillingAreaBySlug(
+      slug,
+      isrFetchOptions({ tags: ["skilling-area", `skilling-area:${slug}`] })
+    );
     return {
       title: `${data.name}`,
       description: data.description || data.name,
@@ -24,19 +29,13 @@ export default async function SkillingAreaDetailPage({ params }) {
   const { slug } = await params;
 
   let area;
-  let cmsSections = [];
-  let pageTheme = null;
 
   try {
-    const areaRes = await fetchSkillingAreaBySlug(slug);
+    const areaRes = await fetchSkillingAreaBySlug(
+      slug,
+      isrFetchOptions({ tags: ["skilling-area", `skilling-area:${slug}`] })
+    );
     area = areaRes.data;
-    const areaId = String(area._id || area.id);
-    const sectionsRes = await getPageSectionsResolved(
-      "skilling_area",
-      areaId
-    ).catch(() => ({ sections: [] }));
-    cmsSections = sectionsRes.sections || [];
-    pageTheme = sectionsRes.page?.theme || null;
   } catch {
     return <NotFoundState entity="Skilling area" />;
   }
@@ -55,13 +54,11 @@ export default async function SkillingAreaDetailPage({ params }) {
       ctaLabel="Browse courses"
       flush
     >
-      <Suspense fallback={null}>
-        <CmsLivePageSections
+      <PublicPageSectionsSuspense compact>
+        <ResolvedPageSections
           pageKey="skilling_area"
           entityId={areaId}
-          entityLabel={area.name}
-          initialSections={cmsSections}
-          initialTheme={pageTheme}
+          cacheTags={[`skilling-area:${slug}`]}
           pageContext={{
             entityType: "skilling_area",
             entityId: areaId,
@@ -70,7 +67,7 @@ export default async function SkillingAreaDetailPage({ params }) {
             catalogSubtitle: `Courses mapped to the ${area.name} skilling area.`,
           }}
         />
-      </Suspense>
+      </PublicPageSectionsSuspense>
     </DetailShell>
   );
 }

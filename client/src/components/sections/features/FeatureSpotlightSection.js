@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import SectionImage from "@/components/sections/SectionImage";
 import CmsSectionItemsBar from "@/components/sections/CmsSectionItemsBar";
 import EmptyItemsHint from "@/components/sections/EmptyItemsHint";
 import SectionFrame from "@/components/sections/SectionFrame";
@@ -22,11 +23,12 @@ function SpotlightCard({ item, index, visible }) {
       style={{ transitionDelay: `${delay}ms` }}
     >
       {photo ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
+        <SectionImage
           src={photo}
           alt={mediaAlt(item, "Feature spotlight")}
-          className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-[1.04]"
+          fill
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+          className="object-cover transition duration-700 group-hover:scale-[1.04]"
         />
       ) : (
         <div className="absolute inset-0 bg-[linear-gradient(145deg,#0b1f4d,#1b4de4)]" />

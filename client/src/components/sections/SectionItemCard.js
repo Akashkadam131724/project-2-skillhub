@@ -1,6 +1,7 @@
 "use client";
 
 import CmsRichText from "@/components/cms/CmsRichText";
+import SectionImage from "@/components/sections/SectionImage";
 import SectionButtons from "@/components/ui/SectionButtons";
 import { mediaUrl } from "@/lib/cms-api";
 import { mediaAlt } from "@/lib/media-alt";
@@ -330,10 +331,12 @@ export function WhyChooseItemCard({
           {showIcon ? (
             <div className="flex size-14 items-center justify-center rounded-2xl bg-brand-soft ring-1 ring-brand/10">
               {imgSrc ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
+                <SectionImage
                   src={imgSrc}
                   alt={mediaAlt(item, "Feature icon")}
+                  width={32}
+                  height={32}
+                  sizes="32px"
                   className="max-h-8 max-w-8 object-contain"
                 />
               ) : (

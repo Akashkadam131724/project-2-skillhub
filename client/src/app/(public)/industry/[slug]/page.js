@@ -1,16 +1,21 @@
-import { Suspense } from "react";
 import { fetchIndustryBySlug } from "@/lib/api";
-import { getPageSectionsResolved } from "@/lib/cms-api";
 import {
   DetailShell,
   NotFoundState,
 } from "@/components/detail/DetailShell";
-import CmsLivePageSections from "@/components/cms/CmsLivePageSections";
+import PublicPageSectionsSuspense from "@/components/cms/PublicPageSectionsSuspense";
+import ResolvedPageSections from "@/components/cms/ResolvedPageSections";
+import { isrFetchOptions } from "@/lib/isr";
+
+export const revalidate = 60;
 
 export async function generateMetadata({ params }) {
   const { slug } = await params;
   try {
-    const { data } = await fetchIndustryBySlug(slug);
+    const { data } = await fetchIndustryBySlug(
+      slug,
+      isrFetchOptions({ tags: ["industry", `industry:${slug}`] })
+    );
     return {
       title: `${data.name}`,
       description: data.description || data.name,
@@ -24,19 +29,13 @@ export default async function IndustryDetailPage({ params }) {
   const { slug } = await params;
 
   let industry;
-  let cmsSections = [];
-  let pageTheme = null;
 
   try {
-    const industryRes = await fetchIndustryBySlug(slug);
+    const industryRes = await fetchIndustryBySlug(
+      slug,
+      isrFetchOptions({ tags: ["industry", `industry:${slug}`] })
+    );
     industry = industryRes.data;
-    const industryId = String(industry._id || industry.id);
-    const sectionsRes = await getPageSectionsResolved(
-      "industry",
-      industryId
-    ).catch(() => ({ sections: [] }));
-    cmsSections = sectionsRes.sections || [];
-    pageTheme = sectionsRes.page?.theme || null;
   } catch {
     return <NotFoundState entity="Industry" />;
   }
@@ -55,13 +54,11 @@ export default async function IndustryDetailPage({ params }) {
       ctaLabel="Browse courses"
       flush
     >
-      <Suspense fallback={null}>
-        <CmsLivePageSections
+      <PublicPageSectionsSuspense compact>
+        <ResolvedPageSections
           pageKey="industry"
           entityId={industryId}
-          entityLabel={industry.name}
-          initialSections={cmsSections}
-          initialTheme={pageTheme}
+          cacheTags={[`industry:${slug}`]}
           pageContext={{
             entityType: "industry",
             entityId: industryId,
@@ -70,7 +67,7 @@ export default async function IndustryDetailPage({ params }) {
             catalogSubtitle: `Courses aligned to the ${industry.name} industry.`,
           }}
         />
-      </Suspense>
+      </PublicPageSectionsSuspense>
     </DetailShell>
   );
 }

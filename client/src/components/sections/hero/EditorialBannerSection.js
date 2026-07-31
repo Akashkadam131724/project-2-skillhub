@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import CmsEditable from "@/components/cms/CmsEditable";
 import CmsRichText from "@/components/cms/CmsRichText";
 import SectionButtonsFooter from "@/components/sections/SectionButtonsFooter";
@@ -24,7 +24,7 @@ export default function EditorialBannerSection({
   onFormOpen,
 }) {
   const ref = useRef(null);
-  const [visible, setVisible] = useState(false);
+  const [visible] = useState(true);
   const img = mediaUrl(section_img_url || data?.image_url);
   const body = data?.body || "";
   const fallbackBg = {
@@ -35,19 +35,6 @@ export default function EditorialBannerSection({
     backgroundImage:
       "linear-gradient(to top, color-mix(in srgb, var(--ink) 55%, transparent), transparent 45%)",
   };
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const io = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) setVisible(true);
-      },
-      { threshold: 0.2 }
-    );
-    io.observe(el);
-    return () => io.disconnect();
-  }, []);
 
   if (
     !cmsMode &&

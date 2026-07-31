@@ -1,6 +1,7 @@
 import { Fraunces, Manrope } from "next/font/google";
 import "./globals.css";
-import SiteThemeBootstrap from "@/components/cms/SiteThemeBootstrap";
+import { fetchSiteThemeForLayout } from "@/lib/site-theme-server";
+import { themeCssVars } from "@/lib/theme";
 
 const display = Fraunces({
   subsets: ["latin"],
@@ -25,16 +26,20 @@ export const metadata = {
   },
 };
 
-export default function RootLayout({ children }) {
+export default async function RootLayout({ children }) {
+  const siteTheme = await fetchSiteThemeForLayout();
+  const themeVars = themeCssVars(siteTheme);
+  const themePreset = siteTheme?.preset || "blue";
+
   return (
     <html
       lang="en"
       className={`${display.variable} ${sans.variable} h-full`}
-      data-theme="blue"
+      data-theme={themePreset}
+      style={themeVars}
       suppressHydrationWarning
     >
       <body className="flex min-h-full flex-col bg-white antialiased" suppressHydrationWarning>
-        <SiteThemeBootstrap />
         {children}
       </body>
     </html>

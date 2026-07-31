@@ -2,6 +2,7 @@
 
 import CmsEditable from "@/components/cms/CmsEditable";
 import CmsRichText from "@/components/cms/CmsRichText";
+import SectionImage from "@/components/sections/SectionImage";
 import { mediaUrl } from "@/lib/cms-api";
 import { mediaAlt } from "@/lib/media-alt";
 import {
@@ -152,8 +153,13 @@ export function HeroImage({
       inverted={inverted}
       className={className}
     >
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={imgUrl} alt={mediaAlt(title, "Hero image")} className={imgClassName} />
+      <div className="overflow-hidden rounded-[1.75rem] shadow-[0_32px_80px_-32px_color-mix(in_srgb,var(--ink)_28%,transparent)] ring-1 ring-slate-200/80 dark:ring-slate-800">
+        <SectionImage
+          src={imgUrl}
+          alt={mediaAlt(title, "Hero image")}
+          className="aspect-[5/4] h-auto w-full object-cover"
+        />
+      </div>
     </CmsEditable>
   );
 }

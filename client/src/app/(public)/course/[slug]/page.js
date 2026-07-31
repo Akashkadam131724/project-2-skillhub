@@ -1,11 +1,12 @@
-import { Suspense } from "react";
 import { fetchCourseBySlug } from "@/lib/api";
-import { getPageSectionsResolved } from "@/lib/cms-api";
 import {
   DetailShell,
   NotFoundState,
 } from "@/components/detail/DetailShell";
-import CmsLivePageSections from "@/components/cms/CmsLivePageSections";
+import PublicPageSectionsSuspense from "@/components/cms/PublicPageSectionsSuspense";
+import ResolvedPageSections from "@/components/cms/ResolvedPageSections";
+
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }) {
   const { slug } = await params;
@@ -24,18 +25,10 @@ export default async function CourseDetailPage({ params }) {
   const { slug } = await params;
 
   let course;
-  let cmsSections = [];
-  let pageTheme = null;
 
   try {
     const courseRes = await fetchCourseBySlug(slug);
     course = courseRes.data;
-    const courseId = String(course._id || course.id);
-    const sectionsRes = await getPageSectionsResolved("course", courseId).catch(
-      () => ({ sections: [] })
-    );
-    cmsSections = sectionsRes.sections || [];
-    pageTheme = sectionsRes.page?.theme || null;
   } catch {
     return <NotFoundState entity="Course" />;
   }
@@ -70,13 +63,11 @@ export default async function CourseDetailPage({ params }) {
       ctaLabel={product?.slug ? "View product" : "Back to catalog"}
       flush
     >
-      <Suspense fallback={null}>
-        <CmsLivePageSections
+      <PublicPageSectionsSuspense compact>
+        <ResolvedPageSections
           pageKey="course"
           entityId={courseId}
-          entityLabel={course.name}
-          initialSections={cmsSections}
-          initialTheme={pageTheme}
+          ssr
           pageContext={{
             entityType: "course",
             entityId: courseId,
@@ -85,7 +76,7 @@ export default async function CourseDetailPage({ params }) {
             vendorId,
           }}
         />
-      </Suspense>
+      </PublicPageSectionsSuspense>
     </DetailShell>
   );
 }

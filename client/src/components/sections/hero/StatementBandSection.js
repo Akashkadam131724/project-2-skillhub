@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import CmsEditable from "@/components/cms/CmsEditable";
 import CmsRichText from "@/components/cms/CmsRichText";
 import SectionButtonsFooter from "@/components/sections/SectionButtonsFooter";
@@ -24,23 +24,10 @@ export default function StatementBandSection({
   onFormOpen,
 }) {
   const ref = useRef(null);
-  const [visible, setVisible] = useState(false);
+  const [visible] = useState(true);
   const img = mediaUrl(section_img_url || data?.image_url);
   const eyebrow = data?.eyebrow || data?.label || "";
   const body = data?.body || "";
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const io = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) setVisible(true);
-      },
-      { threshold: 0.2 }
-    );
-    io.observe(el);
-    return () => io.disconnect();
-  }, []);
 
   if (
     !cmsMode &&

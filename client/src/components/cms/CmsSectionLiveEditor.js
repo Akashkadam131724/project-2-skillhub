@@ -13,14 +13,14 @@ import CmsItemsEditor, {
   serializeItemsDraft,
 } from "@/components/cms/CmsItemsEditor";
 import {
-  resolveSectionComponent,
   sectionUsesImage,
   sectionUsesBg,
   sectionUsesBgColor,
   sectionUsesItems,
   getSectionItemsConfig,
 } from "@/lib/section-registry";
-import { FallbackSection } from "@/components/sections";
+import { resolveSectionComponent } from "@/lib/section-registry-sync";
+import FallbackSection from "@/components/sections/FallbackSection";
 import { mediaUrl, uploadCmsImage } from "@/lib/cms-api";
 import { mediaAlt } from "@/lib/media-alt";
 import { normalizeContentScope } from "@/lib/content-scope";

@@ -1,14 +1,41 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Suspense } from "react";
 import { fetchBlogBySlug, fetchBlogs } from "@/lib/api";
-import { getPageSectionsResolved, mediaUrl } from "@/lib/cms-api";
+import { mediaUrl } from "@/lib/cms-api";
 import BlogArticleBody from "@/components/blog/BlogArticleBody";
 import BlogCard from "@/components/blog/BlogCard";
 import BlogTableOfContents from "@/components/blog/BlogTableOfContents";
-import CmsLivePageSections from "@/components/cms/CmsLivePageSections";
+import PublicPageSectionsSuspense from "@/components/cms/PublicPageSectionsSuspense";
+import ResolvedPageSections from "@/components/cms/ResolvedPageSections";
 import SectionWrapper from "@/components/sections/SectionWrapper";
 import { prepareBlogContentWithToc } from "@/lib/blog-toc";
+import { blogFetchOptions } from "@/lib/isr";
+
+export const revalidate = 60;
+
+export async function generateStaticParams() {
+  try {
+    let page = 1;
+    let totalPages = 1;
+    const slugs = [];
+
+    while (page <= totalPages) {
+      const response = await fetchBlogs(
+        { status: "active", page, limit: 100 },
+        blogFetchOptions(null, { list: true })
+      );
+      for (const blog of response.data || []) {
+        if (blog.slug) slugs.push({ slug: blog.slug });
+      }
+      totalPages = response.totalPages || 1;
+      page += 1;
+    }
+
+    return slugs;
+  } catch {
+    return [];
+  }
+}
 
 function formatDate(value) {
   if (!value) return "";
@@ -22,7 +49,7 @@ function formatDate(value) {
 export async function generateMetadata({ params }) {
   const { slug } = await params;
   try {
-    const { data: blog } = await fetchBlogBySlug(slug);
+    const { data: blog } = await fetchBlogBySlug(slug, blogFetchOptions(slug));
     return {
       title: blog.seoTitle || blog.title,
       description: blog.metaDescription || blog.excerpt,
@@ -39,32 +66,29 @@ export async function generateMetadata({ params }) {
   }
 }
 
-export default async function BlogDetailPage({ params, searchParams }) {
-  const [{ slug }, query] = await Promise.all([params, searchParams]);
-  const cmsMode = String(query?.cms || "") === "true";
+export default async function BlogDetailPage({ params }) {
+  const { slug } = await params;
   let blog;
 
   try {
-    const response = await fetchBlogBySlug(slug);
+    const response = await fetchBlogBySlug(slug, blogFetchOptions(slug));
     blog = response.data;
   } catch {
     notFound();
   }
 
-  if (blog.status !== "active" && !cmsMode) notFound();
+  if (blog.status !== "active") notFound();
 
   const blogId = String(blog._id || blog.id);
-  const [sectionsResponse, relatedResponse] = await Promise.all([
-    getPageSectionsResolved("blog", blogId).catch(() => ({
-      sections: [],
-      page: null,
-    })),
-    fetchBlogs({
+  const relatedResponse = await fetchBlogs(
+    {
       status: "active",
       category: blog.category,
       limit: 4,
-    }).catch(() => ({ data: [] })),
-  ]);
+    },
+    blogFetchOptions(null, { list: true })
+  ).catch(() => ({ data: [] }));
+
   const related = (relatedResponse.data || [])
     .filter((item) => item.slug !== blog.slug)
     .slice(0, 3);
@@ -183,13 +207,11 @@ export default async function BlogDetailPage({ params, searchParams }) {
         </section>
       ) : null}
 
-      <Suspense fallback={null}>
-        <CmsLivePageSections
+      <PublicPageSectionsSuspense compact>
+        <ResolvedPageSections
           pageKey="blog"
           entityId={blogId}
-          entityLabel={blog.title}
-          initialSections={sectionsResponse.sections || []}
-          initialTheme={sectionsResponse.page?.theme || null}
+          cacheTags={[`blog:${slug}`, `blog-sections:${slug}`]}
           pageContext={{
             entityType: "blog",
             entityId: blogId,
@@ -197,7 +219,7 @@ export default async function BlogDetailPage({ params, searchParams }) {
             blogSlug: blog.slug,
           }}
         />
-      </Suspense>
+      </PublicPageSectionsSuspense>
     </main>
   );
 }

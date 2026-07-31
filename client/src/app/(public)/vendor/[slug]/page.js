@@ -1,16 +1,21 @@
-import { Suspense } from "react";
 import { fetchVendorBySlug } from "@/lib/api";
-import { getPageSectionsResolved } from "@/lib/cms-api";
 import {
   DetailShell,
   NotFoundState,
 } from "@/components/detail/DetailShell";
-import CmsLivePageSections from "@/components/cms/CmsLivePageSections";
+import PublicPageSectionsSuspense from "@/components/cms/PublicPageSectionsSuspense";
+import ResolvedPageSections from "@/components/cms/ResolvedPageSections";
+import { isrFetchOptions } from "@/lib/isr";
+
+export const revalidate = 60;
 
 export async function generateMetadata({ params }) {
   const { slug } = await params;
   try {
-    const { data } = await fetchVendorBySlug(slug);
+    const { data } = await fetchVendorBySlug(
+      slug,
+      isrFetchOptions({ tags: ["vendor", `vendor:${slug}`] })
+    );
     return {
       title: `${data.name}`,
       description: data.shortDescription || data.description || data.name,
@@ -24,18 +29,13 @@ export default async function VendorDetailPage({ params }) {
   const { slug } = await params;
 
   let vendor;
-  let cmsSections = [];
-  let pageTheme = null;
 
   try {
-    const vendorRes = await fetchVendorBySlug(slug);
-    vendor = vendorRes.data;
-    const vendorId = String(vendor._id || vendor.id);
-    const sectionsRes = await getPageSectionsResolved("vendor", vendorId).catch(
-      () => ({ sections: [] })
+    const vendorRes = await fetchVendorBySlug(
+      slug,
+      isrFetchOptions({ tags: ["vendor", `vendor:${slug}`] })
     );
-    cmsSections = sectionsRes.sections || [];
-    pageTheme = sectionsRes.page?.theme || null;
+    vendor = vendorRes.data;
   } catch {
     return <NotFoundState entity="Vendor" />;
   }
@@ -55,13 +55,11 @@ export default async function VendorDetailPage({ params }) {
       ctaLabel="Browse courses"
       flush
     >
-      <Suspense fallback={null}>
-        <CmsLivePageSections
+      <PublicPageSectionsSuspense compact>
+        <ResolvedPageSections
           pageKey="vendor"
           entityId={vendorId}
-          entityLabel={vendor.name}
-          initialSections={cmsSections}
-          initialTheme={pageTheme}
+          cacheTags={[`vendor:${slug}`]}
           pageContext={{
             entityType: "vendor",
             entityId: vendorId,
@@ -70,7 +68,7 @@ export default async function VendorDetailPage({ params }) {
             catalogSubtitle: `Browse training courses from ${vendor.name}.`,
           }}
         />
-      </Suspense>
+      </PublicPageSectionsSuspense>
     </DetailShell>
   );
 }

@@ -4,8 +4,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import SectionWrapper from "@/components/sections/SectionWrapper";
-import { resolveSectionComponent, sectionUsesImage, sectionUsesBg, sectionUsesBgColor, sectionUsesItems, getSectionItemsConfig } from "@/lib/section-registry";
-import { FallbackSection } from "@/components/sections";
+import CmsPageSectionRender from "@/components/cms/CmsPageSectionRender";
+import { sectionUsesImage, sectionUsesBg, sectionUsesBgColor, sectionUsesItems, getSectionItemsConfig } from "@/lib/section-registry";
 import Drawer from "@/components/ui/Drawer";
 import {
   EmptyState,
@@ -21,8 +21,6 @@ import {
   sectionKind,
   ScopeBadge,
 } from "@/components/cms/CmsSectionFilters";
-import CmsSectionToolbar from "@/components/cms/CmsSectionToolbar";
-import SectionSurface from "@/components/sections/SectionSurface";
 import PageThemeShell from "@/components/cms/PageThemeShell";
 import {
   defaultSiteTheme,
@@ -32,18 +30,17 @@ import {
   surfacePatternLabel,
   themeForApiSave,
 } from "@/lib/theme";
+import { normalizeSectionTheme } from "@/lib/section-theme";
 import {
-  normalizeSectionTheme,
-  computePlacementSurface,
-  SECTION_THEME_BAND_SKIP_KEYS,
-} from "@/lib/section-theme";
-import SectionThemeWrap from "@/components/sections/SectionThemeWrap";
+  buildVisibleWithSurface,
+  normalizeInitialSections,
+  placementKey,
+} from "@/lib/page-sections-stack";
 import { mergePlacementData, pickPlacementArrayField } from "@/lib/placement-data";
 import {
   saveSectionBandForPlacement,
 } from "@/lib/placement-save";
 import { bandDraftFromSection } from "@/lib/section-band-cms";
-import { resolvePageBandFill } from "@/lib/page-band-fill";
 import CmsSectionBandEditor from "@/components/cms/CmsSectionBandEditor";
 import CmsBgColorPicker from "@/components/cms/CmsBgColorPicker";
 import CmsButtonsEditor, {
@@ -54,7 +51,6 @@ import CmsItemsEditor, {
   normalizeItemsDraft,
   serializeItemsDraft,
 } from "@/components/cms/CmsItemsEditor";
-import { shouldRenderPlacement } from "@/lib/item-types";
 import {
   deleteEntityPageSection,
   getEntityPageSections,
@@ -158,10 +154,6 @@ const FIELD_META = {
     hint: "Background image or color for this section — band light/dark comes from page theme",
   },
 };
-
-function placementKey(s) {
-  return s.placement_id || s.page_tag_id || s.entity_override_id;
-}
 
 function previewSrc(section, catalog = []) {
   if (section?.section_preview_img) return section.section_preview_img;
@@ -404,128 +396,6 @@ function mergePlacements(tags, overrides, entityId, catalog = [], sortDisabled =
   );
 }
 
-function SectionRender({
-  section,
-  cmsMode,
-  surfaceTone,
-  surfaceBand,
-  sectionTheme = "inherit",
-  pageTheme,
-  pageContext,
-  catalog = [],
-  navSections,
-  onEditField,
-  onToggleVisibility,
-  onRemoveExtra,
-}) {
-  // Live pages: never mount item-driven sections with no items
-  if (!shouldRenderPlacement(section, cmsMode)) return null;
-
-  const hidden = section.status === false;
-  const key = section.section_key;
-  const renderKey = section.render_key || "";
-  const pid = placementKey(section);
-  const preview = previewSrc(section, catalog);
-  const cmsProps = cmsMode
-    ? {
-      cmsMode: true,
-      onEditField: (field, options) =>
-        onEditField?.(section, field, options),
-    }
-    : {};
-
-  const Comp = resolveSectionComponent(key, renderKey) || FallbackSection;
-  // Section catalog docs use `key` — must not spread into JSX (React reserved)
-  const { key: _catalogKey, ...sectionProps } = section;
-  const compProps = {
-    ...sectionProps,
-    section_key: key || _catalogKey,
-    ...cmsProps,
-    surfaceTone,
-    surfaceBand,
-    sectionTheme,
-    lightBand: sectionTheme === "light",
-    pageContext,
-    ...(key === "in_page_nav" ? { navSections: navSections || [] } : {}),
-  };
-
-  // Sticky nav must NOT sit inside SectionSurface (or any short wrapper) —
-  // position:sticky is limited to its parent's height, so a nav-tall parent
-  // makes sticky appear broken.
-  let body;
-  const fullBleedKeys = SECTION_THEME_BAND_SKIP_KEYS;
-  const pageSurfaceMode = pageTheme?.surface_mode;
-  if (fullBleedKeys.has(key)) {
-    body = (
-      <SectionThemeWrap
-        theme={sectionTheme}
-        sectionKey={key}
-        pageSurfaceMode={pageSurfaceMode}
-      >
-        <Comp {...compProps} />
-      </SectionThemeWrap>
-    );
-  } else {
-    const pageBandFill = resolvePageBandFill(pageTheme, surfaceBand, surfaceTone);
-    body = (
-      <SectionSurface
-        sectionKey={key || _catalogKey}
-        section_bg_color={section.section_bg_color}
-        section_bg_img={section.section_bg_img}
-        legacy_bg_color={section.data?.bg_color}
-        surfaceTone={surfaceTone}
-        surfaceBand={surfaceBand}
-        sectionTheme={sectionTheme}
-        pageTheme={pageTheme}
-        pageSurfaceMode={pageSurfaceMode}
-        pageBandFill={pageBandFill}
-      >
-        <Comp {...compProps} />
-      </SectionSurface>
-    );
-  }
-
-  const cmsToolbar = cmsMode ? (
-    <CmsSectionToolbar
-      section={section}
-      preview={preview}
-      hidden={hidden}
-      onEditField={onEditField}
-      onToggleVisibility={onToggleVisibility}
-      onRemoveExtra={onRemoveExtra}
-    />
-  ) : null;
-
-  if (key === "in_page_nav") {
-    return (
-      <>
-        <div
-          id={`cms-section-${pid}`}
-          className="scroll-mt-[var(--scroll-anchor-offset,7.5rem)]"
-          aria-hidden
-        />
-        {cmsMode ? (
-          <div className={`transition ${hidden ? "opacity-40" : ""}`}>
-            {cmsToolbar}
-          </div>
-        ) : null}
-        {body}
-      </>
-    );
-  }
-
-  return (
-    <div
-      id={`cms-section-${pid}`}
-      className={`scroll-mt-[var(--scroll-anchor-offset,7.5rem)] transition ${cmsMode && hidden ? "opacity-40" : ""
-        }`}
-    >
-      {cmsToolbar}
-      {body}
-    </div>
-  );
-}
-
 export default function CmsLivePageSections({
   pageKey,
   entityId,
@@ -551,16 +421,8 @@ export default function CmsLivePageSections({
     return qs ? `${pathname}?${qs}` : pathname;
   }, [exitHrefProp, pathname, searchParams]);
 
-  const [sections, setSections] = useState(
-    (initialSections || []).map((s) => ({
-      ...s,
-      placement_id:
-        s.placement_id ||
-        (s.page_tag_id
-          ? String(s.page_tag_id)
-          : String(s.sources?.entity_page_section_id || "")),
-      is_entity_extra: Boolean(s.is_entity_extra),
-    }))
+  const [sections, setSections] = useState(() =>
+    normalizeInitialSections(initialSections)
   );
   const [pageTheme, setPageTheme] = useState(
     () => initialTheme || defaultSiteTheme()
@@ -739,20 +601,10 @@ export default function CmsLivePageSections({
     }
   }
 
-  const visible = useMemo(() => {
-    return sections.filter((s) => shouldRenderPlacement(s, cmsMode));
-  }, [cmsMode, sections]);
-
-  const visibleWithSurface = useMemo(() => {
-    const altIndex = { current: 0 };
-    return visible.map((section) => ({
-      section,
-      ...computePlacementSurface(section, {
-        pageTheme,
-        altIndex,
-      }),
-    }));
-  }, [visible, pageTheme]);
+  const visibleWithSurface = useMemo(
+    () => buildVisibleWithSurface(sections, pageTheme, cmsMode),
+    [cmsMode, pageTheme, sections]
+  );
 
   function openFieldEdit(section, field, options = {}) {
     if (
@@ -1316,10 +1168,9 @@ export default function CmsLivePageSections({
                       .filter((s) => s.section_key !== "in_page_nav")
                     : undefined;
                 return (
-                  <SectionRender
+                  <CmsPageSectionRender
                     key={placementKey(section)}
                     section={section}
-                    cmsMode={cmsMode}
                     surfaceTone={surfaceTone}
                     surfaceBand={surfaceBand}
                     sectionTheme={sectionTheme}

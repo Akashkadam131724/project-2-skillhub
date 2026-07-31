@@ -137,14 +137,17 @@ export async function fetchContents(params = {}) {
 }
 
 /** Fetch every active content row (paginates API limit of 100). */
-export async function fetchAllContents(params = {}) {
+export async function fetchAllContents(params = {}, options = {}) {
   const limit = 100;
   let page = 1;
   let totalPages = 1;
   const all = [];
 
   while (page <= totalPages) {
-    const res = await fetchContents({ ...params, page, limit, status: "active" });
+    const res = await fetchContents(
+      { ...params, page, limit, status: "active" },
+      options
+    );
     all.push(...(res.data || []));
     totalPages = res.totalPages || 1;
     page += 1;
