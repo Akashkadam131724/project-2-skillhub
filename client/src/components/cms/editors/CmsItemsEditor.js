@@ -133,8 +133,8 @@ export function normalizeItemsDraft(items) {
 }
 
 /** Persist only fields this section’s UI uses (+ buttons if configured) */
-export function serializeItemsDraft(draft, sectionKey) {
-  const config = getSectionItemsConfig(sectionKey);
+export function serializeItemsDraft(draft, sectionKey, renderKey = "") {
+  const config = getSectionItemsConfig(sectionKey, renderKey);
   const nested = Boolean(config?.nestedTabs);
   const tabFields = config?.fields || ALL_ITEM_FIELDS;
   const childFields = config?.childFields || tabFields;
@@ -241,9 +241,10 @@ export default function CmsItemsEditor({
   value = [],
   onChange,
   sectionKey = "",
+  renderKey = "",
   expandItemButtons = false,
 }) {
-  const config = getSectionItemsConfig(sectionKey);
+  const config = getSectionItemsConfig(sectionKey, renderKey);
   const list = Array.isArray(value) ? value : [];
   const nested = Boolean(config?.nestedTabs);
   const [dragIndex, setDragIndex] = useState(null);

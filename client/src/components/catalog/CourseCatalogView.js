@@ -1,8 +1,9 @@
 import { Suspense } from "react";
 import { fetchCatalog, fetchCatalogFilters } from "@/lib/api";
-import { mergeCatalogParams } from "@/lib/api/catalogParams";
+import { mergeCatalogParams, CATALOG_PAGE_SIZE } from "@/lib/api/catalogParams";
 import CatalogFilters from "@/components/catalog/CatalogFilters";
 import CatalogSearch from "@/components/catalog/CatalogSearch";
+import CatalogScrollAnchor from "@/components/catalog/CatalogScrollAnchor";
 import CourseCard from "@/components/catalog/CourseCard";
 import CatalogPager from "@/components/catalog/CatalogPager";
 
@@ -23,7 +24,7 @@ export default async function CourseCatalogView({
   searchParams = {},
   baseParams = {},
   hideFilterKeys,
-  limit = 20,
+  limit = CATALOG_PAGE_SIZE,
   heading = "Courses",
   catalogTitle = "Course Catalog",
   catalogSubtitle,
@@ -88,31 +89,30 @@ export default async function CourseCatalogView({
         }
       >
         {showFilters && (
-          <Suspense fallback={<FiltersFallback />}>
-            <CatalogFilters
-              groups={visibleGroups}
-              lockedParams={baseParams}
-              lockedKeys={lockedKeys}
-            />
-          </Suspense>
+          <aside className="min-w-0">
+            <Suspense fallback={<FiltersFallback />}>
+              <CatalogFilters
+                groups={visibleGroups}
+                lockedParams={baseParams}
+                lockedKeys={lockedKeys}
+              />
+            </Suspense>
+          </aside>
         )}
 
         <section className="min-w-0">
-          <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <CatalogScrollAnchor className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <h3 className="m-0 text-xl font-bold text-ink dark:text-white">
               {error ? "—" : `${total.toLocaleString("en-US")} ${heading}`}
             </h3>
             <Suspense
               fallback={
-                <div className="h-11 w-full max-w-md animate-pulse rounded-lg bg-slate-100" />
+                <div className="h-12 w-full max-w-md animate-pulse rounded-2xl bg-slate-100 dark:bg-slate-800" />
               }
             >
-              <CatalogSearch
-                placeholder="Search courses"
-                lockedParams={baseParams}
-              />
+              <CatalogSearch lockedParams={baseParams} />
             </Suspense>
-          </div>
+          </CatalogScrollAnchor>
 
           {error && <p className="mb-4 text-sm text-red-700">{error}</p>}
 

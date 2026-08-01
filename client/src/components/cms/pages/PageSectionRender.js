@@ -4,6 +4,7 @@ import {
   PageSectionPlacementShell,
   wrapSectionBody,
 } from "@/components/cms/sections/page-section-placement";
+import { itemsConfigRenderKey } from "@/lib/sections/section-render-key";
 
 /**
  * Server-friendly placement renderer for public pages (code-split sections).
@@ -18,7 +19,7 @@ export default function PageSectionRender({
   navSections,
 }) {
   const key = section.section_key;
-  const renderKey = section.render_key || "";
+  const renderKey = itemsConfigRenderKey(section);
   const { compProps, catalogKey } = buildSectionCompProps({
     section,
     cmsMode: false,

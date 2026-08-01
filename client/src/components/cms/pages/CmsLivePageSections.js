@@ -6,6 +6,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import SectionWrapper from "@/components/sections/SectionWrapper";
 import CmsPageSectionRender from "@/components/cms/pages/CmsPageSectionRender";
 import { sectionUsesImage, sectionUsesBg, sectionUsesBgColor, sectionUsesItems, getSectionItemsConfig } from "@/lib/sections/section-registry";
+import { itemsConfigRenderKey, placementRenderKey } from "@/lib/sections/section-render-key";
 import Drawer from "@/components/ui/Drawer";
 import {
   EmptyState,
@@ -267,7 +268,9 @@ function mergePlacements(tags, overrides, entityId, catalog = [], sortDisabled =
       page_tag_id: tag.id,
       is_entity_extra: false,
       section_key: tag.section_key,
-      render_key: catalogSection?.render_key || "",
+      render_key: placementRenderKey(
+        catalogSection || { key: tag.section_key }
+      ),
       section_id: tag.section_id,
       name: tag.section_name || tag.section_key,
       content_scope,
@@ -320,7 +323,9 @@ function mergePlacements(tags, overrides, entityId, catalog = [], sortDisabled =
         extra.section_key ||
         catalogSection?.key ||
         "",
-      render_key: catalogSection?.render_key || "",
+      render_key: placementRenderKey(
+        catalogSection || { key: tag.section_key }
+      ),
       section_id: extra.section,
       name: catalogSection?.name || extra.section_key || catalogSection?.key || "",
       content_scope,
@@ -681,8 +686,8 @@ export default function CmsLivePageSections({
         .finally(() => setSaving(false));
       return;
     }
-    if (field === "items" && !sectionUsesItems(section.section_key, section.render_key)) return;
-    if (field === "section_img_url" && !sectionUsesImage(section.section_key, section.render_key))
+    if (field === "items" && !sectionUsesItems(section.section_key, itemsConfigRenderKey(section))) return;
+    if (field === "section_img_url" && !sectionUsesImage(section.section_key, itemsConfigRenderKey(section)))
       return;
     if (field === "section_bg_img" && !sectionUsesBg(section.section_key))
       return;
@@ -842,7 +847,8 @@ export default function CmsLivePageSections({
         await savePlacement(section, {
           items: serializeItemsDraft(
             itemsDraftRef.current,
-            section.section_key
+            section.section_key,
+            itemsConfigRenderKey(section)
           ),
         });
       } else if (field === "body") {
@@ -1042,7 +1048,7 @@ export default function CmsLivePageSections({
     editing?.field === "items"
       ? getSectionItemsConfig(
         editing.section.section_key,
-        editing.section.render_key
+        itemsConfigRenderKey(editing.section)
       )
       : null;
   const drawerTitle = editing
@@ -1708,6 +1714,7 @@ export default function CmsLivePageSections({
                         value={itemsDraft}
                         onChange={setItemsDraft}
                         sectionKey={editing.section.section_key}
+                        renderKey={itemsConfigRenderKey(editing.section)}
                         expandItemButtons={Boolean(editing.expandItemButtons)}
                       />
                     ) : meta.input === "bg_color" ? (

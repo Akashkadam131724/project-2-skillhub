@@ -11,7 +11,6 @@ const NAV = [
   { href: "/cms", label: "Dashboard", exact: true },
   { href: "/cms/site-theme", label: "Site theme" },
   { href: "/cms/pages", label: "All pages" },
-  { href: "/cms/section", label: "Section library" },
   { href: "/cms/pages-content-sections", label: "All sections" },
   { href: "/cms/vendors", label: "Vendors" },
   { href: "/cms/products", label: "Products" },
@@ -20,6 +19,7 @@ const NAV = [
   { href: "/cms/industries", label: "Industries" },
   { href: "/cms/skilling-areas", label: "Skilling areas" },
   { href: "/cms/contents", label: "Content pages" },
+  { href: "/cms/section", label: "Section library Preview" },
 ];
 
 const STORAGE_KEY = "cms-sidebar-open";

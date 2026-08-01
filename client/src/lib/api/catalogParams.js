@@ -1,3 +1,11 @@
+/** Default course catalog page size */
+export const CATALOG_PAGE_SIZE = 14;
+
+/**
+ * @deprecated Use CSS var `--catalog-scroll-offset` and scrollToCatalogAnchor() instead.
+ */
+export const CATALOG_SCROLL_OFFSET = 124;
+
 /**
  * Merge URL search params with locked base params (base wins).
  */

@@ -8,6 +8,8 @@ import {
   wrapSectionBody,
 } from "@/components/cms/sections/page-section-placement";
 import { resolveSectionComponent } from "@/lib/sections/section-registry-sync";
+import { itemsConfigRenderKey } from "@/lib/sections/section-render-key";
+import { SectionCmsProvider } from "@/components/cms/sections/SectionCmsContext";
 import FallbackSection from "@/components/sections/FallbackSection";
 
 /**
@@ -27,7 +29,7 @@ export default function CmsPageSectionRender({
   onRemoveExtra,
 }) {
   const key = section.section_key;
-  const renderKey = section.render_key || "";
+  const itemsRenderKey = itemsConfigRenderKey(section);
   const hidden = section.status === false;
   const preview = previewSrc(section, catalog);
 
@@ -42,8 +44,12 @@ export default function CmsPageSectionRender({
     onEditField,
   });
 
-  const Comp = resolveSectionComponent(key, renderKey) || FallbackSection;
-  const sectionBody = <Comp {...compProps} />;
+  const Comp = resolveSectionComponent(key, itemsRenderKey) || FallbackSection;
+  const sectionBody = (
+    <SectionCmsProvider section={section} renderKey={itemsRenderKey}>
+      <Comp {...compProps} />
+    </SectionCmsProvider>
+  );
 
   const body = wrapSectionBody({
     section,

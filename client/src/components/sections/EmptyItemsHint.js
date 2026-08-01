@@ -1,14 +1,23 @@
 "use client";
 
 import { getSectionItemsConfig } from "@/lib/sections/section-items-config";
+import { useSectionCmsKeys } from "@/components/cms/sections/SectionCmsContext";
 
 /** Shared empty state for item-driven sections in CMS mode */
 export default function EmptyItemsHint({
-  sectionKey,
+  sectionKey: sectionKeyProp,
+  renderKey: renderKeyProp,
   label,
   onEditField,
 }) {
-  const config = getSectionItemsConfig(sectionKey);
+  const ctx = useSectionCmsKeys();
+  const sectionKey = sectionKeyProp || ctx.sectionKey;
+  const renderKey =
+    renderKeyProp !== undefined && renderKeyProp !== null
+      ? renderKeyProp
+      : ctx.renderKey;
+
+  const config = getSectionItemsConfig(sectionKey, renderKey);
   const name =
     label || config?.actionLabel || config?.label || "items";
 

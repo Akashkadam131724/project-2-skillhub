@@ -1,20 +1,29 @@
 "use client";
 
 import { getSectionItemsConfig } from "@/lib/sections/section-items-config";
+import { useSectionCmsKeys } from "@/components/cms/sections/SectionCmsContext";
 
 /**
  * CMS control placed next to the cards — label comes from section config
  * (FAQ items, Benefit cards, Stats, …) not a generic "Items".
  */
 export default function CmsSectionItemsBar({
-  sectionKey,
+  sectionKey: sectionKeyProp,
+  renderKey: renderKeyProp,
   cmsMode,
   onEditField,
   itemCount = 0,
   className = "",
 }) {
+  const ctx = useSectionCmsKeys();
+  const sectionKey = sectionKeyProp || ctx.sectionKey;
+  const renderKey =
+    renderKeyProp !== undefined && renderKeyProp !== null
+      ? renderKeyProp
+      : ctx.renderKey;
+
   if (!cmsMode) return null;
-  const config = getSectionItemsConfig(sectionKey);
+  const config = getSectionItemsConfig(sectionKey, renderKey);
   if (!config) return null;
 
   const label = config.actionLabel || config.label || "Items";

@@ -11,6 +11,7 @@ import {
   uploadCmsImage,
 } from "@/lib/api/cms-api";
 import { isKnownSectionKey, SECTION_CATEGORIES } from "@/lib/sections/section-registry";
+import { ensureSectionRenderKeySaved } from "@/lib/sections/section-render-key";
 import { SECTION_THEME_OPTIONS } from "@/lib/sections/section-theme";
 import {
   contentScopeLabel,
@@ -52,7 +53,10 @@ export default function CmsSectionDetailPage() {
     setError(null);
     try {
       const sectionRes = await getSection(sectionKey);
-      const data = sectionRes.data;
+      const { section: data } = await ensureSectionRenderKeySaved(
+        sectionRes.data,
+        updateSection
+      );
       setSection(data);
       setMeta({
         name: data.name || "",
@@ -76,7 +80,10 @@ export default function CmsSectionDetailPage() {
       try {
         const sectionRes = await getSection(sectionKey);
         if (!alive) return;
-        const data = sectionRes.data;
+        const { section: data } = await ensureSectionRenderKeySaved(
+          sectionRes.data,
+          updateSection
+        );
         setSection(data);
         setMeta({
           name: data.name || "",

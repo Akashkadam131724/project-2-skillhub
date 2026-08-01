@@ -3,6 +3,7 @@ import Breadcrumbs from "@/components/layout/Breadcrumbs";
 import PageBanner from "@/components/layout/PageBanner";
 import CatalogSearch from "@/components/catalog/CatalogSearch";
 import CatalogPager from "@/components/catalog/CatalogPager";
+import CatalogScrollAnchor from "@/components/catalog/CatalogScrollAnchor";
 import SectionWrapper from "@/components/sections/SectionWrapper";
 
 /**
@@ -44,7 +45,7 @@ export default function EntityCatalog({
         ctaHref={bannerCtaHref}
       />
 
-      <SectionWrapper id="catalog" className="py-6 pb-16">
+      <SectionWrapper id="catalog" className="scroll-mt-[var(--catalog-scroll-offset)] py-6 pb-16">
         <header className="mb-8 text-center sm:mb-10">
           <h2 className="m-0 text-[1.75rem] leading-tight font-bold tracking-tight text-ink sm:text-3xl dark:text-white">
             {title}
@@ -56,7 +57,7 @@ export default function EntityCatalog({
           )}
         </header>
 
-        <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <CatalogScrollAnchor className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <h3 className="m-0 text-xl font-bold text-ink dark:text-white">
             {error
               ? "—"
@@ -66,12 +67,12 @@ export default function EntityCatalog({
           </h3>
           <Suspense
             fallback={
-              <div className="h-11 w-full max-w-md animate-pulse rounded-lg bg-slate-100" />
+              <div className="h-12 w-full max-w-md animate-pulse rounded-2xl bg-slate-100 dark:bg-slate-800" />
             }
           >
-            <CatalogSearch placeholder={searchPlaceholder} />
+            <CatalogSearch />
           </Suspense>
-        </div>
+        </CatalogScrollAnchor>
 
         {error && <p className="mb-4 text-sm text-red-700">{error}</p>}
 

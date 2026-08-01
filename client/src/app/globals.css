@@ -299,6 +299,10 @@ body {
 
 :root {
   --site-header-h: 4.25rem;
+  --in-page-nav-h: 3.25rem;
+  --catalog-scroll-offset: calc(
+    var(--site-header-h) + var(--in-page-nav-h) + 1.5rem
+  );
 }
 
 @media (min-width: 1024px) {

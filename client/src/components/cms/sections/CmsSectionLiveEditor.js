@@ -20,6 +20,8 @@ import {
   getSectionItemsConfig,
 } from "@/lib/sections/section-registry";
 import { resolveSectionComponent } from "@/lib/sections/section-registry-sync";
+import { itemsConfigRenderKey } from "@/lib/sections/section-render-key";
+import { SectionCmsProvider } from "@/components/cms/sections/SectionCmsContext";
 import FallbackSection from "@/components/sections/FallbackSection";
 import { mediaUrl, uploadCmsImage } from "@/lib/api/cms-api";
 import { mediaAlt } from "@/lib/utils/media-alt";
@@ -184,10 +186,11 @@ export default function CmsSectionLiveEditor({
 
   const key = section.section_key || section.key;
   const renderKey = section.render_key || "";
+  const itemsRenderKey = itemsConfigRenderKey(section);
   const meta = editingField ? CMS_FIELD_META[editingField] : null;
   const itemsConfig =
     editingField === "items"
-      ? getSectionItemsConfig(key, renderKey)
+      ? getSectionItemsConfig(key, itemsRenderKey)
       : null;
   const drawerTitle =
     editingField === "items"
@@ -204,7 +207,7 @@ export default function CmsSectionLiveEditor({
       field = "section_band";
     }
     if (!CMS_FIELD_META[field]) return;
-    if (field === "items" && !sectionUsesItems(key, renderKey)) return;
+    if (field === "items" && !sectionUsesItems(key, itemsRenderKey)) return;
     if (field === "section_img_url" && !sectionUsesImage(key, renderKey)) return;
     if (field === "section_bg_img" && !sectionUsesBg(key)) return;
 
@@ -270,7 +273,7 @@ export default function CmsSectionLiveEditor({
         patch = { buttons: serializeButtonsDraft(buttonsDraftRef.current) };
       } else if (editingField === "items") {
         patch = {
-          items: serializeItemsDraft(itemsDraftRef.current, key),
+          items: serializeItemsDraft(itemsDraftRef.current, key, itemsRenderKey),
         };
       } else if (editingField === "body") {
         const value = sanitizeRichHtml(fieldValueState);
@@ -298,7 +301,7 @@ export default function CmsSectionLiveEditor({
     }
   }
 
-  const Comp = resolveSectionComponent(key, renderKey) || FallbackSection;
+  const Comp = resolveSectionComponent(key, itemsRenderKey) || FallbackSection;
   const hidden = section.status === false;
   // Section catalog docs use `key` — must not spread into JSX (React reserved)
   const { key: _catalogKey, ...sectionProps } = section;
@@ -325,6 +328,7 @@ export default function CmsSectionLiveEditor({
           }
         />
 
+        <SectionCmsProvider section={section} renderKey={itemsRenderKey}>
         {SECTION_THEME_BAND_SKIP_KEYS.has(String(key || "").toLowerCase()) ? (
           <SectionThemeWrap theme={sectionTheme} sectionKey={key}>
             <Comp
@@ -359,6 +363,7 @@ export default function CmsSectionLiveEditor({
             />
           </SectionSurface>
         )}
+        </SectionCmsProvider>
       </div>
 
       <Drawer
@@ -444,6 +449,7 @@ export default function CmsSectionLiveEditor({
                     value={itemsDraft}
                     onChange={setItemsDraft}
                     sectionKey={key}
+                    renderKey={itemsRenderKey}
                   />
                 ) : meta.input === "bg_color" ? (
                   <form onSubmit={saveField} className="space-y-3">

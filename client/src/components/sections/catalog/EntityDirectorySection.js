@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import SectionFrame from "../SectionFrame";
 import CatalogSearch from "@/components/catalog/CatalogSearch";
 import CatalogPager from "@/components/catalog/CatalogPager";
+import CatalogScrollAnchor from "@/components/catalog/CatalogScrollAnchor";
 import {
   VendorCatalogCard,
   ProductCatalogCard,
@@ -176,7 +177,7 @@ function EntityDirectoryBody({
       {...frameProps}
     >
       <div className="overflow-hidden rounded-[1.75rem] border border-slate-200/80 bg-white p-4 shadow-[0_24px_70px_-48px_color-mix(in_srgb,var(--ink)_35%,transparent)] sm:p-6">
-        <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <CatalogScrollAnchor className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <h3 className="m-0 font-[family-name:var(--font-display)] text-xl font-semibold section-theme-heading">
             {loading
               ? "…"
@@ -186,12 +187,12 @@ function EntityDirectoryBody({
           </h3>
           <Suspense
             fallback={
-              <div className="h-11 w-full max-w-md animate-pulse rounded-lg bg-slate-100" />
+              <div className="h-12 w-full max-w-md animate-pulse rounded-2xl bg-slate-100 dark:bg-slate-800" />
             }
           >
             <CatalogSearch placeholder={meta.searchPlaceholder} />
           </Suspense>
-        </div>
+        </CatalogScrollAnchor>
 
         {error ? <p className="m-0 mb-4 text-sm text-rose-600">{error}</p> : null}
 

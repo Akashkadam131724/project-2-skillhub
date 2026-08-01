@@ -1,10 +1,32 @@
 "use client";
 
-import { useMemo, useState, useTransition } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import Drawer, { HamburgerButton } from "@/components/ui/Drawer";
 import { applyLockedParams } from "@/lib/api/catalogParams";
+import { scrollToCatalogAnchor } from "@/lib/catalog/scrollAnchor";
 import ChevronDownIcon from "@/components/icons/ChevronDownIcon";
+
+function parseList(value) {
+  if (!value) return [];
+  return String(value)
+    .split(",")
+    .map((v) => v.trim())
+    .filter(Boolean);
+}
+
+function normalizeId(value) {
+  return String(value || "").trim();
+}
+
+function isOptionSelected(option, selectedIds) {
+  const selected = selectedIds.map(normalizeId);
+  const id = normalizeId(option?.id);
+  if (id && selected.includes(id)) return true;
+  const slug = normalizeId(option?.slug);
+  if (slug && selected.includes(slug)) return true;
+  return false;
+}
 
 function FilterAccordion({
   title,
@@ -18,17 +40,33 @@ function FilterAccordion({
   defaultOpen = true,
 }) {
   const [open, setOpen] = useState(defaultOpen);
+  const activeCount = selectedIds.length;
 
   return (
-    <section className="border-t border-slate-200 pt-4 dark:border-slate-700">
+    <section
+      className={`border-t border-slate-200 pt-4 dark:border-slate-700 ${
+        activeCount ? "border-brand/20" : ""
+      }`}
+    >
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
         className="mb-3 flex w-full cursor-pointer items-center justify-between border-0 bg-transparent p-0 text-left"
         aria-expanded={open}
       >
-        <span className="text-base font-bold text-ink dark:text-white">
+        <span
+          className={`text-base font-bold ${
+            activeCount
+              ? "text-brand dark:text-brand"
+              : "text-ink dark:text-white"
+          }`}
+        >
           {title}
+          {activeCount ? (
+            <span className="ml-2 inline-flex min-w-[1.25rem] items-center justify-center rounded-full bg-brand px-1.5 py-0.5 text-[11px] font-semibold text-white">
+              {activeCount}
+            </span>
+          ) : null}
         </span>
         <ChevronDownIcon
           className={`size-4 text-slate-500 transition ${open ? "rotate-180" : ""}`}
@@ -52,7 +90,7 @@ function FilterAccordion({
           <ul className="m-0 grid max-h-[140px] list-none gap-2 overflow-auto p-0">
             {items.map((item) => {
               const id = String(item.id);
-              const checked = selectedIds.includes(id);
+              const checked = isOptionSelected(item, selectedIds);
               const empty = typeof item.count === "number" && item.count === 0;
               const disabled = empty && !checked;
               return (
@@ -69,7 +107,7 @@ function FilterAccordion({
                       checked={checked}
                       disabled={disabled}
                       onChange={() => onToggle(id)}
-                      className="size-4 shrink-0 cursor-pointer appearance-none rounded-[3px] border border-slate-300 bg-white checked:border-brand checked:bg-brand checked:bg-[length:0.7rem] checked:bg-center checked:bg-no-repeat checked:bg-[url('data:image/svg+xml,%3Csvg%20viewBox%3D%270%200%2016%2016%27%20fill%3D%27white%27%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%3E%3Cpath%20d%3D%27M6.2%2011.4%202.8%208l1.1-1.1%202.3%202.3%205-5L12.3%205.3z%27/%3E%3C/svg%3E')] disabled:cursor-not-allowed disabled:opacity-50"
+                      className="size-4 shrink-0 cursor-pointer rounded accent-brand disabled:cursor-not-allowed disabled:opacity-50"
                     />
                     <span className="min-w-0 flex-1 leading-snug">
                       {item.label}
@@ -91,14 +129,6 @@ function FilterAccordion({
       )}
     </section>
   );
-}
-
-function parseList(value) {
-  if (!value) return [];
-  return String(value)
-    .split(",")
-    .map((v) => v.trim())
-    .filter(Boolean);
 }
 
 function FiltersPanel({
@@ -134,13 +164,20 @@ function FiltersPanel({
       <div className="grid gap-4">
         {groups.map((group) => {
           const term = (searches[group.key] || "").trim().toLowerCase();
+          const selectedIds = selectedByKey[group.key] || [];
+          const selectedSet = new Set(selectedIds.map(normalizeId));
+          const options = group.options || [];
           const items = term
-            ? (group.options || []).filter((opt) =>
-                String(opt.label || "")
+            ? options.filter((opt) => {
+                const id = normalizeId(opt.id);
+                if (id && selectedSet.has(id)) return true;
+                const slug = normalizeId(opt.slug);
+                if (slug && selectedSet.has(slug)) return true;
+                return String(opt.label || "")
                   .toLowerCase()
-                  .includes(term)
-              )
-            : group.options || [];
+                  .includes(term);
+              })
+            : options;
 
           return (
             <FilterAccordion
@@ -153,7 +190,7 @@ function FiltersPanel({
               searchValue={searches[group.key] || ""}
               onSearchChange={(value) => setSearch(group.key, value)}
               items={items}
-              selectedIds={selectedByKey[group.key] || []}
+              selectedIds={selectedIds}
               onToggle={(id) =>
                 toggleOption(group.key, id, group.clearKeys || [])
               }
@@ -181,27 +218,47 @@ export default function CatalogFilters({
   const [isPending, startTransition] = useTransition();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [searches, setSearches] = useState({});
+  const [pendingSelections, setPendingSelections] = useState({});
 
   const lockedKeySet = useMemo(
     () => new Set(lockedKeys.length ? lockedKeys : Object.keys(lockedParams)),
     [lockedKeys, lockedParams]
   );
 
+  const paramsKey = searchParams.toString();
+
   const selectedByKey = useMemo(() => {
     const map = {};
     for (const group of groups) {
-      map[group.key] = parseList(searchParams.get(group.key));
+      const fromUrl = parseList(searchParams.get(group.key)).map(normalizeId);
+      const fromLocked =
+        lockedKeySet.has(group.key) && lockedParams[group.key] != null
+          ? parseList(lockedParams[group.key]).map(normalizeId)
+          : [];
+      map[group.key] = [...new Set([...fromUrl, ...fromLocked])];
     }
     return map;
-  }, [groups, searchParams]);
+  }, [groups, paramsKey, searchParams, lockedKeySet, lockedParams]);
+
+  useEffect(() => {
+    setPendingSelections({});
+  }, [paramsKey]);
+
+  const effectiveSelectedByKey = useMemo(() => {
+    const map = { ...selectedByKey };
+    for (const [key, ids] of Object.entries(pendingSelections)) {
+      if (Array.isArray(ids)) map[key] = ids;
+    }
+    return map;
+  }, [selectedByKey, pendingSelections]);
 
   const hasFilters = useMemo(() => {
     if (searchParams.get("q")) return true;
     return groups.some((group) => {
       if (lockedKeySet.has(group.key)) return false;
-      return (selectedByKey[group.key] || []).length > 0;
+      return (effectiveSelectedByKey[group.key] || []).length > 0;
     });
-  }, [groups, selectedByKey, searchParams, lockedKeySet]);
+  }, [groups, effectiveSelectedByKey, searchParams, lockedKeySet]);
 
   function pushParams(params) {
     applyLockedParams(params, lockedParams);
@@ -213,7 +270,8 @@ export default function CatalogFilters({
     });
     const qs = params.toString();
     startTransition(() => {
-      router.push(qs ? `${pathname}?${qs}` : pathname);
+      router.push(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
+      requestAnimationFrame(() => scrollToCatalogAnchor());
     });
   }
 
@@ -227,12 +285,25 @@ export default function CatalogFilters({
   function toggleOption(key, id, clearKeys = []) {
     if (lockedKeySet.has(key)) return;
 
-    updateParams((params) => {
-      const current = parseList(params.get(key));
-      const next = current.includes(id)
-        ? current.filter((v) => v !== id)
-        : [...current, id];
+    const current = (
+      pendingSelections[key] ??
+      selectedByKey[key] ??
+      []
+    ).map(normalizeId);
+    const normId = normalizeId(id);
+    const next = current.includes(normId)
+      ? current.filter((v) => v !== normId)
+      : [...current, normId];
 
+    setPendingSelections((prev) => {
+      const pending = { ...prev, [key]: next };
+      clearKeys.forEach((k) => {
+        if (!lockedKeySet.has(k)) delete pending[k];
+      });
+      return pending;
+    });
+
+    updateParams((params) => {
       if (next.length) params.set(key, next.join(","));
       else params.delete(key);
 
@@ -243,6 +314,7 @@ export default function CatalogFilters({
   }
 
   function clearAll() {
+    setPendingSelections({});
     const params = new URLSearchParams();
     pushParams(params);
   }
@@ -259,7 +331,7 @@ export default function CatalogFilters({
     groups,
     searches,
     setSearch,
-    selectedByKey,
+    selectedByKey: effectiveSelectedByKey,
     toggleOption,
     hasFilters,
     clearAll,
@@ -272,9 +344,15 @@ export default function CatalogFilters({
         <HamburgerButton
           label="Open filters"
           onClick={() => setDrawerOpen(true)}
+          active={hasFilters}
         />
-        <span className="text-sm font-semibold text-ink dark:text-white">
+        <span
+          className={`text-sm font-semibold ${
+            hasFilters ? "text-brand" : "text-ink dark:text-white"
+          }`}
+        >
           Filters
+          {hasFilters ? " (active)" : ""}
         </span>
       </div>
 

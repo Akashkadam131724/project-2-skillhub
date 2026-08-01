@@ -6,6 +6,7 @@ import { fetchBlogs } from "@/lib/api";
 import BlogCard from "@/components/blog/BlogCard";
 import CatalogSearch from "@/components/catalog/CatalogSearch";
 import CatalogPager from "@/components/catalog/CatalogPager";
+import CatalogScrollAnchor from "@/components/catalog/CatalogScrollAnchor";
 import SectionFrame from "../SectionFrame";
 
 function BlogDirectoryBody({
@@ -71,7 +72,7 @@ function BlogDirectoryBody({
       buttonsFooter={false}
       {...frameProps}
     >
-      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <CatalogScrollAnchor className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <p className="m-0 text-sm text-slate-500">
           {loading
             ? "Loading…"
@@ -81,12 +82,12 @@ function BlogDirectoryBody({
         </p>
         <Suspense
           fallback={
-            <div className="h-11 w-full max-w-md animate-pulse rounded-lg bg-slate-100 dark:bg-slate-800" />
+            <div className="h-12 w-full max-w-md animate-pulse rounded-2xl bg-slate-100 dark:bg-slate-800" />
           }
         >
           <CatalogSearch placeholder="Search insights…" />
         </Suspense>
-      </div>
+      </CatalogScrollAnchor>
 
       {error ? (
         <p className="m-0 mb-4 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700 dark:border-rose-900 dark:bg-rose-950/40 dark:text-rose-200">

@@ -10,13 +10,23 @@ import {
   listSections,
   mediaUrl,
   setSectionStatus,
+  updateSection,
 } from "@/lib/api/cms-api";
 import {
   SECTION_CATALOG,
   SECTION_CATEGORIES,
   isKnownSectionKey,
 } from "@/lib/sections/section-registry";
-import { contentScopeLabel } from "@/lib/cms/content-scope";
+import {
+  effectiveRenderKey,
+  ensureSectionRenderKeySaved,
+  variantRenderKeyForCreate,
+} from "@/lib/sections/section-render-key";
+import {
+  CONTENT_SCOPES,
+  contentScopeLabel,
+  normalizeContentScope,
+} from "@/lib/cms/content-scope";
 import {
   FilterGroup,
   FilterChipRow,
@@ -36,7 +46,19 @@ import {
   SectionPreviewThumb,
   btnPrimary,
   btnSecondary,
+  inputClass,
 } from "@/components/cms/admin/CmsUi";
+
+const SNAKE_KEY_RE = /^[a-z0-9]+(?:_[a-z0-9]+)*$/;
+
+function openVariantFromSection(section) {
+  return {
+    baseKey: section.key,
+    scope: normalizeContentScope(section.content_scope),
+    sectionTitle: section.section_title || section.name || "",
+    navTitle: section.in_page_nav_title || section.name || "",
+  };
+}
 
 const SHOW_SECTION_PREVIEWS_KEY = "cms-show-section-previews";
 const SHOW_SECTION_FILTERS_KEY = "cms-show-section-filters";
@@ -74,7 +96,14 @@ export default function CmsSectionsPage() {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [showForm, setShowForm] = useState(false);
+  const [showDevForm, setShowDevForm] = useState(false);
+  const [showVariantForm, setShowVariantForm] = useState(false);
+  const [variantBaseKey, setVariantBaseKey] = useState("");
+  const [variantKey, setVariantKey] = useState("");
+  const [variantScope, setVariantScope] = useState("page");
+  const [variantSectionTitle, setVariantSectionTitle] = useState("");
+  const [variantNavTitle, setVariantNavTitle] = useState("");
+  const [variantCopyContent, setVariantCopyContent] = useState(true);
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [categorySearch, setCategorySearch] = useState("");
   const [scopeFilter, setScopeFilter] = useState("all");
@@ -172,6 +201,57 @@ export default function CmsSectionsPage() {
     [sections]
   );
 
+  const variantBaseSection = useMemo(
+    () => sections.find((s) => s.key === variantBaseKey) || null,
+    [sections, variantBaseKey]
+  );
+
+  const sectionsForVariantBase = useMemo(
+    () =>
+      [...sections].sort((a, b) =>
+        String(a.name || a.key).localeCompare(String(b.name || b.key))
+      ),
+    [sections]
+  );
+
+  function resetVariantForm() {
+    setVariantBaseKey("");
+    setVariantKey("");
+    setVariantScope("page");
+    setVariantSectionTitle("");
+    setVariantNavTitle("");
+    setVariantCopyContent(true);
+  }
+
+  function openVariantForm(section = null) {
+    setShowDevForm(false);
+    setShowVariantForm(true);
+    setError(null);
+    if (section) {
+      const seed = openVariantFromSection(section);
+      setVariantBaseKey(seed.baseKey);
+      setVariantScope(seed.scope);
+      setVariantSectionTitle(seed.sectionTitle);
+      setVariantNavTitle(seed.navTitle);
+      setVariantKey("");
+    } else {
+      resetVariantForm();
+    }
+  }
+
+  function closeVariantForm() {
+    setShowVariantForm(false);
+    resetVariantForm();
+  }
+
+  useEffect(() => {
+    if (!variantBaseSection || !showVariantForm) return;
+    const seed = openVariantFromSection(variantBaseSection);
+    setVariantScope(seed.scope);
+    setVariantSectionTitle(seed.sectionTitle);
+    setVariantNavTitle(seed.navTitle);
+  }, [variantBaseKey, variantBaseSection, showVariantForm]);
+
   const filteredSections = useMemo(() => {
     return sections.filter((s) => {
       if (categoryFilter !== "all" && sectionCategory(s) !== categoryFilter) {
@@ -210,7 +290,7 @@ export default function CmsSectionsPage() {
         status: true,
       });
       setPickKey("");
-      setShowForm(false);
+      setShowDevForm(false);
       router.push(`/cms/pages-content-sections/${res.data.key}`);
     } catch (err) {
       setError(err);
@@ -219,7 +299,104 @@ export default function CmsSectionsPage() {
     }
   }
 
+  async function onCreateVariant(e) {
+    e.preventDefault();
+    const key = variantKey.trim().toLowerCase();
+    const sectionTitle = variantSectionTitle.trim();
+    const navTitle = variantNavTitle.trim();
 
+    if (!variantBaseSection) {
+      setError({ message: "Pick an existing section to use as the template." });
+      return;
+    }
+    if (!key || !SNAKE_KEY_RE.test(key)) {
+      setError({
+        message:
+          "Section key is required and must be snake_case (letters, numbers, underscores).",
+      });
+      return;
+    }
+    if (existingKeys.has(key)) {
+      setError({ message: `Section key "${key}" is already in use.` });
+      return;
+    }
+    if (!sectionTitle) {
+      setError({ message: "Section title is required." });
+      return;
+    }
+    if (!navTitle) {
+      setError({ message: "In-page nav label is required." });
+      return;
+    }
+
+    const base = variantBaseSection;
+    setSaving(true);
+    setError(null);
+    try {
+      const { section: repairedBase, patched: basePatched } =
+        await ensureSectionRenderKeySaved(base, updateSection);
+      if (basePatched) {
+        setSections((prev) =>
+          prev.map((s) => (s.key === repairedBase.key ? repairedBase : s))
+        );
+      }
+
+      const componentKey = effectiveRenderKey(repairedBase);
+      const renderKey = variantRenderKeyForCreate(key, componentKey);
+
+      if (!isKnownSectionKey(key, renderKey)) {
+        setError({
+          message:
+            "The selected section has no registered UI component. Pick a different source section.",
+        });
+        setSaving(false);
+        return;
+      }
+
+      const body = {
+        key,
+        name: sectionTitle,
+        render_key: renderKey,
+        content_scope: variantScope,
+        category_key: sectionCategory(repairedBase),
+        section_title: sectionTitle,
+        in_page_nav_title: navTitle,
+        status: true,
+      };
+
+      if (variantCopyContent) {
+        if (repairedBase.sub_title) body.sub_title = repairedBase.sub_title;
+        if (repairedBase.section_bg_img) body.section_bg_img = repairedBase.section_bg_img;
+        if (repairedBase.section_bg_color) {
+          body.section_bg_color = repairedBase.section_bg_color;
+        }
+        if (repairedBase.section_img_url) {
+          body.section_img_url = repairedBase.section_img_url;
+        }
+        if (repairedBase.section_theme) body.section_theme = repairedBase.section_theme;
+        if (repairedBase.section_preview_img) {
+          body.section_preview_img = repairedBase.section_preview_img;
+        }
+        if (repairedBase.data && typeof repairedBase.data === "object") {
+          body.data = JSON.parse(JSON.stringify(repairedBase.data));
+        }
+        if (Array.isArray(repairedBase.buttons) && repairedBase.buttons.length) {
+          body.buttons = JSON.parse(JSON.stringify(repairedBase.buttons));
+        }
+        if (Array.isArray(repairedBase.items) && repairedBase.items.length) {
+          body.items = JSON.parse(JSON.stringify(repairedBase.items));
+        }
+      }
+
+      const res = await createSection(body);
+      closeVariantForm();
+      router.push(`/cms/pages-content-sections/${res.data.key}`);
+    } catch (err) {
+      setError(err);
+    } finally {
+      setSaving(false);
+    }
+  }
 
   return (
     <div>
@@ -264,9 +441,17 @@ export default function CmsSectionsPage() {
             <button
               type="button"
               className={btnPrimary}
-              onClick={() => setShowForm((v) => !v)}
+              onClick={() => {
+                if (showDevForm) setShowDevForm(false);
+                else {
+                  setShowVariantForm(false);
+                  resetVariantForm();
+                  setShowDevForm(true);
+                  setError(null);
+                }
+              }}
             >
-              {showForm ? "Cancel" : "Add section"}
+              {showDevForm ? "Cancel" : "Add section type"}
             </button>
           </>
         }
@@ -274,8 +459,151 @@ export default function CmsSectionsPage() {
 
       <ErrorBanner error={error} />
 
-      {showForm ? (
-        <CmsPanel title="Add section" className="mb-4">
+      {showVariantForm ? (
+        <CmsPanel title="New section from existing" className="mb-4">
+          <p className="mt-0 mb-4 text-sm text-slate-600 dark:text-slate-400">
+            Pick an existing section — UI and category are inherited automatically.
+          </p>
+          {sections.length ? (
+            <form onSubmit={onCreateVariant} className="space-y-4">
+              <Field
+                label="Based on"
+                hint="The UI component and defaults come from this section"
+              >
+                <select
+                  className={inputClass}
+                  value={variantBaseKey}
+                  onChange={(e) => setVariantBaseKey(e.target.value)}
+                  required
+                >
+                  <option value="">Select a section…</option>
+                  {sectionsForVariantBase.map((section) => (
+                    <option key={section.key} value={section.key}>
+                      {section.name} ({section.key})
+                    </option>
+                  ))}
+                </select>
+              </Field>
+
+              {variantBaseSection ? (
+                <div className="flex flex-wrap items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-600 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300">
+                  <span>
+                    UI:{" "}
+                    <code className="rounded bg-slate-200 px-1 dark:bg-slate-800">
+                      {effectiveRenderKey(variantBaseSection)}
+                    </code>
+                  </span>
+                  <CategoryBadge
+                    category={sectionCategory(variantBaseSection)}
+                    categories={categories}
+                  />
+                </div>
+              ) : null}
+
+              <Field
+                label="New section key"
+                hint="Unique snake_case ID — cannot be changed later"
+              >
+                <input
+                  className={inputClass}
+                  value={variantKey}
+                  onChange={(e) => setVariantKey(e.target.value.toLowerCase())}
+                  placeholder="e.g. odyssey_testimonials"
+                  pattern="[a-z0-9]+(?:_[a-z0-9]+)*"
+                  required
+                />
+              </Field>
+
+              <Field label="Content scope">
+                <select
+                  className={inputClass}
+                  value={variantScope}
+                  onChange={(e) => setVariantScope(e.target.value)}
+                  required
+                >
+                  {CONTENT_SCOPES.map((scope) => (
+                    <option key={scope} value={scope}>
+                      {contentScopeLabel(scope)}
+                    </option>
+                  ))}
+                </select>
+              </Field>
+
+              <div className="grid gap-4 sm:grid-cols-2">
+                <Field label="Section title" hint="Default heading on the page">
+                  <input
+                    className={inputClass}
+                    value={variantSectionTitle}
+                    onChange={(e) => setVariantSectionTitle(e.target.value)}
+                    placeholder="e.g. Odyssey testimonials"
+                    maxLength={80}
+                    required
+                  />
+                </Field>
+                <Field label="In-page nav label" hint="Sticky nav link text">
+                  <input
+                    className={inputClass}
+                    value={variantNavTitle}
+                    onChange={(e) => setVariantNavTitle(e.target.value)}
+                    placeholder="e.g. Testimonials"
+                    maxLength={80}
+                    required
+                  />
+                </Field>
+              </div>
+
+              <label className="flex cursor-pointer items-start gap-2 text-sm text-slate-700 dark:text-slate-200">
+                <input
+                  type="checkbox"
+                  className="mt-1"
+                  checked={variantCopyContent}
+                  onChange={(e) => setVariantCopyContent(e.target.checked)}
+                />
+                <span>
+                  Copy default content from source (title fields, items, buttons,
+                  images, and data)
+                </span>
+              </label>
+
+              <div className="flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  className={btnSecondary}
+                  onClick={closeVariantForm}
+                  disabled={saving}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className={btnPrimary}
+                  disabled={
+                    saving ||
+                    !variantBaseKey ||
+                    !variantKey ||
+                    !variantSectionTitle ||
+                    !variantNavTitle
+                  }
+                >
+                  {saving ? "Creating…" : "Create section"}
+                </button>
+              </div>
+            </form>
+          ) : (
+            <EmptyState message='No sections yet. Use "Add section type" to register a component first.' />
+          )}
+        </CmsPanel>
+      ) : null}
+
+      {showDevForm ? (
+        <CmsPanel title="Add section type (developer)" className="mb-4">
+          <p className="mt-0 mb-4 text-sm text-slate-600 dark:text-slate-400">
+            Register a new React component from{" "}
+            <code className="rounded bg-slate-200 px-1 dark:bg-slate-800">
+              section-registry.js
+            </code>
+            .
+          </p>
           {availableToAdd.length ? (
             <form onSubmit={onCreate} className="space-y-4">
               <Field
@@ -392,7 +720,7 @@ export default function CmsSectionsPage() {
             {loading ? (
               <p className="text-sm text-slate-500">Loading…</p>
             ) : !sections.length ? (
-              <EmptyState message='No sections yet. Click "Add section" to register a component type.' />
+              <EmptyState message='No sections yet. Use "Add section type" to register a component first, then use "New from this" on a row to duplicate.' />
             ) : !filteredSections.length ? (
               <EmptyState message="No sections match these filters. Clear filters and try again." />
             ) : showSectionPreviews ? (
@@ -425,6 +753,13 @@ export default function CmsSectionsPage() {
                           >
                             Edit
                           </Link>
+                          <button
+                            type="button"
+                            className={btnPrimary}
+                            onClick={() => openVariantForm(section)}
+                          >
+                            New from this
+                          </button>
                         </div>
                       </div>
                       {previewUrl ? (
@@ -489,6 +824,11 @@ export default function CmsSectionsPage() {
                           </td>
                           <td className="py-3 pr-3 font-mono text-xs text-slate-500">
                             {section.key}
+                            {section.render_key ? (
+                              <span className="mt-0.5 block text-slate-400">
+                                → {section.render_key}
+                              </span>
+                            ) : null}
                             {!isKnownSectionKey(section.key, section.render_key) ? (
                               <span className="mt-0.5 block text-amber-600">
                                 no component
@@ -550,7 +890,13 @@ export default function CmsSectionsPage() {
                               >
                                 Edit Section
                               </Link>
-
+                              <button
+                                type="button"
+                                className={btnPrimary}
+                                onClick={() => openVariantForm(section)}
+                              >
+                                New from this
+                              </button>
                             </div>
                           </td>
                         </tr>

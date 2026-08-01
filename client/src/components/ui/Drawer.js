@@ -167,13 +167,21 @@ export default function Drawer({
   );
 }
 
-export function HamburgerButton({ onClick, label = "Open menu" }) {
+export function HamburgerButton({
+  onClick,
+  label = "Open menu",
+  active = false,
+}) {
   return (
     <button
       type="button"
       onClick={onClick}
       aria-label={label}
-      className="inline-flex size-10 shrink-0 cursor-pointer flex-col items-center justify-center gap-1 rounded-xl border border-slate-200/80 bg-white/70 p-0 text-ink transition hover:border-ink/20 hover:bg-white hover:text-brand dark:border-slate-700 dark:bg-slate-900/70 dark:text-white dark:hover:bg-slate-900"
+      className={`inline-flex size-10 shrink-0 cursor-pointer flex-col items-center justify-center gap-1 rounded-xl border p-0 transition dark:bg-slate-900/70 dark:text-white ${
+        active
+          ? "border-brand bg-brand/10 text-brand dark:border-brand dark:bg-brand/20"
+          : "border-slate-200/80 bg-white/70 text-ink hover:border-ink/20 hover:bg-white hover:text-brand dark:border-slate-700 dark:hover:bg-slate-900"
+      }`}
     >
       <span className="block h-0.5 w-[1.15rem] rounded-full bg-current" />
       <span className="block h-0.5 w-[1.15rem] rounded-full bg-current" />

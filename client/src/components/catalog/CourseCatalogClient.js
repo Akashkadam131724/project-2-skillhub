@@ -3,9 +3,10 @@
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { fetchCatalog, fetchCatalogFilters } from "@/lib/api";
-import { mergeCatalogParams } from "@/lib/api/catalogParams";
+import { mergeCatalogParams, CATALOG_PAGE_SIZE } from "@/lib/api/catalogParams";
 import CatalogFilters from "@/components/catalog/CatalogFilters";
 import CatalogSearch from "@/components/catalog/CatalogSearch";
+import CatalogScrollAnchor from "@/components/catalog/CatalogScrollAnchor";
 import CourseCard from "@/components/catalog/CourseCard";
 import CatalogPager from "@/components/catalog/CatalogPager";
 
@@ -16,7 +17,7 @@ import CatalogPager from "@/components/catalog/CatalogPager";
 export default function CourseCatalogClient({
   baseParams = {},
   hideFilterKeys,
-  limit = 20,
+  limit = CATALOG_PAGE_SIZE,
   heading = "Courses",
 }) {
   const urlParams = useSearchParams();
@@ -97,32 +98,30 @@ export default function CourseCatalogClient({
   const showFilters = visibleGroups.length > 0;
 
   return (
-    <div>
-      <div
-        className={
-          showFilters
-            ? "grid items-start gap-6 lg:grid-cols-[300px_1fr]"
-            : "grid items-start gap-6"
-        }
-      >
+    <div
+      className={
+        showFilters
+          ? "grid items-start gap-6 lg:grid-cols-[300px_1fr]"
+          : "grid items-start gap-6"
+      }
+    >
         {showFilters ? (
-          <CatalogFilters
-            groups={visibleGroups}
-            lockedParams={baseParams}
-            lockedKeys={lockedKeys}
-          />
+          <aside className="min-w-0">
+            <CatalogFilters
+              groups={visibleGroups}
+              lockedParams={baseParams}
+              lockedKeys={lockedKeys}
+            />
+          </aside>
         ) : null}
 
         <section className="min-w-0">
-          <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <CatalogScrollAnchor className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <h3 className="m-0 font-[family-name:var(--font-display)] text-2xl font-semibold tracking-tight text-ink dark:text-white">
               {loading ? "…" : error ? "—" : `${total.toLocaleString("en-US")} ${heading}`}
             </h3>
-            <CatalogSearch
-              placeholder="Search courses"
-              lockedParams={baseParams}
-            />
-          </div>
+            <CatalogSearch lockedParams={baseParams} />
+          </CatalogScrollAnchor>
 
           {error ? <p className="mb-4 text-sm text-rose-600">{error}</p> : null}
 
@@ -160,6 +159,5 @@ export default function CourseCatalogClient({
           </div>
         </section>
       </div>
-    </div>
   );
 }
