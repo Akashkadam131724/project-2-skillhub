@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import SectionLightCard from "@/components/sections/design/SectionLightCard";
+import DsButton from "@/components/ui/DsButton";
 import { DS_FIELD, DS_TEXT } from "@/lib/sections/section-design-system";
 
 function Field({ id, label, required, children }) {
@@ -166,13 +167,16 @@ export default function ShortLeadForm({
             </p>
           ) : null}
 
-          <button
-            type="submit"
+          <DsButton
+            label={status === "submitting" ? "Sending…" : submitLabel}
+            variant="primary"
+            size="md"
+            shape="rounded"
+            icon="none"
+            htmlType="submit"
             disabled={status === "submitting" || cmsMode}
-            className="section-btn section-btn--primary w-full rounded-xl px-5 py-2.5 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
-          >
-            {status === "submitting" ? "Sending…" : submitLabel}
-          </button>
+            className="w-full sm:w-auto"
+          />
         </form>
       )}
     </SectionLightCard>

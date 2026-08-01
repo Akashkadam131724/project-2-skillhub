@@ -78,6 +78,18 @@ const nextConfig = {
         protocol: "https",
         hostname: "media.craiyon.com",
       },
+      {
+        protocol: "https",
+        hostname: "www.motionpictures.org",
+      },
+      {
+        protocol: "https",
+        hostname: "cdn.moviefone.com",
+      },
+      {
+        protocol: "https",
+        hostname: "dx35vtwkllhj9.cloudfront.net",
+      },
       ...uploadRemotePatterns(),
     ],
   },

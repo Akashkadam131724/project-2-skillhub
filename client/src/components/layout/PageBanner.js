@@ -1,5 +1,5 @@
-import Link from "next/link";
 import SectionWrapper from "@/components/sections/SectionWrapper";
+import DsButton from "@/components/ui/DsButton";
 import { mediaAlt } from "@/lib/utils/media-alt";
 
 function BannerAtmosphere() {
@@ -70,18 +70,26 @@ export default function PageBanner({
 
         {ctaHref && ctaLabel ? (
           <div className="mt-8 flex flex-wrap gap-3 sm:mt-10">
-            <Link
-              href={ctaHref}
-              className="inline-flex items-center justify-center rounded-xl bg-white px-5 py-3 text-sm font-semibold text-ink no-underline transition hover:bg-white/90 sm:px-6 sm:text-[15px]"
-            >
-              {ctaLabel}
-            </Link>
-            <Link
-              href="/get-started"
-              className="inline-flex items-center justify-center rounded-xl border border-white/25 bg-white/10 px-5 py-3 text-sm font-semibold text-white no-underline backdrop-blur-sm transition hover:border-white/40 hover:bg-white/15 sm:px-6 sm:text-[15px]"
-            >
-              Plan a program
-            </Link>
+            <DsButton
+              label={ctaLabel}
+              variant="outline"
+              size="md"
+              shape="rounded"
+              icon="none"
+              action_type="url"
+              target_url={ctaHref}
+              surface="dark"
+            />
+            <DsButton
+              label="Plan a program"
+              variant="outline"
+              size="md"
+              shape="rounded"
+              icon="none"
+              action_type="url"
+              target_url="/get-started"
+              surface="dark"
+            />
           </div>
         ) : null}
       </SectionWrapper>

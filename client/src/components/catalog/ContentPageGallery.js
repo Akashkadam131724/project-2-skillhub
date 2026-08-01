@@ -1,12 +1,12 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
-import Link from "next/link";
 import {
   accentForPath,
   groupContentPages,
 } from "@/lib/content/content-catalog";
 import SectionWrapper from "@/components/sections/SectionWrapper";
+import DsButton from "@/components/ui/DsButton";
 import ChevronLeftIcon from "@/components/icons/ChevronLeftIcon";
 import ChevronRightIcon from "@/components/icons/ChevronRightIcon";
 
@@ -74,21 +74,28 @@ function GalleryModal({ pages, index, onClose, onChangeIndex }) {
           >
             <ChevronRightIcon className="size-5" />
           </button>
-          <Link
-            href={page.path}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hidden h-10 items-center justify-center rounded-xl bg-white px-4 text-sm font-semibold text-ink no-underline transition hover:bg-brand hover:text-white sm:inline-flex"
-          >
-            Open page
-          </Link>
-          <button
-            type="button"
+          <DsButton
+            label="Open page"
+            variant="inverse"
+            size="md"
+            shape="rounded"
+            icon="external"
+            icon_position="end"
+            action_type="url"
+            target_url={page.path}
+            open_in_new_tab
+            surface="dark"
+            className="hidden sm:inline-flex"
+          />
+          <DsButton
+            label="Close"
+            variant="outline"
+            size="md"
+            shape="rounded"
+            icon="none"
             onClick={onClose}
-            className="inline-flex h-10 items-center justify-center rounded-xl border border-white/20 px-4 text-sm font-semibold text-white transition hover:bg-white/10"
-          >
-            Close
-          </button>
+            surface="dark"
+          />
         </div>
       </div>
 
@@ -141,19 +148,24 @@ function ContentCard({ page, onOpenAt }) {
           ) : null}
         </div>
         <div className="mt-auto flex flex-wrap gap-2">
-          <button
-            type="button"
+          <DsButton
+            label="Gallery"
+            variant="primary"
+            size="sm"
+            shape="rounded"
+            icon="none"
             onClick={() => onOpenAt(page)}
-            className="inline-flex h-9 flex-1 items-center justify-center rounded-xl bg-ink px-3 text-xs font-semibold text-white transition hover:bg-brand dark:bg-white dark:text-ink dark:hover:bg-brand dark:hover:text-white"
-          >
-            Gallery
-          </button>
-          <Link
-            href={page.path}
-            className="inline-flex h-9 items-center justify-center rounded-xl border border-slate-200 px-3 text-xs font-semibold text-ink no-underline transition hover:border-brand/40 dark:border-slate-700 dark:text-white"
-          >
-            Open
-          </Link>
+            className="flex-1"
+          />
+          <DsButton
+            label="Open"
+            variant="outline"
+            size="sm"
+            shape="rounded"
+            icon="none"
+            action_type="url"
+            target_url={page.path}
+          />
         </div>
       </div>
     </article>
@@ -208,20 +220,24 @@ export default function ContentPageGallery({ pages, title, subtitle }) {
             ) : null}
           </div>
           <div className="flex flex-wrap gap-2">
-            <button
-              type="button"
+            <DsButton
+              label="Browse gallery"
+              variant="primary"
+              size="md"
+              shape="rounded"
+              icon="none"
               onClick={openGallery}
               disabled={!flatFiltered.length}
-              className="inline-flex h-11 items-center justify-center rounded-xl bg-ink px-5 text-sm font-semibold text-white transition hover:bg-brand disabled:cursor-not-allowed disabled:opacity-40 dark:bg-white dark:text-ink dark:hover:bg-brand dark:hover:text-white"
-            >
-              Browse gallery
-            </button>
-            <Link
-              href="/catalog"
-              className="inline-flex h-11 items-center justify-center rounded-xl border border-slate-200 px-5 text-sm font-semibold text-ink no-underline transition hover:border-brand/40 dark:border-slate-700 dark:text-white"
-            >
-              All catalogs
-            </Link>
+            />
+            <DsButton
+              label="All catalogs"
+              variant="outline"
+              size="md"
+              shape="rounded"
+              icon="none"
+              action_type="url"
+              target_url="/catalog"
+            />
           </div>
         </div>
 

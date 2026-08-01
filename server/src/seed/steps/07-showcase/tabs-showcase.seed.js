@@ -775,6 +775,6 @@ async function seed() {
 
 seed().catch(async (err) => {
   console.error("Tabs showcase seed failed:", err);
-  await mongoose.disconnect().catch(() => {});
+  await mongoose.disconnect().catch(() => { });
   process.exit(1);
 });

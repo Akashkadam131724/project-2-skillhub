@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import Link from "next/link";
 import { fetchCatalog } from "@/lib/api";
 import CourseCard from "@/components/catalog/CourseCard";
+import DsButton from "@/components/ui/DsButton";
 import { EmptyState } from "@/components/detail/DetailShell";
 import SectionFrame from "../SectionFrame";
 import { catalogBaseParamsFromContext } from "./CatalogSection";
@@ -75,12 +75,15 @@ export default function RelatedCoursesSection({
       subtitle={subtitle}
       eyebrow="Courses"
       action={
-        <Link
-          href="#catalog"
-          className="inline-flex items-center rounded-xl section-ui-card border px-4 py-2.5 text-sm font-semibold section-theme-heading no-underline transition hover:border-brand hover:text-brand"
-        >
-          View full catalog
-        </Link>
+        <DsButton
+          label="View full catalog"
+          variant="outline"
+          size="md"
+          shape="rounded"
+          icon="none"
+          action_type="anchor"
+          target_id="catalog"
+        />
       }
       buttonsFooter={false}
       {...frameProps}

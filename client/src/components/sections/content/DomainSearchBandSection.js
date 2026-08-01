@@ -5,6 +5,7 @@ import CmsSectionItemsBar from "@/components/sections/CmsSectionItemsBar";
 import EmptyItemsHint from "@/components/sections/EmptyItemsHint";
 import SectionButtonsFooter from "@/components/sections/SectionButtonsFooter";
 import SectionWrapper from "@/components/sections/SectionWrapper";
+import DsButton from "@/components/ui/DsButton";
 import { resolveItemsForSection } from "@/lib/sections/item-types";
 
 /** Domain search mock band inspired by website-builder homepages. */

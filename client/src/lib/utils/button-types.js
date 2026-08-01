@@ -1,5 +1,18 @@
 /** Keep in sync with server/src/modules/cms/button.schema.js */
 
+import {
+  BUTTON_ICON_GROUPS,
+  BUTTON_ICON_LABELS,
+  BUTTON_ICON_PRESETS,
+  isButtonIconPreset,
+} from "@/lib/ui/button-icon-catalog";
+
+export {
+  BUTTON_ICON_GROUPS,
+  BUTTON_ICON_LABELS,
+  BUTTON_ICON_PRESETS,
+};
+
 export const BUTTON_VARIANTS = [
   "primary",
   "secondary",
@@ -7,17 +20,57 @@ export const BUTTON_VARIANTS = [
   "ghost",
   "link",
   "inverse",
+  "danger",
 ];
 
-export const BUTTON_ACTION_TYPES = ["url", "anchor", "form", "youtube"];
+export const BUTTON_SIZES = ["sm", "md", "lg"];
+
+export const BUTTON_SHAPES = ["rounded", "pill", "square"];
+
+export const BUTTON_ICON_POSITIONS = ["start", "end"];
+
+export const BUTTON_ACTION_TYPES = [
+  "url",
+  "anchor",
+  "form",
+  "youtube",
+  "email",
+  "phone",
+  "download",
+  "scroll_top",
+];
 
 export const BUTTON_VARIANT_LABELS = {
-  primary: "Primary",
-  secondary: "Secondary",
-  outline: "Outline",
+  primary: "Primary (white fill on dark)",
+  secondary: "Secondary (glass on dark)",
+  outline: "Outline (white border on dark)",
   ghost: "Ghost",
   link: "Link",
-  inverse: "Inverse (on dark)",
+  inverse: "Inverse (white fill on dark)",
+  danger: "Danger / destructive",
+};
+
+/** Dark-band CTAs — solid primary + white outline secondary */
+export const BUTTON_DARK_CTA_PRESETS = [
+  { variant: "primary", label: "Primary CTA" },
+  { variant: "outline", label: "Secondary CTA" },
+];
+
+export const BUTTON_SIZE_LABELS = {
+  sm: "Small",
+  md: "Medium",
+  lg: "Large",
+};
+
+export const BUTTON_SHAPE_LABELS = {
+  rounded: "Rounded",
+  pill: "Pill",
+  square: "Square",
+};
+
+export const BUTTON_ICON_POSITION_LABELS = {
+  start: "Start (before label)",
+  end: "End (after label)",
 };
 
 export const BUTTON_ACTION_LABELS = {
@@ -25,17 +78,175 @@ export const BUTTON_ACTION_LABELS = {
   anchor: "On-page target (#id)",
   form: "Open form",
   youtube: "YouTube video",
+  email: "Send email",
+  phone: "Call phone",
+  download: "Download file",
+  scroll_top: "Scroll to top",
+};
+
+const DEFAULT_BUTTON = {
+  label: "",
+  variant: "primary",
+  size: "md",
+  shape: "rounded",
+  icon: "auto",
+  icon_position: "start",
+  action_type: "url",
+  target_url: "",
+  target_id: "",
+  form_key: "",
+  open_in_new_tab: false,
+  full_width: false,
+  aria_label: "",
+  download_filename: "",
+  cls_bg: "",
+  cls_text: "",
+  cls_border: "",
+  cls_hover_bg: "",
+  cls_hover_text: "",
+  cls_hover_border: "",
+  sort_order: 0,
+  status: true,
+};
+
+/** Normalize CMS button object with design-system defaults. */
+export function normalizeButton(button = {}) {
+  let variant = String(button.variant || DEFAULT_BUTTON.variant).toLowerCase();
+  if (variant === "inverse_outline") variant = "outline";
+  const size = String(button.size || DEFAULT_BUTTON.size).toLowerCase();
+  const shape = String(button.shape || DEFAULT_BUTTON.shape).toLowerCase();
+  const icon = String(button.icon ?? DEFAULT_BUTTON.icon).trim() || "auto";
+  const icon_position = String(
+    button.icon_position || DEFAULT_BUTTON.icon_position
+  ).toLowerCase();
+
+  return {
+    ...button,
+    label: String(button.label || "").trim(),
+    variant: BUTTON_VARIANTS.includes(variant) ? variant : "primary",
+    size: BUTTON_SIZES.includes(size) ? size : "md",
+    shape: BUTTON_SHAPES.includes(shape) ? shape : "rounded",
+    icon: isButtonIconPreset(icon) ? icon : "auto",
+    icon_position: BUTTON_ICON_POSITIONS.includes(icon_position)
+      ? icon_position
+      : "start",
+    action_type: BUTTON_ACTION_TYPES.includes(
+      String(button.action_type || "url").toLowerCase()
+    )
+      ? String(button.action_type || "url").toLowerCase()
+      : "url",
+    target_url: String(button.target_url || ""),
+    target_id: String(button.target_id || "").replace(/^#/, ""),
+    form_key: String(button.form_key || ""),
+    open_in_new_tab: Boolean(button.open_in_new_tab),
+    full_width: Boolean(button.full_width),
+    aria_label: String(button.aria_label || "").trim(),
+    download_filename: String(button.download_filename || "").trim(),
+    cls_bg: String(button.cls_bg || "").trim(),
+    cls_text: String(button.cls_text || "").trim(),
+    cls_border: String(button.cls_border || "").trim(),
+    cls_hover_bg: String(button.cls_hover_bg || "").trim(),
+    cls_hover_text: String(button.cls_hover_text || "").trim(),
+    cls_hover_border: String(button.cls_hover_border || "").trim(),
+    sort_order: button.sort_order ?? 0,
+    status: button.status !== false,
+  };
+}
+
+/** Accessible label — explicit aria_label or visible label. */
+export function buttonAriaLabel(button) {
+  const b = normalizeButton(button);
+  return b.aria_label || b.label || undefined;
+}
+
+/** Tailwind !-class overrides from CMS cls_* fields */
+export function buttonAppearanceClasses(button) {
+  const b = normalizeButton(button);
+  return [
+    b.cls_bg,
+    b.cls_text,
+    b.cls_border,
+    b.cls_hover_bg,
+    b.cls_hover_text,
+    b.cls_hover_border,
+  ]
+    .filter((part) => String(part || "").trim())
+    .join(" ");
+}
+
+/** Map stored variant → BEM modifier class */
+export function buttonVariantClass(variant) {
+  return `section-btn--${variant}`;
+}
+
+/** CSS class list for the design-system button shell. */
+export function buttonDesignClasses(button, extraClass = "") {
+  const b = normalizeButton(button);
+  const size = b.size === "md" ? "" : `section-btn--${b.size}`;
+  const shape = b.shape === "rounded" ? "" : `section-btn--${b.shape}`;
+  const width = b.full_width ? "section-btn--full" : "";
+  return [
+    "section-btn",
+    buttonVariantClass(b.variant),
+    size,
+    shape,
+    width,
+    buttonAppearanceClasses(b),
+    extraClass,
+  ]
+    .filter(Boolean)
+    .join(" ");
+}
+
+export function buttonSurfaceProps(surface = "inherit") {
+  if (surface === "light") return { "data-btn-surface": "light" };
+  if (surface === "dark") return { "data-btn-surface": "dark" };
+  return {};
+}
+
+/** Optional per-button color overrides — maps to --ds-btn-custom-* CSS variables. */
+export const BUTTON_CUSTOM_STYLE_KEYS = {
+  bg: "--ds-btn-custom-bg",
+  fg: "--ds-btn-custom-fg",
+  border: "--ds-btn-custom-border",
+  hoverBg: "--ds-btn-custom-hover-bg",
+  hoverFg: "--ds-btn-custom-hover-fg",
+  hoverBorder: "--ds-btn-custom-hover-border",
 };
 
 /**
- * Extract a YouTube video id from common URL shapes:
- * watch?v=, youtu.be/, embed/, shorts/, live/
+ * Inline style object for custom button colors (bg, text, border + hover).
+ * @example buttonCustomStyle({ border: "#fff", fg: "#fff", hoverBg: "rgb(255 255 255 / 0.12)" })
  */
+export function buttonCustomStyle(tokens = {}) {
+  const out = {};
+  const aliases = {
+    bg: tokens.bg ?? tokens.background,
+    fg: tokens.fg ?? tokens.color ?? tokens.text,
+    border: tokens.border,
+    hoverBg: tokens.hoverBg ?? tokens.hoverBackground,
+    hoverFg: tokens.hoverFg ?? tokens.hoverColor ?? tokens.hoverText,
+    hoverBorder: tokens.hoverBorder,
+  };
+
+  for (const [key, cssVar] of Object.entries(BUTTON_CUSTOM_STYLE_KEYS)) {
+    const value = aliases[key];
+    if (value != null && String(value).trim() !== "") {
+      out[cssVar] = String(value).trim();
+    }
+  }
+
+  return out;
+}
+
+/** Merge custom tokens + arbitrary style for DsButton. */
+export function buttonMergedStyle(custom, style) {
+  return { ...buttonCustomStyle(custom), ...(style || {}) };
+}
+
 export function parseYoutubeVideoId(input) {
   const raw = String(input || "").trim();
   if (!raw) return null;
-
-  // Bare 11-char id
   if (/^[\w-]{11}$/.test(raw)) return raw;
 
   try {
@@ -47,7 +258,11 @@ export function parseYoutubeVideoId(input) {
       return id && /^[\w-]{11}$/.test(id) ? id : null;
     }
 
-    if (host === "youtube.com" || host === "m.youtube.com" || host === "music.youtube.com") {
+    if (
+      host === "youtube.com" ||
+      host === "m.youtube.com" ||
+      host === "music.youtube.com"
+    ) {
       const v = url.searchParams.get("v");
       if (v && /^[\w-]{11}$/.test(v)) return v;
 
@@ -72,7 +287,10 @@ export function youtubeWatchUrl(videoIdOrUrl) {
   return id ? `https://www.youtube.com/watch?v=${id}` : null;
 }
 
-export function youtubeEmbedUrl(videoIdOrUrl, { autoplay = true, mute = false } = {}) {
+export function youtubeEmbedUrl(
+  videoIdOrUrl,
+  { autoplay = true, mute = false } = {}
+) {
   const id = parseYoutubeVideoId(videoIdOrUrl);
   if (!id) return null;
   const params = new URLSearchParams({
@@ -82,13 +300,27 @@ export function youtubeEmbedUrl(videoIdOrUrl, { autoplay = true, mute = false } 
     ...(autoplay ? { autoplay: "1" } : {}),
     ...(mute || autoplay ? { mute: "1" } : {}),
   });
-  // youtube-nocookie reduces third-party cookie warnings in Lighthouse
   return `https://www.youtube-nocookie.com/embed/${id}?${params.toString()}`;
+}
+
+function normalizeEmailHref(raw) {
+  const value = String(raw || "").trim();
+  if (!value) return null;
+  if (value.toLowerCase().startsWith("mailto:")) return value;
+  return `mailto:${value.replace(/^mailto:/i, "")}`;
+}
+
+function normalizePhoneHref(raw) {
+  const value = String(raw || "").trim();
+  if (!value) return null;
+  if (value.toLowerCase().startsWith("tel:")) return value;
+  const digits = value.replace(/[^\d+]/g, "");
+  return digits ? `tel:${digits}` : null;
 }
 
 /**
  * Resolve href / behavior for a CMS button.
- * Returns { kind, href, formKey, videoId }
+ * Returns { kind, href, formKey, videoId, downloadName }
  */
 export function resolveButtonAction(button) {
   const type = String(button?.action_type || "url").toLowerCase();
@@ -100,6 +332,7 @@ export function resolveButtonAction(button) {
       href: id ? `#${id}` : null,
       formKey: null,
       videoId: null,
+      downloadName: null,
     };
   }
 
@@ -110,6 +343,7 @@ export function resolveButtonAction(button) {
       href: null,
       formKey: formKey || null,
       videoId: null,
+      downloadName: null,
     };
   }
 
@@ -121,14 +355,56 @@ export function resolveButtonAction(button) {
       href: youtubeWatchUrl(raw),
       formKey: null,
       videoId,
+      downloadName: null,
+    };
+  }
+
+  if (type === "email") {
+    return {
+      kind: "email",
+      href: normalizeEmailHref(button?.target_url),
+      formKey: null,
+      videoId: null,
+      downloadName: null,
+    };
+  }
+
+  if (type === "phone") {
+    return {
+      kind: "phone",
+      href: normalizePhoneHref(button?.target_url),
+      formKey: null,
+      videoId: null,
+      downloadName: null,
+    };
+  }
+
+  if (type === "download") {
+    const href = String(button?.target_url || "").trim();
+    const downloadName = String(button?.download_filename || "").trim() || null;
+    return {
+      kind: "download",
+      href: href || null,
+      formKey: null,
+      videoId: null,
+      downloadName,
+    };
+  }
+
+  if (type === "scroll_top") {
+    return {
+      kind: "scroll_top",
+      href: "#top",
+      formKey: null,
+      videoId: null,
+      downloadName: null,
     };
   }
 
   const href = String(button?.target_url || "").trim();
-  return { kind: "url", href: href || null, formKey: null, videoId: null };
+  return { kind: "url", href: href || null, formKey: null, videoId: null, downloadName: null };
 }
 
-/** File extension from a URL/path (ignores query/hash) */
 function urlExtension(href) {
   try {
     const path = String(href || "").split(/[?#]/)[0];
@@ -140,23 +416,25 @@ function urlExtension(href) {
   }
 }
 
-/**
- * Icon kind for a button — driven by action type + link shape.
- * youtube | video | pdf | file | form | anchor | external | link
- */
-export function resolveButtonIcon(button, action = null) {
+export function resolveButtonIconAuto(button, action = null) {
   const resolved = action || resolveButtonAction(button);
   const kind = resolved.kind;
 
   if (kind === "youtube") return "youtube";
   if (kind === "form") return "form";
   if (kind === "anchor") return "anchor";
+  if (kind === "email") return "mail";
+  if (kind === "phone") return "phone";
+  if (kind === "download") return "download";
+  if (kind === "scroll_top") return "arrow-up";
 
   const href = resolved.href || button?.target_url || "";
   const ext = urlExtension(href);
 
   if (ext === "pdf") return "pdf";
-  if (["doc", "docx", "xls", "xlsx", "ppt", "pptx", "zip", "rar"].includes(ext)) {
+  if (
+    ["doc", "docx", "xls", "xlsx", "ppt", "pptx", "zip", "rar"].includes(ext)
+  ) {
     return "file";
   }
   if (["mp4", "webm", "mov", "m4v"].includes(ext)) return "video";
@@ -165,7 +443,16 @@ export function resolveButtonIcon(button, action = null) {
   return "link";
 }
 
-/** Active buttons sorted by sort_order */
+export function resolveButtonIcon(button, action = null) {
+  const preset = String(button?.icon ?? "auto").trim().toLowerCase();
+  if (preset === "none") return null;
+  if (preset && preset !== "auto" && isButtonIconPreset(preset)) {
+    if (preset === "play" || preset === "youtube") return "youtube";
+    return preset;
+  }
+  return resolveButtonIconAuto(button, action);
+}
+
 export function sortActiveButtons(buttons) {
   if (!Array.isArray(buttons)) return [];
   return [...buttons]
@@ -173,24 +460,20 @@ export function sortActiveButtons(buttons) {
     .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0));
 }
 
-/**
- * Legacy fallback: single button_title + target_url → one primary url button.
- */
 export function buttonsFromLegacy(button_title, target_url) {
   const label = String(button_title || "").trim();
   const url = String(target_url || "").trim();
   if (!label || !url) return [];
   return [
-    {
+    normalizeButton({
       label,
       variant: "primary",
       action_type: "url",
       target_url: url,
-      target_id: "",
-      form_key: "",
-      open_in_new_tab: false,
       sort_order: 0,
       status: true,
-    },
+    }),
   ];
 }
+
+export { resolveButtonIconAuto as resolveButtonIconFromAction };

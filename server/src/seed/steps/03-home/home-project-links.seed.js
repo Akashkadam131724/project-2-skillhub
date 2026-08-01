@@ -77,7 +77,6 @@ async function seed() {
     status: true,
     buttons: [
       btn("How it works", { target_url: "/how-it-works", sort_order: 0 }),
-      btn("CMS preview", { variant: "secondary", target_url: "/cms-preview", sort_order: 1 }),
     ],
     data: {},
     items,

@@ -14,6 +14,7 @@ import {
   isPlacementDarkBand,
 } from "@/lib/sections/section-theme";
 import CheckIcon from "@/components/icons/CheckIcon";
+import DsButton from "@/components/ui/DsButton";
 
 /**
  * SaaS pricing tiers — 3-up with featured middle plan (2026 landing standard).
@@ -135,12 +136,16 @@ export default function PricingTiersSection({
                         <div className="flex-1" />
                       )}
                       {item.href ? (
-                        <a
-                          href={item.href}
-                          className="section-btn section-btn--inverse mt-8 rounded-xl px-4 py-3"
-                        >
-                          {item.icon || "Get started"}
-                        </a>
+                        <DsButton
+                          label={item.icon || "Get started"}
+                          variant="inverse"
+                          size="md"
+                          shape="rounded"
+                          icon="none"
+                          action_type="url"
+                          target_url={item.href}
+                          className="mt-8"
+                        />
                       ) : null}
                       {Array.isArray(item.buttons) && item.buttons.length ? (
                         <SectionButtonsFooter
@@ -201,12 +206,16 @@ export default function PricingTiersSection({
                       <div className="flex-1" />
                     )}
                     {item.href ? (
-                      <a
-                        href={item.href}
-                        className="section-btn section-btn--primary mt-8 rounded-xl px-4 py-3"
-                      >
-                        {item.icon || "Get started"}
-                      </a>
+                      <DsButton
+                        label={item.icon || "Get started"}
+                        variant="primary"
+                        size="md"
+                        shape="rounded"
+                        icon="none"
+                        action_type="url"
+                        target_url={item.href}
+                        className="mt-8"
+                      />
                     ) : null}
                     {Array.isArray(item.buttons) && item.buttons.length ? (
                       <SectionButtonsFooter

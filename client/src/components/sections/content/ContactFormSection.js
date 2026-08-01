@@ -13,6 +13,7 @@ import {
 import { DS_FIELD, DS_TEXT } from "@/lib/sections/section-design-system";
 import { resolveItemsForSection } from "@/lib/sections/item-types";
 import { isRichTextEmpty } from "@/lib/utils/rich-text";
+import DsButton from "@/components/ui/DsButton";
 
 const TOPICS = [
   "Request a demo",
@@ -355,13 +356,15 @@ export default function ContactFormSection({
                 ) : null}
 
                 <div className="sm:col-span-2 flex flex-wrap items-center gap-3 pt-1">
-                  <button
-                    type="submit"
+                  <DsButton
+                    label={status === "submitting" ? "Sending…" : "Submit inquiry"}
+                    variant="primary"
+                    size="md"
+                    shape="rounded"
+                    icon="none"
+                    htmlType="submit"
                     disabled={status === "submitting" || cmsMode}
-                    className="section-btn section-btn--primary rounded-xl px-5 py-2.5 disabled:cursor-not-allowed disabled:opacity-60"
-                  >
-                    {status === "submitting" ? "Sending…" : "Submit inquiry"}
-                  </button>
+                  />
                   <p className={`${DS_TEXT.subtle} m-0 text-xs`}>
                     Prefer email?{" "}
                     <a

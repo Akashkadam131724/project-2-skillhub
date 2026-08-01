@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
 import Drawer, { HamburgerButton } from "@/components/ui/Drawer";
+import HeaderContactButton from "@/components/layout/HeaderContactButton";
 import ChevronDownIcon from "@/components/icons/ChevronDownIcon";
 
 function isInternalHref(url) {
@@ -394,13 +395,11 @@ export default function SiteHeaderNav({
               navigation={navigation}
               onNavigate={() => setDrawerOpen(false)}
             />
-            <Link
-              href="/contact-us"
-              onClick={() => setDrawerOpen(false)}
-              className="mt-6 inline-flex w-full items-center justify-center rounded-xl bg-ink px-4 py-3 text-sm font-semibold tracking-wide text-white no-underline transition hover:bg-brand dark:bg-white dark:text-ink dark:hover:bg-brand dark:hover:text-white"
-            >
-              Contact us
-            </Link>
+            <HeaderContactButton
+              className="mt-6"
+              fullWidth
+              onNavigate={() => setDrawerOpen(false)}
+            />
           </Drawer>
         </div>
       ) : null}

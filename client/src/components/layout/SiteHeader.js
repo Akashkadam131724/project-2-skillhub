@@ -2,6 +2,7 @@ import Link from "next/link";
 import ProjectNav from "@/components/layout/ProjectNav";
 import SiteHeaderNav from "@/components/layout/SiteHeaderNav";
 import HeaderSearch from "@/components/search/HeaderSearchLazy";
+import HeaderContactButton from "@/components/layout/HeaderContactButton";
 import SkillHubLogo from "@/components/layout/SkillHubLogo";
 import SectionWrapper from "@/components/sections/SectionWrapper";
 import CartIcon from "@/components/icons/CartIcon";
@@ -90,12 +91,7 @@ export default async function SiteHeader() {
             <CartIcon />
           </IconButton>
 
-          <Link
-            href="/contact-us"
-            className="hidden h-10 shrink-0 items-center justify-center rounded-xl bg-ink px-3.5 text-xs font-semibold tracking-wide text-white no-underline transition hover:bg-brand lg:inline-flex dark:bg-white dark:text-ink dark:hover:bg-brand dark:hover:text-white"
-          >
-            Contact us
-          </Link>
+          <HeaderContactButton className="hidden lg:inline-flex" />
 
           <HeaderNavSlot
             mode={mode}

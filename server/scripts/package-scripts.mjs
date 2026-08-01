@@ -23,6 +23,7 @@ export const coreScripts = {
     "npm run seed:pipeline -- --only=content-pages-from-manifest,entity-skilling-industry-cms",
 
   "uploads:manifest": "node scripts/generate-uploads-manifest.mjs",
+  "buttons:enrich": "node --env-file=.env scripts/enrich-buttons.mjs",
   "netcom:categories": "node scripts/fetch-netcom-categories.mjs",
   "seed:image-urls": "node scripts/extract-seed-image-urls.mjs",
   "seed:1m":

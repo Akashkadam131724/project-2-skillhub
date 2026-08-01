@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import SectionFrame from "../SectionFrame";
 import ProductCard from "@/components/catalog/ProductCard";
+import DsButton from "@/components/ui/DsButton";
 import { EmptyState } from "@/components/detail/DetailShell";
 import { fetchProductsByVendor } from "@/lib/api";
 
@@ -117,22 +118,18 @@ export default function ProductsSection({
           </ul>
           {hasMore ? (
             <div className="mt-8 flex justify-center">
-              <button
-                type="button"
+              <DsButton
+                label={
+                  expanded
+                    ? "Show less"
+                    : `View more (${remaining} more)`
+                }
+                variant="outline"
+                size="md"
+                shape="rounded"
+                icon="none"
                 onClick={() => setExpanded((v) => !v)}
-                className="inline-flex items-center gap-2 rounded-xl section-ui-card border px-5 py-3 text-sm font-semibold section-theme-heading transition hover:border-brand hover:text-brand"
-              >
-                {expanded ? (
-                  <>Show less</>
-                ) : (
-                  <>
-                    View more
-                    <span className="font-normal text-slate-500">
-                      ({remaining} more)
-                    </span>
-                  </>
-                )}
-              </button>
+              />
             </div>
           ) : null}
         </div>

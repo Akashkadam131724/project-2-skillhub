@@ -15,7 +15,6 @@ const QUICK_LINKS = [
   { href: "/cms/contents", label: "Content pages", hint: "About us, our team, … free-form" },
   { href: "/cms/pages", label: "Page templates", hint: "Section placements by page type" },
   { href: "/cms/pages-content-sections", label: "Content sections", hint: "Global section defaults" },
-  { href: "/cms-preview", label: "CMS preview", hint: "Client showcase of CMS features" },
   { href: "/cms/section", label: "Section library", hint: "Live previews by category (/cms/section/*)" },
   { href: "/cms/vendors", label: "Vendors", hint: "Open a vendor → live CMS" },
   { href: "/cms/products", label: "Products", hint: "Open a product → live CMS" },

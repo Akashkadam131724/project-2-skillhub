@@ -8,6 +8,7 @@ import { mediaAlt } from "@/lib/utils/media-alt";
 import SearchIcon from "@/components/icons/SearchIcon";
 import CloseIcon from "@/components/icons/CloseIcon";
 import ArrowRightIcon from "@/components/icons/ArrowRightIcon";
+import DsButton from "@/components/ui/DsButton";
 
 const TABS = [
   { id: "all", label: "All" },
@@ -115,12 +116,16 @@ function EmptyState({ hasQuery, q }) {
       <p className="mt-1.5 mb-0 text-sm text-slate-500 dark:text-slate-400">
         Try another keyword, or browse the course catalog.
       </p>
-      <Link
-        href={`/courses?q=${encodeURIComponent(q)}`}
-        className="mt-4 inline-flex items-center rounded-xl bg-ink px-3.5 py-2 text-xs font-semibold text-white no-underline transition hover:bg-brand dark:bg-white dark:text-ink dark:hover:bg-brand dark:hover:text-white"
-      >
-        Search courses
-      </Link>
+      <DsButton
+        label="Search courses"
+        variant="primary"
+        size="sm"
+        shape="rounded"
+        icon="none"
+        action_type="url"
+        target_url={`/courses?q=${encodeURIComponent(q)}`}
+        className="mt-4"
+      />
     </div>
   );
 }

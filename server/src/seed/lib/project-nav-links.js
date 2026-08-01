@@ -7,7 +7,6 @@ export const PROJECT_NAV_LINKS = [
   { name: "Catalog", href: "/catalog" },
   { name: "How it works", href: "/how-it-works" },
   { name: "Catalog guide", href: "/catalog-guide" },
-  { name: "CMS preview", href: "/cms-preview" },
   { name: "Sections", href: "/sections" },
   { name: "Components", href: "/components" },
   { name: "Visual guides", href: "/insights" },

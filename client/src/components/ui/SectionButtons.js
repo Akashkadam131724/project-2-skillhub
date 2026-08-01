@@ -1,10 +1,10 @@
 "use client";
 
 import {
-  buttonsFromLegacy,
   sortActiveButtons,
+  buttonsFromLegacy,
 } from "@/lib/utils/button-types";
-import CmsButton from "./CmsButton";
+import DsButton from "./DsButton";
 
 /**
  * Renders a section's buttons array (or legacy button_title / target_url).
@@ -17,6 +17,8 @@ export default function SectionButtons({
   buttonClassName = "",
   onFormOpen,
   inverted = false,
+  /** inherit | light | dark — use light for buttons inside white cards on dark bands */
+  surface = "inherit",
 }) {
   const list = sortActiveButtons(
     Array.isArray(buttons) && buttons.length
@@ -29,14 +31,16 @@ export default function SectionButtons({
   return (
     <div className={className}>
       {list.map((btn, i) => (
-        <CmsButton
+        <DsButton
           key={btn._id || btn.id || `${btn.label}-${i}`}
           button={btn}
           className={buttonClassName}
           onFormOpen={onFormOpen}
           inverted={inverted}
+          surface={surface}
         />
       ))}
     </div>
   );
 }
+

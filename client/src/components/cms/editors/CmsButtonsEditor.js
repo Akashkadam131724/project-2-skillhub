@@ -4,9 +4,21 @@ import { useRef, useState } from "react";
 import {
   BUTTON_ACTION_LABELS,
   BUTTON_ACTION_TYPES,
+  BUTTON_ICON_GROUPS,
+  BUTTON_ICON_LABELS,
+  BUTTON_ICON_POSITION_LABELS,
+  BUTTON_ICON_POSITIONS,
+  BUTTON_SHAPE_LABELS,
+  BUTTON_SHAPES,
+  BUTTON_SIZE_LABELS,
+  BUTTON_SIZES,
   BUTTON_VARIANT_LABELS,
   BUTTON_VARIANTS,
+  BUTTON_DARK_CTA_PRESETS,
+  normalizeButton,
 } from "@/lib/utils/button-types";
+import DsButton from "@/components/ui/DsButton";
+import ButtonAppearanceFields from "@/components/cms/editors/ButtonAppearanceFields";
 import DragHandleIcon from "@/components/icons/DragHandleIcon";
 
 const inputClass =
@@ -20,16 +32,8 @@ function nextDraftKey() {
 
 function emptyButton(sort_order = 0) {
   return {
+    ...normalizeButton({ label: "", sort_order }),
     _key: nextDraftKey(),
-    label: "",
-    variant: "primary",
-    action_type: "url",
-    target_url: "",
-    target_id: "",
-    form_key: "",
-    open_in_new_tab: false,
-    sort_order,
-    status: true,
   };
 }
 
@@ -40,16 +44,8 @@ export function normalizeButtonsDraft(buttons) {
     ...emptyButton(i),
     ...b,
     _key: b?._key || b?._id || b?.id || nextDraftKey(),
-    label: b?.label || "",
-    variant: b?.variant || "primary",
-    action_type: b?.action_type || "url",
-    target_url: b?.target_url || "",
-    target_id: String(b?.target_id || "").replace(/^#/, ""),
-    form_key: b?.form_key || "",
-    open_in_new_tab: Boolean(b?.open_in_new_tab),
-    sort_order: b?.sort_order ?? i,
-    status: b?.status !== false,
     _id: b?._id || b?.id,
+    ...normalizeButton(b),
   }));
 }
 
@@ -61,25 +57,42 @@ export function serializeButtonsDraft(draft) {
   return (draft || [])
     .filter((b) => String(b.label || "").trim())
     .map((b, i) => {
+      const normalized = normalizeButton({ ...b, sort_order: i });
+      const usesTargetUrl = [
+        "url",
+        "youtube",
+        "email",
+        "phone",
+        "download",
+      ].includes(normalized.action_type);
       const out = {
-        label: String(b.label).trim(),
-        variant: b.variant || "primary",
-        action_type: b.action_type || "url",
-        target_url:
-          b.action_type === "url" || b.action_type === "youtube"
-            ? String(b.target_url || "").trim()
-            : "",
+        label: normalized.label,
+        variant: normalized.variant,
+        size: normalized.size,
+        shape: normalized.shape,
+        icon: normalized.icon,
+        icon_position: normalized.icon_position,
+        action_type: normalized.action_type,
+        target_url: usesTargetUrl ? normalized.target_url : "",
         target_id:
-          b.action_type === "anchor"
-            ? String(b.target_id || "")
-                .replace(/^#/, "")
-                .trim()
-            : "",
+          normalized.action_type === "anchor" ? normalized.target_id : "",
         form_key:
-          b.action_type === "form" ? String(b.form_key || "").trim() : "",
-        open_in_new_tab: Boolean(b.open_in_new_tab),
+          normalized.action_type === "form" ? normalized.form_key : "",
+        open_in_new_tab: normalized.open_in_new_tab,
+        full_width: normalized.full_width,
+        aria_label: normalized.aria_label,
+        download_filename:
+          normalized.action_type === "download"
+            ? normalized.download_filename
+            : "",
+        cls_bg: normalized.cls_bg,
+        cls_text: normalized.cls_text,
+        cls_border: normalized.cls_border,
+        cls_hover_bg: normalized.cls_hover_bg,
+        cls_hover_text: normalized.cls_hover_text,
+        cls_hover_border: normalized.cls_hover_border,
         sort_order: i,
-        status: b.status !== false,
+        status: normalized.status,
       };
       const id = b._id || b.id;
       if (isMongoId(id)) out._id = String(id);
@@ -103,12 +116,48 @@ function reorder(list, fromIndex, toIndex) {
   return next.map((b, i) => ({ ...b, sort_order: i }));
 }
 
+function ButtonDesignPreview({ button }) {
+  const normalized = normalizeButton(button);
+  if (!normalized.label) {
+    return (
+      <p className="m-0 text-[11px] text-slate-400 italic">
+        Enter a label to preview
+      </p>
+    );
+  }
+
+  return (
+    <div className="space-y-2">
+      <p className="m-0 text-[11px] font-semibold tracking-wide text-slate-500 uppercase">
+        Preview
+      </p>
+      <div className="grid gap-2 sm:grid-cols-2">
+        <div
+          className="flex min-h-[4.5rem] flex-wrap items-center gap-2 rounded-lg border border-slate-200 bg-white p-3 dark:border-slate-700"
+          data-light-surface
+        >
+          <span className="w-full text-[10px] font-medium text-slate-400">
+            Light section
+          </span>
+          <DsButton button={normalized} preview surface="light" />
+        </div>
+        <div
+          className="flex min-h-[4.5rem] flex-wrap items-center gap-2 rounded-lg border border-slate-700 bg-slate-900 p-3"
+          data-section-theme="dark"
+        >
+          <span className="w-full text-[10px] font-medium text-white/50">
+            Dark section
+          </span>
+          <DsButton button={normalized} preview surface="dark" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /**
  * Multi-button editor for page-section mappings.
  * Drag the handle to reorder; ↑/↓ still available.
- *
- * onChange must accept a React setState updater: (prev) => next
- * (so nested item-button edits never wipe sibling fields).
  */
 export default function CmsButtonsEditor({ value = [], onChange }) {
   const list = Array.isArray(value) ? value : [];
@@ -124,7 +173,9 @@ export default function CmsButtonsEditor({ value = [], onChange }) {
   }
 
   function updateAt(index, patch) {
-    commit((prev) => prev.map((b, i) => (i === index ? { ...b, ...patch } : b)));
+    commit((prev) =>
+      prev.map((b, i) => (i === index ? normalizeButton({ ...b, ...patch }) : b))
+    );
   }
 
   function removeAt(index) {
@@ -139,13 +190,31 @@ export default function CmsButtonsEditor({ value = [], onChange }) {
     commit((prev) => [...prev, emptyButton(prev.length)]);
   }
 
+  function addDarkCtaPair() {
+    commit((prev) => {
+      const start = prev.length;
+      const pair = BUTTON_DARK_CTA_PRESETS.map((preset, i) =>
+        normalizeButton({
+          ...emptyButton(start + i),
+          label: preset.label,
+          variant: preset.variant,
+          size: "md",
+          shape: "rounded",
+          icon: "none",
+          action_type: "url",
+          target_url: "/",
+        })
+      );
+      return [...prev, ...pair];
+    });
+  }
+
   function onDragStart(index, e) {
     dragIndexRef.current = index;
     setDragIndex(index);
     setOverIndex(index);
     e.dataTransfer.effectAllowed = "move";
     e.dataTransfer.setData("text/plain", String(index));
-    // Improve drag ghost in some browsers
     if (e.currentTarget instanceof HTMLElement) {
       e.dataTransfer.setDragImage(
         e.currentTarget.closest("[data-button-card]") || e.currentTarget,
@@ -164,8 +233,7 @@ export default function CmsButtonsEditor({ value = [], onChange }) {
   function onDrop(index, e) {
     e.preventDefault();
     const from =
-      dragIndexRef.current ??
-      Number(e.dataTransfer.getData("text/plain"));
+      dragIndexRef.current ?? Number(e.dataTransfer.getData("text/plain"));
     if (Number.isFinite(from)) {
       commit((prev) => reorder(prev, from, index));
     }
@@ -194,7 +262,8 @@ export default function CmsButtonsEditor({ value = [], onChange }) {
 
       {list.map((btn, index) => {
         const isDragging = dragIndex === index;
-        const isOver = overIndex === index && dragIndex !== null && dragIndex !== index;
+        const isOver =
+          overIndex === index && dragIndex !== null && dragIndex !== index;
 
         return (
           <div
@@ -261,6 +330,8 @@ export default function CmsButtonsEditor({ value = [], onChange }) {
               </div>
             </div>
 
+            <ButtonDesignPreview button={btn} />
+
             <label className="block text-sm">
               <span className="mb-1 block text-xs font-medium text-slate-700 dark:text-slate-200">
                 Label
@@ -276,7 +347,7 @@ export default function CmsButtonsEditor({ value = [], onChange }) {
             <div className="grid grid-cols-2 gap-2">
               <label className="block text-sm">
                 <span className="mb-1 block text-xs font-medium text-slate-700 dark:text-slate-200">
-                  Style
+                  Button style
                 </span>
                 <select
                   className={inputClass}
@@ -304,6 +375,88 @@ export default function CmsButtonsEditor({ value = [], onChange }) {
                   {BUTTON_ACTION_TYPES.map((t) => (
                     <option key={t} value={t}>
                       {BUTTON_ACTION_LABELS[t] || t}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
+
+            <ButtonAppearanceFields
+              value={btn}
+              onPatch={(patch) => updateAt(index, patch)}
+            />
+
+            <div className="grid grid-cols-2 gap-2">
+              <label className="block text-sm">
+                <span className="mb-1 block text-xs font-medium text-slate-700 dark:text-slate-200">
+                  Size
+                </span>
+                <select
+                  className={inputClass}
+                  value={btn.size || "md"}
+                  onChange={(e) => updateAt(index, { size: e.target.value })}
+                >
+                  {BUTTON_SIZES.map((s) => (
+                    <option key={s} value={s}>
+                      {BUTTON_SIZE_LABELS[s] || s}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label className="block text-sm">
+                <span className="mb-1 block text-xs font-medium text-slate-700 dark:text-slate-200">
+                  Shape
+                </span>
+                <select
+                  className={inputClass}
+                  value={btn.shape || "rounded"}
+                  onChange={(e) => updateAt(index, { shape: e.target.value })}
+                >
+                  {BUTTON_SHAPES.map((s) => (
+                    <option key={s} value={s}>
+                      {BUTTON_SHAPE_LABELS[s] || s}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2">
+              <label className="block text-sm">
+                <span className="mb-1 block text-xs font-medium text-slate-700 dark:text-slate-200">
+                  Icon
+                </span>
+                <select
+                  className={inputClass}
+                  value={btn.icon || "auto"}
+                  onChange={(e) => updateAt(index, { icon: e.target.value })}
+                >
+                  {BUTTON_ICON_GROUPS.map((group) => (
+                    <optgroup key={group.id} label={group.label}>
+                      {group.icons.map((iconKey) => (
+                        <option key={iconKey} value={iconKey}>
+                          {BUTTON_ICON_LABELS[iconKey] || iconKey}
+                        </option>
+                      ))}
+                    </optgroup>
+                  ))}
+                </select>
+              </label>
+              <label className="block text-sm">
+                <span className="mb-1 block text-xs font-medium text-slate-700 dark:text-slate-200">
+                  Icon position
+                </span>
+                <select
+                  className={inputClass}
+                  value={btn.icon_position || "start"}
+                  onChange={(e) =>
+                    updateAt(index, { icon_position: e.target.value })
+                  }
+                  disabled={(btn.icon || "auto") === "none"}
+                >
+                  {BUTTON_ICON_POSITIONS.map((pos) => (
+                    <option key={pos} value={pos}>
+                      {BUTTON_ICON_POSITION_LABELS[pos] || pos}
                     </option>
                   ))}
                 </select>
@@ -389,25 +542,133 @@ export default function CmsButtonsEditor({ value = [], onChange }) {
               </label>
             ) : null}
 
-            <label className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-300">
+            {btn.action_type === "email" ? (
+              <label className="block text-sm">
+                <span className="mb-1 block text-xs font-medium text-slate-700 dark:text-slate-200">
+                  Email address
+                </span>
+                <input
+                  className={inputClass}
+                  type="email"
+                  value={btn.target_url}
+                  onChange={(e) =>
+                    updateAt(index, { target_url: e.target.value })
+                  }
+                  placeholder="hello@example.com"
+                />
+              </label>
+            ) : null}
+
+            {btn.action_type === "phone" ? (
+              <label className="block text-sm">
+                <span className="mb-1 block text-xs font-medium text-slate-700 dark:text-slate-200">
+                  Phone number
+                </span>
+                <input
+                  className={inputClass}
+                  type="tel"
+                  value={btn.target_url}
+                  onChange={(e) =>
+                    updateAt(index, { target_url: e.target.value })
+                  }
+                  placeholder="+1 800 555 0100"
+                />
+              </label>
+            ) : null}
+
+            {btn.action_type === "download" ? (
+              <>
+                <label className="block text-sm">
+                  <span className="mb-1 block text-xs font-medium text-slate-700 dark:text-slate-200">
+                    File URL
+                  </span>
+                  <input
+                    className={inputClass}
+                    value={btn.target_url}
+                    onChange={(e) =>
+                      updateAt(index, { target_url: e.target.value })
+                    }
+                    placeholder="/uploads/brochure.pdf"
+                  />
+                </label>
+                <label className="block text-sm">
+                  <span className="mb-1 block text-xs font-medium text-slate-700 dark:text-slate-200">
+                    Download filename (optional)
+                  </span>
+                  <input
+                    className={inputClass}
+                    value={btn.download_filename || ""}
+                    onChange={(e) =>
+                      updateAt(index, { download_filename: e.target.value })
+                    }
+                    placeholder="skillhub-brochure.pdf"
+                  />
+                </label>
+              </>
+            ) : null}
+
+            {btn.action_type === "scroll_top" ? (
+              <p className="m-0 text-[11px] text-slate-500">
+                Scrolls the visitor smoothly to the top of the page. No extra
+                fields needed.
+              </p>
+            ) : null}
+
+            <label className="block text-sm">
+              <span className="mb-1 block text-xs font-medium text-slate-700 dark:text-slate-200">
+                Accessibility label (optional)
+              </span>
               <input
-                type="checkbox"
-                checked={btn.status !== false}
-                onChange={(e) => updateAt(index, { status: e.target.checked })}
+                className={inputClass}
+                value={btn.aria_label || ""}
+                onChange={(e) =>
+                  updateAt(index, { aria_label: e.target.value })
+                }
+                placeholder="Overrides visible label for screen readers"
               />
-              Enabled
             </label>
+
+            <div className="flex flex-wrap gap-4">
+              <label className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-300">
+                <input
+                  type="checkbox"
+                  checked={Boolean(btn.full_width)}
+                  onChange={(e) =>
+                    updateAt(index, { full_width: e.target.checked })
+                  }
+                />
+                Full width
+              </label>
+              <label className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-300">
+                <input
+                  type="checkbox"
+                  checked={btn.status !== false}
+                  onChange={(e) => updateAt(index, { status: e.target.checked })}
+                />
+                Enabled
+              </label>
+            </div>
           </div>
         );
       })}
 
-      <button
-        type="button"
-        onClick={addButton}
-        className="w-full rounded-lg border border-dashed border-slate-300 px-3 py-2.5 text-sm font-semibold text-slate-600 hover:border-brand hover:text-brand dark:border-slate-600 dark:text-slate-300"
-      >
-        + Add button
-      </button>
+      <div className="flex flex-wrap gap-2">
+        <button
+          type="button"
+          onClick={addButton}
+          className="min-w-0 flex-1 rounded-lg border border-dashed border-slate-300 px-3 py-2.5 text-sm font-semibold text-slate-600 hover:border-brand hover:text-brand dark:border-slate-600 dark:text-slate-300"
+        >
+          + Add button
+        </button>
+        <button
+          type="button"
+          onClick={addDarkCtaPair}
+          className="min-w-0 flex-1 rounded-lg border border-dashed border-slate-300 px-3 py-2.5 text-sm font-semibold text-slate-600 hover:border-brand hover:text-brand dark:border-slate-600 dark:text-slate-300"
+          title="Adds a white primary + white-outline secondary for dark bands"
+        >
+          + Dark outline CTAs
+        </button>
+      </div>
     </div>
   );
 }

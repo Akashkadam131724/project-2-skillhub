@@ -8,6 +8,7 @@ import {
 import { scrollToCatalogAnchor } from "@/lib/catalog/scrollAnchor";
 import SearchIcon from "@/components/icons/SearchIcon";
 import CloseIcon from "@/components/icons/CloseIcon";
+import DsButton from "@/components/ui/DsButton";
 
 export default function CatalogSearch({
   placeholder = "Search and press Enter",
@@ -81,13 +82,16 @@ export default function CatalogSearch({
             Enter
           </kbd>
         )}
-        <button
-          type="submit"
-          aria-label="Search"
-          className="inline-flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-xl border-0 bg-brand text-white shadow-sm shadow-brand/25 transition hover:bg-brand-hover active:scale-[0.97]"
-        >
-          <SearchIcon className="size-3.5" />
-        </button>
+        <DsButton
+          label="Search"
+          aria_label="Search"
+          variant="primary"
+          size="sm"
+          shape="square"
+          icon="search"
+          htmlType="submit"
+          className="size-8 shrink-0 !px-0 [&_.section-btn__label]:sr-only"
+        />
       </label>
     </form>
   );

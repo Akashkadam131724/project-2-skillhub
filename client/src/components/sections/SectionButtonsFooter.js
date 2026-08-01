@@ -20,6 +20,8 @@ export default function SectionButtonsFooter({
   editField = "buttons",
   onFormOpen,
   inverted = false,
+  /** inherit | light | dark */
+  surface = "inherit",
   className = "mt-6 sm:mt-8",
   buttonsClassName = "flex flex-wrap items-center gap-3",
 }) {
@@ -38,6 +40,7 @@ export default function SectionButtonsFooter({
           buttons={list}
           onFormOpen={onFormOpen}
           inverted={inverted}
+          surface={surface}
           className={buttonsClassName}
         />
       ) : null}

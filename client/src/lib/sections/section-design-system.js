@@ -15,7 +15,8 @@
  * - Brand accents (`text-brand`) are OK on any layer.
  *
  * CSS tokens live in `app/section-theme.css` (`--band-*`, `--card-*`, `--field-*`).
- * Buttons: `app/section-buttons.css`. Tabs: `app/section-tabs.css`.
+ * Buttons: `app/section-buttons.css` + `components/ui/DsButton.js` + `lib/utils/button-types.js`.
+ * Tabs: `app/section-tabs.css`.
  */
 
 export const SECTION_SURFACE_LIGHT_CARD = "light-card";
@@ -56,6 +57,50 @@ export const DS_FIELD = {
 export const DS_BADGE = {
   media: "section-media-badge",
   faqIndex: "section-faq-index",
+};
+
+/** Design-system buttons — render with DsButton / SectionButtons */
+export const DS_BUTTON = {
+  base: "section-btn",
+  /** Force light palette on white cards inside dark bands */
+  surfaceLight: { "data-btn-surface": "light" },
+  /** Force glass/dark-band palette (heroes, cinematic bands) */
+  surfaceDark: { "data-btn-surface": "dark" },
+  /**
+   * Tailwind !-class fields — see `ButtonAppearanceFields` in CMS editor.
+   * @type {Record<string, string>}
+   */
+  appearanceFields: {
+    bg: "cls_bg",
+    text: "cls_text",
+    border: "cls_border",
+    hoverBg: "cls_hover_bg",
+    hoverText: "cls_hover_text",
+    hoverBorder: "cls_hover_border",
+  },
+  /**
+   * Optional CSS variable overrides — set on button, parent, or via DsButton `custom` prop.
+   */
+  customTokens: {
+    bg: "--ds-btn-custom-bg",
+    fg: "--ds-btn-custom-fg",
+    border: "--ds-btn-custom-border",
+    hoverBg: "--ds-btn-custom-hover-bg",
+    hoverFg: "--ds-btn-custom-hover-fg",
+    hoverBorder: "--ds-btn-custom-hover-border",
+  },
+  /**
+   * Dark-band CTAs — white primary + white-outline secondary.
+   */
+  darkCtaSet: [
+    { variant: "primary", size: "md", shape: "rounded" },
+    { variant: "outline", size: "md", shape: "rounded" },
+  ],
+  /** @deprecated use darkCtaSet */
+  darkCtaPair: [
+    { variant: "primary", size: "md", shape: "rounded" },
+    { variant: "outline", size: "md", shape: "rounded" },
+  ],
 };
 
 /** Card / panel shells — use with Tailwind `border`, radius, padding */
