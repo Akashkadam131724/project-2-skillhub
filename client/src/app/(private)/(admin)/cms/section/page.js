@@ -2,15 +2,15 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { listSectionCategories } from "@/lib/cms-api";
-import { sectionCategoryHref } from "@/lib/section-library";
+import { listSectionCategories } from "@/lib/api/cms-api";
+import { sectionCategoryHref } from "@/lib/sections/section-library";
 import {
   CmsHeading,
   CmsPanel,
   ErrorBanner,
   EmptyState,
   btnSecondary,
-} from "@/components/cms/CmsUi";
+} from "@/components/cms/admin/CmsUi";
 
 export default function CmsSectionLibraryIndexPage() {
   const [categories, setCategories] = useState([]);

@@ -8,7 +8,7 @@ import {
   deletePage,
   listPages,
   setPageStatus,
-} from "@/lib/cms-api";
+} from "@/lib/api/cms-api";
 import {
   CmsHeading,
   CmsPanel,
@@ -20,7 +20,7 @@ import {
   btnPrimary,
   btnSecondary,
   btnDanger,
-} from "@/components/cms/CmsUi";
+} from "@/components/cms/admin/CmsUi";
 
 const ENTITY_TYPES = [
   { value: "", label: "None (static)" },

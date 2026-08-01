@@ -5,14 +5,14 @@ import EmptyItemsHint from "@/components/sections/EmptyItemsHint";
 import SectionButtonsFooter from "@/components/sections/SectionButtonsFooter";
 import SectionFrame from "@/components/sections/SectionFrame";
 import SectionLightCard from "@/components/sections/design/SectionLightCard";
-import CmsRichText from "@/components/cms/CmsRichText";
-import { resolveItemsForSection } from "@/lib/item-types";
-import { isRichTextEmpty } from "@/lib/rich-text";
+import CmsRichText from "@/components/cms/primitives/CmsRichText";
+import { resolveItemsForSection } from "@/lib/sections/item-types";
+import { isRichTextEmpty } from "@/lib/utils/rich-text";
 import {
   DS_CARD,
   DS_TEXT,
   isPlacementDarkBand,
-} from "@/lib/section-theme";
+} from "@/lib/sections/section-theme";
 import CheckIcon from "@/components/icons/CheckIcon";
 
 /**

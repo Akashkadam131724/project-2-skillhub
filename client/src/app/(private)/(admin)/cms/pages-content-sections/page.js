@@ -10,13 +10,13 @@ import {
   listSections,
   mediaUrl,
   setSectionStatus,
-} from "@/lib/cms-api";
+} from "@/lib/api/cms-api";
 import {
   SECTION_CATALOG,
   SECTION_CATEGORIES,
   isKnownSectionKey,
-} from "@/lib/section-registry";
-import { contentScopeLabel } from "@/lib/content-scope";
+} from "@/lib/sections/section-registry";
+import { contentScopeLabel } from "@/lib/cms/content-scope";
 import {
   FilterGroup,
   FilterChipRow,
@@ -25,7 +25,7 @@ import {
   sectionCategory,
   sectionScope,
   ScopeBadge,
-} from "@/components/cms/CmsSectionFilters";
+} from "@/components/cms/sections/CmsSectionFilters";
 import {
   CmsHeading,
   CmsPanel,
@@ -36,7 +36,7 @@ import {
   SectionPreviewThumb,
   btnPrimary,
   btnSecondary,
-} from "@/components/cms/CmsUi";
+} from "@/components/cms/admin/CmsUi";
 
 const SHOW_SECTION_PREVIEWS_KEY = "cms-show-section-previews";
 const SHOW_SECTION_FILTERS_KEY = "cms-show-section-filters";
@@ -118,23 +118,7 @@ export default function CmsSectionsPage() {
     });
   }
 
-  async function load() {
-    setError(null);
-    try {
-      const [secRes, pageRes, catRes] = await Promise.all([
-        listSections(),
-        listPages(),
-        listSectionCategories({ status: true }),
-      ]);
-      setSections(secRes.data || []);
-      setPages(pageRes.data || []);
-      setCategories(catRes.data || []);
-    } catch (err) {
-      setError(err);
-    } finally {
-      setLoading(false);
-    }
-  }
+
 
   useEffect(() => {
     let alive = true;
@@ -235,14 +219,7 @@ export default function CmsSectionsPage() {
     }
   }
 
-  async function toggleStatus(section) {
-    try {
-      await setSectionStatus(section.key, !section.status);
-      await load();
-    } catch (err) {
-      setError(err);
-    }
-  }
+
 
   return (
     <div>
@@ -261,11 +238,10 @@ export default function CmsSectionsPage() {
               title={
                 showFilters ? "Hide category filters" : "Show category filters"
               }
-              className={`${btnSecondary} ${
-                showFilters
-                  ? "!bg-brand !text-white hover:!bg-brand-hover"
-                  : ""
-              }`}
+              className={`${btnSecondary} ${showFilters
+                ? "!bg-brand !text-white hover:!bg-brand-hover"
+                : ""
+                }`}
             >
               {showFilters ? "Filters on" : "Filters off"}
             </button>
@@ -278,11 +254,10 @@ export default function CmsSectionsPage() {
                   ? "Showing preview images — click for table view"
                   : "Show section preview images"
               }
-              className={`${btnSecondary} ${
-                showSectionPreviews
-                  ? "!bg-brand !text-white hover:!bg-brand-hover"
-                  : ""
-              }`}
+              className={`${btnSecondary} ${showSectionPreviews
+                ? "!bg-brand !text-white hover:!bg-brand-hover"
+                : ""
+                }`}
             >
               {showSectionPreviews ? "Previews on" : "Previews off"}
             </button>
@@ -315,11 +290,10 @@ export default function CmsSectionsPage() {
                         key={s.key}
                         type="button"
                         onClick={() => setPickKey(s.key)}
-                        className={`rounded-lg border px-3 py-3 text-left transition ${
-                          selected
-                            ? "border-brand ring-2 ring-brand/30"
-                            : "border-slate-200 hover:border-slate-300 dark:border-slate-800"
-                        }`}
+                        className={`rounded-lg border px-3 py-3 text-left transition ${selected
+                          ? "border-brand ring-2 ring-brand/30"
+                          : "border-slate-200 hover:border-slate-300 dark:border-slate-800"
+                          }`}
                       >
                         <span className="block text-sm font-semibold text-slate-900 dark:text-white">
                           {s.name}
@@ -404,11 +378,10 @@ export default function CmsSectionsPage() {
                 Showing {filteredSections.length} section
                 {filteredSections.length === 1 ? "" : "s"}
                 {categoryFilter !== "all"
-                  ? ` · category: ${
-                      SECTION_CATEGORIES.find(
-                        (category) => category.key === categoryFilter
-                      )?.name || "Uncategorized"
-                    }`
+                  ? ` · category: ${SECTION_CATEGORIES.find(
+                    (category) => category.key === categoryFilter
+                  )?.name || "Uncategorized"
+                  }`
                   : ""}
                 {scopeFilter !== "all"
                   ? ` · scope: ${contentScopeLabel(scopeFilter)}`
@@ -575,23 +548,9 @@ export default function CmsSectionsPage() {
                                 href={`/cms/pages-content-sections/${section.key}`}
                                 className={btnSecondary}
                               >
-                                Edit content
+                                Edit Section
                               </Link>
-                              {usedOn[0] ? (
-                                <Link
-                                  href={`/cms/pages/${usedOn[0]}`}
-                                  className={btnSecondary}
-                                >
-                                  Open template
-                                </Link>
-                              ) : null}
-                              <button
-                                type="button"
-                                className={btnSecondary}
-                                onClick={() => toggleStatus(section)}
-                              >
-                                {section.status ? "Disable" : "Enable"}
-                              </button>
+
                             </div>
                           </td>
                         </tr>

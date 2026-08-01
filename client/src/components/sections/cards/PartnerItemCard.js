@@ -1,8 +1,8 @@
 "use client";
 
-import { mediaUrl } from "@/lib/cms-api";
-import { mediaAlt } from "@/lib/media-alt";
-import { itemTitle } from "@/lib/item-types";
+import { mediaUrl } from "@/lib/api/cms-api";
+import { mediaAlt } from "@/lib/utils/media-alt";
+import { itemTitle } from "@/lib/sections/item-types";
 import CardPlaceholder from "./CardPlaceholder";
 
 export default function PartnerItemCard({ item, preview = false }) {

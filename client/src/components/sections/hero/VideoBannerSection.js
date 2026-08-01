@@ -1,9 +1,9 @@
 "use client";
 
-import { mediaUrl } from "@/lib/cms-api";
-import { mediaAlt } from "@/lib/media-alt";
-import { parseYoutubeVideoId } from "@/lib/button-types";
-import { resolveItemsForSection } from "@/lib/item-types";
+import { mediaUrl } from "@/lib/api/cms-api";
+import { mediaAlt } from "@/lib/utils/media-alt";
+import { parseYoutubeVideoId } from "@/lib/utils/button-types";
+import { resolveItemsForSection } from "@/lib/sections/item-types";
 import CmsSectionItemsBar from "../CmsSectionItemsBar";
 import SectionButtonsFooter from "../SectionButtonsFooter";
 

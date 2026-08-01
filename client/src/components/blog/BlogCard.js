@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { mediaUrl } from "@/lib/cms-api";
+import { mediaUrl } from "@/lib/api/cms-api";
 
 function formatDate(value) {
   if (!value) return "";

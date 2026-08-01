@@ -1,6 +1,6 @@
 import { Fraunces, Manrope } from "next/font/google";
 import "./globals.css";
-import { fetchSiteThemeForLayout } from "@/lib/site-theme-server";
+import { fetchSiteThemeForLayout } from "@/lib/theme/site-theme-server";
 import { themeCssVars } from "@/lib/theme";
 
 const display = Fraunces({

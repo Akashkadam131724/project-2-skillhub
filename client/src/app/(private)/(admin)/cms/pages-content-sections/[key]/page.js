@@ -9,16 +9,16 @@ import {
   updateSection,
   mediaUrl,
   uploadCmsImage,
-} from "@/lib/cms-api";
-import { isKnownSectionKey, SECTION_CATEGORIES } from "@/lib/section-registry";
-import { SECTION_THEME_OPTIONS } from "@/lib/section-theme";
+} from "@/lib/api/cms-api";
+import { isKnownSectionKey, SECTION_CATEGORIES } from "@/lib/sections/section-registry";
+import { SECTION_THEME_OPTIONS } from "@/lib/sections/section-theme";
 import {
   contentScopeLabel,
   normalizeContentScope,
-} from "@/lib/content-scope";
+} from "@/lib/cms/content-scope";
 import CmsSectionLiveEditor, {
   sectionDocToLiveProps,
-} from "@/components/cms/CmsSectionLiveEditor";
+} from "@/components/cms/sections/CmsSectionLiveEditor";
 import {
   CmsHeading,
   CmsPanel,
@@ -29,7 +29,7 @@ import {
   inputClass,
   btnPrimary,
   btnSecondary,
-} from "@/components/cms/CmsUi";
+} from "@/components/cms/admin/CmsUi";
 
 export default function CmsSectionDetailPage() {
   const { key } = useParams();

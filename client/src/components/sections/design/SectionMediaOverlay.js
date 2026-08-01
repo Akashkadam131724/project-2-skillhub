@@ -3,7 +3,7 @@
 import {
   sectionClassNames,
   sectionDarkOverlaySurfaceProps,
-} from "@/lib/section-design-system";
+} from "@/lib/sections/section-design-system";
 
 /** Light copy region on top of photos / gradients */
 export default function SectionMediaOverlay({

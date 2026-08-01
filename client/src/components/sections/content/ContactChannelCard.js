@@ -1,10 +1,10 @@
 "use client";
 
-import CmsRichText from "@/components/cms/CmsRichText";
+import CmsRichText from "@/components/cms/primitives/CmsRichText";
 import SectionLightCard from "@/components/sections/design/SectionLightCard";
-import { DS_TEXT } from "@/lib/section-design-system";
-import { itemTitle } from "@/lib/item-types";
-import { isRichTextEmpty } from "@/lib/rich-text";
+import { DS_TEXT } from "@/lib/sections/section-design-system";
+import { itemTitle } from "@/lib/sections/item-types";
+import { isRichTextEmpty } from "@/lib/utils/rich-text";
 import ContactChannelIcon from "@/components/icons/ContactChannelIcon";
 
 export function contactChannelIconKind(item) {

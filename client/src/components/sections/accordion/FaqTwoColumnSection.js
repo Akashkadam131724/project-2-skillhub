@@ -1,13 +1,13 @@
 "use client";
 
-import CmsEditable from "@/components/cms/CmsEditable";
+import CmsEditable from "@/components/cms/primitives/CmsEditable";
 import CmsSectionItemsBar from "@/components/sections/CmsSectionItemsBar";
 import EmptyItemsHint from "@/components/sections/EmptyItemsHint";
 import SectionButtonsFooter from "@/components/sections/SectionButtonsFooter";
 import FaqItemCard from "@/components/sections/cards/FaqItemCard";
 import SectionWrapper from "../SectionWrapper";
-import { resolveItemsForSection } from "@/lib/item-types";
-import { isPlacementDarkBand } from "@/lib/section-theme";
+import { resolveItemsForSection } from "@/lib/sections/item-types";
+import { isPlacementDarkBand } from "@/lib/sections/section-theme";
 
 /** @returns {"left"|"right"} */
 export function normalizeFaqHeaderSide(data) {

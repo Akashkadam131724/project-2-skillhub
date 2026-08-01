@@ -1,10 +1,10 @@
-import PublicPageSectionsSuspense from "@/components/cms/PublicPageSectionsSuspense";
+import PublicPageSectionsSuspense from "@/components/cms/pages/PublicPageSectionsSuspense";
 import ContentCatchAllSections from "../ContentCatchAllSections";
 import { fetchContentByPath } from "@/lib/api";
 import {
   contentPathFromParams,
   isReservedContentPath,
-} from "@/lib/content-pages";
+} from "@/lib/content/content-pages";
 
 export async function generateMetadata({ params }) {
   const { slug: slugParam } = await params;

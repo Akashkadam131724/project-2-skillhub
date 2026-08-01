@@ -1,9 +1,9 @@
 "use client";
 
-import CmsRichText from "@/components/cms/CmsRichText";
+import CmsRichText from "@/components/cms/primitives/CmsRichText";
 import SectionButtons from "@/components/ui/SectionButtons";
-import { isRichTextEmpty } from "@/lib/rich-text";
-import { itemAnswer, itemQuestion } from "@/lib/item-types";
+import { isRichTextEmpty } from "@/lib/utils/rich-text";
+import { itemAnswer, itemQuestion } from "@/lib/sections/item-types";
 import CardPlaceholder from "./CardPlaceholder";
 
 /** Shared FAQ accordion row — used on page + CMS preview */

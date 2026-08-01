@@ -8,28 +8,28 @@ import {
   deleteContent,
   restoreContent,
   updateContent,
-} from "@/lib/entity-cms-api";
+} from "@/lib/api/entity-cms-api";
 import {
   CONTENT_PAGE_KEY,
   contentCmsHref,
   contentPublicHref,
   normalizeContentPath,
   slugFromPath,
-} from "@/lib/content-pages";
-import { nextToggleStatus } from "@/lib/cms-list-filters";
+} from "@/lib/content/content-pages";
+import { nextToggleStatus } from "@/lib/cms/cms-list-filters";
 import { useCmsEntityList } from "@/hooks/useCmsEntityList";
-import CmsEntityListPanel from "@/components/cms/CmsEntityListPanel";
+import CmsEntityListPanel from "@/components/cms/admin/CmsEntityListPanel";
 import CmsEntityRowActions, {
   CmsEntityStatusBadge,
-} from "@/components/cms/CmsEntityRowActions";
-import { createContentPageSections, listSections } from "@/lib/cms-api";
-import ContentPageSectionBuilder from "@/components/cms/ContentPageSectionBuilder";
+} from "@/components/cms/admin/CmsEntityRowActions";
+import { createContentPageSections, listSections } from "@/lib/api/cms-api";
+import ContentPageSectionBuilder from "@/components/cms/sections/ContentPageSectionBuilder";
 import {
   cmsEntityListMetaClass,
   cmsEntityListPrimaryClass,
   cmsEntityListRowClass,
   cmsEntityListTitleClass,
-} from "@/components/cms/cms-entity-list-row";
+} from "@/components/cms/admin/cms-entity-list-row";
 import {
   CmsHeading,
   CmsPanel,
@@ -38,7 +38,7 @@ import {
   inputClass,
   btnPrimary,
   btnSecondary,
-} from "@/components/cms/CmsUi";
+} from "@/components/cms/admin/CmsUi";
 
 function pathifyFromName(text) {
   const kebab = String(text || "")

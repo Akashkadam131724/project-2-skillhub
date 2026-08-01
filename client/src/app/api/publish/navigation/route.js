@@ -1,7 +1,7 @@
 import { revalidatePath, revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
-import { NAVIGATION_CACHE_TAG } from "@/lib/isr";
-import { logPublish } from "@/lib/cache-log";
+import { NAVIGATION_CACHE_TAG } from "@/lib/cache/isr";
+import { logPublish } from "@/lib/cache/cache-log";
 
 /**
  * Refresh the cached site header navigation.

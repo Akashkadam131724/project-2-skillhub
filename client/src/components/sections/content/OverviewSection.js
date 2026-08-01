@@ -1,14 +1,14 @@
 "use client";
 
-import CmsEditable from "@/components/cms/CmsEditable";
-import CmsRichText from "@/components/cms/CmsRichText";
-import { mediaUrl } from "@/lib/cms-api";
-import { mediaAlt } from "@/lib/media-alt";
+import CmsEditable from "@/components/cms/primitives/CmsEditable";
+import CmsRichText from "@/components/cms/primitives/CmsRichText";
+import { mediaUrl } from "@/lib/api/cms-api";
+import { mediaAlt } from "@/lib/utils/media-alt";
 import {
   placementHasMeaningfulContent,
   sectionProbeFromProps,
-} from "@/lib/item-types";
-import { isRichTextEmpty } from "@/lib/rich-text";
+} from "@/lib/sections/item-types";
+import { isRichTextEmpty } from "@/lib/utils/rich-text";
 import SectionButtonsFooter from "../SectionButtonsFooter";
 import SectionFrame from "../SectionFrame";
 

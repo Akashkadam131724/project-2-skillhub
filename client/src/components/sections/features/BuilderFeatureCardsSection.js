@@ -4,9 +4,9 @@ import CmsSectionItemsBar from "@/components/sections/CmsSectionItemsBar";
 import EmptyItemsHint from "@/components/sections/EmptyItemsHint";
 import SectionFrame from "@/components/sections/SectionFrame";
 import MobileCardPeekRow from "@/components/sections/MobileCardPeekRow";
-import CmsRichText from "@/components/cms/CmsRichText";
-import { resolveItemsForSection } from "@/lib/item-types";
-import { isRichTextEmpty } from "@/lib/rich-text";
+import CmsRichText from "@/components/cms/primitives/CmsRichText";
+import { resolveItemsForSection } from "@/lib/sections/item-types";
+import { isRichTextEmpty } from "@/lib/utils/rich-text";
 
 /** Monochrome feature cards for builder capabilities: store, bookings, marketing, analytics. */
 export default function BuilderFeatureCardsSection({

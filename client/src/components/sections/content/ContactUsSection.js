@@ -1,13 +1,13 @@
 "use client";
 
-import CmsEditable from "@/components/cms/CmsEditable";
-import CmsRichText from "@/components/cms/CmsRichText";
+import CmsEditable from "@/components/cms/primitives/CmsEditable";
+import CmsRichText from "@/components/cms/primitives/CmsRichText";
 import ContactChannelCard from "@/components/sections/content/ContactChannelCard";
 import SectionButtonsFooter from "@/components/sections/SectionButtonsFooter";
 import { SectionBand, SectionBrandGlow } from "@/components/sections/design";
-import { DS_TEXT } from "@/lib/section-design-system";
-import { resolveItemsForSection } from "@/lib/item-types";
-import { isRichTextEmpty } from "@/lib/rich-text";
+import { DS_TEXT } from "@/lib/sections/section-design-system";
+import { resolveItemsForSection } from "@/lib/sections/item-types";
+import { isRichTextEmpty } from "@/lib/utils/rich-text";
 
 /**
  * Global Contact Us band — shared contact details across pages.

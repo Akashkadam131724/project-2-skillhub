@@ -3,8 +3,8 @@
 import CmsSectionItemsBar from "@/components/sections/CmsSectionItemsBar";
 import EmptyItemsHint from "@/components/sections/EmptyItemsHint";
 import FaqItemCard from "@/components/sections/cards/FaqItemCard";
-import { resolveItemsForSection } from "@/lib/item-types";
-import { isPlacementDarkBand } from "@/lib/section-theme";
+import { resolveItemsForSection } from "@/lib/sections/item-types";
+import { isPlacementDarkBand } from "@/lib/sections/section-theme";
 import SectionFrame from "../SectionFrame";
 
 export default function FaqSection({

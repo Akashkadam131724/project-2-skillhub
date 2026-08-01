@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
-import { applyLockedParams } from "@/lib/catalogParams";
+import { applyLockedParams } from "@/lib/api/catalogParams";
 
 export default function CatalogPager({ page, totalPages, lockedParams = {} }) {
   const pathname = usePathname();

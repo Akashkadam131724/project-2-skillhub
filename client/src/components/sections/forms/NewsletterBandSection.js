@@ -2,7 +2,7 @@
 
 import SectionFrame from "../SectionFrame";
 import SectionButtons from "@/components/ui/SectionButtons";
-import { sortActiveButtons, buttonsFromLegacy } from "@/lib/button-types";
+import { sortActiveButtons, buttonsFromLegacy } from "@/lib/utils/button-types";
 
 /**
  * Newsletter / lead capture band — decorative form + section-level CTAs.

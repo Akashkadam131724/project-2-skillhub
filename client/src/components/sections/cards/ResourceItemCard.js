@@ -1,9 +1,9 @@
 "use client";
 
-import CmsRichText from "@/components/cms/CmsRichText";
+import CmsRichText from "@/components/cms/primitives/CmsRichText";
 import SectionButtons from "@/components/ui/SectionButtons";
-import { isRichTextEmpty } from "@/lib/rich-text";
-import { itemTitle } from "@/lib/item-types";
+import { isRichTextEmpty } from "@/lib/utils/rich-text";
+import { itemTitle } from "@/lib/sections/item-types";
 import CardPlaceholder from "./CardPlaceholder";
 
 export default function ResourceItemCard({ item, preview = false }) {

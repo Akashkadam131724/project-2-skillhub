@@ -1,10 +1,10 @@
 "use client";
 
-import CmsEditable from "@/components/cms/CmsEditable";
+import CmsEditable from "@/components/cms/primitives/CmsEditable";
 import SectionButtonsFooter from "@/components/sections/SectionButtonsFooter";
 import SectionWrapper from "../SectionWrapper";
-import { mediaUrl } from "@/lib/cms-api";
-import { bannerBgStyle } from "@/lib/banner-bg";
+import { mediaUrl } from "@/lib/api/cms-api";
+import { bannerBgStyle } from "@/lib/theme/banner-bg";
 
 /** Theme band — ink → brand (inherits page / site theme CSS vars). */
 const THEME_BAND_CLASS =

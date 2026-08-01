@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { mediaUrl } from "@/lib/cms-api";
+import { mediaUrl } from "@/lib/api/cms-api";
 
 /**
  * Optimized section image — WebP/AVIF via next/image, lazy by default.

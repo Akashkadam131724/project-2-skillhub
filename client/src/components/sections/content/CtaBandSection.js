@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import CmsEditable from "@/components/cms/CmsEditable";
-import CmsRichText from "@/components/cms/CmsRichText";
+import CmsEditable from "@/components/cms/primitives/CmsEditable";
+import CmsRichText from "@/components/cms/primitives/CmsRichText";
 import SectionButtonsFooter from "@/components/sections/SectionButtonsFooter";
 import SectionWrapper from "@/components/sections/SectionWrapper";
-import { isRichTextEmpty } from "@/lib/rich-text";
+import { isRichTextEmpty } from "@/lib/utils/rich-text";
 
 /**
  * Full-bleed ink CTA band — strong close for marketing pages.

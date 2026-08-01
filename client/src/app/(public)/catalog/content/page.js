@@ -1,5 +1,5 @@
 import { fetchAllContents } from "@/lib/api";
-import { isGalleryContentPage } from "@/lib/content-catalog";
+import { isGalleryContentPage } from "@/lib/content/content-catalog";
 import ContentPageGallery from "@/components/catalog/ContentPageGallery";
 
 export const metadata = {

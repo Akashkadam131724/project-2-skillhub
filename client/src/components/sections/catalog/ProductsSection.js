@@ -2,10 +2,8 @@
 
 import { useEffect, useMemo, useState } from "react";
 import SectionFrame from "../SectionFrame";
-import {
-  EmptyState,
-  ProductCard,
-} from "@/components/detail/DetailShell";
+import ProductCard from "@/components/catalog/ProductCard";
+import { EmptyState } from "@/components/detail/DetailShell";
 import { fetchProductsByVendor } from "@/lib/api";
 
 /** Initial visible count — 2 rows on lg (3 cols) */

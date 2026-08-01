@@ -13,20 +13,20 @@ import {
   deleteCourse,
   restoreCourse,
   updateCourse,
-} from "@/lib/entity-cms-api";
-import { cmsEditHref, cmsPublicHref } from "@/lib/cms-edit-routes";
-import { nextToggleStatus } from "@/lib/cms-list-filters";
+} from "@/lib/api/entity-cms-api";
+import { cmsEditHref, cmsPublicHref } from "@/lib/cms/cms-edit-routes";
+import { nextToggleStatus } from "@/lib/cms/cms-list-filters";
 import { useCmsEntityList } from "@/hooks/useCmsEntityList";
-import CmsEntityListPanel from "@/components/cms/CmsEntityListPanel";
+import CmsEntityListPanel from "@/components/cms/admin/CmsEntityListPanel";
 import CmsEntityRowActions, {
   CmsEntityStatusBadge,
-} from "@/components/cms/CmsEntityRowActions";
+} from "@/components/cms/admin/CmsEntityRowActions";
 import {
   cmsEntityListMetaClass,
   cmsEntityListPrimaryClass,
   cmsEntityListRowClass,
   cmsEntityListTitleClass,
-} from "@/components/cms/cms-entity-list-row";
+} from "@/components/cms/admin/cms-entity-list-row";
 import {
   CmsHeading,
   CmsPanel,
@@ -34,7 +34,7 @@ import {
   ErrorBanner,
   inputClass,
   btnPrimary,
-} from "@/components/cms/CmsUi";
+} from "@/components/cms/admin/CmsUi";
 
 const emptyForm = {
   name: "",

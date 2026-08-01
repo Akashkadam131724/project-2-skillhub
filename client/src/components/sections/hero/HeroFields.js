@@ -1,14 +1,14 @@
 "use client";
 
-import CmsEditable from "@/components/cms/CmsEditable";
-import CmsRichText from "@/components/cms/CmsRichText";
+import CmsEditable from "@/components/cms/primitives/CmsEditable";
+import CmsRichText from "@/components/cms/primitives/CmsRichText";
 import SectionImage from "@/components/sections/SectionImage";
-import { mediaUrl } from "@/lib/cms-api";
-import { mediaAlt } from "@/lib/media-alt";
+import { mediaUrl } from "@/lib/api/cms-api";
+import { mediaAlt } from "@/lib/utils/media-alt";
 import {
   placementHasMeaningfulContent,
   sectionProbeFromProps,
-} from "@/lib/item-types";
+} from "@/lib/sections/item-types";
 
 /** Public pages: skip empty field-driven heroes (CMS still shows shells). */
 export function shouldHideEmptyHero(sectionKey, props = {}) {

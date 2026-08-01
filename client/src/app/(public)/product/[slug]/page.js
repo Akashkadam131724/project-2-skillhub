@@ -6,8 +6,8 @@ import {
   DetailShell,
   NotFoundState,
 } from "@/components/detail/DetailShell";
-import PublicPageSectionsSuspense from "@/components/cms/PublicPageSectionsSuspense";
-import ResolvedPageSections from "@/components/cms/ResolvedPageSections";
+import PublicPageSectionsSuspense from "@/components/cms/pages/PublicPageSectionsSuspense";
+import ResolvedPageSections from "@/components/cms/pages/ResolvedPageSections";
 
 function resolveVendorId(product, vendor) {
   if (vendor?._id || vendor?.id) return String(vendor._id || vendor.id);

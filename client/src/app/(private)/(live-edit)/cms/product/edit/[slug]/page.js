@@ -3,15 +3,15 @@ import {
   fetchProductBySlug,
   fetchVendorBySlug,
 } from "@/lib/api";
-import { getPageSectionsResolved } from "@/lib/cms-api";
+import { getPageSectionsResolved } from "@/lib/api/cms-api";
 import {
   cmsPublicHref,
-} from "@/lib/cms-edit-routes";
+} from "@/lib/cms/cms-edit-routes";
 import {
   DetailShell,
   NotFoundState,
 } from "@/components/detail/DetailShell";
-import CmsLivePageSections from "@/components/cms/CmsLivePageSections";
+import CmsLivePageSections from "@/components/cms/pages/CmsLivePageSections";
 
 function resolveVendorId(product, vendor) {
   if (vendor?._id || vendor?.id) return String(vendor._id || vendor.id);

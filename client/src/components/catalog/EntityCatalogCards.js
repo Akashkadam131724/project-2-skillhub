@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { mediaAlt } from "@/lib/media-alt";
+import { mediaAlt } from "@/lib/utils/media-alt";
 
 export function VendorCatalogCard({ vendor }) {
   const logo = vendor.logoUrl || vendor.vendorCatalogueLogo;

@@ -1,6 +1,6 @@
 "use client";
 
-import CmsEditable from "@/components/cms/CmsEditable";
+import CmsEditable from "@/components/cms/primitives/CmsEditable";
 import SectionButtonsFooter from "./SectionButtonsFooter";
 import SectionWrapper from "./SectionWrapper";
 

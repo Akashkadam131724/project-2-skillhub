@@ -1,6 +1,6 @@
 "use client";
 
-import { getSectionItemsConfig } from "@/lib/section-items-config";
+import { getSectionItemsConfig } from "@/lib/sections/section-items-config";
 
 /**
  * CMS control placed next to the cards — label comes from section config

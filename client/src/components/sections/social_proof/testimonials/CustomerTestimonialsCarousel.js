@@ -4,14 +4,14 @@ import { useEffect, useState } from "react";
 import CmsSectionItemsBar from "@/components/sections/CmsSectionItemsBar";
 import EmptyItemsHint from "@/components/sections/EmptyItemsHint";
 import SectionFrame from "@/components/sections/SectionFrame";
-import { mediaUrl } from "@/lib/cms-api";
-import { mediaAlt } from "@/lib/media-alt";
+import { mediaUrl } from "@/lib/api/cms-api";
+import { mediaAlt } from "@/lib/utils/media-alt";
 import {
   itemAuthor,
   itemQuote,
   resolveItemsForSection,
-} from "@/lib/item-types";
-import CmsRichText from "@/components/cms/CmsRichText";
+} from "@/lib/sections/item-types";
+import CmsRichText from "@/components/cms/primitives/CmsRichText";
 import StarRatingIcon from "@/components/icons/StarRatingIcon";
 import ChevronLeftSmIcon from "@/components/icons/ChevronLeftSmIcon";
 import ChevronRightSmIcon from "@/components/icons/ChevronRightSmIcon";

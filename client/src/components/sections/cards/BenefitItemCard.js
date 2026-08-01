@@ -1,11 +1,11 @@
 "use client";
 
-import CmsRichText from "@/components/cms/CmsRichText";
+import CmsRichText from "@/components/cms/primitives/CmsRichText";
 import SectionButtons from "@/components/ui/SectionButtons";
-import { mediaUrl } from "@/lib/cms-api";
-import { mediaAlt } from "@/lib/media-alt";
-import { isRichTextEmpty } from "@/lib/rich-text";
-import { itemTitle } from "@/lib/item-types";
+import { mediaUrl } from "@/lib/api/cms-api";
+import { mediaAlt } from "@/lib/utils/media-alt";
+import { isRichTextEmpty } from "@/lib/utils/rich-text";
+import { itemTitle } from "@/lib/sections/item-types";
 import CardPlaceholder from "./CardPlaceholder";
 
 export default function BenefitItemCard({ item, preview = false }) {

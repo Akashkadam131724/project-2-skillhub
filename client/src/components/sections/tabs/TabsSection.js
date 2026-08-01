@@ -4,13 +4,13 @@ import { useState } from "react";
 import CmsSectionItemsBar from "@/components/sections/CmsSectionItemsBar";
 import EmptyItemsHint from "@/components/sections/EmptyItemsHint";
 import SectionFrame from "@/components/sections/SectionFrame";
-import CmsRichText from "@/components/cms/CmsRichText";
+import CmsRichText from "@/components/cms/primitives/CmsRichText";
 import SectionButtons from "@/components/ui/SectionButtons";
-import { mediaUrl } from "@/lib/cms-api";
-import { mediaAlt } from "@/lib/media-alt";
-import { groupItemsByTabs } from "@/lib/item-types";
-import { isRichTextEmpty } from "@/lib/rich-text";
-import { sortActiveButtons } from "@/lib/button-types";
+import { mediaUrl } from "@/lib/api/cms-api";
+import { mediaAlt } from "@/lib/utils/media-alt";
+import { groupItemsByTabs } from "@/lib/sections/item-types";
+import { isRichTextEmpty } from "@/lib/utils/rich-text";
+import { sortActiveButtons } from "@/lib/utils/button-types";
 
 function tabPanelButtons(item) {
   const fromButtons = sortActiveButtons(

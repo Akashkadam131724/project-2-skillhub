@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import CmsSectionItemsBar from "@/components/sections/CmsSectionItemsBar";
 import EmptyItemsHint from "@/components/sections/EmptyItemsHint";
 import SectionFrame from "@/components/sections/SectionFrame";
-import { resolveItemsForSection } from "@/lib/item-types";
+import { resolveItemsForSection } from "@/lib/sections/item-types";
 
 /**
  * Metric rail — social-proof numbers strip (logo-bar alternative from SaaS kits).

@@ -3,7 +3,7 @@
 import { useMemo, useState, useTransition } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import Drawer, { HamburgerButton } from "@/components/ui/Drawer";
-import { applyLockedParams } from "@/lib/catalogParams";
+import { applyLockedParams } from "@/lib/api/catalogParams";
 import ChevronDownIcon from "@/components/icons/ChevronDownIcon";
 
 function FilterAccordion({

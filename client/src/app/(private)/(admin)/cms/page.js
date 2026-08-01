@@ -8,7 +8,7 @@ import {
   ErrorBanner,
   btnPrimary,
   btnSecondary,
-} from "@/components/cms/CmsUi";
+} from "@/components/cms/admin/CmsUi";
 
 const QUICK_LINKS = [
   { href: "/cms/site-theme", label: "Themes", hint: "Site + all page template themes" },

@@ -5,7 +5,7 @@ import Link from "next/link";
 import {
   accentForPath,
   groupContentPages,
-} from "@/lib/content-catalog";
+} from "@/lib/content/content-catalog";
 import SectionWrapper from "@/components/sections/SectionWrapper";
 import ChevronLeftIcon from "@/components/icons/ChevronLeftIcon";
 import ChevronRightIcon from "@/components/icons/ChevronRightIcon";

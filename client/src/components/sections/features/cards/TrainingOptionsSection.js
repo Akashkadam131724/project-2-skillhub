@@ -4,8 +4,8 @@ import CmsSectionItemsBar from "@/components/sections/CmsSectionItemsBar";
 import EmptyItemsHint from "@/components/sections/EmptyItemsHint";
 import SectionFrame from "@/components/sections/SectionFrame";
 import MobileCardPeekRow from "@/components/sections/MobileCardPeekRow";
-import { resolveItemsForSection } from "@/lib/item-types";
-import { isPlacementDarkBand } from "@/lib/section-theme";
+import { resolveItemsForSection } from "@/lib/sections/item-types";
+import { isPlacementDarkBand } from "@/lib/sections/section-theme";
 import TrainingOptionCard from "./TrainingOptionCard";
 
 /**

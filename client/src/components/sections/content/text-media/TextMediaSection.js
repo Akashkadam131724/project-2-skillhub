@@ -3,7 +3,7 @@
 import CmsSectionItemsBar from "@/components/sections/CmsSectionItemsBar";
 import EmptyItemsHint from "@/components/sections/EmptyItemsHint";
 import SectionFrame from "@/components/sections/SectionFrame";
-import { resolveItemsForSection } from "@/lib/item-types";
+import { resolveItemsForSection } from "@/lib/sections/item-types";
 import TextMediaRow from "./TextMediaRow";
 
 /**

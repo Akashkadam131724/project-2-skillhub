@@ -3,9 +3,9 @@
 import CmsSectionItemsBar from "@/components/sections/CmsSectionItemsBar";
 import EmptyItemsHint from "@/components/sections/EmptyItemsHint";
 import SectionFrame from "../SectionFrame";
-import { mediaUrl } from "@/lib/cms-api";
-import { resolveItemsForSection } from "@/lib/item-types";
-import { DS_TEXT } from "@/lib/section-design-system";
+import { mediaUrl } from "@/lib/api/cms-api";
+import { resolveItemsForSection } from "@/lib/sections/item-types";
+import { DS_TEXT } from "@/lib/sections/section-design-system";
 
 export default function TrustBadgesSection({
   section_title,

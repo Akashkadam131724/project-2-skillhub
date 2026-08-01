@@ -2,14 +2,14 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { fetchBlogBySlug, fetchBlogs } from "@/lib/api";
-import { getPageSectionsResolved, mediaUrl } from "@/lib/cms-api";
-import { cmsPublicHref } from "@/lib/cms-edit-routes";
+import { getPageSectionsResolved, mediaUrl } from "@/lib/api/cms-api";
+import { cmsPublicHref } from "@/lib/cms/cms-edit-routes";
 import BlogArticleBody from "@/components/blog/BlogArticleBody";
 import BlogCard from "@/components/blog/BlogCard";
 import BlogTableOfContents from "@/components/blog/BlogTableOfContents";
-import CmsLivePageSections from "@/components/cms/CmsLivePageSections";
+import CmsLivePageSections from "@/components/cms/pages/CmsLivePageSections";
 import SectionWrapper from "@/components/sections/SectionWrapper";
-import { prepareBlogContentWithToc } from "@/lib/blog-toc";
+import { prepareBlogContentWithToc } from "@/lib/utils/blog-toc";
 
 function formatDate(value) {
   if (!value) return "";

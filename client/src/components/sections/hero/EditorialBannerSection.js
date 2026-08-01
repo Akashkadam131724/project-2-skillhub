@@ -1,12 +1,12 @@
 "use client";
 
 import { useRef, useState } from "react";
-import CmsEditable from "@/components/cms/CmsEditable";
-import CmsRichText from "@/components/cms/CmsRichText";
+import CmsEditable from "@/components/cms/primitives/CmsEditable";
+import CmsRichText from "@/components/cms/primitives/CmsRichText";
 import SectionButtonsFooter from "@/components/sections/SectionButtonsFooter";
-import { mediaUrl } from "@/lib/cms-api";
-import { mediaAlt } from "@/lib/media-alt";
-import { isRichTextEmpty } from "@/lib/rich-text";
+import { mediaUrl } from "@/lib/api/cms-api";
+import { mediaAlt } from "@/lib/utils/media-alt";
+import { isRichTextEmpty } from "@/lib/utils/rich-text";
 
 /**
  * Full-bleed editorial banner — large display type over a dominant image plane.

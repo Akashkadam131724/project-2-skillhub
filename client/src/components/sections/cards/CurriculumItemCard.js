@@ -1,6 +1,6 @@
 "use client";
 
-import { itemTitle } from "@/lib/item-types";
+import { itemTitle } from "@/lib/sections/item-types";
 import CardPlaceholder from "./CardPlaceholder";
 
 export default function CurriculumItemCard({ item, preview = false }) {

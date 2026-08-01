@@ -4,8 +4,8 @@ import CmsSectionItemsBar from "@/components/sections/CmsSectionItemsBar";
 import EmptyItemsHint from "@/components/sections/EmptyItemsHint";
 import SectionFrame from "../SectionFrame";
 import SectionButtons from "@/components/ui/SectionButtons";
-import { mediaUrl } from "@/lib/cms-api";
-import { resolveItemsForSection } from "@/lib/item-types";
+import { mediaUrl } from "@/lib/api/cms-api";
+import { resolveItemsForSection } from "@/lib/sections/item-types";
 
 export default function MediaMosaicSection({
   section_title,

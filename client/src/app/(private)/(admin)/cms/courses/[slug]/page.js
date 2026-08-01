@@ -10,7 +10,7 @@ import {
   fetchSkillingAreas,
   fetchSkillLevels,
 } from "@/lib/api";
-import { updateCourse, deleteCourse } from "@/lib/entity-cms-api";
+import { updateCourse, deleteCourse } from "@/lib/api/entity-cms-api";
 import {
   CmsHeading,
   CmsPanel,
@@ -20,7 +20,7 @@ import {
   btnPrimary,
   btnSecondary,
   btnDanger,
-} from "@/components/cms/CmsUi";
+} from "@/components/cms/admin/CmsUi";
 
 function idsFrom(arr) {
   return (arr || []).map((x) =>

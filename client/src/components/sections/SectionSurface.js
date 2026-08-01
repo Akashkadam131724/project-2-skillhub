@@ -1,8 +1,8 @@
 "use client";
 
-import { mediaUrl } from "@/lib/cms-api";
-import { bannerBgStyle } from "@/lib/banner-bg";
-import { pageBandThemeForFill } from "@/lib/section-band-surfaces";
+import { mediaUrl } from "@/lib/api/cms-api";
+import { bannerBgStyle } from "@/lib/theme/banner-bg";
+import { pageBandThemeForFill } from "@/lib/sections/section-band-surfaces";
 import {
   isPageSurfaceTransparent,
   normalizeSectionTheme,
@@ -10,7 +10,7 @@ import {
   sectionThemeBandClass,
   sectionThemeDataAttribute,
   surfaceToneForSectionTheme,
-} from "@/lib/section-theme";
+} from "@/lib/sections/section-theme";
 import {
   resolveSurfacePattern,
   surfaceBandStyle,

@@ -3,7 +3,7 @@
 import {
   SECTION_BRAND_GLOW_STYLE,
   sectionBrandGlowClassName,
-} from "@/lib/section-design-system";
+} from "@/lib/sections/section-design-system";
 
 export default function SectionBrandGlow() {
   return (

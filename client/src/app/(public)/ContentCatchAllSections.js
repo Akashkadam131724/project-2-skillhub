@@ -1,13 +1,13 @@
 import { notFound } from "next/navigation";
-import PublicPageSections from "@/components/cms/PublicPageSections";
+import PublicPageSections from "@/components/cms/pages/PublicPageSections";
 import { fetchContentByPath } from "@/lib/api";
-import { getPageSectionsResolved } from "@/lib/cms-api";
+import { getPageSectionsResolved } from "@/lib/api/cms-api";
 import {
   CONTENT_DIRECTORY_BY_PATH,
   CONTENT_PAGE_KEY,
   contentPathFromParams,
   isReservedContentPath,
-} from "@/lib/content-pages";
+} from "@/lib/content/content-pages";
 
 export default async function ContentCatchAllSections({ params }) {
   const { slug: slugParam } = await params;

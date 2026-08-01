@@ -1,6 +1,6 @@
 "use client";
 
-import { itemStatLabel, itemStatValue } from "@/lib/item-types";
+import { itemStatLabel, itemStatValue } from "@/lib/sections/item-types";
 import CardPlaceholder from "./CardPlaceholder";
 
 export default function StatItemCard({

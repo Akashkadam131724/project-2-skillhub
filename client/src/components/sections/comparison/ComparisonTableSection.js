@@ -3,10 +3,10 @@
 import CmsSectionItemsBar from "@/components/sections/CmsSectionItemsBar";
 import EmptyItemsHint from "@/components/sections/EmptyItemsHint";
 import SectionFrame from "../SectionFrame";
-import CmsRichText from "@/components/cms/CmsRichText";
+import CmsRichText from "@/components/cms/primitives/CmsRichText";
 import SectionButtons from "@/components/ui/SectionButtons";
-import { resolveItemsForSection } from "@/lib/item-types";
-import { isRichTextEmpty } from "@/lib/rich-text";
+import { resolveItemsForSection } from "@/lib/sections/item-types";
+import { isRichTextEmpty } from "@/lib/utils/rich-text";
 
 export default function ComparisonTableSection({
   section_title,

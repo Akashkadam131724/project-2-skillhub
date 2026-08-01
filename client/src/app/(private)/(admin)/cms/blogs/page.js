@@ -7,21 +7,21 @@ import {
   deleteBlog,
   restoreBlog,
   updateBlog,
-} from "@/lib/entity-cms-api";
-import { cmsEditHref, cmsPublicHref } from "@/lib/cms-edit-routes";
-import { nextToggleStatus } from "@/lib/cms-list-filters";
+} from "@/lib/api/entity-cms-api";
+import { cmsEditHref, cmsPublicHref } from "@/lib/cms/cms-edit-routes";
+import { nextToggleStatus } from "@/lib/cms/cms-list-filters";
 import { useCmsEntityList } from "@/hooks/useCmsEntityList";
-import CmsEntityListPanel from "@/components/cms/CmsEntityListPanel";
+import CmsEntityListPanel from "@/components/cms/admin/CmsEntityListPanel";
 import CmsEntityRowActions, {
   CmsEntityStatusBadge,
-} from "@/components/cms/CmsEntityRowActions";
-import CmsRichTextEditor from "@/components/cms/CmsRichTextEditor";
+} from "@/components/cms/admin/CmsEntityRowActions";
+import CmsRichTextEditor from "@/components/cms/editors/CmsRichTextEditor";
 import {
   cmsEntityListMetaClass,
   cmsEntityListPrimaryClass,
   cmsEntityListRowClass,
   cmsEntityListTitleClass,
-} from "@/components/cms/cms-entity-list-row";
+} from "@/components/cms/admin/cms-entity-list-row";
 import {
   CmsHeading,
   CmsPanel,
@@ -29,8 +29,8 @@ import {
   Field,
   inputClass,
   btnPrimary,
-} from "@/components/cms/CmsUi";
-import { isRichTextEmpty, sanitizeRichHtml } from "@/lib/rich-text";
+} from "@/components/cms/admin/CmsUi";
+import { isRichTextEmpty, sanitizeRichHtml } from "@/lib/utils/rich-text";
 
 const emptyForm = {
   title: "",

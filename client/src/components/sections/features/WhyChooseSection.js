@@ -1,14 +1,14 @@
 "use client";
 
-import CmsEditable from "@/components/cms/CmsEditable";
+import CmsEditable from "@/components/cms/primitives/CmsEditable";
 import CmsSectionItemsBar from "@/components/sections/CmsSectionItemsBar";
 import EmptyItemsHint from "@/components/sections/EmptyItemsHint";
 import WhyChooseItemCard from "@/components/sections/cards/WhyChooseItemCard";
 import MobileCardPeekRow from "@/components/sections/MobileCardPeekRow";
 import SectionButtonsFooter from "@/components/sections/SectionButtonsFooter";
 import SectionWrapper from "@/components/sections/SectionWrapper";
-import { resolveItemsForSection } from "@/lib/item-types";
-import { isPlacementDarkBand } from "@/lib/section-theme";
+import { resolveItemsForSection } from "@/lib/sections/item-types";
+import { isPlacementDarkBand } from "@/lib/sections/section-theme";
 
 /**
  * “Why choose” band — glass cards on dark bands; white cards on light bands.

@@ -3,7 +3,7 @@
 import CmsSectionItemsBar from "@/components/sections/CmsSectionItemsBar";
 import EmptyItemsHint from "@/components/sections/EmptyItemsHint";
 import CurriculumItemCard from "@/components/sections/cards/CurriculumItemCard";
-import { resolveItemsForSection } from "@/lib/item-types";
+import { resolveItemsForSection } from "@/lib/sections/item-types";
 import SectionFrame from "../SectionFrame";
 
 export default function CurriculumSection({

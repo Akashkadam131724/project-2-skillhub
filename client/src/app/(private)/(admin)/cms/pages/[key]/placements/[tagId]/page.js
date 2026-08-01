@@ -8,17 +8,17 @@ import {
   getSection,
   listPageSections,
   updatePageSectionTag,
-} from "@/lib/cms-api";
+} from "@/lib/api/cms-api";
 import {
   contentLockedAtLayer,
   contentScopeLabel,
   lockedContentHref,
   lockedContentMessage,
   normalizeContentScope,
-} from "@/lib/content-scope";
+} from "@/lib/cms/content-scope";
 import CmsSectionLiveEditor, {
   templatePlacementToLiveProps,
-} from "@/components/cms/CmsSectionLiveEditor";
+} from "@/components/cms/sections/CmsSectionLiveEditor";
 import {
   CmsHeading,
   CmsPanel,
@@ -29,7 +29,7 @@ import {
   inputClass,
   btnPrimary,
   btnSecondary,
-} from "@/components/cms/CmsUi";
+} from "@/components/cms/admin/CmsUi";
 
 export default function CmsPagePlacementDetailPage() {
   const { key, tagId } = useParams();

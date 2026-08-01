@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import CmsEditable from "@/components/cms/CmsEditable";
-import CmsRichText from "@/components/cms/CmsRichText";
+import CmsEditable from "@/components/cms/primitives/CmsEditable";
+import CmsRichText from "@/components/cms/primitives/CmsRichText";
 import CmsSectionItemsBar from "@/components/sections/CmsSectionItemsBar";
 import ContactChannelCard from "@/components/sections/content/ContactChannelCard";
 import {
@@ -10,9 +10,9 @@ import {
   SectionBrandGlow,
   SectionLightCard,
 } from "@/components/sections/design";
-import { DS_FIELD, DS_TEXT } from "@/lib/section-design-system";
-import { resolveItemsForSection } from "@/lib/item-types";
-import { isRichTextEmpty } from "@/lib/rich-text";
+import { DS_FIELD, DS_TEXT } from "@/lib/sections/section-design-system";
+import { resolveItemsForSection } from "@/lib/sections/item-types";
+import { isRichTextEmpty } from "@/lib/utils/rich-text";
 
 const TOPICS = [
   "Request a demo",

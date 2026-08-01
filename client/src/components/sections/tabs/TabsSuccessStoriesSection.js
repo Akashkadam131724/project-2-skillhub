@@ -1,16 +1,16 @@
 "use client";
 
 import { useCallback, useState } from "react";
-import CmsEditable from "@/components/cms/CmsEditable";
+import CmsEditable from "@/components/cms/primitives/CmsEditable";
 import CmsSectionItemsBar from "@/components/sections/CmsSectionItemsBar";
 import EmptyItemsHint from "@/components/sections/EmptyItemsHint";
 import SectionWrapper from "@/components/sections/SectionWrapper";
 import SectionButtons from "@/components/ui/SectionButtons";
 import YoutubeModal from "@/components/ui/YoutubeModal";
-import { mediaUrl } from "@/lib/cms-api";
-import { mediaAlt } from "@/lib/media-alt";
-import { resolveSectionItems } from "@/lib/item-types";
-import { sortActiveButtons, youtubeEmbedUrl, youtubeWatchUrl } from "@/lib/button-types";
+import { mediaUrl } from "@/lib/api/cms-api";
+import { mediaAlt } from "@/lib/utils/media-alt";
+import { resolveSectionItems } from "@/lib/sections/item-types";
+import { sortActiveButtons, youtubeEmbedUrl, youtubeWatchUrl } from "@/lib/utils/button-types";
 import PlayIcon from "@/components/icons/PlayIcon";
 import SuccessStoryTabIcon from "@/components/icons/SuccessStoryTabIcon";
 

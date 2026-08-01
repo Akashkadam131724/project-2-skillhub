@@ -1,14 +1,14 @@
 import { Suspense } from "react";
 import { fetchVendorBySlug } from "@/lib/api";
-import { getPageSectionsResolved } from "@/lib/cms-api";
+import { getPageSectionsResolved } from "@/lib/api/cms-api";
 import {
   cmsPublicHref,
-} from "@/lib/cms-edit-routes";
+} from "@/lib/cms/cms-edit-routes";
 import {
   DetailShell,
   NotFoundState,
 } from "@/components/detail/DetailShell";
-import CmsLivePageSections from "@/components/cms/CmsLivePageSections";
+import CmsLivePageSections from "@/components/cms/pages/CmsLivePageSections";
 
 export async function generateMetadata({ params }) {
   const { slug } = await params;

@@ -11,8 +11,8 @@ import {
   hasMediaUrl,
   shouldHideEmptyHero,
 } from "./HeroFields";
-import { mediaUrl } from "@/lib/cms-api";
-import { mediaAlt } from "@/lib/media-alt";
+import { mediaUrl } from "@/lib/api/cms-api";
+import { mediaAlt } from "@/lib/utils/media-alt";
 
 const DEFAULT_HERO_IMAGE =
   "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&w=1200&q=75";

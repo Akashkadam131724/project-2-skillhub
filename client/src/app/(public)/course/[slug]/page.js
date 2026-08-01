@@ -3,8 +3,8 @@ import {
   DetailShell,
   NotFoundState,
 } from "@/components/detail/DetailShell";
-import PublicPageSectionsSuspense from "@/components/cms/PublicPageSectionsSuspense";
-import ResolvedPageSections from "@/components/cms/ResolvedPageSections";
+import PublicPageSectionsSuspense from "@/components/cms/pages/PublicPageSectionsSuspense";
+import ResolvedPageSections from "@/components/cms/pages/ResolvedPageSections";
 
 export async function generateMetadata({ params }) {
   const { slug } = await params;

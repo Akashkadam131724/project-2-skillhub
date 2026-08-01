@@ -1,10 +1,10 @@
 "use client";
 
 import SectionButtons from "@/components/ui/SectionButtons";
-import { mediaUrl } from "@/lib/cms-api";
-import { mediaAlt } from "@/lib/media-alt";
-import { bannerBgStyle, bannerOverlayStyle } from "@/lib/banner-bg";
-import { itemTitle } from "@/lib/item-types";
+import { mediaUrl } from "@/lib/api/cms-api";
+import { mediaAlt } from "@/lib/utils/media-alt";
+import { bannerBgStyle, bannerOverlayStyle } from "@/lib/theme/banner-bg";
+import { itemTitle } from "@/lib/sections/item-types";
 import PlayIcon from "@/components/icons/PlayIcon";
 
 /** Live-matching preview of a Hero Media banner slide */

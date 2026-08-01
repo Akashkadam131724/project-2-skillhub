@@ -18,7 +18,7 @@ import {
   setPageSectionTagStatus,
   uploadCmsImage,
   getSiteTheme,
-} from "@/lib/cms-api";
+} from "@/lib/api/cms-api";
 import {
   CmsHeading,
   CmsPanel,
@@ -31,15 +31,15 @@ import {
   btnPrimary,
   btnSecondary,
   btnDanger,
-} from "@/components/cms/CmsUi";
+} from "@/components/cms/admin/CmsUi";
 import {
   contentScopeLabel,
   normalizeContentScope,
-} from "@/lib/content-scope";
+} from "@/lib/cms/content-scope";
 import { emptyPageTheme, mergeTheme, normalizePageTheme, themeForApiSave } from "@/lib/theme";
-import CmsThemeEditor from "@/components/cms/CmsThemeEditor";
-import CmsOverrideGuide from "@/components/cms/CmsOverrideGuide";
-import CmsPagePreviewStack from "@/components/cms/CmsPagePreviewStack";
+import CmsThemeEditor from "@/components/cms/theme/CmsThemeEditor";
+import CmsOverrideGuide from "@/components/cms/theme/CmsOverrideGuide";
+import CmsPagePreviewStack from "@/components/cms/sections/CmsPagePreviewStack";
 import {
   FilterGroup,
   FilterChipRow,
@@ -47,7 +47,7 @@ import {
   sectionCategory,
   sectionKind,
   ScopeBadge,
-} from "@/components/cms/CmsSectionFilters";
+} from "@/components/cms/sections/CmsSectionFilters";
 
 const ENTITY_TYPES = [
   { value: "", label: "None (static)" },

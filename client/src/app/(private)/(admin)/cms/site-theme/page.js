@@ -5,18 +5,18 @@ import Link from "next/link";
 import {
   getSiteTheme,
   updateSiteTheme,
-} from "@/lib/cms-api";
+} from "@/lib/api/cms-api";
 import { defaultSiteTheme } from "@/lib/theme";
 import {
   CmsHeading,
   CmsPanel,
   ErrorBanner,
   btnSecondary,
-} from "@/components/cms/CmsUi";
-import CmsThemeEditor from "@/components/cms/CmsThemeEditor";
-import CmsPageTemplateThemesPanel from "@/components/cms/CmsPageTemplateThemesPanel";
-import CmsOverrideGuide from "@/components/cms/CmsOverrideGuide";
-import PageThemeShell from "@/components/cms/PageThemeShell";
+} from "@/components/cms/admin/CmsUi";
+import CmsThemeEditor from "@/components/cms/theme/CmsThemeEditor";
+import CmsPageTemplateThemesPanel from "@/components/cms/theme/CmsPageTemplateThemesPanel";
+import CmsOverrideGuide from "@/components/cms/theme/CmsOverrideGuide";
+import PageThemeShell from "@/components/cms/theme/PageThemeShell";
 
 export default function CmsSiteThemePage() {
   const [theme, setTheme] = useState(defaultSiteTheme());

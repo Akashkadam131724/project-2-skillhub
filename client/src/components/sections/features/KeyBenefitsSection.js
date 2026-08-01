@@ -4,7 +4,7 @@ import CmsSectionItemsBar from "@/components/sections/CmsSectionItemsBar";
 import EmptyItemsHint from "@/components/sections/EmptyItemsHint";
 import BenefitItemCard from "@/components/sections/cards/BenefitItemCard";
 import MobileCardPeekRow from "@/components/sections/MobileCardPeekRow";
-import { resolveItemsForSection } from "@/lib/item-types";
+import { resolveItemsForSection } from "@/lib/sections/item-types";
 import SectionFrame from "../SectionFrame";
 
 export default function KeyBenefitsSection({

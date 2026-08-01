@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import CmsRichText from "@/components/cms/CmsRichText";
+import CmsRichText from "@/components/cms/primitives/CmsRichText";
 import SectionButtons from "@/components/ui/SectionButtons";
 import SectionWrapper from "../SectionWrapper";
-import { sortActiveButtons, buttonsFromLegacy } from "@/lib/button-types";
-import { isRichTextEmpty } from "@/lib/rich-text";
+import { sortActiveButtons, buttonsFromLegacy } from "@/lib/utils/button-types";
+import { isRichTextEmpty } from "@/lib/utils/rich-text";
 
 /**
  * Timed promo modal — section-level CTAs inside the dialog; optional dismiss cookie via data.storage_key.

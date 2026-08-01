@@ -6,7 +6,7 @@ import {
   sectionThemeBandClass,
   sectionThemeDataAttribute,
   SECTION_THEME_BAND_SKIP_KEYS,
-} from "@/lib/section-theme";
+} from "@/lib/sections/section-theme";
 
 /**
  * Wrapper for full-bleed sections — sets data-section-theme and optional band bg.

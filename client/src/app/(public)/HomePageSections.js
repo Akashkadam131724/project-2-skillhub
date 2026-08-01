@@ -1,6 +1,6 @@
-import PublicPageSections from "@/components/cms/PublicPageSections";
+import PublicPageSections from "@/components/cms/pages/PublicPageSections";
 import { fetchContentByPath } from "@/lib/api";
-import { getPageSectionsResolved } from "@/lib/cms-api";
+import { getPageSectionsResolved } from "@/lib/api/cms-api";
 
 export default async function HomePageSections() {
   let content = null;

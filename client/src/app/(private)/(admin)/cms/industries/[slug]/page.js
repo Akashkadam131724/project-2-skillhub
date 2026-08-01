@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { fetchIndustryBySlug } from "@/lib/api";
-import { updateIndustry, deleteIndustry } from "@/lib/entity-cms-api";
+import { updateIndustry, deleteIndustry } from "@/lib/api/entity-cms-api";
 import {
   CmsHeading,
   CmsPanel,
@@ -15,7 +15,7 @@ import {
   btnPrimary,
   btnSecondary,
   btnDanger,
-} from "@/components/cms/CmsUi";
+} from "@/components/cms/admin/CmsUi";
 
 export default function CmsIndustryEditPage() {
   const { slug } = useParams();

@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { itemTitle } from "@/lib/item-types";
+import { itemTitle } from "@/lib/sections/item-types";
 
 const FaqItemCard = dynamic(() => import("./cards/FaqItemCard"));
 const BenefitItemCard = dynamic(() => import("./cards/BenefitItemCard"));

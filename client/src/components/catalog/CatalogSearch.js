@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { applyLockedParams } from "@/lib/catalogParams";
+import { applyLockedParams } from "@/lib/api/catalogParams";
 import SearchIcon from "@/components/icons/SearchIcon";
 
 export default function CatalogSearch({

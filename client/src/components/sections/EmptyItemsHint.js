@@ -1,6 +1,6 @@
 "use client";
 
-import { getSectionItemsConfig } from "@/lib/section-items-config";
+import { getSectionItemsConfig } from "@/lib/sections/section-items-config";
 
 /** Shared empty state for item-driven sections in CMS mode */
 export default function EmptyItemsHint({

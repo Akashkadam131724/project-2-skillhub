@@ -1,8 +1,8 @@
 "use client";
 
-import CmsEditable from "@/components/cms/CmsEditable";
-import { mediaUrl } from "@/lib/cms-api";
-import { resolveItemsForSection, itemTitle } from "@/lib/item-types";
+import CmsEditable from "@/components/cms/primitives/CmsEditable";
+import { mediaUrl } from "@/lib/api/cms-api";
+import { resolveItemsForSection, itemTitle } from "@/lib/sections/item-types";
 import CmsSectionItemsBar from "../../CmsSectionItemsBar";
 import EmptyItemsHint from "../../EmptyItemsHint";
 import SectionWrapper from "../../SectionWrapper";

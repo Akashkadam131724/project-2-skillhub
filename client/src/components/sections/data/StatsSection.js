@@ -7,12 +7,12 @@ import {
   itemStatLabel,
   itemStatValue,
   resolveItemsForSection,
-} from "@/lib/item-types";
+} from "@/lib/sections/item-types";
 import {
   sectionGlassCardSurfaceProps,
   sectionLightCardSurfaceProps,
-} from "@/lib/section-design-system";
-import { isPlacementDarkBand } from "@/lib/section-theme";
+} from "@/lib/sections/section-design-system";
+import { isPlacementDarkBand } from "@/lib/sections/section-theme";
 
 function StatCell({ item, index, onDarkBand }) {
   const value = itemStatValue(item);

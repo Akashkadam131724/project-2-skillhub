@@ -4,8 +4,8 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { fetchBlogBySlug } from "@/lib/api";
-import { deleteBlog, updateBlog } from "@/lib/entity-cms-api";
-import CmsRichTextEditor from "@/components/cms/CmsRichTextEditor";
+import { deleteBlog, updateBlog } from "@/lib/api/entity-cms-api";
+import CmsRichTextEditor from "@/components/cms/editors/CmsRichTextEditor";
 import {
   CmsHeading,
   CmsPanel,
@@ -16,8 +16,8 @@ import {
   btnPrimary,
   btnSecondary,
   inputClass,
-} from "@/components/cms/CmsUi";
-import { isRichTextEmpty, sanitizeRichHtml } from "@/lib/rich-text";
+} from "@/components/cms/admin/CmsUi";
+import { isRichTextEmpty, sanitizeRichHtml } from "@/lib/utils/rich-text";
 
 function formFromBlog(data) {
   return {

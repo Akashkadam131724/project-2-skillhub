@@ -1,7 +1,7 @@
 "use client";
 
-import CmsEditable from "@/components/cms/CmsEditable";
-import CmsRichText from "@/components/cms/CmsRichText";
+import CmsEditable from "@/components/cms/primitives/CmsEditable";
+import CmsRichText from "@/components/cms/primitives/CmsRichText";
 import CmsSectionItemsBar from "@/components/sections/CmsSectionItemsBar";
 import SectionButtonsFooter from "@/components/sections/SectionButtonsFooter";
 import {
@@ -9,9 +9,9 @@ import {
   SectionBrandGlow,
   SectionLightCard,
 } from "@/components/sections/design";
-import { DS_TEXT } from "@/lib/section-design-system";
-import { resolveItemsForSection, itemTitle } from "@/lib/item-types";
-import { isRichTextEmpty } from "@/lib/rich-text";
+import { DS_TEXT } from "@/lib/sections/section-design-system";
+import { resolveItemsForSection, itemTitle } from "@/lib/sections/item-types";
+import { isRichTextEmpty } from "@/lib/utils/rich-text";
 import ShortLeadForm from "./ShortLeadForm";
 
 export function normalizeFormContentSide(data) {

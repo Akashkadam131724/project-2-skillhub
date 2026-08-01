@@ -1,4 +1,4 @@
-import PublicPageSectionsSuspense from "@/components/cms/PublicPageSectionsSuspense";
+import PublicPageSectionsSuspense from "@/components/cms/pages/PublicPageSectionsSuspense";
 import HomePageSections from "./HomePageSections";
 
 export const metadata = {

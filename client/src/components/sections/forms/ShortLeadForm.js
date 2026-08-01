@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import SectionLightCard from "@/components/sections/design/SectionLightCard";
-import { DS_FIELD, DS_TEXT } from "@/lib/section-design-system";
+import { DS_FIELD, DS_TEXT } from "@/lib/sections/section-design-system";
 
 function Field({ id, label, required, children }) {
   return (

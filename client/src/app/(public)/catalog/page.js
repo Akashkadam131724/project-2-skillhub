@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CATALOG_HUB_ITEMS } from "@/lib/content-catalog";
+import { CATALOG_HUB_ITEMS } from "@/lib/content/content-catalog";
 import SectionWrapper from "@/components/sections/SectionWrapper";
 
 export const metadata = {

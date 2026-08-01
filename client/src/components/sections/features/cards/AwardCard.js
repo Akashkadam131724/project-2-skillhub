@@ -1,10 +1,10 @@
 "use client";
 
-import CmsRichText from "@/components/cms/CmsRichText";
-import { mediaUrl } from "@/lib/cms-api";
-import { mediaAlt } from "@/lib/media-alt";
-import { isRichTextEmpty } from "@/lib/rich-text";
-import { itemTitle } from "@/lib/item-types";
+import CmsRichText from "@/components/cms/primitives/CmsRichText";
+import { mediaUrl } from "@/lib/api/cms-api";
+import { mediaAlt } from "@/lib/utils/media-alt";
+import { isRichTextEmpty } from "@/lib/utils/rich-text";
+import { itemTitle } from "@/lib/sections/item-types";
 import FeatureCardPlaceholder from "./FeatureCardPlaceholder";
 
 /** Award / recognition — soft editorial tile */

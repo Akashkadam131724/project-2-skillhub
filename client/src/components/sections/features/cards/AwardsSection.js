@@ -4,7 +4,7 @@ import CmsSectionItemsBar from "@/components/sections/CmsSectionItemsBar";
 import EmptyItemsHint from "@/components/sections/EmptyItemsHint";
 import SectionFrame from "@/components/sections/SectionFrame";
 import MobileCardPeekRow from "@/components/sections/MobileCardPeekRow";
-import { resolveItemsForSection } from "@/lib/item-types";
+import { resolveItemsForSection } from "@/lib/sections/item-types";
 import AwardCard from "./AwardCard";
 
 /**

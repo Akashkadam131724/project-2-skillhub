@@ -1,4 +1,4 @@
-import CmsShell from "@/components/cms/CmsShell";
+import CmsShell from "@/components/cms/admin/CmsShell";
 
 export const metadata = {
   title: "CMS",

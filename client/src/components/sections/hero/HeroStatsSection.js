@@ -7,9 +7,9 @@ import {
   sectionGlassCardSurfaceProps,
   sectionLightCardSurfaceProps,
   DS_TEXT,
-} from "@/lib/section-design-system";
-import { isPlacementDarkBand } from "@/lib/section-theme";
-import { itemStatLabel, itemStatValue } from "@/lib/item-types";
+} from "@/lib/sections/section-design-system";
+import { isPlacementDarkBand } from "@/lib/sections/section-theme";
+import { itemStatLabel, itemStatValue } from "@/lib/sections/item-types";
 
 function StatTile({ item, onDarkBand }) {
   const value = itemStatValue(item);

@@ -1,8 +1,8 @@
 import { Suspense } from "react";
 import { fetchContentByPath } from "@/lib/api";
-import { getPageSectionsResolved } from "@/lib/cms-api";
-import { cmsPublicHref } from "@/lib/cms-edit-routes";
-import CmsLivePageSections from "@/components/cms/CmsLivePageSections";
+import { getPageSectionsResolved } from "@/lib/api/cms-api";
+import { cmsPublicHref } from "@/lib/cms/cms-edit-routes";
+import CmsLivePageSections from "@/components/cms/pages/CmsLivePageSections";
 
 export const metadata = {
   title: "Edit homepage sections",

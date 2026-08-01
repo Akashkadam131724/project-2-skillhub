@@ -6,7 +6,7 @@ import {
   resolveButtonAction,
   resolveButtonIcon,
   youtubeEmbedUrl,
-} from "@/lib/button-types";
+} from "@/lib/utils/button-types";
 import YoutubeModal from "./YoutubeModal";
 import ButtonIcon from "@/components/icons/ButtonIcon";
 

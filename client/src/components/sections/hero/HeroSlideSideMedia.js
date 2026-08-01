@@ -1,12 +1,12 @@
 "use client";
 
 import { useCallback, useState } from "react";
-import { mediaUrl } from "@/lib/cms-api";
-import { mediaAlt } from "@/lib/media-alt";
+import { mediaUrl } from "@/lib/api/cms-api";
+import { mediaAlt } from "@/lib/utils/media-alt";
 import {
   youtubeEmbedUrl,
   youtubeWatchUrl,
-} from "@/lib/button-types";
+} from "@/lib/utils/button-types";
 import YoutubeModal from "@/components/ui/YoutubeModal";
 import PlayIcon from "@/components/icons/PlayIcon";
 

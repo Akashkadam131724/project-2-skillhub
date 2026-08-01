@@ -3,7 +3,7 @@
 import {
   sectionClassNames,
   sectionLightCardSurfaceProps,
-} from "@/lib/section-design-system";
+} from "@/lib/sections/section-design-system";
 
 /**
  * White card surface — ink text and fields on any band (especially dark).

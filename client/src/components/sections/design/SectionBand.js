@@ -4,7 +4,7 @@ import SectionWrapper from "@/components/sections/SectionWrapper";
 import {
   SECTION_BAND_SHELL_CLASS,
   sectionClassNames,
-} from "@/lib/section-design-system";
+} from "@/lib/sections/section-design-system";
 
 /**
  * Transparent section root inside SectionSurface — band background comes from the page stack.

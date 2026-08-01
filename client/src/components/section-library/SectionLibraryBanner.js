@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { sectionCategoryHref } from "@/lib/section-library";
+import { sectionCategoryHref } from "@/lib/sections/section-library";
 
 export default function SectionLibraryBanner({
   title = "Section library",

@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { fetchCatalog, fetchCatalogFilters } from "@/lib/api";
-import { mergeCatalogParams } from "@/lib/catalogParams";
+import { mergeCatalogParams } from "@/lib/api/catalogParams";
 import CatalogFilters from "@/components/catalog/CatalogFilters";
 import CatalogSearch from "@/components/catalog/CatalogSearch";
 import CourseCard from "@/components/catalog/CourseCard";

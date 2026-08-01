@@ -1,6 +1,6 @@
 "use client";
 
-import CmsLivePageSections from "@/components/cms/CmsLivePageSections";
+import CmsLivePageSections from "@/components/cms/pages/CmsLivePageSections";
 
 /** Section stack only (category showcase). */
 export default function SectionLibraryPageBody({

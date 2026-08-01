@@ -3,7 +3,7 @@
 import {
   buttonsFromLegacy,
   sortActiveButtons,
-} from "@/lib/button-types";
+} from "@/lib/utils/button-types";
 import SectionButtons from "@/components/ui/SectionButtons";
 
 /**

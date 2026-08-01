@@ -1,43 +1,9 @@
-import Link from "next/link";
 import { Suspense } from "react";
-import PageBanner from "@/components/PageBanner";
+import Breadcrumbs from "@/components/layout/Breadcrumbs";
+import PageBanner from "@/components/layout/PageBanner";
 import CatalogSearch from "@/components/catalog/CatalogSearch";
 import CatalogPager from "@/components/catalog/CatalogPager";
 import SectionWrapper from "@/components/sections/SectionWrapper";
-
-function Breadcrumbs({ crumbs = [] }) {
-  if (!crumbs.length) return null;
-
-  return (
-    <nav
-      aria-label="Breadcrumb"
-      className="border-b border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-950"
-    >
-      <SectionWrapper className="flex flex-wrap items-center gap-2 py-3 text-sm text-slate-500">
-        <Link href="/" className="no-underline hover:text-brand">
-          Home
-        </Link>
-        {crumbs.map((crumb) => (
-          <span key={crumb.href || crumb.label} className="contents">
-            <span aria-hidden="true">/</span>
-            {crumb.href ? (
-              <Link
-                href={crumb.href}
-                className="no-underline hover:text-brand"
-              >
-                {crumb.label}
-              </Link>
-            ) : (
-              <span className="text-slate-700 dark:text-slate-300">
-                {crumb.label}
-              </span>
-            )}
-          </span>
-        ))}
-      </SectionWrapper>
-    </nav>
-  );
-}
 
 /**
  * Shared list layout for vendor / product / skilling / industry catalogs.

@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { mediaUrl } from "@/lib/cms-api";
-import { resolveItemsForSection, itemTitle } from "@/lib/item-types";
-import { bannerBgStyle, bannerOverlayStyle } from "@/lib/banner-bg";
-import { isRichTextEmpty } from "@/lib/rich-text";
-import CmsRichText from "@/components/cms/CmsRichText";
+import { mediaUrl } from "@/lib/api/cms-api";
+import { resolveItemsForSection, itemTitle } from "@/lib/sections/item-types";
+import { bannerBgStyle, bannerOverlayStyle } from "@/lib/theme/banner-bg";
+import { isRichTextEmpty } from "@/lib/utils/rich-text";
+import CmsRichText from "@/components/cms/primitives/CmsRichText";
 import CmsSectionItemsBar from "../CmsSectionItemsBar";
 import EmptyItemsHint from "../EmptyItemsHint";
 import SectionButtonsFooter from "../SectionButtonsFooter";

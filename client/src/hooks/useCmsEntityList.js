@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { buildCmsListQuery } from "@/lib/cms-list-filters";
+import { buildCmsListQuery } from "@/lib/cms/cms-list-filters";
 
 const EMPTY_EXTRA = Object.freeze({});
 

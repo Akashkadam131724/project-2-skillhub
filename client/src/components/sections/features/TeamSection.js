@@ -1,13 +1,13 @@
 "use client";
 
-import CmsRichText from "@/components/cms/CmsRichText";
+import CmsRichText from "@/components/cms/primitives/CmsRichText";
 import CmsSectionItemsBar from "@/components/sections/CmsSectionItemsBar";
 import EmptyItemsHint from "@/components/sections/EmptyItemsHint";
 import SectionFrame from "@/components/sections/SectionFrame";
 import MobileCardPeekRow from "@/components/sections/MobileCardPeekRow";
-import { mediaUrl } from "@/lib/cms-api";
-import { resolveItemsForSection } from "@/lib/item-types";
-import { isRichTextEmpty } from "@/lib/rich-text";
+import { mediaUrl } from "@/lib/api/cms-api";
+import { resolveItemsForSection } from "@/lib/sections/item-types";
+import { isRichTextEmpty } from "@/lib/utils/rich-text";
 
 function TeamMemberCard({ item }) {
   const photo = mediaUrl(item.image_url);

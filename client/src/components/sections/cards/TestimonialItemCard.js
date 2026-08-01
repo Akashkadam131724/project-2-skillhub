@@ -1,8 +1,8 @@
 "use client";
 
-import CmsRichText from "@/components/cms/CmsRichText";
-import { isRichTextEmpty } from "@/lib/rich-text";
-import { itemAuthor, itemQuote } from "@/lib/item-types";
+import CmsRichText from "@/components/cms/primitives/CmsRichText";
+import { isRichTextEmpty } from "@/lib/utils/rich-text";
+import { itemAuthor, itemQuote } from "@/lib/sections/item-types";
 import CardPlaceholder from "./CardPlaceholder";
 
 export default function TestimonialItemCard({ item, preview = false }) {
