@@ -15,7 +15,7 @@ const sans = Manrope({
 
 export const metadata = {
   title: {
-    default: "SkillHub",
+    default: "SkillHub AI",
     template: "%s | SkillHub",
   },
   description:
