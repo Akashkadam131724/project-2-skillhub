@@ -1,9 +1,12 @@
 import Link from "next/link";
 import ProjectNav from "@/components/layout/ProjectNav";
+import SiteHeaderNav from "@/components/layout/SiteHeaderNav";
 import HeaderSearch from "@/components/search/HeaderSearchLazy";
 import SkillHubLogo from "@/components/layout/SkillHubLogo";
 import SectionWrapper from "@/components/sections/SectionWrapper";
 import CartIcon from "@/components/icons/CartIcon";
+import { getNavigationTree } from "@/lib/navigation";
+import { getHeaderNavMode } from "@/lib/navigation/header-nav-mode";
 
 function IconButton({ href, label, children }) {
   return (
@@ -17,7 +20,29 @@ function IconButton({ href, label, children }) {
   );
 }
 
-export default function SiteHeader() {
+function HeaderNavSlot({ mode, navigation, showDesktop, showMobile }) {
+  if (mode === "api") {
+    return (
+      <SiteHeaderNav
+        navigation={navigation}
+        showDesktop={showDesktop}
+        showMobile={showMobile}
+      />
+    );
+  }
+
+  return <ProjectNav showDesktop={showDesktop} showMobile={showMobile} />;
+}
+
+/**
+ * Site header — switch nav source via HEADER_NAV / NEXT_PUBLIC_HEADER_NAV:
+ *   static (default) | api
+ */
+export default async function SiteHeader() {
+  const mode = getHeaderNavMode();
+  const navigation =
+    mode === "api" ? (await getNavigationTree()).navigation : [];
+
   return (
     <header className="sticky top-0 z-50 border-b border-slate-200/70 bg-white/75 backdrop-blur-xl [--site-header-h:4.25rem] dark:border-slate-800/80 dark:bg-slate-950/75 lg:[--site-header-h:4.75rem]">
       <div
@@ -51,7 +76,11 @@ export default function SiteHeader() {
         </div>
 
         <div className="hidden min-w-0 justify-self-center overflow-x-auto lg:block">
-          <ProjectNav showMobile={false} />
+          <HeaderNavSlot
+            mode={mode}
+            navigation={navigation}
+            showMobile={false}
+          />
         </div>
 
         <div className="ml-auto flex shrink-0 items-center justify-end gap-1.5 sm:gap-2 lg:ml-0 lg:justify-self-end">
@@ -68,7 +97,11 @@ export default function SiteHeader() {
             Contact us
           </Link>
 
-          <ProjectNav showDesktop={false} />
+          <HeaderNavSlot
+            mode={mode}
+            navigation={navigation}
+            showDesktop={false}
+          />
         </div>
       </SectionWrapper>
     </header>

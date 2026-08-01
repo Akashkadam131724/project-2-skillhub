@@ -1,6 +1,8 @@
 import { navFetchOptions, NAVIGATION_CACHE_TAG } from "@/lib/cache/isr";
 import { logFetchResult } from "@/lib/cache/cache-log";
 
+export { getHeaderNavMode, isApiHeaderNav } from "./header-nav-mode";
+
 const NAV_API_URL =
   process.env.NAV_API_URL ||
   process.env.NEXT_PUBLIC_API_URL ||
@@ -30,3 +32,5 @@ export async function getNavigationTree() {
     };
   }
 }
+
+export { NAVIGATION_CACHE_TAG };

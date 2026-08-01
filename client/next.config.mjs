@@ -43,12 +43,14 @@ function uploadRemotePatterns() {
 
   if (process.env.NODE_ENV !== "production") {
     for (const port of ["3000", "3005"]) {
-      add({
-        protocol: "http",
-        hostname: "localhost",
-        port,
-        pathname: "/uploads/**",
-      });
+      for (const hostname of ["localhost", "127.0.0.1"]) {
+        add({
+          protocol: "http",
+          hostname,
+          port,
+          pathname: "/uploads/**",
+        });
+      }
     }
   }
 
@@ -62,6 +64,7 @@ const nextConfig = {
     formats: ["image/avif", "image/webp"],
     deviceSizes: [640, 750, 828, 1080, 1200, 1400],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+    qualities: [75, 80],
     remotePatterns: [
       {
         protocol: "https",
@@ -70,6 +73,10 @@ const nextConfig = {
       {
         protocol: "https",
         hostname: "images.netcomlearning.com",
+      },
+      {
+        protocol: "https",
+        hostname: "media.craiyon.com",
       },
       ...uploadRemotePatterns(),
     ],
