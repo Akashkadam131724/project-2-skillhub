@@ -11,7 +11,12 @@ function themeBandFillValue(raw) {
   return value;
 }
 
-export function resolvePageBandFill(pageTheme, surfaceBand, surfaceTone) {
+export function resolvePageBandFill(
+  pageTheme,
+  surfaceBand,
+  surfaceTone,
+  surfaceBandIndex
+) {
   const theme = pageTheme || {};
   const pattern = resolveSurfacePattern(theme);
   if (isPageSurfaceTransparent(pattern)) return "";
@@ -32,5 +37,20 @@ export function resolvePageBandFill(pageTheme, surfaceBand, surfaceTone) {
   );
 
   if (!primary && !alt) return "";
+
+  if (
+    pattern.layout === "cycle" &&
+    pattern.bands.length > 1 &&
+    surfaceBandIndex !== undefined &&
+    surfaceBandIndex !== null
+  ) {
+    const slot = Math.max(0, Number(surfaceBandIndex) || 0);
+    const useAltFill =
+      pattern.bands.length === 2
+        ? slot % 2 === 1
+        : slot % pattern.bands.length >= Math.ceil(pattern.bands.length / 2);
+    return (useAltFill ? alt : primary) || (useAltFill ? primary : alt);
+  }
+
   return primary || alt;
 }

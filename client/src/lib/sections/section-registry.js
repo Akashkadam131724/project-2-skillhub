@@ -7,9 +7,13 @@ import {
 } from "./section-items-config.js";
 
 /**
- * Surface mode:
- *  - "alt"   → participates in white / grey alternating page backgrounds
- *  - "fixed" → section owns its own background (e.g. dark CTA) — skip alternating
+ * Registry surface hint (documentation + isKnownSectionKey).
+ * Runtime band behavior lives in `section-theme.js`:
+ *   SECTION_OWN_BAND_KEYS — paints its own full-bleed band
+ *   SECTION_THEME_BAND_SKIP_KEYS — CTA / nav / modal (no SectionSurface band)
+ *   placementAdvancesAlternationIndex() — white/grey counter
+ *
+ * "fixed" ≈ own-band or non-row chrome. Everything else is "alt" (page alternation).
  */
 export const SECTION_SURFACE = {
   overview: "alt",
@@ -20,7 +24,7 @@ export const SECTION_SURFACE = {
   feature_spotlight: "alt",
   process_steps: "alt",
   cta_band: "fixed",
-  contact_us: "fixed",
+  contact_us: "alt",
   contact_form: "alt",
   statement_band: "fixed",
   bento_grid: "alt",
@@ -36,7 +40,7 @@ export const SECTION_SURFACE = {
   tabs_success_stories: "alt",
   pricing_tiers: "alt",
   masonry_quotes: "alt",
-  metric_rail: "fixed",
+  metric_rail: "alt",
   site_builder_hero: "fixed",
   template_gallery: "fixed",
   builder_feature_cards: "alt",
@@ -44,8 +48,8 @@ export const SECTION_SURFACE = {
   website_build_steps: "alt",
   video_banner: "fixed",
   cast_profiles: "alt",
-  why_choose: "fixed",
-  stats: "fixed",
+  why_choose: "alt",
+  stats: "alt",
   related_courses: "alt",
   curriculum: "alt",
   partners: "alt",
@@ -62,14 +66,14 @@ export const SECTION_SURFACE = {
   entity_directory: "alt",
   latest_blogs: "alt",
   blog_directory: "alt",
-  hero_classic: "fixed",
-  hero_split: "fixed",
-  hero_centered: "fixed",
-  hero_minimal: "fixed",
+  hero_classic: "alt",
+  hero_split: "alt",
+  hero_centered: "alt",
+  hero_minimal: "alt",
   hero_media: "fixed",
-  hero_stats: "fixed",
-  hero_asymmetric: "fixed",
-  hero_dual_cta: "fixed",
+  hero_stats: "alt",
+  hero_asymmetric: "alt",
+  hero_dual_cta: "alt",
   promo_modal: "fixed",
   newsletter_band: "alt",
   form_split: "alt",
@@ -81,11 +85,6 @@ export const SECTION_SURFACE = {
   learning_path: "alt",
   faq_two_column: "alt",
 };
-
-export function sectionUsesAltSurface(key, renderKey) {
-  const behavior = resolveSectionBehaviorKey(key, renderKey);
-  return SECTION_SURFACE[behavior] !== "fixed";
-}
 
 /**
  * Sections whose UI opts into rendering `section_img_url`.

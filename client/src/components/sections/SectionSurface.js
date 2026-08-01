@@ -13,6 +13,7 @@ import {
 } from "@/lib/sections/section-theme";
 import {
   resolveSurfacePattern,
+  surfaceBandShellClass,
   surfaceBandStyle,
   surfaceToneBandClass,
 } from "@/lib/theme";
@@ -82,7 +83,7 @@ export default function SectionSurface({
     allowBandPaint && !hasCustomBg && !hasPageFill && paintTone
       ? surfaceToneBandClass(paintTone)
       : allowBandPaint && !hasCustomBg && !hasPageFill && paintBand
-        ? "section-band-bg"
+        ? surfaceBandShellClass(paintBand)
         : skipInheritedBand && hasForcedTheme
           ? sectionThemeBandClass(themePref)
           : "";

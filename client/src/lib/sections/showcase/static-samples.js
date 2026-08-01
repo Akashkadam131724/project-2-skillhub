@@ -15,7 +15,25 @@ const IMG = {
   story: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1200&q=80",
   capitol:
     "https://images.unsplash.com/photo-1564760055775-dcfcb245faf2?auto=format&fit=crop&w=1600&q=80",
+  classroom:
+    "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&w=1600&q=80",
+  laptop:
+    "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1600&q=80",
+  conference:
+    "https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=1600&q=80",
+  skyline:
+    "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1600&q=80",
+  collaboration:
+    "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?auto=format&fit=crop&w=1600&q=80",
+  workshop:
+    "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=1600&q=80",
+  dataViz:
+    "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1600&q=80",
+  campus:
+    "https://images.unsplash.com/photo-1562774053-701939374585?auto=format&fit=crop&w=1600&q=80",
 };
+
+const SHOWCASE_VIDEO = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
 
 /** Human-readable names (mirrors client SECTION_CATALOG). */
 export const SECTION_NAMES = {
@@ -190,18 +208,38 @@ export const SECTIONS_BY_CATEGORY = {
   learning: ["learning_path"],
 };
 
+const RICH_CARD_TEMPLATES = [
+  {
+    title: "Authorized vendor paths",
+    subtitle: "Microsoft · AWS · Google Cloud",
+    body: "<p>Official curricula mapped to certification objectives, refreshed as vendors ship new releases.</p>",
+    image_url: IMG.hero,
+  },
+  {
+    title: "Role-based skilling maps",
+    subtitle: "Engineer → architect → lead",
+    body: "<p>Bundle courses by job family instead of one-off enrollments scattered across teams.</p>",
+    image_url: IMG.laptop,
+  },
+  {
+    title: "Live CMS publishing",
+    subtitle: "Edit on the real URL",
+    body: "<p>Enablement teams refine copy, imagery, and CTAs on public pages with <code>?cms=true</code>.</p>",
+    image_url: IMG.gallery,
+  },
+  {
+    title: "Enterprise reporting",
+    subtitle: "Cohort progress & ROI",
+    body: "<p>Track completion, exam readiness, and spend across business units from one place.</p>",
+    image_url: IMG.dataViz,
+  },
+];
+
 function defaultItems(n = 3) {
-  return Array.from({ length: n }, (_, i) =>
-    item(
-      {
-        title: `Sample card ${i + 1}`,
-        subtitle: "Supporting detail for showcase",
-        body: "<p>Example copy so this section renders on the public page.</p>",
-        image_url: i === 0 ? IMG.team : "",
-      },
-      i
-    )
-  );
+  return Array.from({ length: n }, (_, i) => {
+    const template = RICH_CARD_TEMPLATES[i % RICH_CARD_TEMPLATES.length];
+    return item({ ...template }, i);
+  });
 }
 
 function nestedTabPair(label, title, imageUrl) {
@@ -215,7 +253,7 @@ function nestedTabPair(label, title, imageUrl) {
         value: label,
         title,
         subtitle: "Tab preview panel",
-        body: "<p>Switch tabs to compare layouts in this category showcase.</p>",
+        body: "<p>Switch tabs to compare layouts. Each tab can include a hero image, rich body, nested child cards, and CTA buttons — mirroring real product marketing pages.</p>",
         image_url: imageUrl,
         buttons: [btn("Learn more", { variant: "inverse", target_url: "/courses" })],
       },
@@ -238,22 +276,40 @@ function sampleForKey(key) {
   const k = String(key).toLowerCase();
 
   const heroCopy = {
-    section_title: "Enterprise learning that scales",
+    section_title: "Enterprise learning that scales with your roadmap",
     sub_title:
-      "Authorized vendor training, role-based paths, and live CMS pages — preview of this hero layout.",
-    buttons: [btn("Browse catalog", { target_url: "/courses" })],
+      "Authorized vendor curricula, hands-on labs, and role-based certification paths — discoverable through one structured catalog with live CMS pages.",
+    buttons: [
+      btn("Browse catalog", { target_url: "/courses" }),
+      btn("Talk to an advisor", {
+        variant: "secondary",
+        target_url: "/contact-us",
+      }),
+    ],
+  };
+
+  const heroImages = {
+    hero_classic: IMG.hero,
+    hero_split: IMG.laptop,
+    hero_centered: IMG.conference,
+    hero_minimal: "",
+    hero_asymmetric: IMG.skyline,
+    hero_dual_cta: IMG.collaboration,
   };
 
   switch (k) {
     case "overview":
       return {
-        section_title: "Overview section",
-        sub_title: "Rich text block with optional image and CTAs.",
+        section_title: "Platform overview",
+        sub_title: "Rich text block with optional imagery and CTAs — ideal for entity detail pages below the banner.",
         in_page_nav_title: "Overview",
         data: {
-          body: "<p>The overview section combines a title, subtitle, rich body, and optional buttons — ideal for entity detail pages under the banner.</p>",
+          body: "<p>SkillHub connects <strong>vendors</strong>, <strong>products</strong>, and <strong>courses</strong> into one searchable catalog. Marketing teams publish landing pages from the section library while L&D leaders map skilling areas to business outcomes.</p><p>Use this section for long-form narrative, bullet lists, and embedded links without building a custom layout.</p>",
         },
-        buttons: [btn("See courses", { target_url: "/courses" })],
+        buttons: [
+          btn("See courses", { target_url: "/courses" }),
+          btn("Vendor partners", { variant: "outline", target_url: "/vendors" }),
+        ],
       };
 
     case "text_media":
@@ -264,9 +320,9 @@ function sampleForKey(key) {
         items: [
           item(
             {
-              title: "Align teams on outcomes",
+              title: "Align teams on measurable outcomes",
               subtitle: "Strategy before scheduling",
-              body: "<p>Map skilling areas to business goals before picking individual courses.</p>",
+              body: "<p>Map skilling areas to quarterly OKRs. Identify prerequisite courses before opening enrollment to hundreds of engineers.</p>",
               image_url: IMG.team,
               label: "left",
             },
@@ -274,13 +330,23 @@ function sampleForKey(key) {
           ),
           item(
             {
-              title: "Ship pages without engineering",
+              title: "Ship pages without engineering tickets",
               subtitle: "Live CMS editing",
-              body: "<p>Marketers update copy on public URLs with <code>?cms=true</code>.</p>",
+              body: "<p>Marketers update hero copy, testimonials, and CTAs on public URLs. Changes appear instantly — no deploy pipeline required.</p>",
               image_url: IMG.gallery,
               label: "right",
             },
             1
+          ),
+          item(
+            {
+              title: "Report progress to leadership",
+              subtitle: "Cohort analytics",
+              body: "<p>Export completion rates, exam readiness, and spend by business unit for quarterly business reviews.</p>",
+              image_url: IMG.dataViz,
+              label: "left",
+            },
+            2
           ),
         ],
       };
@@ -316,6 +382,10 @@ function sampleForKey(key) {
         sub_title: "Structured lead form section.",
         in_page_nav_title: "Form",
         data: { form_key: "enterprise" },
+        items: [
+          item({ title: "Email", subtitle: "hello@skillhub.example", href: "mailto:hello@skillhub.example", icon: "email" }, 0),
+          item({ title: "Phone", subtitle: "+1 (555) 010-2000", href: "tel:+15550102000", icon: "phone" }, 1),
+        ],
       };
 
     case "horizon_gallery":
@@ -327,6 +397,8 @@ function sampleForKey(key) {
           item({ title: "Section library", subtitle: "Filter by category", image_url: IMG.gallery }, 0),
           item({ title: "Live edit mode", subtitle: "On-page CMS", image_url: IMG.story }, 1),
           item({ title: "Entity pages", subtitle: "Vendor & product CMS", image_url: IMG.hero }, 2),
+          item({ title: "Course catalog", subtitle: "Filterable grid", image_url: IMG.classroom }, 3),
+          item({ title: "Blog journal", subtitle: "Editorial hub", image_url: IMG.campus }, 4),
         ],
       };
 
@@ -335,11 +407,12 @@ function sampleForKey(key) {
         section_title: "How teams publish",
         sub_title: "Sticky media with chapter items.",
         in_page_nav_title: "Narrative",
-        section_img_url: IMG.hero,
+        section_img_url: IMG.workshop,
         items: [
-          item({ title: "Register sections", body: "<p>Define each layout once in the global catalog.</p>" }, 0),
-          item({ title: "Place on templates", body: "<p>Attach sections to home, vendor, or content pages.</p>" }, 1),
-          item({ title: "Edit live", body: "<p>Refine copy on the public URL in CMS mode.</p>" }, 2),
+          item({ title: "Register sections", body: "<p>Define each layout once in the global catalog — hero, tabs, catalog grids, and social proof blocks.</p>" }, 0),
+          item({ title: "Place on templates", body: "<p>Attach sections to home, vendor, product, or free-form content pages with drag-and-drop ordering.</p>" }, 1),
+          item({ title: "Seed or edit content", body: "<p>Run database seeds for demo data, then refine copy in live CMS mode on the public URL.</p>" }, 2),
+          item({ title: "Publish & measure", body: "<p>Share URLs with stakeholders and track enrollments from linked catalog sections.</p>" }, 3),
         ],
       };
 
@@ -371,7 +444,12 @@ function sampleForKey(key) {
         section_title: "Find your learning path",
         sub_title: "Domain-style search band.",
         in_page_nav_title: "Search",
-        data: { placeholder: "Search courses, vendors, or skills…" },
+        data: { placeholder: "Search courses, vendors, or skills…", domain: "skillhub-learning.com" },
+        items: [
+          item({ value: ".com", label: "skillhub-learning.com" }, 0),
+          item({ value: ".io", label: "skillhub.io" }, 1),
+          item({ value: ".cloud", label: "skillhub.cloud" }, 2),
+        ],
       };
 
     case "website_build_steps":
@@ -407,9 +485,47 @@ function sampleForKey(key) {
 
     case "why_choose":
       return {
-        section_title: "Why Choose SkillHub?",
+        section_title: "Why teams choose SkillHub",
+        sub_title: "Compare delivery quality, catalog depth, and time-to-launch against traditional LMS rollouts.",
         in_page_nav_title: "Why choose",
-        items: defaultItems(4),
+        items: [
+          item(
+            {
+              title: "Vendor-authorized content",
+              subtitle: "No outdated third-party copies",
+              body: "<p>Every path links to official curricula from Microsoft, AWS, Google Cloud, and 50+ technology partners.</p>",
+              image_url: IMG.hero,
+            },
+            0
+          ),
+          item(
+            {
+              title: "Faster page launches",
+              subtitle: "Section library + live CMS",
+              body: "<p>Pick from 58 registered layouts, drop them on a content page, and edit copy on the live URL the same day.</p>",
+              image_url: IMG.laptop,
+            },
+            1
+          ),
+          item(
+            {
+              title: "Advisor-led rollouts",
+              subtitle: "Enterprise onboarding",
+              body: "<p>Dedicated learning advisors help scope cohorts, negotiate vendor bundles, and report ROI to leadership.</p>",
+              image_url: IMG.collaboration,
+            },
+            2
+          ),
+          item(
+            {
+              title: "Flexible delivery formats",
+              subtitle: "ILT · virtual · self-paced",
+              body: "<p>Mix instructor-led bootcamps with on-demand modules so global teams learn in the format that fits their schedule.</p>",
+              image_url: IMG.classroom,
+            },
+            3
+          ),
+        ],
       };
 
     case "feature_spotlight":
@@ -437,8 +553,40 @@ function sampleForKey(key) {
     case "training_options":
       return {
         section_title: "Flexible training options",
+        sub_title: "Self-paced, virtual instructor-led, and private cohort formats for every team size.",
         in_page_nav_title: "Training",
-        items: defaultItems(3),
+        items: [
+          item(
+            {
+              title: "Self-paced on demand",
+              subtitle: "Start anytime",
+              body: "<p>Access labs, knowledge checks, and exam prep on your schedule. Ideal for individual contributors upskilling between projects.</p>",
+              image_url: IMG.laptop,
+              buttons: [btn("Browse self-paced", { target_url: "/courses" })],
+            },
+            0
+          ),
+          item(
+            {
+              title: "Virtual instructor-led",
+              subtitle: "Live facilitation",
+              body: "<p>Join scheduled sessions with certified instructors, breakout rooms, and Q&A — without travel costs.</p>",
+              image_url: IMG.classroom,
+              buttons: [btn("View schedule", { variant: "outline", target_url: "/contact-us" })],
+            },
+            1
+          ),
+          item(
+            {
+              title: "Private enterprise cohort",
+              subtitle: "Dedicated advisor",
+              body: "<p>Custom runbooks, branded portals, and weekly progress reviews for teams of 25–2,500 learners.</p>",
+              image_url: IMG.conference,
+              buttons: [btn("Request proposal", { target_url: "/contact-us" })],
+            },
+            2
+          ),
+        ],
       };
 
     case "team":
@@ -446,8 +594,9 @@ function sampleForKey(key) {
         section_title: "Meet the team",
         in_page_nav_title: "Team",
         items: [
-          item({ title: "Alex Rivera", subtitle: "Head of Learning", body: "<p>Enterprise curriculum strategy.</p>", image_url: IMG.team }, 0),
-          item({ title: "Jordan Lee", subtitle: "CMS Product", body: "<p>Live editing and section library.</p>", image_url: IMG.story }, 1),
+          item({ title: "Alex Rivera", subtitle: "Head of Learning Strategy", body: "<p>Leads enterprise curriculum design and vendor partnerships across North America and EMEA.</p>", image_url: IMG.team }, 0),
+          item({ title: "Jordan Lee", subtitle: "CMS Product Lead", body: "<p>Owns the section library, live editing experience, and content page workflows.</p>", image_url: IMG.story }, 1),
+          item({ title: "Priya Nair", subtitle: "Principal Advisor", body: "<p>Guides Fortune 500 cohort planning, certification roadmaps, and executive reporting.</p>", image_url: IMG.collaboration }, 2),
         ],
       };
 
@@ -476,9 +625,47 @@ function sampleForKey(key) {
 
     case "card_stack":
       return {
-        section_title: "Stacked story cards",
+        section_title: "How modern L&D teams ship faster",
+        sub_title: "Sticky stacking story cards — scroll to reveal each chapter.",
         in_page_nav_title: "Stack",
-        items: defaultItems(4),
+        items: [
+          item(
+            {
+              title: "Discover the catalog",
+              subtitle: "Step 01",
+              body: "<p>Filter by vendor, skilling area, delivery format, and certification level. Save shortlists for stakeholder review.</p>",
+              image_url: IMG.hero,
+            },
+            0
+          ),
+          item(
+            {
+              title: "Curate learning paths",
+              subtitle: "Step 02",
+              body: "<p>Bundle courses into role-based journeys — cloud engineer, security analyst, data platform lead.</p>",
+              image_url: IMG.gallery,
+            },
+            1
+          ),
+          item(
+            {
+              title: "Publish landing pages",
+              subtitle: "Step 03",
+              body: "<p>Attach section layouts to content pages and refine copy in live CMS mode on the public URL.</p>",
+              image_url: IMG.laptop,
+            },
+            2
+          ),
+          item(
+            {
+              title: "Measure outcomes",
+              subtitle: "Step 04",
+              body: "<p>Track enrollments, completions, and exam pass rates. Report ROI to leadership each quarter.</p>",
+              image_url: IMG.dataViz,
+            },
+            3
+          ),
+        ],
       };
 
     case "builder_feature_cards":
@@ -566,8 +753,11 @@ function sampleForKey(key) {
         section_title: "Frequently asked questions",
         in_page_nav_title: "FAQ",
         items: [
-          item({ title: "How do I add a section to a content page?", body: "<p>Open the page in CMS mode and use Page settings → Add section.</p>" }, 0),
-          item({ title: "Can I preview all section types?", body: "<p>Yes — browse <strong>/cms/section</strong> and each category page.</p>" }, 1),
+          item({ title: "How do I add a section to a content page?", body: "<p>Open the page in CMS mode and use <strong>Page settings → Add section</strong>. Pick a layout from the global catalog or create a variant from an existing type.</p>" }, 0),
+          item({ title: "Can I preview all section types?", body: "<p>Yes — browse <strong>/cms/section</strong> and each category page for static, read-only previews with sample content.</p>" }, 1),
+          item({ title: "How does live editing work?", body: "<p>Append <code>?cms=true</code> to any public URL when signed in as an admin. The emerald toolbar unlocks inline editing for sections, items, and buttons.</p>" }, 2),
+          item({ title: "What is a section variant?", body: "<p>Variants share a <code>render_key</code> with the base layout but have their own unique <code>key</code> and default content — useful for reusable templates.</p>" }, 3),
+          item({ title: "Can I hide filters on catalog sections?", body: "<p>Yes — lock filter params in the section's page context so vendor or skilling-area pages show a pre-filtered course grid.</p>" }, 4),
         ],
       };
 
@@ -584,9 +774,10 @@ function sampleForKey(key) {
         section_title: "Sample curriculum",
         in_page_nav_title: "Curriculum",
         items: [
-          item({ title: "Module 1 — Foundations" }, 0),
-          item({ title: "Module 2 — Core services" }, 1),
-          item({ title: "Module 3 — Security" }, 2),
+          item({ title: "Module 1 — Cloud foundations", subtitle: "8 hours · self-paced", body: "<p>Core concepts, shared responsibility model, and identity basics.</p>" }, 0),
+          item({ title: "Module 2 — Core services", subtitle: "12 hours · labs", body: "<p>Compute, storage, networking, and monitoring hands-on exercises.</p>" }, 1),
+          item({ title: "Module 3 — Security & compliance", subtitle: "10 hours · blended", body: "<p>Zero trust patterns, encryption, and audit logging workshops.</p>" }, 2),
+          item({ title: "Module 4 — Certification prep", subtitle: "ILT · exam voucher", body: "<p>Instructor-led review sessions, practice tests, and exam scheduling support.</p>", buttons: [btn("Schedule exam", { target_url: "/contact-us" })] }, 3),
         ],
       };
 
@@ -634,8 +825,9 @@ function sampleForKey(key) {
         section_title: "What learners say",
         in_page_nav_title: "Quotes",
         items: [
-          item({ body: "SkillHub cut our vendor onboarding time in half.", title: "L&D Director, FinServ" }, 0),
-          item({ body: "The live CMS let us ship campaign pages same-day.", title: "Marketing Lead" }, 1),
+          item({ body: "SkillHub cut our vendor onboarding time in half. We went from spreadsheet chaos to a single source of truth for 200+ courses.", title: "L&D Director, Global FinServ" }, 0),
+          item({ body: "The live CMS let us ship campaign landing pages same-day. Marketing no longer waits on engineering for copy tweaks.", title: "VP Marketing, SaaS" }, 1),
+          item({ body: "Our cloud engineering cohort achieved a 94% certification pass rate after following the structured path SkillHub advisors built.", title: "Head of Cloud Enablement" }, 2),
         ],
       };
 
@@ -654,22 +846,36 @@ function sampleForKey(key) {
         section_title: "Masonry quotes",
         in_page_nav_title: "Masonry",
         items: [
-          item({ body: "Best structured catalog we have used.", title: "CTO" }, 0),
-          item({ body: "Live editing changed our release cadence.", title: "VP Marketing" }, 1),
-          item({ body: "Clear paths from vendor to certification.", title: "Enablement" }, 2),
+          item({ body: "Best structured catalog we have evaluated — vendor metadata is actually accurate.", title: "CTO, Healthcare" }, 0),
+          item({ body: "Live editing changed our release cadence from monthly deploys to same-day iterations.", title: "VP Marketing" }, 1),
+          item({ body: "Clear paths from vendor certification to internal role requirements.", title: "Director of Enablement" }, 2),
+          item({ body: "Advisors helped us negotiate a better Microsoft EA bundle tied to skilling outcomes.", title: "Procurement Lead" }, 3),
+          item({ body: "Section library previews saved weeks of design exploration before we committed to layouts.", title: "Product Designer" }, 4),
         ],
       };
 
     case "partners":
       return {
         section_title: "Technology partners",
+        sub_title: "Authorized training partners trusted by enterprise teams.",
         in_page_nav_title: "Partners",
+        items: [
+          item({ title: "Amazon", image_url: "https://images.netcomlearning.com/cms/logos/amazon-logo-training-partner.png" }, 0),
+          item({ title: "Microsoft", image_url: "https://images.netcomlearning.com/cms/logos/microsoft-logo-training-partner.png" }, 1),
+          item({ title: "Google Cloud", image_url: "https://images.netcomlearning.com/cms/logos/google-cloud-logo-training-partner.png" }, 2),
+        ],
       };
 
     case "partners_marquee":
       return {
         section_title: "Partner logo marquee",
+        sub_title: "Infinite-scroll partner strip with soft edge fade.",
         in_page_nav_title: "Marquee",
+        items: [
+          item({ title: "Amazon", image_url: "https://images.netcomlearning.com/cms/logos/amazon-logo-training-partner.png" }, 0),
+          item({ title: "Bank of America", image_url: "https://images.netcomlearning.com/cms/logos/bank-of-america-logo-training-partner.png" }, 1),
+          item({ title: "BMO", image_url: "https://images.netcomlearning.com/cms/logos/bmo-logo-training-partner.png" }, 2),
+        ],
       };
 
     case "awards":
@@ -714,46 +920,86 @@ function sampleForKey(key) {
 
     case "editorial_banner":
       return {
-        section_title: "Editorial banner hero",
-        sub_title: "Full-bleed display type over imagery.",
+        section_title: "Transform how your organization learns",
+        sub_title: "Full-bleed editorial hero with display typography over photography — built for campaign landing pages.",
         in_page_nav_title: "Editorial",
-        section_bg_img: IMG.hero,
+        section_img_url: IMG.workshop,
+        data: {
+          body: "<p>Pair this layout with in-page navigation and a course catalog section to turn awareness into enrollment.</p>",
+        },
+        buttons: [
+          btn("Explore courses", { variant: "inverse", target_url: "/courses" }),
+          btn("See vendors", { variant: "outline", target_url: "/vendors" }),
+        ],
       };
 
     case "statement_band":
       return {
-        section_title: "Capability compounds when learning is structured.",
-        sub_title: "Statement band — typography-led hero strip.",
+        section_title: "Capability compounds when learning is deliberate, measurable, and tied to outcomes.",
+        sub_title: "Typography-led manifesto band over a soft image wash.",
         in_page_nav_title: "Statement",
+        section_img_url: IMG.skyline,
+        data: {
+          eyebrow: "SkillHub philosophy",
+          body: "<p>We help L&D teams move from one-off course purchases to durable skilling programs aligned with vendor roadmaps and business priorities.</p>",
+        },
+        buttons: [btn("Our approach", { variant: "inverse", target_url: "/about-us" })],
       };
 
     case "orbit_hero":
       return {
-        section_title: "Orbit hero frame",
-        sub_title: "Product frame with floating cards.",
+        section_title: "Launch your learning hub in days, not quarters",
+        sub_title: "SaaS-style product frame with badge, dual CTAs, and browser preview imagery.",
         in_page_nav_title: "Orbit",
-        section_img_url: IMG.hero,
+        section_img_url: IMG.laptop,
+        data: {
+          eyebrow: "New · Section library",
+          body: "<p>58 registered layouts across hero, content, catalog, and social proof categories — all editable in live CMS mode.</p>",
+        },
+        buttons: [
+          btn("Browse layouts", { target_url: "/cms/section" }),
+          btn("Open CMS", { variant: "secondary", target_url: "/cms/pages" }),
+        ],
       };
 
     case "site_builder_hero":
       return {
-        section_title: "Build your learning site",
-        sub_title: "Site builder marketing hero.",
+        section_title: "Build your branded learning site",
+        sub_title: "Website-builder marketing hero with layered previews and bold display type.",
         in_page_nav_title: "Builder",
-        buttons: [btn("See templates", { target_url: "/cms/pages" })],
+        section_img_url: IMG.campus,
+        data: {
+          eyebrow: "Website builder",
+          body: "<p>Launch vendor hubs, product landing pages, and editorial journals without a custom front-end project.</p>",
+        },
+        buttons: [
+          btn("See templates", { target_url: "/cms/pages" }),
+          btn("Section library", { variant: "secondary", target_url: "/cms/section" }),
+        ],
       };
 
     case "video_banner":
       return {
-        section_title: "See SkillHub in action",
-        sub_title: "Full-bleed video banner.",
         in_page_nav_title: "Video",
-        section_bg_img: IMG.hero,
-        buttons: [
-          btn("Watch demo", {
-            action_type: "youtube",
-            target_url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-          }),
+        items: [
+          item(
+            {
+              title: "See SkillHub in action",
+              subtitle:
+                "Watch how enterprise teams discover authorized training, map skilling paths, and publish live CMS pages — without a separate staging environment.",
+              image_url: IMG.conference,
+              href: SHOWCASE_VIDEO,
+              buttons: [
+                btn("Browse catalog", { variant: "inverse", target_url: "/courses" }),
+                btn("Watch full demo", {
+                  variant: "outline",
+                  target_url: SHOWCASE_VIDEO,
+                  open_in_new_tab: true,
+                }),
+              ],
+            },
+            0
+          ),
         ],
       };
 
@@ -903,14 +1149,16 @@ function sampleForKey(key) {
           item(
             {
               title: "Cohort kickoff",
-              subtitle: "Enterprise rollout",
-              image_url: IMG.team,
+              subtitle: "Enterprise rollout · 240 learners",
+              image_url: IMG.conference,
               buttons: [btn("Case study", { variant: "inverse", target_url: "/blogs" })],
             },
             0
           ),
-          item({ title: "Lab day", subtitle: "Hands-on", image_url: IMG.gallery }, 1),
-          item({ title: "Certification", subtitle: "Exam prep", image_url: IMG.story }, 2),
+          item({ title: "Hands-on lab day", subtitle: "Azure fundamentals", image_url: IMG.classroom }, 1),
+          item({ title: "Certification week", subtitle: "Exam prep intensive", image_url: IMG.workshop }, 2),
+          item({ title: "Advisor workshop", subtitle: "Skilling roadmap", image_url: IMG.collaboration }, 3),
+          item({ title: "Leadership briefing", subtitle: "ROI review", image_url: IMG.skyline }, 4),
         ],
       };
 
@@ -1026,7 +1274,7 @@ function sampleForKey(key) {
       return {
         ...heroCopy,
         in_page_nav_title: SECTION_NAMES[k]?.replace("Hero — ", "") || k,
-        section_img_url: k === "hero_split" || k === "hero_asymmetric" ? IMG.hero : undefined,
+        section_img_url: heroImages[k] || undefined,
       };
 
     case "hero_media":
@@ -1039,6 +1287,7 @@ function sampleForKey(key) {
             {
               title: "Enterprise learning that scales",
               subtitle: "Authorized vendor training worldwide.",
+              image_url: IMG.hero,
               buttons: [btn("Browse catalog", { variant: "inverse", target_url: "/courses" })],
             },
             0
@@ -1046,10 +1295,21 @@ function sampleForKey(key) {
           item(
             {
               title: "Close skill gaps faster",
-              body: "<p>Role-based paths with labs and certification prep.</p>",
+              subtitle: "Role-based paths with labs and certification prep.",
+              body: "<p>Map cloud, security, and data competencies to the roles on your hiring plan.</p>",
+              image_url: IMG.classroom,
               buttons: [btn("View vendors", { variant: "inverse", target_url: "/vendors" })],
             },
             1
+          ),
+          item(
+            {
+              title: "Publish pages without deploys",
+              subtitle: "Live CMS on every public URL.",
+              image_url: IMG.laptop,
+              buttons: [btn("Try CMS mode", { variant: "inverse", target_url: "/?cms=true" })],
+            },
+            2
           ),
         ],
       };
@@ -1113,7 +1373,8 @@ export function buildCategoryPagePlacements(categoryKey) {
       sort_order: 1,
       in_page_nav_title: "About",
       section_title: `${cat?.name || categoryKey} sections`,
-      sub_title: `${keys.length} registered layouts in the SkillHub section library. Scroll to preview each component with sample content.`,
+      sub_title: `${keys.length} registered layouts in the SkillHub section library. Scroll to preview each component with realistic sample content, imagery, and CTAs.`,
+      section_img_url: IMG.hero,
       buttons: [
         btn("All categories", { target_url: "/cms/section" }),
         btn("Section admin", {

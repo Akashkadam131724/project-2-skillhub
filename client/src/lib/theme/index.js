@@ -21,6 +21,7 @@ export {
   isSurfaceToneLight,
   isSurfaceBandLight,
   surfaceToneBandClass,
+  surfaceBandShellClass,
   surfaceTonePreviewBg,
   surfaceTonePreviewLabel,
   surfaceBandPreviewBg,

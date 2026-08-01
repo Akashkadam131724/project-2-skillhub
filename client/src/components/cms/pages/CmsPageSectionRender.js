@@ -19,6 +19,7 @@ export default function CmsPageSectionRender({
   section,
   surfaceTone,
   surfaceBand,
+  surfaceBandIndex,
   sectionTheme = "inherit",
   pageTheme,
   pageContext,
@@ -59,6 +60,7 @@ export default function CmsPageSectionRender({
     pageTheme,
     surfaceTone,
     surfaceBand,
+    surfaceBandIndex,
   });
 
   const cmsToolbar = (

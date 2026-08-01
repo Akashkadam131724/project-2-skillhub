@@ -1153,7 +1153,11 @@ export default function CmsLivePageSections({
             );
 
             const renderPlacements = (rows, baseIndex) =>
-              rows.map(({ section, surfaceTone, surfaceBand, sectionTheme }, relIndex) => {
+              rows.map(
+                (
+                  { section, surfaceTone, surfaceBand, surfaceBandIndex, sectionTheme },
+                  relIndex
+                ) => {
                 const index = baseIndex + relIndex;
                 const navSections =
                   section.section_key === "in_page_nav"
@@ -1168,6 +1172,7 @@ export default function CmsLivePageSections({
                     section={section}
                     surfaceTone={surfaceTone}
                     surfaceBand={surfaceBand}
+                    surfaceBandIndex={surfaceBandIndex}
                     sectionTheme={sectionTheme}
                     pageTheme={pageTheme}
                     pageContext={pageContext}

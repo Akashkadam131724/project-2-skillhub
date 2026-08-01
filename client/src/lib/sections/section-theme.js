@@ -3,7 +3,6 @@
  * Legacy rows may still have `data.section_theme`. `inherit` follows page alternation.
  */
 
-import { sectionUsesAltSurface } from "./section-registry";
 import {
   isPageSurfaceTransparent,
   resolveSurfacePattern,
@@ -171,6 +170,7 @@ export const SECTION_OWN_BAND_KEYS = new Set([
   "orbit_hero",
   "domain_search_band",
   "horizon_gallery",
+  "template_gallery",
 ]);
 
 /** True when SectionSurface should not paint inherited page band fill. */
@@ -181,6 +181,20 @@ export function sectionSkipsInheritedBandPaint(sectionKey) {
   return (
     SECTION_OWN_BAND_KEYS.has(key) || SECTION_THEME_BAND_SKIP_KEYS.has(key)
   );
+}
+
+/**
+ * True when a placement should advance the page band alternation counter.
+ * Heroes / CTAs with their own band, nav, and overlays do not consume a slot.
+ */
+export function placementAdvancesAlternationIndex(section) {
+  const key = String(section?.section_key || "")
+    .trim()
+    .toLowerCase();
+  if (!key || key === "in_page_nav" || key === "promo_modal") return false;
+  if (SECTION_THEME_BAND_SKIP_KEYS.has(key)) return false;
+  if (sectionSkipsInheritedBandPaint(key)) return false;
+  return true;
 }
 
 /** Full-bleed sections that default to a dark band when section_theme is inherit. */
@@ -215,13 +229,10 @@ export function computePlacementSurface(
       : { surface_mode: pageSurfaceMode || "alternating" };
   const pattern = resolveSurfacePattern(resolvedTheme);
   const isTransparent = isPageSurfaceTransparent(pattern);
-  const usesAlt =
-    !hasCustomBg &&
-    !isTransparent &&
-    sectionUsesAltSurface(section?.section_key, section?.render_key);
 
   let surfaceBand;
   let surfaceTone;
+  let surfaceBandIndex;
   if (isTransparent && !hasCustomBg) {
     surfaceBand = null;
     surfaceTone = null;
@@ -233,7 +244,8 @@ export function computePlacementSurface(
     surfaceBand = surfaceBandAtIndex(pattern, index, {
       ink: resolvedTheme.ink,
     });
-    if (usesAlt) {
+    surfaceBandIndex = index;
+    if (placementAdvancesAlternationIndex(section)) {
       altIndex.current += 1;
     }
     surfaceTone = undefined;
@@ -243,5 +255,6 @@ export function computePlacementSurface(
     sectionTheme: themePref,
     surfaceBand: hasCustomBg && !themeTone ? undefined : surfaceBand,
     surfaceTone: hasCustomBg && !themeTone ? undefined : surfaceTone,
+    surfaceBandIndex,
   };
 }

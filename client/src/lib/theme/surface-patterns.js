@@ -308,6 +308,18 @@ const SURFACE_BAND_CLASS = {
   dark_ink: "section-band-bg section-band-bg--dark-ink",
 };
 
+/** CSS shell class for a resolved surface band (pattern-driven rows). */
+export function surfaceBandShellClass(surfaceBand) {
+  if (!surfaceBand?.bg) return "section-band-bg";
+  const bg = String(surfaceBand.bg).trim().toLowerCase();
+  for (const [tone, value] of Object.entries(LEGACY_TONE_BG)) {
+    if (String(value).trim().toLowerCase() === bg) {
+      return surfaceToneBandClass(tone);
+    }
+  }
+  return "section-band-bg";
+}
+
 /** Legacy token → CSS class (section theme overrides only). */
 export function surfaceToneBandClass(tone) {
   if (!tone) return "";

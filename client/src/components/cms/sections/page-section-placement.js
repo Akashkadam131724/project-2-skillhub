@@ -54,6 +54,7 @@ export function wrapSectionBody({
   pageTheme,
   surfaceTone,
   surfaceBand,
+  surfaceBandIndex,
 }) {
   const key = section.section_key;
   const fullBleedKeys = SECTION_THEME_BAND_SKIP_KEYS;
@@ -71,7 +72,12 @@ export function wrapSectionBody({
     );
   }
 
-  const pageBandFill = resolvePageBandFill(pageTheme, surfaceBand, surfaceTone);
+  const pageBandFill = resolvePageBandFill(
+    pageTheme,
+    surfaceBand,
+    surfaceTone,
+    surfaceBandIndex
+  );
 
   return (
     <SectionSurface

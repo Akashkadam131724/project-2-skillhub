@@ -13,6 +13,7 @@ export default function PageSectionRender({
   section,
   surfaceTone,
   surfaceBand,
+  surfaceBandIndex,
   sectionTheme = "inherit",
   pageTheme,
   pageContext,
@@ -42,6 +43,7 @@ export default function PageSectionRender({
     pageTheme,
     surfaceTone,
     surfaceBand,
+    surfaceBandIndex,
   });
 
   return (
