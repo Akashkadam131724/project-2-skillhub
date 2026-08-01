@@ -81,12 +81,6 @@ export async function fetchCourses(params = {}) {
   return apiGet(`/courses${toQuery(params)}`);
 }
 
-export async function fetchCoursesByProduct(productId, params = {}) {
-  return apiGet(
-    `/courses/product/${encodeURIComponent(productId)}${toQuery(params)}`
-  );
-}
-
 export async function fetchSkillLevels(params = {}) {
   return apiGet(`/skill-levels${toQuery(params)}`);
 }
@@ -109,12 +103,6 @@ export async function fetchIndustryBySlug(slug, options = {}) {
   });
 }
 
-export async function fetchCoursesByIndustry(idOrSlug, params = {}) {
-  return apiGet(
-    `/industries/${encodeURIComponent(idOrSlug)}/courses${toQuery(params)}`
-  );
-}
-
 export async function fetchSkillingAreas(params = {}) {
   return apiGet(`/skilling-areas${toQuery(params)}`);
 }
@@ -124,12 +112,6 @@ export async function fetchSkillingAreaBySlug(slug, options = {}) {
     notFoundMessage: "Skilling area not found",
     ...options,
   });
-}
-
-export async function fetchCoursesBySkillingArea(idOrSlug, params = {}) {
-  return apiGet(
-    `/skilling-areas/${encodeURIComponent(idOrSlug)}/courses${toQuery(params)}`
-  );
 }
 
 export async function fetchContents(params = {}) {
@@ -156,13 +138,6 @@ export async function fetchAllContents(params = {}, options = {}) {
   return all;
 }
 
-export async function fetchContentBySlug(slug, options = {}) {
-  return apiGet(`/contents/${encodeURIComponent(slug)}`, {
-    notFoundMessage: "Content not found",
-    ...options,
-  });
-}
-
 /** Lookup by public path (`about-us` or `company/careers`). */
 export async function fetchContentByPath(path, options = {}) {
   return apiGet(`/contents${toQuery({ path })}`, {
@@ -180,10 +155,6 @@ export async function fetchBlogBySlug(slug, options = {}) {
     notFoundMessage: "Blog not found",
     ...options,
   });
-}
-
-export async function fetchSectionLibraryCategories(options = {}) {
-  return apiGet("/section-library/categories", options);
 }
 
 export async function fetchSectionLibraryShowcase(showcaseKey, options = {}) {

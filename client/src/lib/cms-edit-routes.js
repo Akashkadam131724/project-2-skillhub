@@ -7,7 +7,7 @@
  * Admin lists:       /cms/vendors, …
  */
 
-export const CMS_ENTITY_TYPES = {
+const CMS_ENTITY_TYPES = {
   vendor: {
     pageKey: "vendor",
     segment: "vendor",
@@ -61,19 +61,6 @@ export const CMS_ENTITY_TYPES = {
 const PUBLIC_PATH_RE =
   /^\/(vendor|product|course|industry|skilling-area|blog)\/([^/]+)\/?$/;
 
-/** Live section editor — app/(private)/(live-edit)/cms/.../edit */
-export function isCmsLiveEditPath(pathname) {
-  if (!pathname) return false;
-  if (pathname === "/cms/home/edit") return true;
-  return /^\/cms\/[^/]+\/edit(\/|$)/.test(pathname);
-}
-
-/** CMS admin (sidebar) — app/(private)/(admin)/cms */
-export function isCmsAdminPath(pathname) {
-  if (!pathname?.startsWith("/cms")) return false;
-  return !isCmsLiveEditPath(pathname);
-}
-
 export function cmsPublicHref(pageKey, slugOrPath) {
   if (pageKey === "home") return "/";
   if (pageKey === "content") {
@@ -99,7 +86,7 @@ export function cmsEditHref(pageKey, slugOrPath) {
   return `/cms/${type.segment}/edit/${encodeURIComponent(String(slugOrPath || "").trim())}`;
 }
 
-export function cmsMetaHref(pageKey, slug) {
+function cmsMetaHref(pageKey, slug) {
   const type = CMS_ENTITY_TYPES[pageKey];
   if (!type || pageKey === "home" || pageKey === "content") {
     return type?.listPath || "/cms";
@@ -107,7 +94,7 @@ export function cmsMetaHref(pageKey, slug) {
   return `/cms/${type.segment}/${encodeURIComponent(String(slug || "").trim())}`;
 }
 
-export function cmsListHref(pageKey) {
+function cmsListHref(pageKey) {
   return CMS_ENTITY_TYPES[pageKey]?.listPath || "/cms";
 }
 
@@ -120,10 +107,7 @@ export function cmsEditExitHref(pageKey, slug) {
   return cmsListHref(pageKey);
 }
 
-/**
- * Map a public pathname to a live-edit href (for ?cms=true redirects & FAB).
- * Returns null when the path is not a CMS-backed public page.
- */
+/** Map a public pathname to a live-edit href (CmsModeToggle FAB). */
 export function cmsEditHrefFromPublicPath(pathname) {
   const path = String(pathname || "").replace(/\/+$/, "") || "/";
   if (path === "/") return cmsEditHref("home");
@@ -137,6 +121,5 @@ export function cmsEditHrefFromPublicPath(pathname) {
     if (pageKey) return cmsEditHref(pageKey, decodeURIComponent(slug));
   }
 
-  // Content catch-all (anything else that isn't a reserved app route)
   return cmsEditHref("content", path.replace(/^\//, ""));
 }

@@ -13,6 +13,48 @@ const withBundleAnalyzer = bundleAnalyzer({
   analyzerMode: "static",
 });
 
+function uploadRemotePatterns() {
+  const patterns = [];
+  const seen = new Set();
+  const add = (pattern) => {
+    const key = `${pattern.protocol}://${pattern.hostname}:${pattern.port || ""}${pattern.pathname}`;
+    if (seen.has(key)) return;
+    seen.add(key);
+    patterns.push(pattern);
+  };
+
+  const apiBase = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+  try {
+    const url = new URL(apiBase);
+    const protocol = url.protocol.replace(":", "");
+    const hosts =
+      url.hostname === "localhost" ? ["localhost", "127.0.0.1"] : [url.hostname];
+    for (const hostname of hosts) {
+      add({
+        protocol,
+        hostname,
+        ...(url.port ? { port: url.port } : {}),
+        pathname: "/uploads/**",
+      });
+    }
+  } catch {
+    /* fall through to dev defaults */
+  }
+
+  if (process.env.NODE_ENV !== "production") {
+    for (const port of ["3000", "3005"]) {
+      add({
+        protocol: "http",
+        hostname: "localhost",
+        port,
+        pathname: "/uploads/**",
+      });
+    }
+  }
+
+  return patterns;
+}
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   productionBrowserSourceMaps: false,
@@ -29,12 +71,7 @@ const nextConfig = {
         protocol: "https",
         hostname: "images.netcomlearning.com",
       },
-      {
-        protocol: "http",
-        hostname: "localhost",
-        port: "3000",
-        pathname: "/uploads/**",
-      },
+      ...uploadRemotePatterns(),
     ],
   },
   // Terminal: GET url 200 in Xms (cache hit | cache miss | cache skip)

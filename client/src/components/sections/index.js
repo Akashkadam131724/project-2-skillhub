@@ -1,7 +1,6 @@
 export { default as SectionWrapper } from "./SectionWrapper";
 export { default as SectionFrame, SectionInner } from "./SectionFrame";
 export { default as FallbackSection } from "./FallbackSection";
-export { default as PartnersSection } from "./PartnersSection";
 
 export * from "./hero";
 export * from "./content";
