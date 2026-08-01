@@ -32,7 +32,7 @@ import {
   surfacePatternLabel,
   themeForApiSave,
 } from "@/lib/theme";
-import { normalizeSectionTheme } from "@/lib/sections/section-theme";
+import { normalizeSectionTheme, sectionSupportsBandTheme } from "@/lib/sections/section-theme";
 import {
   buildVisibleWithSurface,
   normalizeInitialSections,
@@ -1697,6 +1697,12 @@ export default function CmsLivePageSections({
                     onChange={setBandDraft}
                     showBgImage={sectionUsesBg(editing.section.section_key)}
                     showBgColor={sectionUsesBgColor(editing.section.section_key)}
+                    showTheme={sectionSupportsBandTheme(
+                      editing.section.section_key,
+                      itemsConfigRenderKey(editing.section)
+                    )}
+                    sectionKey={editing.section.section_key}
+                    renderKey={itemsConfigRenderKey(editing.section)}
                     inheritedSurfaceTone={bandEditorPlacement.inheritedSurfaceTone}
                     inheritedSurfaceBand={bandEditorPlacement.inheritedSurfaceBand}
                     pageTheme={pageTheme}

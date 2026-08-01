@@ -12,7 +12,7 @@ import {
 } from "@/lib/api/cms-api";
 import { isKnownSectionKey, SECTION_CATEGORIES } from "@/lib/sections/section-registry";
 import { ensureSectionRenderKeySaved } from "@/lib/sections/section-render-key";
-import { SECTION_THEME_OPTIONS } from "@/lib/sections/section-theme";
+import { SECTION_THEME_OPTIONS, sectionFixedBandThemeHint, sectionSupportsBandTheme } from "@/lib/sections/section-theme";
 import {
   contentScopeLabel,
   normalizeContentScope,
@@ -330,24 +330,36 @@ export default function CmsSectionDetailPage() {
                   : "Full cascade — entity pages can override template and global defaults."}
             </p>
           </Field>
-          <Field
-            label="Default band theme"
-            hint="Catalog default — template and page placements can override"
-          >
-            <select
-              className={inputClass}
-              value={meta.section_theme || "inherit"}
-              onChange={(e) =>
-                setMeta((m) => ({ ...m, section_theme: e.target.value }))
-              }
+          {sectionSupportsBandTheme(sectionKey) ? (
+            <Field
+              label="Default band theme"
+              hint="Catalog default — template and page placements can override"
             >
-              {SECTION_THEME_OPTIONS.map((opt) => (
-                <option key={opt.value} value={opt.value}>
-                  {opt.label}
-                </option>
-              ))}
-            </select>
-          </Field>
+              <select
+                className={inputClass}
+                value={meta.section_theme || "inherit"}
+                onChange={(e) =>
+                  setMeta((m) => ({ ...m, section_theme: e.target.value }))
+                }
+              >
+                {SECTION_THEME_OPTIONS.map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
+            </Field>
+          ) : (
+            <Field
+              label="Default band theme"
+              hint={sectionFixedBandThemeHint(sectionKey) || "Fixed palette — not configurable"}
+              className="sm:col-span-2"
+            >
+              <p className="m-0 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-600 dark:border-slate-700 dark:bg-slate-900/50 dark:text-slate-300">
+                {sectionFixedBandThemeHint(sectionKey)}
+              </p>
+            </Field>
+          )}
           <Field
             label="Catalog preview image"
             hint="Shown in CMS lists; copied onto page mappings when tagged"

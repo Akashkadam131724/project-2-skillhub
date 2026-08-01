@@ -11,6 +11,7 @@ import {
  * Runtime band behavior lives in `section-theme.js`:
  *   SECTION_OWN_BAND_KEYS — paints its own full-bleed band
  *   SECTION_THEME_BAND_SKIP_KEYS — CTA / nav / modal (no SectionSurface band)
+ *   SECTION_FIXED_BAND_THEME_KEYS — fixed light/dark palette (hide theme in CMS)
  *   placementAdvancesAlternationIndex() — white/grey counter
  *
  * "fixed" ≈ own-band or non-row chrome. Everything else is "alt" (page alternation).

@@ -7,7 +7,7 @@ import {
   effectiveBandThemeInfo,
   effectiveBandToneForDraft,
 } from "@/lib/sections/section-band-cms";
-import { SECTION_THEME_OPTIONS } from "@/lib/sections/section-theme";
+import { SECTION_THEME_OPTIONS, sectionFixedBandThemeHint, sectionSupportsBandTheme } from "@/lib/sections/section-theme";
 import { mediaUrl, uploadCmsImage } from "@/lib/api/cms-api";
 import { mediaAlt } from "@/lib/utils/media-alt";
 import { isBannerGradient } from "@/lib/theme/banner-bg";
@@ -42,6 +42,9 @@ export default function CmsSectionBandEditor({
   onChange,
   showBgImage = true,
   showBgColor = true,
+  showTheme = true,
+  sectionKey = "",
+  renderKey = "",
   bgFieldsLocked = false,
   bgLockedMessage = "",
   inheritedSurfaceTone,
@@ -75,6 +78,9 @@ export default function CmsSectionBandEditor({
   );
   const previewStyle = bandPreviewStyle(draft, themeInfo);
   const customBgActive = Boolean(draft.bgImg || draft.bgColor?.trim());
+  const fixedThemeHint = sectionFixedBandThemeHint(sectionKey, renderKey);
+  const themeSupported =
+    showTheme && sectionSupportsBandTheme(sectionKey, renderKey);
   const sampleTitleClass = draft.bgImg
     ? "relative m-0 text-[11px] font-semibold text-white drop-shadow-sm"
     : "relative m-0 text-[11px] font-semibold text-[var(--band-fg)]";
@@ -100,26 +106,34 @@ export default function CmsSectionBandEditor({
         </p>
       </div>
 
-      <fieldset className="space-y-2 rounded-lg border border-slate-200 p-3 dark:border-slate-700">
-        <legend className="px-1 text-sm font-medium text-slate-700 dark:text-slate-200">
-          Band theme
-          <span className="ml-1 font-normal text-slate-500">
-            (at this layer — inherit uses parent default)
-          </span>
-        </legend>
-        <select
-          className={inputClass}
-          value={draft.theme || "inherit"}
-          disabled={saving}
-          onChange={(e) => set({ theme: e.target.value })}
-        >
-          {SECTION_THEME_OPTIONS.map((opt) => (
-            <option key={opt.value} value={opt.value}>
-              {opt.label}
-            </option>
-          ))}
-        </select>
-      </fieldset>
+      {fixedThemeHint ? (
+        <p className="m-0 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5 text-xs text-slate-600 dark:border-slate-700 dark:bg-slate-900/50 dark:text-slate-300">
+          {fixedThemeHint}
+        </p>
+      ) : null}
+
+      {themeSupported ? (
+        <fieldset className="space-y-2 rounded-lg border border-slate-200 p-3 dark:border-slate-700">
+          <legend className="px-1 text-sm font-medium text-slate-700 dark:text-slate-200">
+            Band theme
+            <span className="ml-1 font-normal text-slate-500">
+              (at this layer — inherit uses parent default)
+            </span>
+          </legend>
+          <select
+            className={inputClass}
+            value={draft.theme || "inherit"}
+            disabled={saving}
+            onChange={(e) => set({ theme: e.target.value })}
+          >
+            {SECTION_THEME_OPTIONS.map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
+        </fieldset>
+      ) : null}
 
       <div
         className="overflow-hidden rounded-xl border border-slate-200 dark:border-slate-700"

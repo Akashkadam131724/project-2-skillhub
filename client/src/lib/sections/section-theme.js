@@ -158,6 +158,65 @@ export const SECTION_THEME_BAND_SKIP_KEYS = new Set([
 ]);
 
 /**
+ * Sections with a baked-in light or dark palette — band theme has no effect on layout.
+ * Hide the theme switch in Section band editors (e.g. editorial_banner: always dark + white text).
+ */
+export const SECTION_FIXED_BAND_THEME_KEYS = new Set([
+  /* Always dark, light text */
+  "editorial_banner",
+  "statement_band",
+  "cta_band",
+  "split_cta",
+  "video_banner",
+  "site_builder_hero",
+  "domain_search_band",
+  "horizon_gallery",
+  "hero_media",
+  /* Fixed light / warm palette */
+  "orbit_hero",
+  "template_gallery",
+  /* Chrome / overlay */
+  "in_page_nav",
+  "promo_modal",
+]);
+
+/** True when band light/dark theme can be changed for this section type. */
+export function sectionSupportsBandTheme(sectionKey, renderKey) {
+  const key = String(renderKey || sectionKey || "")
+    .trim()
+    .toLowerCase();
+  if (!key) return true;
+  return !SECTION_FIXED_BAND_THEME_KEYS.has(key);
+}
+
+export function sectionFixedBandThemeHint(sectionKey, renderKey) {
+  const key = String(renderKey || sectionKey || "")
+    .trim()
+    .toLowerCase();
+  if (!sectionSupportsBandTheme(sectionKey, renderKey)) {
+    const darkKeys = new Set([
+      "editorial_banner",
+      "statement_band",
+      "cta_band",
+      "split_cta",
+      "video_banner",
+      "site_builder_hero",
+      "domain_search_band",
+      "horizon_gallery",
+      "hero_media",
+    ]);
+    if (darkKeys.has(key)) {
+      return "This section uses a fixed dark band with light text — band theme does not apply.";
+    }
+    if (key === "orbit_hero" || key === "template_gallery") {
+      return "This section uses a fixed light palette — band theme does not apply.";
+    }
+    return "This section uses a fixed style — band theme does not apply.";
+  }
+  return "";
+}
+
+/**
  * Hero / banner sections that paint their own band when `section_theme` is inherit
  * and no section background is set — skip page alternating fill from SectionSurface.
  */

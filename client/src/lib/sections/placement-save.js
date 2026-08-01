@@ -1,5 +1,5 @@
 import { normalizeContentScope } from "@/lib/cms/content-scope";
-import { normalizeSectionTheme } from "./section-theme";
+import { normalizeSectionTheme, sectionSupportsBandTheme } from "./section-theme";
 import {
   updatePageSectionTag,
   updateSection,
@@ -82,9 +82,13 @@ export async function saveSectionBandForPlacement(
       section_bg_color: draft.bgColor?.trim() || null,
     });
   }
-  await saveSectionThemeForPlacement(section, {
-    pageKey,
-    entityId,
-    rawValue: draft.theme ?? "inherit",
-  });
+  if (
+    sectionSupportsBandTheme(section?.section_key, section?.render_key)
+  ) {
+    await saveSectionThemeForPlacement(section, {
+      pageKey,
+      entityId,
+      rawValue: draft.theme ?? "inherit",
+    });
+  }
 }

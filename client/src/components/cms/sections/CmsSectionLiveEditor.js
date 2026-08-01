@@ -27,7 +27,7 @@ import { mediaUrl, uploadCmsImage } from "@/lib/api/cms-api";
 import { mediaAlt } from "@/lib/utils/media-alt";
 import { normalizeContentScope } from "@/lib/cms/content-scope";
 import { mergePlacementData } from "@/lib/sections/placement-data";
-import { computePlacementSurface, SECTION_THEME_BAND_SKIP_KEYS } from "@/lib/sections/section-theme";
+import { computePlacementSurface, SECTION_THEME_BAND_SKIP_KEYS, sectionSupportsBandTheme } from "@/lib/sections/section-theme";
 import { saveSectionBandForPlacement } from "@/lib/sections/placement-save";
 import { bandDraftFromSection } from "@/lib/sections/section-band-cms";
 import CmsSectionBandEditor from "@/components/cms/sections/CmsSectionBandEditor";
@@ -426,6 +426,9 @@ export default function CmsSectionLiveEditor({
                 onChange={setBandDraft}
                 showBgImage={sectionUsesBg(key)}
                 showBgColor={sectionUsesBgColor(key)}
+                showTheme={sectionSupportsBandTheme(key, itemsRenderKey)}
+                sectionKey={key}
+                renderKey={itemsRenderKey}
                 inheritedSurfaceTone={surfaceTone}
                 inheritedSurfaceBand={surfaceBand}
                 pageTheme={pageContext?.pageTheme || pageContext}
