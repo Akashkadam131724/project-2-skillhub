@@ -42,6 +42,7 @@ export default function StatementBandSection({
   return (
     <section
       ref={ref}
+      data-always-light-text=""
       className="relative isolate min-h-[85vh] w-full overflow-hidden bg-ink text-white"
     >
       {img ? (

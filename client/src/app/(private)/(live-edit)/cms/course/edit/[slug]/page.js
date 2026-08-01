@@ -1,10 +1,7 @@
 import { Suspense } from "react";
 import { fetchCourseBySlug } from "@/lib/api";
 import { getPageSectionsResolved } from "@/lib/cms-api";
-import {
-  cmsEditExitHref,
-  cmsPublicHref,
-} from "@/lib/cms-edit-routes";
+import { cmsPublicHref } from "@/lib/cms-edit-routes";
 import {
   DetailShell,
   NotFoundState,
@@ -73,7 +70,6 @@ export default async function CmsCourseSectionEditPage({ params }) {
           initialTheme={pageTheme}
           cmsMode
           publicHref={cmsPublicHref("course", course.slug)}
-          exitHref={cmsEditExitHref("course", course.slug)}
           pageContext={{
             entityType: "course",
             entityId: courseId,

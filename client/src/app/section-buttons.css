@@ -1,0 +1,217 @@
+/**
+ * Section CTAs — token-driven; inherits band / light-island context from section-theme.css.
+ */
+
+/* —— Light palette (default) —— */
+:root {
+  --ds-btn-primary-bg: var(--brand);
+  --ds-btn-primary-fg: #fff;
+  --ds-btn-primary-hover: var(--brand-hover);
+  --ds-btn-secondary-border: rgb(203 213 225);
+  --ds-btn-secondary-bg: #fff;
+  --ds-btn-secondary-fg: rgb(30 41 59);
+  --ds-btn-secondary-hover-bg: rgb(248 250 252);
+  --ds-btn-secondary-hover-border: rgb(148 163 184);
+  --ds-btn-outline-width: 2px;
+  --ds-btn-outline-border: var(--brand);
+  --ds-btn-outline-bg: transparent;
+  --ds-btn-outline-fg: var(--brand);
+  --ds-btn-outline-hover-bg: color-mix(in srgb, var(--brand) 10%, transparent);
+  --ds-btn-ghost-fg: rgb(51 65 85);
+  --ds-btn-ghost-hover-bg: rgb(241 245 249);
+  --ds-btn-link-fg: var(--brand);
+  --ds-btn-link-hover-fg: var(--brand-hover);
+  --ds-btn-inverse-bg: #fff;
+  --ds-btn-inverse-fg: var(--ink);
+  --ds-btn-inverse-hover-bg: rgb(241 245 249);
+  --ds-btn-cms-border: rgb(203 213 225);
+  --ds-btn-cms-bg: rgb(255 255 255 / 0.85);
+  --ds-btn-cms-fg: rgb(71 85 105);
+  --ds-btn-cms-hover-border: var(--brand);
+  --ds-btn-cms-hover-fg: var(--brand);
+}
+
+/* Dark section band — glass-style CTAs */
+[data-section-theme="dark"] {
+  --ds-btn-secondary-border: rgb(255 255 255 / 0.45);
+  --ds-btn-secondary-bg: rgb(255 255 255 / 0.1);
+  --ds-btn-secondary-fg: #fff;
+  --ds-btn-secondary-hover-bg: rgb(255 255 255 / 0.2);
+  --ds-btn-secondary-hover-border: rgb(255 255 255 / 0.55);
+  --ds-btn-outline-border: rgb(255 255 255 / 0.45);
+  --ds-btn-outline-fg: #fff;
+  --ds-btn-outline-hover-bg: rgb(255 255 255 / 0.1);
+  --ds-btn-ghost-fg: #fff;
+  --ds-btn-ghost-hover-bg: rgb(255 255 255 / 0.2);
+  --ds-btn-link-fg: #fff;
+  --ds-btn-link-hover-fg: rgb(255 255 255 / 0.85);
+  --ds-btn-cms-border: rgb(255 255 255 / 0.4);
+  --ds-btn-cms-bg: rgb(255 255 255 / 0.1);
+  --ds-btn-cms-fg: #fff;
+  --ds-btn-cms-hover-border: rgb(255 255 255 / 0.55);
+  --ds-btn-cms-hover-fg: #fff;
+}
+
+/* Site dark mode (header / CMS chrome) */
+.dark {
+  --ds-btn-secondary-border: rgb(71 85 105);
+  --ds-btn-secondary-bg: rgb(15 23 42);
+  --ds-btn-secondary-fg: rgb(241 245 249);
+  --ds-btn-secondary-hover-bg: rgb(30 41 59);
+  --ds-btn-secondary-hover-border: rgb(71 85 105);
+  --ds-btn-ghost-fg: rgb(226 232 240);
+  --ds-btn-ghost-hover-bg: rgb(30 41 59);
+}
+
+[data-btn-surface="dark"] {
+  --ds-btn-secondary-border: rgb(255 255 255 / 0.45);
+  --ds-btn-secondary-bg: rgb(255 255 255 / 0.1);
+  --ds-btn-secondary-fg: #fff;
+  --ds-btn-secondary-hover-bg: rgb(255 255 255 / 0.2);
+  --ds-btn-secondary-hover-border: rgb(255 255 255 / 0.55);
+  --ds-btn-outline-border: rgb(255 255 255 / 0.45);
+  --ds-btn-outline-fg: #fff;
+  --ds-btn-outline-hover-bg: rgb(255 255 255 / 0.1);
+  --ds-btn-ghost-fg: #fff;
+  --ds-btn-ghost-hover-bg: rgb(255 255 255 / 0.2);
+  --ds-btn-link-fg: #fff;
+  --ds-btn-link-hover-fg: rgb(255 255 255 / 0.85);
+  --ds-btn-cms-border: rgb(255 255 255 / 0.4);
+  --ds-btn-cms-bg: rgb(255 255 255 / 0.1);
+  --ds-btn-cms-fg: #fff;
+  --ds-btn-cms-hover-border: rgb(255 255 255 / 0.55);
+  --ds-btn-cms-hover-fg: #fff;
+}
+
+/* Light islands reset button palette over dark bands */
+:is(
+  .section-light-card,
+  [data-section-surface="light-card"],
+  [data-light-surface],
+  [data-always-ink-text]
+) {
+  --ds-btn-secondary-border: rgb(203 213 225);
+  --ds-btn-secondary-bg: #fff;
+  --ds-btn-secondary-fg: rgb(30 41 59);
+  --ds-btn-secondary-hover-bg: rgb(248 250 252);
+  --ds-btn-secondary-hover-border: rgb(148 163 184);
+  --ds-btn-outline-border: var(--brand);
+  --ds-btn-outline-fg: var(--brand);
+  --ds-btn-outline-hover-bg: color-mix(in srgb, var(--brand) 10%, transparent);
+  --ds-btn-ghost-fg: rgb(51 65 85);
+  --ds-btn-ghost-hover-bg: rgb(241 245 249);
+  --ds-btn-link-fg: var(--brand);
+  --ds-btn-link-hover-fg: var(--brand-hover);
+  --ds-btn-cms-border: rgb(203 213 225);
+  --ds-btn-cms-bg: rgb(255 255 255 / 0.85);
+  --ds-btn-cms-fg: rgb(71 85 105);
+  --ds-btn-cms-hover-border: var(--brand);
+  --ds-btn-cms-hover-fg: var(--brand);
+}
+
+.section-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.25;
+  text-decoration: none;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.section-btn:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--brand) 65%, transparent);
+  outline-offset: 2px;
+}
+
+.section-btn--link,
+.section-btn--cms-manage {
+  padding-left: 0.25rem;
+  padding-right: 0.25rem;
+  border-color: transparent;
+  background: transparent;
+}
+
+.section-btn--primary {
+  background-color: var(--ds-btn-primary-bg);
+  color: var(--ds-btn-primary-fg);
+  border-color: transparent;
+}
+
+.section-btn--primary:hover {
+  background-color: var(--ds-btn-primary-hover);
+}
+
+.section-btn--secondary {
+  border-color: var(--ds-btn-secondary-border);
+  background-color: var(--ds-btn-secondary-bg);
+  color: var(--ds-btn-secondary-fg);
+}
+
+.section-btn--secondary:hover {
+  background-color: var(--ds-btn-secondary-hover-bg);
+  border-color: var(--ds-btn-secondary-hover-border);
+}
+
+.section-btn--outline {
+  border-width: var(--ds-btn-outline-width, 2px);
+  border-color: var(--ds-btn-outline-border);
+  background-color: var(--ds-btn-outline-bg, transparent);
+  color: var(--ds-btn-outline-fg);
+}
+
+.section-btn--outline:hover {
+  background-color: var(--ds-btn-outline-hover-bg);
+}
+
+.section-btn--ghost {
+  background-color: transparent;
+  color: var(--ds-btn-ghost-fg);
+  border-color: transparent;
+}
+
+.section-btn--ghost:hover {
+  background-color: var(--ds-btn-ghost-hover-bg);
+}
+
+.section-btn--link {
+  color: var(--ds-btn-link-fg);
+}
+
+.section-btn--link:hover {
+  color: var(--ds-btn-link-hover-fg);
+  text-decoration: underline;
+}
+
+.section-btn--inverse {
+  background-color: var(--ds-btn-inverse-bg);
+  color: var(--ds-btn-inverse-fg);
+  border-color: transparent;
+}
+
+.section-btn--inverse:hover {
+  background-color: var(--ds-btn-inverse-hover-bg);
+}
+
+.section-btn--cms-manage {
+  border-style: dashed;
+  border-color: var(--ds-btn-cms-border);
+  background-color: var(--ds-btn-cms-bg);
+  color: var(--ds-btn-cms-fg);
+  padding: 0.375rem 0.75rem;
+  font-size: 0.6875rem;
+}
+
+.section-btn--cms-manage:hover {
+  border-color: var(--ds-btn-cms-hover-border, var(--brand));
+  color: var(--ds-btn-cms-hover-fg, var(--brand));
+}

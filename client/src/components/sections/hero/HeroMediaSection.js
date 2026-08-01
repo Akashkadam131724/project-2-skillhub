@@ -98,6 +98,7 @@ export default function HeroMediaSection({
 
   return (
     <section
+      data-always-light-text=""
       className="relative min-h-[22rem] overflow-hidden text-white sm:min-h-[28rem]"
       style={bannerBgStyle(bgValue)}
     >

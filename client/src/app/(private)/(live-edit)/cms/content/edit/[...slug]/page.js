@@ -8,7 +8,6 @@ import {
   contentPathFromParams,
 } from "@/lib/content-pages";
 import {
-  cmsEditExitHref,
   cmsPublicHref,
 } from "@/lib/cms-edit-routes";
 import CmsLivePageSections from "@/components/cms/CmsLivePageSections";
@@ -69,7 +68,6 @@ export default async function CmsContentSectionEditPage({ params }) {
           initialTheme={pageTheme}
           cmsMode
           publicHref={cmsPublicHref("content", path)}
-          exitHref={cmsEditExitHref("content")}
           pageContext={{
             entityType: "content",
             entityId: contentId,

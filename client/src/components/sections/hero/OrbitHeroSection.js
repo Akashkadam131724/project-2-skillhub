@@ -35,7 +35,7 @@ export default function OrbitHeroSection({
   return (
     <section
       ref={ref}
-      className="relative isolate overflow-hidden bg-[linear-gradient(165deg,#f8fafc_0%,#ffffff_40%,#eef2f7_100%)] py-16 sm:py-20 lg:py-24 dark:bg-none dark:bg-slate-950"
+      className="relative isolate overflow-hidden bg-[linear-gradient(165deg,#f8fafc_0%,#ffffff_40%,#eef2f7_100%)] py-16 sm:py-20 lg:py-24"
     >
       <div
         aria-hidden
@@ -84,7 +84,7 @@ export default function OrbitHeroSection({
             className="justify-center"
           >
             {sub_title || cmsMode ? (
-              <p className="mt-5 mb-0 max-w-2xl text-base leading-relaxed text-slate-600 sm:text-lg dark:text-slate-300">
+              <p className="mt-5 mb-0 max-w-2xl text-base leading-relaxed section-theme-muted sm:text-lg">
                 {sub_title || "Supporting line"}
               </p>
             ) : null}
@@ -93,7 +93,7 @@ export default function OrbitHeroSection({
           {!isRichTextEmpty(body) ? (
             <CmsRichText
               html={body}
-              className="mt-4 max-w-xl text-sm text-slate-500 dark:text-slate-400"
+              className="mt-4 max-w-xl text-sm section-theme-muted"
             />
           ) : null}
 

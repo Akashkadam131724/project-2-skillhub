@@ -1,10 +1,7 @@
 import { Suspense } from "react";
 import { fetchContentByPath } from "@/lib/api";
 import { getPageSectionsResolved } from "@/lib/cms-api";
-import {
-  cmsEditExitHref,
-  cmsPublicHref,
-} from "@/lib/cms-edit-routes";
+import { cmsPublicHref } from "@/lib/cms-edit-routes";
 import CmsLivePageSections from "@/components/cms/CmsLivePageSections";
 
 export const metadata = {
@@ -58,7 +55,6 @@ export default async function CmsHomeSectionEditPage() {
           initialTheme={pageTheme}
           cmsMode
           publicHref={cmsPublicHref("home")}
-          exitHref={cmsEditExitHref("home")}
           pageContext={{
             entityType: "content",
             entityId: contentId,

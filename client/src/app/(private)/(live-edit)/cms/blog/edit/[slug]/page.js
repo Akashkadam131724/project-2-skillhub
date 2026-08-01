@@ -3,10 +3,7 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { fetchBlogBySlug, fetchBlogs } from "@/lib/api";
 import { getPageSectionsResolved, mediaUrl } from "@/lib/cms-api";
-import {
-  cmsEditExitHref,
-  cmsPublicHref,
-} from "@/lib/cms-edit-routes";
+import { cmsPublicHref } from "@/lib/cms-edit-routes";
 import BlogArticleBody from "@/components/blog/BlogArticleBody";
 import BlogCard from "@/components/blog/BlogCard";
 import BlogTableOfContents from "@/components/blog/BlogTableOfContents";
@@ -181,7 +178,6 @@ export default async function CmsBlogSectionEditPage({ params }) {
           initialTheme={sectionsResponse.page?.theme || null}
           cmsMode
           publicHref={cmsPublicHref("blog", blog.slug)}
-          exitHref={cmsEditExitHref("blog", blog.slug)}
           pageContext={{
             entityType: "blog",
             entityId: blogId,

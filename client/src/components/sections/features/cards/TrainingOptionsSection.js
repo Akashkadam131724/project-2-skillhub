@@ -5,6 +5,7 @@ import EmptyItemsHint from "@/components/sections/EmptyItemsHint";
 import SectionFrame from "@/components/sections/SectionFrame";
 import MobileCardPeekRow from "@/components/sections/MobileCardPeekRow";
 import { resolveItemsForSection } from "@/lib/item-types";
+import { isPlacementDarkBand } from "@/lib/section-theme";
 import TrainingOptionCard from "./TrainingOptionCard";
 
 /**
@@ -17,10 +18,20 @@ export default function TrainingOptionsSection({
   section_key = "training_options",
   cmsMode,
   onEditField,
+  sectionTheme,
+  section_theme,
+  surfaceTone,
+  surfaceBand,
   ...frameProps
 }) {
   const items = resolveItemsForSection(section_key, mappingItems);
   if (!items.length && !cmsMode) return null;
+
+  const onDarkBand = isPlacementDarkBand({
+    section_theme: section_theme ?? sectionTheme,
+    surfaceTone,
+    surfaceBand,
+  });
 
   return (
     <SectionFrame
@@ -47,6 +58,7 @@ export default function TrainingOptionsSection({
               key={item._id || item.id || i}
               item={item}
               index={i}
+              onDarkBand={onDarkBand}
             />
           ))}
         </MobileCardPeekRow>

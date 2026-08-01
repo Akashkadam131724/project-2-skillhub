@@ -63,13 +63,21 @@ export async function saveSectionThemeForPlacement(
   });
 }
 
+/** Invoke savePlacement whether it expects (section, patch) or (patch) only. */
+function invokeSavePlacement(savePlacement, section, patch) {
+  if (savePlacement.length >= 2) {
+    return savePlacement(section, patch);
+  }
+  return savePlacement(patch);
+}
+
 /** Save band background + theme on the placement layer (theme is page-level only). */
 export async function saveSectionBandForPlacement(
   section,
   { draft, savePlacement, contentLocked = false, pageKey, entityId }
 ) {
   if (!contentLocked) {
-    await savePlacement(section, {
+    await invokeSavePlacement(savePlacement, section, {
       section_bg_img: draft.bgImg?.trim() || null,
       section_bg_color: draft.bgColor?.trim() || null,
     });

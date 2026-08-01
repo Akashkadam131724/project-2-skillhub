@@ -1,10 +1,7 @@
 import { Suspense } from "react";
 import { fetchSkillingAreaBySlug } from "@/lib/api";
 import { getPageSectionsResolved } from "@/lib/cms-api";
-import {
-  cmsEditExitHref,
-  cmsPublicHref,
-} from "@/lib/cms-edit-routes";
+import { cmsPublicHref } from "@/lib/cms-edit-routes";
 import {
   DetailShell,
   NotFoundState,
@@ -64,7 +61,6 @@ export default async function CmsSkillingAreaSectionEditPage({ params }) {
           initialTheme={pageTheme}
           cmsMode
           publicHref={cmsPublicHref("skilling_area", area.slug)}
-          exitHref={cmsEditExitHref("skilling_area", area.slug)}
           pageContext={{
             entityType: "skilling_area",
             entityId: areaId,

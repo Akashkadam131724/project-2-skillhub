@@ -95,84 +95,30 @@ function TabButton({ item, index, active, onClick, layout }) {
   const childCount = Array.isArray(item.children) ? item.children.length : 0;
   const label = item.value || String(index + 1).padStart(2, "0");
   const title = item.title || `Feature ${index + 1}`;
+  const layoutClass =
+    layout === "horizontal"
+      ? "section-tab--horizontal"
+      : layout === "underline"
+        ? "section-tab--underline"
+        : "section-tab--vertical";
 
-  if (layout === "horizontal") {
-    return (
-      <button
-        type="button"
-        role="tab"
-        aria-selected={active}
-        onClick={onClick}
-        className={`shrink-0 rounded-full border px-4 py-2.5 text-left transition ${active
-            ? "border-ink bg-ink text-white dark:border-white dark:bg-white dark:text-ink"
-            : "border-slate-200 bg-white section-theme-heading hover:border-slate-300"
-          }`}
-      >
-        <span className="block text-[10px] font-semibold tracking-[0.16em] uppercase opacity-60">
-          {label}
-        </span>
-        <span className="mt-0.5 block text-sm font-semibold tracking-tight">
-          {title}
-        </span>
-      </button>
-    );
-  }
-
-  if (layout === "underline") {
-    return (
-      <button
-        type="button"
-        role="tab"
-        aria-selected={active}
-        onClick={onClick}
-        className={`shrink-0 border-b-2 px-1 pb-3 text-left transition ${active
-            ? "border-brand section-theme-heading"
-            : "border-transparent text-slate-500 hover:text-ink dark:hover:text-white"
-          }`}
-      >
-        <span className="block text-sm font-semibold tracking-tight sm:text-base">
-          {title}
-        </span>
-        {item.subtitle ? (
-          <span className="mt-0.5 block text-xs text-slate-500">
-            {item.subtitle}
-          </span>
-        ) : null}
-      </button>
-    );
-  }
-
-  // vertical (default)
   return (
     <button
       type="button"
       role="tab"
       aria-selected={active}
       onClick={onClick}
-      className={`rounded-2xl border px-4 py-4 text-left transition ${active
-          ? "border-ink bg-ink text-white shadow-md dark:border-white dark:bg-white dark:text-ink"
-          : "border-slate-200 bg-white section-theme-heading hover:border-slate-300"
-        }`}
+      className={`section-tab ${layoutClass}${active ? " is-active" : ""}`}
     >
-      <span className="block text-xs font-semibold tracking-[0.18em] uppercase opacity-60">
-        {label}
-      </span>
-      <span className="mt-1 block text-base font-semibold tracking-tight">
-        {title}
-      </span>
-      {item.subtitle ? (
-        <span
-          className={`mt-1 block text-sm ${active ? "text-white/70 dark:text-ink/60" : "text-slate-500"
-            }`}
-        >
-          {item.subtitle}
-        </span>
+      {layout !== "underline" ? (
+        <span className="section-tab__eyebrow">{label}</span>
       ) : null}
-      {childCount ? (
-        <span
-          className={`mt-2 inline-block text-[11px] font-semibold tracking-wide uppercase ${active ? "text-white/50 dark:text-ink/45" : "text-slate-400"
-            }`}
-        >
+      <span className="section-tab__title">{title}</span>
+      {item.subtitle ? (
+        <span className="section-tab__subtitle">{item.subtitle}</span>
+      ) : null}
+      {layout === "vertical" && childCount ? (
+        <span className="section-tab__meta">
           {childCount} item{childCount === 1 ? "" : "s"}
         </span>
       ) : null}
@@ -336,10 +282,10 @@ export default function TabsSection({
 
   const tabListClass =
     layout === "vertical"
-      ? "flex flex-col gap-2"
+      ? "section-tabs-list section-tabs-list--vertical"
       : layout === "underline"
-        ? "flex gap-6 overflow-x-auto border-b border-slate-200 dark:border-slate-800"
-        : "flex gap-2 overflow-x-auto pb-1";
+        ? "section-tabs-list section-tabs-list--underline"
+        : "section-tabs-list section-tabs-list--horizontal";
 
   const shell =
     layout === "vertical" ? (

@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import SectionWrapper from "@/components/sections/SectionWrapper";
 import CmsPageSectionRender from "@/components/cms/CmsPageSectionRender";
 import { sectionUsesImage, sectionUsesBg, sectionUsesBgColor, sectionUsesItems, getSectionItemsConfig } from "@/lib/section-registry";
@@ -404,23 +404,29 @@ export default function CmsLivePageSections({
   initialSections = [],
   initialTheme = null,
   cmsMode: cmsModeProp = false,
-  exitHref: exitHrefProp,
   publicHref: publicHrefProp = null,
   pageContext = null,
 }) {
   const pathname = usePathname();
+  const router = useRouter();
   const searchParams = useSearchParams();
   const dedicatedEdit = cmsModeProp === true;
   const cmsMode =
     dedicatedEdit ||
     String(searchParams.get("cms") || "").toLowerCase() === "true";
-  const exitHref = useMemo(() => {
-    if (exitHrefProp) return exitHrefProp;
-    const params = new URLSearchParams(searchParams.toString());
-    params.delete("cms");
-    const qs = params.toString();
-    return qs ? `${pathname}?${qs}` : pathname;
-  }, [exitHrefProp, pathname, searchParams]);
+
+  function exitCms() {
+    if (publicHrefProp) {
+      router.push(publicHrefProp);
+      router.refresh();
+      return;
+    }
+    if (typeof window !== "undefined" && window.history.length > 1) {
+      router.back();
+      return;
+    }
+    router.push("/");
+  }
 
   const [sections, setSections] = useState(() =>
     normalizeInitialSections(initialSections)
@@ -1112,12 +1118,13 @@ export default function CmsLivePageSections({
               >
                 <SettingsIcon />
               </button>
-              <Link
-                href={exitHref}
-                className="rounded-lg px-3 py-2 text-xs font-semibold text-emerald-900 no-underline hover:bg-emerald-100 dark:text-emerald-100 dark:hover:bg-emerald-900/60"
+              <button
+                type="button"
+                onClick={exitCms}
+                className="rounded-lg px-3 py-2 text-xs font-semibold text-emerald-900 hover:bg-emerald-100 dark:text-emerald-100 dark:hover:bg-emerald-900/60"
               >
                 Exit
-              </Link>
+              </button>
             </div>
           </div>
         </div>
@@ -1592,15 +1599,18 @@ export default function CmsLivePageSections({
               ) : null}
 
               <div className="border-t border-slate-200 pt-3 dark:border-slate-800">
-                <Link
-                  href={exitHref}
-                  className="text-xs font-semibold text-slate-600 no-underline hover:text-brand dark:text-slate-300"
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPanelOpen(false);
+                    exitCms();
+                  }}
+                  className="border-0 bg-transparent p-0 text-xs font-semibold text-slate-600 hover:text-brand dark:text-slate-300"
                 >
                   Exit CMS mode
-                </Link>
+                </button>
                 <p className="mt-1 mb-0 text-[11px] text-slate-400">
-                  Or use <span className="font-semibold">CMS On/Off</span> in
-                  the top bar
+                  Returns to the page you were viewing before edit mode.
                 </p>
               </div>
             </div>

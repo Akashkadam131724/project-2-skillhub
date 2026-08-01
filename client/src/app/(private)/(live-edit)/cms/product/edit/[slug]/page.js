@@ -5,7 +5,6 @@ import {
 } from "@/lib/api";
 import { getPageSectionsResolved } from "@/lib/cms-api";
 import {
-  cmsEditExitHref,
   cmsPublicHref,
 } from "@/lib/cms-edit-routes";
 import {
@@ -95,7 +94,6 @@ export default async function CmsProductSectionEditPage({ params }) {
           initialTheme={pageTheme}
           cmsMode
           publicHref={cmsPublicHref("product", product.slug)}
-          exitHref={cmsEditExitHref("product", product.slug)}
           pageContext={{
             entityType: "product",
             entityId: productId,

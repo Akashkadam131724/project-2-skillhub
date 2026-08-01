@@ -26,10 +26,8 @@ function StoryTab({ item, active, onClick }) {
       role="tab"
       aria-selected={active}
       onClick={onClick}
-      className={`inline-flex shrink-0 items-center gap-2 rounded-full border px-4 py-2.5 text-sm font-semibold transition ${
-        active
-          ? "border-ink bg-ink text-white shadow-sm dark:border-white dark:bg-white dark:text-ink"
-          : "border-slate-200 bg-slate-100 text-slate-700 hover:border-slate-300 hover:bg-slate-200 dark:text-slate-200"
+      className={`section-tab section-tab--horizontal inline-flex items-center gap-2 text-sm font-semibold${
+        active ? " is-active" : ""
       }`}
     >
       <SuccessStoryTabIcon name={item.icon} />
@@ -203,7 +201,7 @@ export default function TabsSuccessStoriesSection({
             <div
               role="tablist"
               aria-label="Success stories"
-              className="flex flex-wrap justify-center gap-2 sm:gap-3"
+              className="section-tabs-list section-tabs-list--horizontal flex-wrap justify-center"
             >
               {stories.map((item, i) => (
                 <StoryTab

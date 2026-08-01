@@ -1,10 +1,7 @@
 import { Suspense } from "react";
 import { fetchIndustryBySlug } from "@/lib/api";
 import { getPageSectionsResolved } from "@/lib/cms-api";
-import {
-  cmsEditExitHref,
-  cmsPublicHref,
-} from "@/lib/cms-edit-routes";
+import { cmsPublicHref } from "@/lib/cms-edit-routes";
 import {
   DetailShell,
   NotFoundState,
@@ -64,7 +61,6 @@ export default async function CmsIndustrySectionEditPage({ params }) {
           initialTheme={pageTheme}
           cmsMode
           publicHref={cmsPublicHref("industry", industry.slug)}
-          exitHref={cmsEditExitHref("industry", industry.slug)}
           pageContext={{
             entityType: "industry",
             entityId: industryId,

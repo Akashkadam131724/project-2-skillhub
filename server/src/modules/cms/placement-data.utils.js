@@ -39,8 +39,7 @@ function isEntityPlacementLayer(source) {
 
 /**
  * Cascade items/buttons across placement layers.
- * Entity overrides may store mongoose `[]` after theme-only saves — treat as inherit
- * unless `items_override` / `buttons_override` is true.
+ * Entity overrides with `items_override` / `buttons_override` store the saved arrays.
  */
 export function pickPlacementArrayField(field, ...sources) {
   const overrideKey =

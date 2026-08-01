@@ -93,7 +93,14 @@ export default function SectionItemCard({
     case "hero_banner":
       return <HeroBannerItemCard item={item} preview={preview} />;
     case "training_option":
-      return <TrainingOptionCard item={item} preview={preview} />;
+      return (
+        <TrainingOptionCard
+          item={item}
+          preview={preview}
+          index={index}
+          onDarkBand={onDarkBand}
+        />
+      );
     case "award":
       return <AwardCard item={item} preview={preview} />;
     case "partner":

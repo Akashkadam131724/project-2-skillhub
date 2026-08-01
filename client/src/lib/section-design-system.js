@@ -4,7 +4,8 @@
  * ## Layers (outside → in)
  * 1. **Page stack** — `SectionSurface` (CMS) sets band background + `data-section-theme="light"|"dark"`.
  * 2. **Band content** — transparent `SectionBand` / `section-band-shell`; copy uses `DS.text.*`.
- * 3. **Nested surface** — `SectionLightCard` (ink on white) or `SectionMediaOverlay` (light copy on photos).
+ * 3. **Light island** — `SectionLightCard` / `data-section-surface="light-card"` resets all
+ *    `--card-*`, `--field-*`, and `--ds-btn-*` tokens so white cards/forms look identical on any band.
  *
  * ## Rules
  * - Never put `bg-white` / `dark:bg-slate-*` on the outer `<section>` of a CMS placement.
@@ -14,6 +15,7 @@
  * - Brand accents (`text-brand`) are OK on any layer.
  *
  * CSS tokens live in `app/section-theme.css` (`--band-*`, `--card-*`, `--field-*`).
+ * Buttons: `app/section-buttons.css`. Tabs: `app/section-tabs.css`.
  */
 
 export const SECTION_SURFACE_LIGHT_CARD = "light-card";

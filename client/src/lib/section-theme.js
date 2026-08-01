@@ -158,6 +158,31 @@ export const SECTION_THEME_BAND_SKIP_KEYS = new Set([
   "promo_modal",
 ]);
 
+/**
+ * Hero / banner sections that paint their own band when `section_theme` is inherit
+ * and no section background is set — skip page alternating fill from SectionSurface.
+ */
+export const SECTION_OWN_BAND_KEYS = new Set([
+  "hero_media",
+  "editorial_banner",
+  "statement_band",
+  "video_banner",
+  "site_builder_hero",
+  "orbit_hero",
+  "domain_search_band",
+  "horizon_gallery",
+]);
+
+/** True when SectionSurface should not paint inherited page band fill. */
+export function sectionSkipsInheritedBandPaint(sectionKey) {
+  const key = String(sectionKey || "")
+    .trim()
+    .toLowerCase();
+  return (
+    SECTION_OWN_BAND_KEYS.has(key) || SECTION_THEME_BAND_SKIP_KEYS.has(key)
+  );
+}
+
 /** Full-bleed sections that default to a dark band when section_theme is inherit. */
 export const SECTION_INHERIT_DARK_BAND_KEYS = new Set([
   "cta_band",
@@ -166,7 +191,6 @@ export const SECTION_INHERIT_DARK_BAND_KEYS = new Set([
   "statement_band",
   "editorial_banner",
   "video_banner",
-  "hero_stats",
   "metric_rail",
 ]);
 

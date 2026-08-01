@@ -49,6 +49,7 @@ export default function EditorialBannerSection({
   return (
     <section
       ref={ref}
+      data-always-light-text=""
       className="relative isolate min-h-[70vh] w-full overflow-hidden bg-ink text-white sm:min-h-[78vh]"
     >
       {img ? (

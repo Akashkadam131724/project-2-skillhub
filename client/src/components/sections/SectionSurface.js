@@ -6,6 +6,8 @@ import { pageBandThemeForFill } from "@/lib/section-band-surfaces";
 import {
   isPageSurfaceTransparent,
   normalizeSectionTheme,
+  sectionSkipsInheritedBandPaint,
+  sectionThemeBandClass,
   sectionThemeDataAttribute,
   surfaceToneForSectionTheme,
 } from "@/lib/section-theme";
@@ -57,6 +59,11 @@ export default function SectionSurface({
     ? surfaceToneForSectionTheme(themePref)
     : null;
   const hasForcedTheme = forcedTone !== null;
+  const skipInheritedBand =
+    sectionSkipsInheritedBandPaint(sectionKey) &&
+    !hasCustomBg &&
+    !hasPageFill &&
+    themePref === "inherit";
 
   const tone =
     allowBandPaint &&
@@ -68,36 +75,42 @@ export default function SectionSurface({
   const effectiveTone = hasForcedTheme ? forcedTone : tone;
   const effectiveBand =
     allowBandPaint && !hasForcedTheme && surfaceBand ? surfaceBand : null;
+  const paintTone = skipInheritedBand ? (hasForcedTheme ? forcedTone : null) : effectiveTone;
+  const paintBand = skipInheritedBand ? null : effectiveBand;
 
   const surfaceClass =
-    allowBandPaint && !hasCustomBg && !hasPageFill && effectiveTone
-      ? surfaceToneBandClass(effectiveTone)
-      : allowBandPaint && !hasCustomBg && !hasPageFill && effectiveBand
+    allowBandPaint && !hasCustomBg && !hasPageFill && paintTone
+      ? surfaceToneBandClass(paintTone)
+      : allowBandPaint && !hasCustomBg && !hasPageFill && paintBand
         ? "section-band-bg"
-        : "";
+        : skipInheritedBand && hasForcedTheme
+          ? sectionThemeBandClass(themePref)
+          : "";
 
   const themeAttr = allowBandPaint
     ? sectionThemeDataAttribute(themePref)
     : undefined;
   const fillTheme = hasPageFill ? pageBandThemeForFill(pageFill) : null;
   const isLightBandTone =
-    effectiveTone === "white" ||
-    effectiveTone === "muted" ||
-    String(effectiveTone || "").startsWith("soft_");
+    paintTone === "white" ||
+    paintTone === "muted" ||
+    String(paintTone || "").startsWith("soft_");
   const bandAttr =
     allowBandPaint && !hasCustomBg
-      ? themeAttr ??
-        (fillTheme === "dark"
-          ? "dark"
-          : fillTheme === "light"
-            ? "light"
-            : effectiveBand?.theme
-              ? effectiveBand.theme
-              : effectiveTone === "dark" || effectiveTone === "dark_ink"
-                ? "dark"
-                : isLightBandTone
-                  ? "light"
-                  : undefined)
+      ? skipInheritedBand
+        ? themeAttr
+        : themeAttr ??
+          (fillTheme === "dark"
+            ? "dark"
+            : fillTheme === "light"
+              ? "light"
+              : paintBand?.theme
+                ? paintBand.theme
+                : paintTone === "dark" || paintTone === "dark_ink"
+                  ? "dark"
+                  : isLightBandTone
+                    ? "light"
+                    : undefined)
       : undefined;
 
   const bandStyle =
@@ -105,8 +118,8 @@ export default function SectionSurface({
       ? bannerBgStyle(bgColor)
       : hasPageFill
         ? bannerBgStyle(pageFill)
-        : effectiveBand?.bg
-          ? surfaceBandStyle(effectiveBand)
+        : paintBand?.bg
+          ? surfaceBandStyle(paintBand)
           : undefined;
 
   return (

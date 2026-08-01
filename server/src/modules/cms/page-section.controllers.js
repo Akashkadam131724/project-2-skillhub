@@ -468,26 +468,39 @@ export const upsertEntityPageSection = async (req, res) => {
         if (key === "sort_order" && !allowSort) continue;
         $set[key] = source[key];
       }
-      if (source.items !== undefined) {
+      if (source.items !== undefined && source.items !== null) {
         $set.items = source.items;
         $set.items_override = true;
       }
-      if (source.buttons !== undefined) {
+      if (source.buttons !== undefined && source.buttons !== null) {
         $set.buttons = source.buttons;
         $set.buttons_override = true;
       }
       return $set;
     }
 
+    /** Clear stored arrays only when client sends null (inherit). Partial saves must not wipe items/buttons. */
     async function finalizeEntityDoc(doc, body) {
       if (!doc?._id) return doc;
       const unset = {};
-      if (body.items === undefined) unset.items = "";
-      if (body.buttons === undefined) unset.buttons = "";
+      if (body.items === null) {
+        unset.items = "";
+        unset.items_override = "";
+      }
+      if (body.buttons === null) {
+        unset.buttons = "";
+        unset.buttons_override = "";
+      }
       if (Object.keys(unset).length) {
         await EntityPageSection.updateOne({ _id: doc._id }, { $unset: unset });
-        if (unset.items) doc.items = undefined;
-        if (unset.buttons) doc.buttons = undefined;
+        if (unset.items) {
+          doc.items = undefined;
+          doc.items_override = false;
+        }
+        if (unset.buttons) {
+          doc.buttons = undefined;
+          doc.buttons_override = false;
+        }
       }
       return doc;
     }

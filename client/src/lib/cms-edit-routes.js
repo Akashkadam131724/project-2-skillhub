@@ -61,6 +61,13 @@ const CMS_ENTITY_TYPES = {
 const PUBLIC_PATH_RE =
   /^\/(vendor|product|course|industry|skilling-area|blog)\/([^/]+)\/?$/;
 
+/** Public URL → CMS live-edit (exact paths). */
+const PUBLIC_EDIT_PATH_OVERRIDES = {
+  "/catalog": "/cms/contents",
+  "/catalog/content": "/cms/contents",
+  "/section": "/cms/section",
+};
+
 export function cmsPublicHref(pageKey, slugOrPath) {
   if (pageKey === "home") return "/";
   if (pageKey === "content") {
@@ -86,30 +93,18 @@ export function cmsEditHref(pageKey, slugOrPath) {
   return `/cms/${type.segment}/edit/${encodeURIComponent(String(slugOrPath || "").trim())}`;
 }
 
-function cmsMetaHref(pageKey, slug) {
-  const type = CMS_ENTITY_TYPES[pageKey];
-  if (!type || pageKey === "home" || pageKey === "content") {
-    return type?.listPath || "/cms";
-  }
-  return `/cms/${type.segment}/${encodeURIComponent(String(slug || "").trim())}`;
-}
-
-function cmsListHref(pageKey) {
-  return CMS_ENTITY_TYPES[pageKey]?.listPath || "/cms";
-}
-
-/** Default exit target from live edit bar (metadata form or list). */
-export function cmsEditExitHref(pageKey, slug) {
-  if (pageKey === "home" || pageKey === "content") {
-    return cmsListHref(pageKey);
-  }
-  if (slug) return cmsMetaHref(pageKey, slug);
-  return cmsListHref(pageKey);
-}
-
-/** Map a public pathname to a live-edit href (CmsModeToggle FAB). */
+/** Map a public pathname to a live-edit href (header link, edit FAB). */
 export function cmsEditHrefFromPublicPath(pathname) {
   const path = String(pathname || "").replace(/\/+$/, "") || "/";
+
+  if (PUBLIC_EDIT_PATH_OVERRIDES[path]) {
+    return PUBLIC_EDIT_PATH_OVERRIDES[path];
+  }
+
+  if (path.startsWith("/section/")) {
+    return `/cms${path}`;
+  }
+
   if (path === "/") return cmsEditHref("home");
 
   const entityMatch = path.match(PUBLIC_PATH_RE);

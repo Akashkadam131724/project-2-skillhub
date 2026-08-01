@@ -3,8 +3,38 @@
 import SectionWrapper from "../SectionWrapper";
 import SectionButtonsFooter from "../SectionButtonsFooter";
 import { HeroTitle, HeroSubtitle, shouldHideEmptyHero } from "./HeroFields";
+import {
+  sectionGlassCardSurfaceProps,
+  sectionLightCardSurfaceProps,
+  DS_TEXT,
+} from "@/lib/section-design-system";
+import { isPlacementDarkBand } from "@/lib/section-theme";
+import { itemStatLabel, itemStatValue } from "@/lib/item-types";
 
-/** Hero with inline proof stats — stats grid only when items exist. */
+function StatTile({ item, onDarkBand }) {
+  const value = itemStatValue(item);
+  const label = itemStatLabel(item) || item?.title || "";
+  const surfaceProps = onDarkBand
+    ? sectionGlassCardSurfaceProps("px-4 py-4")
+    : sectionLightCardSurfaceProps(
+        "border px-4 py-4 shadow-[0_12px_40px_-28px_color-mix(in_srgb,var(--ink)_22%,transparent)]"
+      );
+
+  return (
+    <div {...surfaceProps}>
+      <p
+        className={`m-0 text-2xl font-bold tracking-tight sm:text-3xl ${DS_TEXT.heading}`}
+      >
+        {value || "—"}
+      </p>
+      <p className={`mt-1 mb-0 text-xs font-medium tracking-wide uppercase ${DS_TEXT.muted}`}>
+        {label}
+      </p>
+    </div>
+  );
+}
+
+/** Hero with inline proof stats — follows page / section band theme. */
 export default function HeroStatsSection({
   section_title,
   sub_title,
@@ -12,6 +42,10 @@ export default function HeroStatsSection({
   buttons,
   button_title,
   target_url,
+  section_theme,
+  sectionTheme: sectionThemeProp,
+  surfaceTone,
+  surfaceBand,
   cmsMode,
   onEditField,
   onFormOpen,
@@ -30,6 +64,12 @@ export default function HeroStatsSection({
     return null;
   }
 
+  const onDarkBand = isPlacementDarkBand({
+    section_theme: section_theme ?? sectionThemeProp,
+    surfaceTone,
+    surfaceBand,
+  });
+
   const stats = Array.isArray(items)
     ? items.filter(
         (i) =>
@@ -40,7 +80,7 @@ export default function HeroStatsSection({
   const hasStats = stats.length > 0;
 
   return (
-    <section className="border-b border-slate-200 text-white dark:border-slate-800">
+    <section className="border-b border-slate-200 dark:border-slate-800">
       <SectionWrapper className="py-12 sm:py-14 lg:py-16">
         <div
           className={
@@ -54,15 +94,15 @@ export default function HeroStatsSection({
               section_title={section_title}
               cmsMode={cmsMode}
               onEditField={onEditField}
-              inverted
-              className="m-0 text-3xl leading-tight font-bold tracking-tight text-white sm:text-4xl"
+              inverted={onDarkBand}
+              className={`m-0 text-3xl leading-tight font-bold tracking-tight sm:text-4xl ${DS_TEXT.heading}`}
             />
             <HeroSubtitle
               sub_title={sub_title}
               cmsMode={cmsMode}
               onEditField={onEditField}
-              inverted
-              className="max-w-xl text-base leading-relaxed text-slate-200"
+              inverted={onDarkBand}
+              className={`max-w-xl text-base leading-relaxed ${DS_TEXT.muted}`}
             />
             <SectionButtonsFooter
               buttons={buttons}
@@ -71,14 +111,18 @@ export default function HeroStatsSection({
               cmsMode={cmsMode}
               onEditField={onEditField}
               onFormOpen={onFormOpen}
-              inverted
+              inverted={onDarkBand}
               className="mt-2"
             />
             {cmsMode && !hasStats ? (
               <button
                 type="button"
                 onClick={() => onEditField?.("items")}
-                className="mt-1 self-start rounded-md border border-dashed border-white/40 px-3 py-1.5 text-xs text-white/70"
+                className={`mt-1 self-start rounded-md border border-dashed px-3 py-1.5 text-xs ${
+                  onDarkBand
+                    ? "border-white/40 text-white/70"
+                    : "border-slate-300 text-slate-500"
+                }`}
               >
                 Add stats…
               </button>
@@ -88,17 +132,11 @@ export default function HeroStatsSection({
           {hasStats ? (
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 sm:gap-5">
               {stats.map((item, index) => (
-                <div
+                <StatTile
                   key={item._id || item.id || index}
-                  className="rounded-xl border border-white/15 bg-white/5 px-4 py-4"
-                >
-                  <p className="m-0 text-2xl font-bold tracking-tight text-white sm:text-3xl">
-                    {item.value || "—"}
-                  </p>
-                  <p className="mt-1 mb-0 text-xs font-medium tracking-wide text-slate-300 uppercase">
-                    {item.label || item.title || ""}
-                  </p>
-                </div>
+                  item={item}
+                  onDarkBand={onDarkBand}
+                />
               ))}
             </div>
           ) : null}

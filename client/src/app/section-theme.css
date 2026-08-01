@@ -1,11 +1,12 @@
 /**
- * Section theme — swap token sets on the band; optional surface presets on cards.
+ * Section theme — swap token sets on the band; light islands reset tokens for cards/forms.
  *
  * Architecture: see `lib/section-design-system.js` and primitives in
  * `components/sections/design/`.
  *
- * Band: [data-section-theme="light" | "dark"]  → --band-*, default --card-* on band
- * Surface presets: light-card | dark-overlay | glass-card
+ * Band: [data-section-theme="light" | "dark"]  → --band-*, fields, typography
+ * Light island: [data-section-surface="light-card"] / [data-light-surface]
+ * Buttons: section-buttons.css  |  Tabs: section-tabs.css
  */
 
 /* —— Fixed palettes (never swap with band — only applied via presets / theme blocks) —— */
@@ -50,6 +51,8 @@
   --field-fg: var(--ds-light-field-fg);
   --field-border: var(--ds-light-field-border);
   --field-placeholder: var(--ds-light-field-placeholder);
+  --field-focus-border: var(--brand);
+  --field-focus-ring: 0 0 0 2px color-mix(in srgb, var(--brand) 22%, transparent);
 }
 
 /* —— Light band —— */
@@ -93,6 +96,8 @@
   --field-fg: var(--ds-glass-field-fg);
   --field-border: var(--ds-glass-field-border);
   --field-placeholder: var(--ds-glass-field-placeholder);
+  --field-focus-border: color-mix(in srgb, var(--brand) 55%, white);
+  --field-focus-ring: 0 0 0 2px color-mix(in srgb, var(--brand) 35%, transparent);
   --section-fg: var(--band-fg);
   --section-muted: var(--band-muted);
   --section-subtle: var(--band-subtle);
@@ -267,12 +272,18 @@
   border-top: 1px solid var(--band-border, rgb(226 232 240));
 }
 
-/* —— Surface: white card (ink text on any band) —— */
-.section-light-card,
-[data-section-surface="light-card"],
-[data-light-surface],
-[data-always-ink-text] {
+/* —— Light UI island — white card / form; same look on any band —— */
+:is(
+  .section-light-card,
+  [data-section-surface="light-card"],
+  [data-light-surface],
+  [data-always-ink-text]
+) {
   color: var(--ds-light-card-fg);
+  color-scheme: light;
+  --band-fg: var(--ds-light-card-fg);
+  --band-muted: var(--ds-light-card-muted);
+  --band-subtle: var(--ds-light-card-subtle);
   --card-fg: var(--ds-light-card-fg);
   --card-muted: var(--ds-light-card-muted);
   --card-subtle: var(--ds-light-card-subtle);
@@ -282,7 +293,8 @@
   --field-fg: var(--ds-light-field-fg);
   --field-border: var(--ds-light-field-border);
   --field-placeholder: var(--ds-light-field-placeholder);
-  color-scheme: light;
+  --field-focus-border: var(--brand);
+  --field-focus-ring: 0 0 0 2px color-mix(in srgb, var(--brand) 22%, transparent);
 }
 
 [data-section-surface="glass-card"],
@@ -303,6 +315,9 @@
 [data-section-surface="dark-overlay"],
 [data-always-light-text] {
   color: #fff;
+  --band-fg: #fff;
+  --band-muted: rgb(255 255 255 / 0.72);
+  --band-subtle: rgb(255 255 255 / 0.5);
   --card-fg: #fff;
   --card-muted: rgb(255 255 255 / 0.72);
   --card-subtle: rgb(255 255 255 / 0.5);
@@ -326,191 +341,83 @@
   backdrop-filter: blur(6px);
 }
 
-/* FAQ row index (01, 02…) — brand on light cards, light copy on glass / dark band */
+/* FAQ row index — brand on light cards, card fg on glass / overlay */
 .section-faq-index {
   color: color-mix(in srgb, var(--brand) 70%, transparent);
 }
 
-[data-section-surface="glass-card"] .section-faq-index,
-.section-glass-card-shell .section-faq-index,
-[data-section-surface="dark-overlay"] .section-faq-index {
+:is([data-section-surface="glass-card"], .section-glass-card-shell, [data-section-surface="dark-overlay"])
+  .section-faq-index {
   color: var(--card-fg);
   opacity: 0.8;
 }
 
-[data-section-surface="light-card"] .section-faq-index,
-.section-light-card .section-faq-index,
-[data-light-surface] .section-faq-index {
-  color: color-mix(in srgb, var(--brand) 70%, transparent);
-  opacity: 1;
-}
-
-/* Band typography (section headers, copy outside cards) */
+/* Typography — card tokens inside surfaces, band tokens elsewhere (inherited) */
 .section-theme-heading {
-  color: var(--band-fg, var(--ink));
+  color: var(--card-fg, var(--band-fg, var(--ink))) !important;
 }
 
 .section-theme-muted {
-  color: var(--band-muted, rgb(71 85 105));
+  color: var(--card-muted, var(--band-muted, rgb(71 85 105))) !important;
 }
 
-.section-theme-subtle {
-  color: var(--band-subtle, rgb(148 163 184));
-}
-
+.section-theme-subtle,
 .section-theme-placeholder {
-  color: var(--band-subtle, rgb(203 213 225));
+  color: var(--card-subtle, var(--band-subtle, rgb(148 163 184))) !important;
 }
 
-[data-section-theme] .section-theme-heading:not([data-light-surface] *):not([data-section-surface] *) {
+.cms-rich-body,
+.cms-rich-body p,
+.cms-rich-body li {
+  color: var(--card-muted, var(--band-muted));
+}
+
+.cms-rich-body h2,
+.cms-rich-body h3,
+.cms-rich-body h4 {
+  color: var(--card-fg, var(--band-fg)) !important;
+}
+
+/* Legacy Tailwind utilities inside themed sections */
+[data-section-theme="dark"] .text-ink {
   color: var(--band-fg) !important;
 }
 
-[data-section-theme] .section-theme-muted:not([data-light-surface] *):not([data-section-surface] *) {
-  color: var(--band-muted) !important;
-}
-
-[data-section-theme] .section-theme-subtle:not([data-light-surface] *):not([data-section-surface] *),
-[data-section-theme] .section-theme-placeholder:not([data-light-surface] *):not([data-section-surface] *) {
-  color: var(--band-subtle) !important;
-}
-
-/* Inside a surface preset — use card tokens */
-.section-light-card .section-theme-heading,
-[data-section-surface] .section-theme-heading,
-[data-light-surface] .section-theme-heading,
-[data-always-light-text] .section-theme-heading,
-[data-always-ink-text] .section-theme-heading {
-  color: var(--card-fg) !important;
-}
-
-.section-light-card .section-theme-muted,
-[data-section-surface] .section-theme-muted,
-[data-light-surface] .section-theme-muted,
-[data-always-ink-text] .section-theme-muted {
-  color: var(--card-muted) !important;
-}
-
-[data-section-surface] .section-theme-subtle,
-[data-light-surface] .section-theme-subtle,
-[data-always-ink-text] .section-theme-subtle {
-  color: var(--card-subtle) !important;
-}
-
-[data-section-surface="dark-overlay"] .section-theme-muted,
-[data-always-light-text] .section-theme-muted {
-  color: var(--card-muted) !important;
-}
-
-[data-section-surface] .cms-rich-body,
-[data-section-surface] .cms-rich-body p,
-[data-section-surface] .cms-rich-body li,
-[data-light-surface] .cms-rich-body,
-[data-light-surface] .cms-rich-body p,
-[data-light-surface] .cms-rich-body li {
-  color: var(--card-muted) !important;
-}
-
-[data-section-surface] .cms-rich-body h2,
-[data-section-surface] .cms-rich-body h3,
-[data-section-surface] .cms-rich-body h4,
-[data-light-surface] .cms-rich-body h2,
-[data-light-surface] .cms-rich-body h3,
-[data-light-surface] .cms-rich-body h4 {
-  color: var(--card-fg) !important;
-}
-
-[data-section-surface="dark-overlay"] .cms-rich-body,
-[data-section-surface="dark-overlay"] .cms-rich-body p,
-[data-always-light-text] .cms-rich-body,
-[data-always-light-text] .cms-rich-body p {
-  color: var(--card-muted) !important;
-}
-
-[data-section-surface="dark-overlay"] .cms-rich-body h2,
-[data-section-surface="dark-overlay"] .cms-rich-body h3,
-[data-always-light-text] .cms-rich-body h2,
-[data-always-light-text] .cms-rich-body h3 {
-  color: var(--card-fg) !important;
-}
-
-[data-section-theme] .cms-rich-body:not([data-section-surface] *):not([data-light-surface] *) {
-  color: var(--band-muted);
-}
-
-[data-section-theme] .cms-rich-body:not([data-section-surface] *):not([data-light-surface] *) p,
-[data-section-theme] .cms-rich-body:not([data-section-surface] *):not([data-light-surface] *) li {
-  color: var(--band-muted);
-}
-
-[data-section-theme] .cms-rich-body:not([data-section-surface] *):not([data-light-surface] *) h2,
-[data-section-theme] .cms-rich-body:not([data-section-surface] *):not([data-light-surface] *) h3,
-[data-section-theme] .cms-rich-body:not([data-section-surface] *):not([data-light-surface] *) h4 {
+[data-section-theme="light"] .dark\:text-white {
   color: var(--band-fg) !important;
 }
 
-/* Surfaces: backgrounds & borders */
-.section-light-card .bg-white,
-.section-light-card .bg-white\/80,
-.section-light-card .dark\:bg-slate-950,
-.section-light-card .dark\:bg-slate-900,
-[data-section-surface="light-card"] .bg-white,
-[data-section-surface="light-card"] .bg-white\/80,
-[data-section-surface="light-card"] .dark\:bg-slate-950,
-[data-light-surface] .bg-white,
-[data-light-surface] .bg-white\/80,
-[data-light-surface] .dark\:bg-slate-950,
-[data-always-ink-text] .bg-white {
+:is(.section-light-card, [data-section-surface="light-card"], [data-light-surface]) .text-ink {
+  color: var(--ink) !important;
+}
+
+/* Light island: neutralize hardcoded bg-white / border-slate in markup */
+:is(.section-light-card, [data-section-surface="light-card"], [data-light-surface], [data-always-ink-text])
+  :is(.bg-white, .bg-white\/80, .dark\:bg-slate-950, .dark\:bg-slate-900) {
   background-color: var(--card-bg) !important;
 }
 
-.section-light-card .border-slate-200,
-.section-light-card .border-slate-200\/80,
-[data-section-surface="light-card"] .border-slate-200,
-[data-section-surface="light-card"] .border-slate-200\/80,
-[data-light-surface] .border-slate-200,
-[data-light-surface] .border-slate-200\/80 {
+:is(.section-light-card, [data-section-surface="light-card"], [data-light-surface])
+  :is(.border-slate-200, .border-slate-200\/80) {
   border-color: var(--card-border) !important;
 }
 
-/* Form fields — band level */
-[data-section-theme] input:not([data-section-surface] *):not([data-light-surface] *),
-[data-section-theme] textarea:not([data-section-surface] *):not([data-light-surface] *),
-[data-section-theme] select:not([data-section-surface] *):not([data-light-surface] *) {
+/* Form fields — tokens flow from band or island wrapper */
+[data-section-theme] input,
+[data-section-theme] textarea,
+[data-section-theme] select {
   background-color: var(--field-bg) !important;
   border-color: var(--field-border) !important;
   color: var(--field-fg) !important;
 }
 
-[data-section-theme] input:not([data-section-surface] *):not([data-light-surface] *)::placeholder,
-[data-section-theme] textarea:not([data-section-surface] *):not([data-light-surface] *)::placeholder {
-  color: var(--field-placeholder) !important;
-}
-
-[data-section-surface] .section-field,
-[data-light-surface] .section-field {
-  background-color: var(--field-bg) !important;
-  border-color: var(--field-border) !important;
-  color: var(--field-fg) !important;
-}
-
-[data-section-surface] .section-field::placeholder,
-[data-light-surface] .section-field::placeholder {
+[data-section-theme] input::placeholder,
+[data-section-theme] textarea::placeholder {
   color: var(--field-placeholder) !important;
 }
 
 .section-field-label {
-  color: var(--band-muted, rgb(71 85 105));
-}
-
-[data-section-surface] .section-field-label,
-[data-light-surface] .section-field-label,
-.section-light-card .section-field-label {
-  color: var(--card-muted) !important;
-}
-
-[data-section-theme] .section-field-label:not([data-light-surface] *):not([data-section-surface] *) {
-  color: var(--band-muted) !important;
+  color: var(--card-muted, var(--band-muted, rgb(71 85 105))) !important;
 }
 
 .section-field {
@@ -533,21 +440,13 @@
 }
 
 .section-field:focus {
-  border-color: var(--brand);
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--brand) 22%, transparent);
-}
-
-[data-section-theme="dark"] .section-field:focus:not([data-light-surface] *):not([data-section-surface] *),
-[data-section-surface] .section-field:focus,
-[data-light-surface] .section-field:focus {
-  border-color: color-mix(in srgb, var(--brand) 55%, white);
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--brand) 35%, transparent);
+  border-color: var(--field-focus-border, var(--brand));
+  box-shadow: var(--field-focus-ring, 0 0 0 2px color-mix(in srgb, var(--brand) 22%, transparent));
 }
 
 /* Native selects on white cards (avoid OS dark-mode option styling on dark bands) */
-.section-light-card select.section-field option,
-[data-section-surface="light-card"] select.section-field option,
-[data-light-surface] select.section-field option {
+:is(.section-light-card, [data-section-surface="light-card"], [data-light-surface])
+  select.section-field option {
   color: var(--ink);
   background-color: #fff;
 }
@@ -559,13 +458,6 @@
   border-radius: 0.25rem;
   border: 1px solid var(--field-border, rgb(203 213 225));
   accent-color: var(--brand);
-}
-[data-section-theme="dark"] .text-ink:not([data-section-surface] *):not([data-light-surface] *) {
-  color: var(--band-fg) !important;
-}
-
-[data-section-theme="light"] .dark\:text-white:not([data-section-surface] *):not([data-light-surface] *) {
-  color: var(--band-fg) !important;
 }
 
 /* Secondary chips / links on dark bands (still use bg-white in markup) */

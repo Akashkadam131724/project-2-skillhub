@@ -2,7 +2,6 @@ import { Suspense } from "react";
 import { fetchVendorBySlug } from "@/lib/api";
 import { getPageSectionsResolved } from "@/lib/cms-api";
 import {
-  cmsEditExitHref,
   cmsPublicHref,
 } from "@/lib/cms-edit-routes";
 import {
@@ -64,7 +63,6 @@ export default async function CmsVendorSectionEditPage({ params }) {
           initialTheme={pageTheme}
           cmsMode
           publicHref={cmsPublicHref("vendor", vendor.slug)}
-          exitHref={cmsEditExitHref("vendor", vendor.slug)}
           pageContext={{
             entityType: "vendor",
             entityId: vendorId,

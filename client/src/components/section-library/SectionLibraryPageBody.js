@@ -19,6 +19,7 @@ export default function SectionLibraryPageBody({
       initialSections={initialSections}
       initialTheme={initialTheme}
       pageContext={pageContext}
+      cmsMode
     />
   );
 }
