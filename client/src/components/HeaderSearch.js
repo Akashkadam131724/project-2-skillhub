@@ -5,6 +5,9 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { fetchGlobalSearch } from "@/lib/api";
 import { mediaAlt } from "@/lib/media-alt";
+import SearchIcon from "@/components/icons/SearchIcon";
+import CloseIcon from "@/components/icons/CloseIcon";
+import ArrowRightIcon from "@/components/icons/ArrowRightIcon";
 
 const TABS = [
   { id: "all", label: "All" },
@@ -39,57 +42,6 @@ const TYPE_META = {
     tone: "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300",
   },
 };
-
-function SearchIcon({ className = "size-5" }) {
-  return (
-    <svg
-      className={className}
-      viewBox="0 0 24 24"
-      fill="none"
-      aria-hidden="true"
-    >
-      <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="1.8" />
-      <path
-        d="M20 20L16.65 16.65"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-      />
-    </svg>
-  );
-}
-
-function CloseIcon() {
-  return (
-    <svg className="size-5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path
-        d="M6 6l12 12M18 6L6 18"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-      />
-    </svg>
-  );
-}
-
-function ArrowIcon() {
-  return (
-    <svg
-      className="size-4 shrink-0 text-slate-300 transition group-hover:text-brand dark:text-slate-600"
-      viewBox="0 0 24 24"
-      fill="none"
-      aria-hidden="true"
-    >
-      <path
-        d="M5 12h14M13 6l6 6-6 6"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
 
 function ResultRow({ item, onSelect }) {
   const meta = TYPE_META[item.type] || TYPE_META.content;
@@ -129,7 +81,10 @@ function ResultRow({ item, onSelect }) {
           {subtitle}
         </span>
       </span>
-      <ArrowIcon />
+      <ArrowRightIcon
+        className="size-4 shrink-0 text-slate-300 transition group-hover:text-brand dark:text-slate-600"
+        strokeWidth="1.8"
+      />
     </Link>
   );
 }

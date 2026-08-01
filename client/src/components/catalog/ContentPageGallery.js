@@ -7,25 +7,8 @@ import {
   groupContentPages,
 } from "@/lib/content-catalog";
 import SectionWrapper from "@/components/sections/SectionWrapper";
-
-function ChevronIcon({ dir = "left" }) {
-  return (
-    <svg
-      className="size-5"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      aria-hidden
-    >
-      {dir === "left" ? (
-        <path strokeLinecap="round" strokeLinejoin="round" d="M15 18l-6-6 6-6" />
-      ) : (
-        <path strokeLinecap="round" strokeLinejoin="round" d="M9 18l6-6-6-6" />
-      )}
-    </svg>
-  );
-}
+import ChevronLeftIcon from "@/components/icons/ChevronLeftIcon";
+import ChevronRightIcon from "@/components/icons/ChevronRightIcon";
 
 function GalleryModal({ pages, index, onClose, onChangeIndex }) {
   const page = pages[index];
@@ -81,7 +64,7 @@ function GalleryModal({ pages, index, onClose, onChangeIndex }) {
             className="inline-flex size-10 items-center justify-center rounded-xl border border-white/20 bg-white/10 text-white transition hover:bg-white/20"
             aria-label="Previous page"
           >
-            <ChevronIcon dir="left" />
+            <ChevronLeftIcon className="size-5" />
           </button>
           <button
             type="button"
@@ -89,7 +72,7 @@ function GalleryModal({ pages, index, onClose, onChangeIndex }) {
             className="inline-flex size-10 items-center justify-center rounded-xl border border-white/20 bg-white/10 text-white transition hover:bg-white/20"
             aria-label="Next page"
           >
-            <ChevronIcon dir="right" />
+            <ChevronRightIcon className="size-5" />
           </button>
           <Link
             href={page.path}

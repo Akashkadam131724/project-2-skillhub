@@ -10,6 +10,8 @@ import { mediaUrl } from "@/lib/cms-api";
 import { mediaAlt } from "@/lib/media-alt";
 import { resolveItemsForSection } from "@/lib/item-types";
 import { isRichTextEmpty } from "@/lib/rich-text";
+import ChevronLeftIcon from "@/components/icons/ChevronLeftIcon";
+import ChevronRightIcon from "@/components/icons/ChevronRightIcon";
 
 /**
  * Cinematic horizontal snap gallery — full-bleed image panels with captions.
@@ -84,9 +86,7 @@ export default function HorizonGallerySection({
                   className="inline-flex size-11 items-center justify-center rounded-full border border-white/25 bg-white/5 text-white transition hover:bg-white/15"
                   aria-label="Previous"
                 >
-                  <svg className="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M15 18l-6-6 6-6" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
+                  <ChevronLeftIcon />
                 </button>
                 <button
                   type="button"
@@ -94,9 +94,7 @@ export default function HorizonGallerySection({
                   className="inline-flex size-11 items-center justify-center rounded-full border border-white/25 bg-white/5 text-white transition hover:bg-white/15"
                   aria-label="Next"
                 >
-                  <svg className="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M9 18l6-6-6-6" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
+                  <ChevronRightIcon />
                 </button>
               </div>
             ) : null}

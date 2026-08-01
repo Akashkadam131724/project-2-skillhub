@@ -8,6 +8,7 @@ import {
   youtubeEmbedUrl,
 } from "@/lib/button-types";
 import YoutubeModal from "./YoutubeModal";
+import ButtonIcon from "@/components/icons/ButtonIcon";
 
 const BASE_CLASS = "section-btn";
 
@@ -19,93 +20,6 @@ const VARIANT_CLASS = {
   link: "section-btn--link",
   inverse: "section-btn--inverse",
 };
-
-function ButtonIcon({ kind, className = "size-4 shrink-0" }) {
-  const props = {
-    className,
-    viewBox: "0 0 24 24",
-    fill: "none",
-    "aria-hidden": true,
-  };
-
-  switch (kind) {
-    case "youtube":
-    case "video":
-      return (
-        <svg {...props}>
-          <path
-            d="M8 5.5v13l11-6.5L8 5.5Z"
-            fill="currentColor"
-          />
-        </svg>
-      );
-    case "pdf":
-      return (
-        <svg {...props} stroke="currentColor" strokeWidth="1.75">
-          <path
-            d="M14 2H7a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8l-5-6Z"
-            strokeLinejoin="round"
-          />
-          <path d="M14 2v6h6" strokeLinecap="round" strokeLinejoin="round" />
-          <path
-            d="M9 13h6M9 17h4"
-            strokeLinecap="round"
-          />
-        </svg>
-      );
-    case "file":
-      return (
-        <svg {...props} stroke="currentColor" strokeWidth="1.75">
-          <path
-            d="M14 2H7a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8l-5-6Z"
-            strokeLinejoin="round"
-          />
-          <path d="M14 2v6h6" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-      );
-    case "form":
-      return (
-        <svg {...props} stroke="currentColor" strokeWidth="1.75">
-          <path
-            d="M8 6h8M8 10h8M8 14h5"
-            strokeLinecap="round"
-          />
-          <rect x="4" y="3" width="16" height="18" rx="2" />
-        </svg>
-      );
-    case "anchor":
-      return (
-        <svg {...props} stroke="currentColor" strokeWidth="1.75">
-          <path
-            d="M12 5v14M12 19l-4-4M12 19l4-4"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-      );
-    case "external":
-      return (
-        <svg {...props} stroke="currentColor" strokeWidth="1.75">
-          <path
-            d="M14 4h6v6M10 14 20 4M18 14v5a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-      );
-    case "link":
-    default:
-      return (
-        <svg {...props} stroke="currentColor" strokeWidth="1.75">
-          <path
-            d="M9 15l6-6M8.5 10.5l-1.2 1.2a3.5 3.5 0 0 0 5 5l1.2-1.2M15.5 13.5l1.2-1.2a3.5 3.5 0 0 0-5-5L10.5 8.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-      );
-  }
-}
 
 function ButtonLabel({ icon, children }) {
   return (

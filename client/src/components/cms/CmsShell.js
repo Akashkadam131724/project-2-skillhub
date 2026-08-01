@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import SkillHubLogo from "@/components/SkillHubLogo";
 import CmsMainLinksNewTab from "@/components/cms/CmsMainLinksNewTab";
+import MenuIcon from "@/components/icons/MenuIcon";
 
 const NAV = [
   { href: "/cms", label: "Dashboard", exact: true },
@@ -35,33 +36,6 @@ function navActive(pathname, href, exact) {
     );
   }
   return pathname === href || pathname.startsWith(`${href}/`);
-}
-
-function MenuIcon({ open }) {
-  return (
-    <svg
-      className="size-4"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.75"
-      aria-hidden
-    >
-      {open ? (
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M15.75 19.5L8.25 12l7.5-7.5"
-        />
-      ) : (
-        <>
-          <path strokeLinecap="round" d="M4 7h16" />
-          <path strokeLinecap="round" d="M4 12h16" />
-          <path strokeLinecap="round" d="M4 17h16" />
-        </>
-      )}
-    </svg>
-  );
 }
 
 export default function CmsShell({ children }) {

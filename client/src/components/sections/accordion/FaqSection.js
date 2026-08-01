@@ -2,7 +2,7 @@
 
 import CmsSectionItemsBar from "@/components/sections/CmsSectionItemsBar";
 import EmptyItemsHint from "@/components/sections/EmptyItemsHint";
-import SectionItemCard from "@/components/sections/SectionItemCard";
+import FaqItemCard from "@/components/sections/cards/FaqItemCard";
 import { resolveItemsForSection } from "@/lib/item-types";
 import { isPlacementDarkBand } from "@/lib/section-theme";
 import SectionFrame from "../SectionFrame";
@@ -57,9 +57,8 @@ export default function FaqSection({
       {items.length ? (
         <div className="flex flex-col gap-3">
           {items.map((item, i) => (
-            <SectionItemCard
+            <FaqItemCard
               key={item._id || item.id || i}
-              type="faq"
               item={item}
               index={i}
               onDarkBand={darkBand}

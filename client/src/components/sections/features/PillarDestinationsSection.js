@@ -10,6 +10,7 @@ import { mediaUrl } from "@/lib/cms-api";
 import { mediaAlt } from "@/lib/media-alt";
 import { resolveItemsForSection } from "@/lib/item-types";
 import { isRichTextEmpty } from "@/lib/rich-text";
+import ArrowRightIcon from "@/components/icons/ArrowRightIcon";
 
 function Pillar({ item, index, visible }) {
   const photo = mediaUrl(item.image_url);
@@ -52,9 +53,7 @@ function Pillar({ item, index, visible }) {
         {href ? (
           <span className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-white">
             Explore
-            <svg className="size-4 transition group-hover:translate-x-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M5 12h14M13 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
+            <ArrowRightIcon className="size-4 transition group-hover:translate-x-1" />
           </span>
         ) : null}
       </div>

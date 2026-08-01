@@ -11,68 +11,11 @@ import { mediaUrl } from "@/lib/cms-api";
 import { mediaAlt } from "@/lib/media-alt";
 import { resolveSectionItems } from "@/lib/item-types";
 import { sortActiveButtons, youtubeEmbedUrl, youtubeWatchUrl } from "@/lib/button-types";
+import PlayIcon from "@/components/icons/PlayIcon";
+import SuccessStoryTabIcon from "@/components/icons/SuccessStoryTabIcon";
 
 const DEFAULT_GRADIENT =
   "linear-gradient(135deg, #2e1064 0%, #4c1d95 45%, #312e81 100%)";
-
-function PlayIcon({ className = "size-7" }) {
-  return (
-    <svg
-      className={className}
-      viewBox="0 0 24 24"
-      fill="currentColor"
-      aria-hidden
-    >
-      <path d="M8 5.14v13.72a1 1 0 0 0 1.5.86l11-6.86a1 1 0 0 0 0-1.72l-11-6.86a1 1 0 0 0-1.5.86Z" />
-    </svg>
-  );
-}
-
-function TabGlyph({ name }) {
-  const key = String(name || "").toLowerCase().trim();
-  const common = "size-4 shrink-0";
-
-  if (key === "healthcare") {
-    return (
-      <svg className={common} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden>
-        <path d="M12 21s-7-4.5-7-10a4 4 0 0 1 7-2 4 4 0 0 1 7 2c0 5.5-7 10-7 10Z" />
-        <path d="M12 11v4M10 13h4" />
-      </svg>
-    );
-  }
-  if (key === "finance" || key === "financial") {
-    return (
-      <svg className={common} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden>
-        <path d="M3 10h18M5 6h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2Z" />
-        <path d="M8 14h.01M12 14h.01M16 14h.01" />
-      </svg>
-    );
-  }
-  if (key === "technology" || key === "tech") {
-    return (
-      <svg className={common} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden>
-        <rect x="3" y="4" width="18" height="12" rx="2" />
-        <path d="M8 20h8M12 16v4" />
-      </svg>
-    );
-  }
-  if (key === "local" || key === "local-government") {
-    return (
-      <svg className={common} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden>
-        <path d="M3 21h18M5 21V9l7-4 7 4v12" />
-        <path d="M9 21v-6h6v6" />
-      </svg>
-    );
-  }
-
-  return (
-    <svg className={common} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden>
-      <path d="M3 21h18M6 21V7l6-3 6 3v14" />
-      <path d="M9 21v-4h6v4" />
-      <path d="M10 10h4M10 14h4" />
-    </svg>
-  );
-}
 
 function StoryTab({ item, active, onClick }) {
   const label = item.label || item.title || "Story";
@@ -89,7 +32,7 @@ function StoryTab({ item, active, onClick }) {
           : "border-slate-200 bg-slate-100 text-slate-700 hover:border-slate-300 hover:bg-slate-200 dark:text-slate-200"
       }`}
     >
-      <TabGlyph name={item.icon} />
+      <SuccessStoryTabIcon name={item.icon} />
       <span className="whitespace-nowrap">{label}</span>
     </button>
   );

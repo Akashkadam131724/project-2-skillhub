@@ -2,7 +2,7 @@
 
 import CmsSectionItemsBar from "@/components/sections/CmsSectionItemsBar";
 import EmptyItemsHint from "@/components/sections/EmptyItemsHint";
-import SectionItemCard from "@/components/sections/SectionItemCard";
+import BenefitItemCard from "@/components/sections/cards/BenefitItemCard";
 import MobileCardPeekRow from "@/components/sections/MobileCardPeekRow";
 import { resolveItemsForSection } from "@/lib/item-types";
 import SectionFrame from "../SectionFrame";
@@ -39,11 +39,7 @@ export default function KeyBenefitsSection({
           gridClassName="sm:grid-cols-2 lg:grid-cols-4 lg:gap-6"
         >
           {items.map((item, i) => (
-            <SectionItemCard
-              key={item._id || item.id || i}
-              type="benefit"
-              item={item}
-            />
+            <BenefitItemCard key={item._id || item.id || i} item={item} />
           ))}
         </MobileCardPeekRow>
       ) : (

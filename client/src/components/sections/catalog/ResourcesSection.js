@@ -2,7 +2,7 @@
 
 import CmsSectionItemsBar from "@/components/sections/CmsSectionItemsBar";
 import EmptyItemsHint from "@/components/sections/EmptyItemsHint";
-import SectionItemCard from "@/components/sections/SectionItemCard";
+import ResourceItemCard from "@/components/sections/cards/ResourceItemCard";
 import { resolveItemsForSection } from "@/lib/item-types";
 import SectionFrame from "../SectionFrame";
 
@@ -36,7 +36,7 @@ export default function ResourcesSection({
         <ul className="m-0 list-none space-y-3 p-0">
           {items.map((item, i) => (
             <li key={item._id || item.id || i}>
-              <SectionItemCard type="resource" item={item} />
+              <ResourceItemCard item={item} />
             </li>
           ))}
         </ul>

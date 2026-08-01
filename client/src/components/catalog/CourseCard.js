@@ -1,101 +1,9 @@
 import Link from "next/link";
-
-function IconVendor({ className = "size-4" }) {
-  return (
-    <svg
-      className={className}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.75"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M3 21h18" />
-      <path d="M5 21V7l7-4 7 4v14" />
-      <path d="M9 21v-6h6v6" />
-      <path d="M9 10h.01M15 10h.01M9 14h.01M15 14h.01" />
-    </svg>
-  );
-}
-
-function IconSkillLevel({ className = "size-4" }) {
-  return (
-    <svg
-      className={className}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.75"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M4 20V14" />
-      <path d="M10 20V10" />
-      <path d="M16 20V6" />
-      <path d="M22 20V3" />
-    </svg>
-  );
-}
-
-function IconIndustry({ className = "size-4" }) {
-  return (
-    <svg
-      className={className}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.75"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M3 21h18" />
-      <path d="M5 21V10l5 3V10l5 3V5h4v16" />
-      <path d="M9 21v-4h4v4" />
-    </svg>
-  );
-}
-
-function IconSkillingArea({ className = "size-4" }) {
-  return (
-    <svg
-      className={className}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.75"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M12 2 2 7l10 5 10-5-10-5Z" />
-      <path d="m2 17 10 5 10-5" />
-      <path d="m2 12 10 5 10-5" />
-    </svg>
-  );
-}
-
-function IconProduct({ className = "size-4" }) {
-  return (
-    <svg
-      className={className}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.75"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" />
-      <path d="M3.3 7 12 12l8.7-5" />
-      <path d="M12 22V12" />
-    </svg>
-  );
-}
+import VendorIcon from "@/components/icons/VendorIcon";
+import SkillLevelIcon from "@/components/icons/SkillLevelIcon";
+import IndustryIcon from "@/components/icons/IndustryIcon";
+import SkillingAreaIcon from "@/components/icons/SkillingAreaIcon";
+import ProductIcon from "@/components/icons/ProductIcon";
 
 function formatNames(items, fallback = "—") {
   if (!Array.isArray(items) || items.length === 0) return fallback;
@@ -175,12 +83,12 @@ export default function CourseCard({ course }) {
               href={`/product/${productSlug}`}
               className="inline-flex items-center gap-1.5 rounded-full border border-brand/25 bg-brand-soft px-2.5 py-1 text-xs font-semibold text-brand no-underline dark:border-brand/40 dark:bg-brand/20 dark:text-brand"
             >
-              <IconProduct className="size-3.5" />
+              <ProductIcon className="size-3.5" />
               {productName}
             </Link>
           ) : (
             <span className="inline-flex items-center gap-1.5 rounded-full border border-brand/25 bg-brand-soft px-2.5 py-1 text-xs font-semibold text-brand dark:border-brand/40 dark:bg-brand/20 dark:text-brand">
-              <IconProduct className="size-3.5" />
+              <ProductIcon className="size-3.5" />
               {productName}
             </span>
           )
@@ -193,18 +101,18 @@ export default function CourseCard({ course }) {
 
       <div className="mt-4 grid gap-2.5 sm:grid-cols-2">
         <MetaItem
-          icon={<IconVendor />}
+          icon={<VendorIcon />}
           label="Vendor"
           value={vendorName}
           href={vendorSlug ? `/vendor/${vendorSlug}` : null}
         />
         <MetaItem
-          icon={<IconSkillLevel />}
+          icon={<SkillLevelIcon />}
           label="Skill level"
           value={skillLevelName}
         />
         <MetaItem
-          icon={<IconIndustry />}
+          icon={<IndustryIcon />}
           label="Industry"
           value={industryNames}
           href={
@@ -214,7 +122,7 @@ export default function CourseCard({ course }) {
           }
         />
         <MetaItem
-          icon={<IconSkillingArea />}
+          icon={<SkillingAreaIcon />}
           label="Skilling area"
           value={skillingAreaNames}
           href={

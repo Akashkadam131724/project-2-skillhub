@@ -7,6 +7,7 @@ import {
   BUTTON_VARIANT_LABELS,
   BUTTON_VARIANTS,
 } from "@/lib/button-types";
+import DragHandleIcon from "@/components/icons/DragHandleIcon";
 
 const inputClass =
   "w-full rounded-lg border border-slate-300 bg-white px-2.5 py-2 text-sm outline-none focus:border-brand dark:border-slate-700 dark:bg-slate-900";
@@ -30,24 +31,6 @@ function emptyButton(sort_order = 0) {
     sort_order,
     status: true,
   };
-}
-
-function DragHandleIcon() {
-  return (
-    <svg
-      className="size-4"
-      viewBox="0 0 24 24"
-      fill="currentColor"
-      aria-hidden
-    >
-      <circle cx="9" cy="7" r="1.5" />
-      <circle cx="15" cy="7" r="1.5" />
-      <circle cx="9" cy="12" r="1.5" />
-      <circle cx="15" cy="12" r="1.5" />
-      <circle cx="9" cy="17" r="1.5" />
-      <circle cx="15" cy="17" r="1.5" />
-    </svg>
-  );
 }
 
 /** Normalize API / legacy button objects for the editor */

@@ -9,6 +9,7 @@ import { mediaUrl } from "@/lib/cms-api";
 import { mediaAlt } from "@/lib/media-alt";
 import { resolveItemsForSection } from "@/lib/item-types";
 import { isRichTextEmpty } from "@/lib/rich-text";
+import StarSparkleIcon from "@/components/icons/StarSparkleIcon";
 
 /**
  * Masonry quote wall — SaaS social proof pattern (volume of voice).
@@ -77,14 +78,7 @@ export default function MasonryQuotesSection({
                   >
                     <div className="mb-3 flex gap-0.5 text-brand" aria-hidden>
                       {Array.from({ length: 5 }).map((_, s) => (
-                        <svg
-                          key={s}
-                          className="size-3.5"
-                          viewBox="0 0 20 20"
-                          fill="currentColor"
-                        >
-                          <path d="M10 1.5l2.4 5.2 5.6.6-4.2 3.8 1.2 5.5L10 13.8 4.9 16.6l1.2-5.5L2 7.3l5.6-.6L10 1.5z" />
-                        </svg>
+                        <StarSparkleIcon key={s} />
                       ))}
                     </div>
                     {!isRichTextEmpty(item.body) ? (

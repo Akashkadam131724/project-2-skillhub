@@ -5,7 +5,7 @@ import EmptyItemsHint from "@/components/sections/EmptyItemsHint";
 import SectionFrame from "@/components/sections/SectionFrame";
 import MobileCardPeekRow from "@/components/sections/MobileCardPeekRow";
 import { resolveItemsForSection } from "@/lib/item-types";
-import { TrainingOptionCard } from "./CardItems";
+import TrainingOptionCard from "./TrainingOptionCard";
 
 /**
  * Flexible training modalities — image-led modern tiles.

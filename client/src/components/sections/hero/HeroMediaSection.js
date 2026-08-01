@@ -11,6 +11,8 @@ import EmptyItemsHint from "../EmptyItemsHint";
 import SectionButtonsFooter from "../SectionButtonsFooter";
 import SectionWrapper from "../SectionWrapper";
 import HeroSlideSideMedia from "./HeroSlideSideMedia";
+import ChevronLeftIcon from "@/components/icons/ChevronLeftIcon";
+import ChevronRightIcon from "@/components/icons/ChevronRightIcon";
 
 function SlideCopy({ item, cmsMode, onEditField, onFormOpen }) {
   const title = itemTitle(item) || item?.title || "";
@@ -153,20 +155,7 @@ export default function HeroMediaSection({
                   className="inline-flex size-10 items-center justify-center rounded-full border border-white/30 bg-white/10 text-white transition hover:bg-white/20"
                   aria-label="Previous banner"
                 >
-                  <svg
-                    className="size-4"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    aria-hidden
-                  >
-                    <path
-                      d="M15 18l-6-6 6-6"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
+                  <ChevronLeftIcon />
                 </button>
 
                 <div className="flex items-center gap-2" role="tablist">
@@ -193,20 +182,7 @@ export default function HeroMediaSection({
                   className="inline-flex size-10 items-center justify-center rounded-full border border-white/30 bg-white/10 text-white transition hover:bg-white/20"
                   aria-label="Next banner"
                 >
-                  <svg
-                    className="size-4"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    aria-hidden
-                  >
-                    <path
-                      d="M9 18l6-6-6-6"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
+                  <ChevronRightIcon />
                 </button>
               </div>
             ) : null}

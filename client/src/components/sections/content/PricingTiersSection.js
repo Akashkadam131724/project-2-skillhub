@@ -13,6 +13,7 @@ import {
   DS_TEXT,
   isPlacementDarkBand,
 } from "@/lib/section-theme";
+import CheckIcon from "@/components/icons/CheckIcon";
 
 /**
  * SaaS pricing tiers — 3-up with featured middle plan (2026 landing standard).
@@ -125,20 +126,7 @@ export default function PricingTiersSection({
                               key={fi}
                               className={`flex items-start gap-2 text-sm ${DS_TEXT.muted}`}
                             >
-                              <svg
-                                className="mt-0.5 size-4 shrink-0"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="2.5"
-                                aria-hidden
-                              >
-                                <path
-                                  d="M5 13l4 4L19 7"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                />
-                              </svg>
+                              <CheckIcon className="mt-0.5 shrink-0" />
                               {f}
                             </li>
                           ))}
@@ -204,20 +192,7 @@ export default function PricingTiersSection({
                             key={fi}
                             className={`flex items-start gap-2 text-sm ${DS_TEXT.muted}`}
                           >
-                            <svg
-                              className="mt-0.5 size-4 shrink-0 text-brand"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2.5"
-                              aria-hidden
-                            >
-                              <path
-                                d="M5 13l4 4L19 7"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              />
-                            </svg>
+                            <CheckIcon className="mt-0.5 shrink-0 text-brand" />
                             {f}
                           </li>
                         ))}

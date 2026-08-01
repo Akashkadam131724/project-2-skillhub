@@ -2,7 +2,7 @@
 
 import CmsSectionItemsBar from "@/components/sections/CmsSectionItemsBar";
 import EmptyItemsHint from "@/components/sections/EmptyItemsHint";
-import SectionItemCard from "@/components/sections/SectionItemCard";
+import TestimonialItemCard from "@/components/sections/cards/TestimonialItemCard";
 import { resolveItemsForSection } from "@/lib/item-types";
 import SectionFrame from "../SectionFrame";
 
@@ -35,11 +35,7 @@ export default function TestimonialsSection({
       {items.length ? (
         <div className="grid gap-3 sm:grid-cols-2">
           {items.map((item, i) => (
-            <SectionItemCard
-              key={item._id || item.id || i}
-              type="testimonial"
-              item={item}
-            />
+            <TestimonialItemCard key={item._id || item.id || i} item={item} />
           ))}
         </div>
       ) : (

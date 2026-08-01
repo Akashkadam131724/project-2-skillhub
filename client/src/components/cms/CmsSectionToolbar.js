@@ -6,6 +6,7 @@ import {
   SECTION_CATALOG,
   sectionUsesImage,
 } from "@/lib/section-registry";
+import MoreHorizontalIcon from "@/components/icons/MoreHorizontalIcon";
 
 function sectionDisplayName(sectionKey) {
   const key = String(sectionKey || "").toLowerCase();
@@ -32,21 +33,6 @@ function MenuItem({ children, onClick, danger = false }) {
     >
       {children}
     </button>
-  );
-}
-
-function MoreIcon() {
-  return (
-    <svg
-      viewBox="0 0 20 20"
-      fill="currentColor"
-      className="size-4"
-      aria-hidden
-    >
-      <circle cx="4" cy="10" r="1.75" />
-      <circle cx="10" cy="10" r="1.75" />
-      <circle cx="16" cy="10" r="1.75" />
-    </svg>
   );
 }
 
@@ -154,7 +140,7 @@ export default function CmsSectionToolbar({
             aria-expanded={open}
             aria-haspopup="menu"
           >
-            <MoreIcon />
+            <MoreHorizontalIcon />
           </button>
 
           {open ? (

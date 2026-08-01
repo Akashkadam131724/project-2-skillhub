@@ -4,26 +4,10 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
 import Drawer, { HamburgerButton } from "@/components/ui/Drawer";
+import ChevronDownIcon from "@/components/icons/ChevronDownIcon";
 
 function isInternalHref(url) {
   return typeof url === "string" && url.startsWith("/") && !url.startsWith("//");
-}
-
-function Chevron({ open }) {
-  return (
-    <svg
-      className={`size-3.5 transition ${open ? "rotate-180 text-brand" : "text-slate-400"}`}
-      viewBox="0 0 20 20"
-      fill="currentColor"
-      aria-hidden="true"
-    >
-      <path
-        fillRule="evenodd"
-        d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z"
-        clipRule="evenodd"
-      />
-    </svg>
-  );
 }
 
 function NavLink({ href, className, onClick, children }) {
@@ -290,7 +274,9 @@ function DesktopNav({ navigation }) {
                 }`}
               >
                 <span>{item.name}</span>
-                <Chevron open={isOpen} />
+                <ChevronDownIcon
+                  className={`size-3.5 transition ${isOpen ? "rotate-180 text-brand" : "text-slate-400"}`}
+                />
               </button>
             </li>
           );
@@ -340,7 +326,9 @@ function MobileNavSections({ navigation, onNavigate }) {
               className="flex w-full cursor-pointer items-center justify-between border-0 bg-transparent px-4 py-3.5 text-left text-sm font-semibold text-ink dark:text-white"
             >
               <span>{item.name}</span>
-              <Chevron open={isOpen} />
+              <ChevronDownIcon
+                className={`size-3.5 transition ${isOpen ? "rotate-180 text-brand" : "text-slate-400"}`}
+              />
             </button>
             {isOpen && (
               <div className="grid gap-2.5 border-t border-slate-100 px-3 py-3 dark:border-slate-800">

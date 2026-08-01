@@ -2,7 +2,7 @@
 
 import CmsSectionItemsBar from "@/components/sections/CmsSectionItemsBar";
 import EmptyItemsHint from "@/components/sections/EmptyItemsHint";
-import SectionItemCard from "@/components/sections/SectionItemCard";
+import CurriculumItemCard from "@/components/sections/cards/CurriculumItemCard";
 import { resolveItemsForSection } from "@/lib/item-types";
 import SectionFrame from "../SectionFrame";
 
@@ -36,7 +36,7 @@ export default function CurriculumSection({
         <ol className="m-0 list-decimal space-y-2 pl-5 text-sm text-slate-700 dark:text-slate-200">
           {items.map((item, i) => (
             <li key={item._id || item.id || i}>
-              <SectionItemCard type="curriculum" item={item} />
+              <CurriculumItemCard item={item} />
             </li>
           ))}
         </ol>

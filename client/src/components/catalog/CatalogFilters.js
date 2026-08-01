@@ -4,23 +4,7 @@ import { useMemo, useState, useTransition } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import Drawer, { HamburgerButton } from "@/components/ui/Drawer";
 import { applyLockedParams } from "@/lib/catalogParams";
-
-function Chevron({ open }) {
-  return (
-    <svg
-      className={`size-4 text-slate-500 transition ${open ? "rotate-180" : ""}`}
-      viewBox="0 0 20 20"
-      fill="currentColor"
-      aria-hidden="true"
-    >
-      <path
-        fillRule="evenodd"
-        d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z"
-        clipRule="evenodd"
-      />
-    </svg>
-  );
-}
+import ChevronDownIcon from "@/components/icons/ChevronDownIcon";
 
 function FilterAccordion({
   title,
@@ -46,7 +30,9 @@ function FilterAccordion({
         <span className="text-base font-bold text-ink dark:text-white">
           {title}
         </span>
-        <Chevron open={open} />
+        <ChevronDownIcon
+          className={`size-4 text-slate-500 transition ${open ? "rotate-180" : ""}`}
+        />
       </button>
 
       {open && (

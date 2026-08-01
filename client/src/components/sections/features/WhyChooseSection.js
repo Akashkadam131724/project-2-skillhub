@@ -3,7 +3,7 @@
 import CmsEditable from "@/components/cms/CmsEditable";
 import CmsSectionItemsBar from "@/components/sections/CmsSectionItemsBar";
 import EmptyItemsHint from "@/components/sections/EmptyItemsHint";
-import SectionItemCard from "@/components/sections/SectionItemCard";
+import WhyChooseItemCard from "@/components/sections/cards/WhyChooseItemCard";
 import MobileCardPeekRow from "@/components/sections/MobileCardPeekRow";
 import SectionButtonsFooter from "@/components/sections/SectionButtonsFooter";
 import SectionWrapper from "@/components/sections/SectionWrapper";
@@ -175,9 +175,8 @@ export default function WhyChooseSection({
             gridClassName="sm:grid-cols-2 lg:grid-cols-3"
           >
             {items.map((item, i) => (
-              <SectionItemCard
+              <WhyChooseItemCard
                 key={item._id || item.id || i}
-                type="why_choose"
                 item={item}
                 index={i}
                 variant={lightBand ? "light" : "dark"}
