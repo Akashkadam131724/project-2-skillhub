@@ -1,7 +1,7 @@
-import { Suspense } from "react";
 import { fetchContentByPath } from "@/lib/api";
-import { getPageSectionsResolved } from "@/lib/api/cms-api";
+import { fetchLiveEditPageTheme } from "@/lib/cms/live-edit-theme";
 import { cmsPublicHref } from "@/lib/cms/cms-edit-routes";
+import { CmsLiveEditProvider } from "@/components/cms/pages/live/CmsLiveEditContext";
 import CmsLivePageSections from "@/components/cms/pages/CmsLivePageSections";
 
 export const metadata = {
@@ -11,20 +11,13 @@ export const metadata = {
 
 export default async function CmsHomeSectionEditPage() {
   let content = null;
-  let cmsSections = [];
   let pageTheme = null;
 
   try {
     const res = await fetchContentByPath("/");
     content = res?.data || null;
     if (content) {
-      const contentId = String(content._id || content.id);
-      const sectionsRes = await getPageSectionsResolved(
-        "home",
-        contentId
-      ).catch(() => ({ sections: [] }));
-      cmsSections = sectionsRes.sections || [];
-      pageTheme = sectionsRes.page?.theme || null;
+      pageTheme = await fetchLiveEditPageTheme("home");
     }
   } catch {
     content = null;
@@ -46,23 +39,21 @@ export default async function CmsHomeSectionEditPage() {
 
   return (
     <main>
-      <Suspense fallback={null}>
-        <CmsLivePageSections
-          pageKey="home"
-          entityId={contentId}
-          entityLabel={content.name}
-          initialSections={cmsSections}
-          initialTheme={pageTheme}
-          cmsMode
-          publicHref={cmsPublicHref("home")}
-          pageContext={{
-            entityType: "content",
-            entityId: contentId,
-            entityName: content.name,
-            contentPath: content.path,
-          }}
-        />
-      </Suspense>
+      <CmsLiveEditProvider
+        pageKey="home"
+        entityId={contentId}
+        entityLabel={content.name}
+        initialTheme={pageTheme}
+        publicHref={cmsPublicHref("home")}
+        pageContext={{
+          entityType: "content",
+          entityId: contentId,
+          entityName: content.name,
+          contentPath: content.path,
+        }}
+      >
+        <CmsLivePageSections />
+      </CmsLiveEditProvider>
     </main>
   );
 }

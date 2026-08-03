@@ -1,5 +1,6 @@
 "use client";
 
+import { CmsLiveEditProvider } from "@/components/cms/pages/live/CmsLiveEditContext";
 import CmsLivePageSections from "@/components/cms/pages/CmsLivePageSections";
 
 /** Section stack only (category showcase). */
@@ -7,19 +8,20 @@ export default function SectionLibraryPageBody({
   pageKey,
   entityId,
   entityLabel,
-  initialSections,
   initialTheme,
   pageContext,
+  publicHref = null,
 }) {
   return (
-    <CmsLivePageSections
+    <CmsLiveEditProvider
       pageKey={pageKey}
       entityId={entityId}
       entityLabel={entityLabel}
-      initialSections={initialSections}
       initialTheme={initialTheme}
       pageContext={pageContext}
-      cmsMode
-    />
+      publicHref={publicHref}
+    >
+      <CmsLivePageSections />
+    </CmsLiveEditProvider>
   );
 }

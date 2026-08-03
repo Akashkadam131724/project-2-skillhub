@@ -1,16 +1,14 @@
-import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { fetchContentByPath } from "@/lib/api";
-import { getPageSectionsResolved } from "@/lib/api/cms-api";
+import { fetchLiveEditPageTheme } from "@/lib/cms/live-edit-theme";
 import {
   CONTENT_DIRECTORY_BY_PATH,
   CONTENT_PAGE_KEY,
   contentPathFromParams,
 } from "@/lib/content/content-pages";
-import {
-  cmsPublicHref,
-} from "@/lib/cms/cms-edit-routes";
+import { cmsPublicHref } from "@/lib/cms/cms-edit-routes";
 import CmsLivePageSections from "@/components/cms/pages/CmsLivePageSections";
+import { CmsLiveEditProvider } from "@/components/cms/pages/live/CmsLiveEditContext";
 
 export async function generateMetadata({ params }) {
   const { slug: slugParam } = await params;
@@ -30,7 +28,6 @@ export default async function CmsContentSectionEditPage({ params }) {
   }
 
   let content;
-  let cmsSections = [];
   let pageTheme = null;
 
   try {
@@ -45,41 +42,29 @@ export default async function CmsContentSectionEditPage({ params }) {
   }
 
   const contentId = String(content._id || content.id);
-
-  try {
-    const sectionsRes = await getPageSectionsResolved(
-      CONTENT_PAGE_KEY,
-      contentId
-    ).catch(() => ({ sections: [] }));
-    cmsSections = sectionsRes.sections || [];
-    pageTheme = sectionsRes.page?.theme || null;
-  } catch {
-    cmsSections = [];
-  }
+  pageTheme = await fetchLiveEditPageTheme(CONTENT_PAGE_KEY);
 
   return (
     <main>
-      <Suspense fallback={null}>
-        <CmsLivePageSections
-          pageKey={CONTENT_PAGE_KEY}
-          entityId={contentId}
-          entityLabel={content.name}
-          initialSections={cmsSections}
-          initialTheme={pageTheme}
-          cmsMode
-          publicHref={cmsPublicHref("content", path)}
-          pageContext={{
-            entityType: "content",
-            entityId: contentId,
-            entityName: content.name,
-            contentSlug: content.slug,
-            contentPath: content.path,
-            ...(CONTENT_DIRECTORY_BY_PATH[path]
-              ? { directoryType: CONTENT_DIRECTORY_BY_PATH[path] }
-              : {}),
-          }}
-        />
-      </Suspense>
+      <CmsLiveEditProvider
+        pageKey={CONTENT_PAGE_KEY}
+        entityId={contentId}
+        entityLabel={content.name}
+        initialTheme={pageTheme}
+        publicHref={cmsPublicHref("content", path)}
+        pageContext={{
+          entityType: "content",
+          entityId: contentId,
+          entityName: content.name,
+          contentSlug: content.slug,
+          contentPath: content.path,
+          ...(CONTENT_DIRECTORY_BY_PATH[path]
+            ? { directoryType: CONTENT_DIRECTORY_BY_PATH[path] }
+            : {}),
+        }}
+      >
+        <CmsLivePageSections />
+      </CmsLiveEditProvider>
     </main>
   );
 }

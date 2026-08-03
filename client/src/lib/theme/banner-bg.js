@@ -105,6 +105,66 @@ export const LIGHT_GRADIENT_PRESETS = [
     label: "Ocean light",
     value: "linear-gradient(145deg, #5eead4 0%, #5ec8e8 50%, #3b82f6 100%)",
   },
+  {
+    label: "Blush fade",
+    value: "linear-gradient(180deg, #fff7ed 0%, #ffedd5 45%, #ffffff 100%)",
+  },
+  {
+    label: "Cool stripe",
+    value: "linear-gradient(180deg, #ffffff 0%, #f1f5f9 48%, #ffffff 100%)",
+  },
+  {
+    label: "Warm sand",
+    value: "linear-gradient(165deg, #fffbeb 0%, #fef3c7 38%, #ffffff 100%)",
+  },
+  {
+    label: "Pearl",
+    value: "linear-gradient(180deg, #ffffff 0%, #f8fafc 45%, #eef2f7 100%)",
+  },
+  {
+    label: "Frost",
+    value: "linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #f8fafc 100%)",
+  },
+  {
+    label: "Sage mist",
+    value: "linear-gradient(145deg, #f8fafc 0%, #f0fdf4 45%, #ecfccb 100%)",
+  },
+  {
+    label: "Rose quartz",
+    value: "linear-gradient(125deg, #fff1f2 0%, #fce7f3 50%, #faf5ff 100%)",
+  },
+  {
+    label: "Lemon mist",
+    value: "linear-gradient(160deg, #fefce8 0%, #fef9c3 42%, #ffffff 100%)",
+  },
+  {
+    label: "Horizon",
+    value: "linear-gradient(180deg, #e0f2fe 0%, #f0f9ff 42%, #ffffff 100%)",
+  },
+  {
+    label: "Teal glow",
+    value: "linear-gradient(135deg, #ccfbf1 0%, #99f6e4 38%, #f0fdfa 100%)",
+  },
+  {
+    label: "Periwinkle",
+    value: "linear-gradient(140deg, #eef2ff 0%, #e0e7ff 50%, #f5f3ff 100%)",
+  },
+  {
+    label: "Brand soft",
+    value: "linear-gradient(135deg, #eff6ff 0%, #dbeafe 52%, #f8fafc 100%)",
+  },
+  {
+    label: "Soft peach",
+    value: "linear-gradient(145deg, #fff7ed 0%, #ffedd5 35%, #fef3c7 100%)",
+  },
+  {
+    label: "Morning haze",
+    value: "linear-gradient(120deg, #fafafa 0%, #f1f5f9 35%, #e2e8f0 100%)",
+  },
+  {
+    label: "Aqua veil",
+    value: "linear-gradient(155deg, #ecfeff 0%, #cffafe 45%, #f0fdfa 100%)",
+  },
 ];
 
 /**

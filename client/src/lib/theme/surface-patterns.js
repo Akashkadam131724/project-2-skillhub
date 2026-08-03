@@ -202,7 +202,38 @@ export function bandThemeFromBg(bg, { ink = "#0b1f4d" } = {}) {
   ) {
     return "dark";
   }
-  if (isBannerGradient(bg)) return "light";
+  if (isBannerGradient(bg)) {
+    const darkStops = [
+      "#0f172a",
+      "#0b1f4d",
+      "#111827",
+      "#020617",
+      "#082f49",
+      "#052e16",
+      "#1c1917",
+      "#312e81",
+      "#10100e",
+      "#0b0b0a",
+      "var(--ink)",
+      "rgb(15,",
+      "rgb(0, ",
+    ];
+    if (darkStops.some((stop) => value.includes(stop))) return "dark";
+
+    const hexes = [...value.matchAll(/#([0-9a-f]{3,8})\b/gi)];
+    if (hexes.length) {
+      const luminances = hexes
+        .map((match) => parseHexRgb(`#${match[1]}`))
+        .filter(Boolean)
+        .map(relativeLuminance);
+      if (luminances.length) {
+        const avg =
+          luminances.reduce((sum, lum) => sum + lum, 0) / luminances.length;
+        return avg < 0.45 ? "dark" : "light";
+      }
+    }
+    return "light";
+  }
 
   const hexMatch = value.match(/#([0-9a-f]{3,8})\b/i);
   if (hexMatch) {

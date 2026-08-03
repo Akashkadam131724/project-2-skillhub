@@ -1,14 +1,12 @@
-import { Suspense } from "react";
 import { fetchVendorBySlug } from "@/lib/api";
-import { getPageSectionsResolved } from "@/lib/api/cms-api";
-import {
-  cmsPublicHref,
-} from "@/lib/cms/cms-edit-routes";
+import { fetchLiveEditPageTheme } from "@/lib/cms/live-edit-theme";
+import { cmsPublicHref } from "@/lib/cms/cms-edit-routes";
 import {
   DetailShell,
   NotFoundState,
 } from "@/components/detail/DetailShell";
 import CmsLivePageSections from "@/components/cms/pages/CmsLivePageSections";
+import { CmsLiveEditProvider } from "@/components/cms/pages/live/CmsLiveEditContext";
 
 export async function generateMetadata({ params }) {
   const { slug } = await params;
@@ -22,18 +20,12 @@ export default async function CmsVendorSectionEditPage({ params }) {
   const { slug } = await params;
 
   let vendor;
-  let cmsSections = [];
   let pageTheme = null;
 
   try {
     const vendorRes = await fetchVendorBySlug(slug);
     vendor = vendorRes.data;
-    const vendorId = String(vendor._id || vendor.id);
-    const sectionsRes = await getPageSectionsResolved("vendor", vendorId).catch(
-      () => ({ sections: [] })
-    );
-    cmsSections = sectionsRes.sections || [];
-    pageTheme = sectionsRes.page?.theme || null;
+    pageTheme = await fetchLiveEditPageTheme("vendor");
   } catch {
     return <NotFoundState entity="Vendor" />;
   }
@@ -54,24 +46,22 @@ export default async function CmsVendorSectionEditPage({ params }) {
       ctaLabel="Browse courses"
       flush
     >
-      <Suspense fallback={null}>
-        <CmsLivePageSections
-          pageKey="vendor"
-          entityId={vendorId}
-          entityLabel={vendor.name}
-          initialSections={cmsSections}
-          initialTheme={pageTheme}
-          cmsMode
-          publicHref={cmsPublicHref("vendor", vendor.slug)}
-          pageContext={{
-            entityType: "vendor",
-            entityId: vendorId,
-            entityName: vendor.name,
-            catalogTitle: `${vendor.name} Courses`,
-            catalogSubtitle: `Browse training courses from ${vendor.name}.`,
-          }}
-        />
-      </Suspense>
+      <CmsLiveEditProvider
+        pageKey="vendor"
+        entityId={vendorId}
+        entityLabel={vendor.name}
+        initialTheme={pageTheme}
+        publicHref={cmsPublicHref("vendor", vendor.slug)}
+        pageContext={{
+          entityType: "vendor",
+          entityId: vendorId,
+          entityName: vendor.name,
+          catalogTitle: `${vendor.name} Courses`,
+          catalogSubtitle: `Browse training courses from ${vendor.name}.`,
+        }}
+      >
+        <CmsLivePageSections />
+      </CmsLiveEditProvider>
     </DetailShell>
   );
 }

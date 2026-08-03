@@ -1,17 +1,15 @@
-import { Suspense } from "react";
 import {
   fetchProductBySlug,
   fetchVendorBySlug,
 } from "@/lib/api";
-import { getPageSectionsResolved } from "@/lib/api/cms-api";
-import {
-  cmsPublicHref,
-} from "@/lib/cms/cms-edit-routes";
+import { fetchLiveEditPageTheme } from "@/lib/cms/live-edit-theme";
+import { cmsPublicHref } from "@/lib/cms/cms-edit-routes";
 import {
   DetailShell,
   NotFoundState,
 } from "@/components/detail/DetailShell";
 import CmsLivePageSections from "@/components/cms/pages/CmsLivePageSections";
+import { CmsLiveEditProvider } from "@/components/cms/pages/live/CmsLiveEditContext";
 
 function resolveVendorId(product, vendor) {
   if (vendor?._id || vendor?.id) return String(vendor._id || vendor.id);
@@ -34,7 +32,6 @@ export default async function CmsProductSectionEditPage({ params }) {
 
   let product;
   let vendor = null;
-  let cmsSections = [];
   let pageTheme = null;
 
   try {
@@ -54,18 +51,11 @@ export default async function CmsProductSectionEditPage({ params }) {
       vendor = linkedVendor;
     }
 
-    const productId = String(product._id || product.id);
-    const sectionsRes = await getPageSectionsResolved(
-      "product",
-      productId
-    ).catch(() => ({ sections: [] }));
-    cmsSections = sectionsRes.sections || [];
-    pageTheme = sectionsRes.page?.theme || null;
+    pageTheme = await fetchLiveEditPageTheme("product");
   } catch {
     return <NotFoundState entity="Product" />;
   }
 
-  const vendorSlug = vendor?.slug || null;
   const vendorName = vendor?.name || null;
   const vendorId = resolveVendorId(product, vendor);
   const vendorLogo = vendor?.logoUrl || vendor?.vendorCatalogueLogo || null;
@@ -85,27 +75,25 @@ export default async function CmsProductSectionEditPage({ params }) {
       ctaLabel="Browse courses"
       flush
     >
-      <Suspense fallback={null}>
-        <CmsLivePageSections
-          pageKey="product"
-          entityId={productId}
-          entityLabel={product.name}
-          initialSections={cmsSections}
-          initialTheme={pageTheme}
-          cmsMode
-          publicHref={cmsPublicHref("product", product.slug)}
-          pageContext={{
-            entityType: "product",
-            entityId: productId,
-            entityName: product.name,
-            vendorId,
-            catalogTitle: `${product.name} Courses`,
-            catalogSubtitle: vendorName
-              ? `Courses for ${product.name} from ${vendorName}.`
-              : `Browse courses for ${product.name}.`,
-          }}
-        />
-      </Suspense>
+      <CmsLiveEditProvider
+        pageKey="product"
+        entityId={productId}
+        entityLabel={product.name}
+        initialTheme={pageTheme}
+        publicHref={cmsPublicHref("product", product.slug)}
+        pageContext={{
+          entityType: "product",
+          entityId: productId,
+          entityName: product.name,
+          vendorId,
+          catalogTitle: `${product.name} Courses`,
+          catalogSubtitle: vendorName
+            ? `Courses for ${product.name} from ${vendorName}.`
+            : `Browse courses for ${product.name}.`,
+        }}
+      >
+        <CmsLivePageSections />
+      </CmsLiveEditProvider>
     </DetailShell>
   );
 }

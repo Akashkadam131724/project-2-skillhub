@@ -1,13 +1,14 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Suspense } from "react";
 import { fetchBlogBySlug, fetchBlogs } from "@/lib/api";
-import { getPageSectionsResolved, mediaUrl } from "@/lib/api/cms-api";
+import { mediaUrl } from "@/lib/api/cms-api";
+import { fetchLiveEditPageTheme } from "@/lib/cms/live-edit-theme";
 import { cmsPublicHref } from "@/lib/cms/cms-edit-routes";
 import BlogArticleBody from "@/components/blog/BlogArticleBody";
 import BlogCard from "@/components/blog/BlogCard";
 import BlogTableOfContents from "@/components/blog/BlogTableOfContents";
 import CmsLivePageSections from "@/components/cms/pages/CmsLivePageSections";
+import { CmsLiveEditProvider } from "@/components/cms/pages/live/CmsLiveEditContext";
 import SectionWrapper from "@/components/sections/SectionWrapper";
 import { prepareBlogContentWithToc } from "@/lib/utils/blog-toc";
 
@@ -40,11 +41,8 @@ export default async function CmsBlogSectionEditPage({ params }) {
   }
 
   const blogId = String(blog._id || blog.id);
-  const [sectionsResponse, relatedResponse] = await Promise.all([
-    getPageSectionsResolved("blog", blogId).catch(() => ({
-      sections: [],
-      page: null,
-    })),
+  const [pageTheme, relatedResponse] = await Promise.all([
+    fetchLiveEditPageTheme("blog"),
     fetchBlogs({
       status: "active",
       category: blog.category,
@@ -169,23 +167,21 @@ export default async function CmsBlogSectionEditPage({ params }) {
         </section>
       ) : null}
 
-      <Suspense fallback={null}>
-        <CmsLivePageSections
-          pageKey="blog"
-          entityId={blogId}
-          entityLabel={blog.title}
-          initialSections={sectionsResponse.sections || []}
-          initialTheme={sectionsResponse.page?.theme || null}
-          cmsMode
-          publicHref={cmsPublicHref("blog", blog.slug)}
-          pageContext={{
-            entityType: "blog",
-            entityId: blogId,
-            entityName: blog.title,
-            blogSlug: blog.slug,
-          }}
-        />
-      </Suspense>
+      <CmsLiveEditProvider
+        pageKey="blog"
+        entityId={blogId}
+        entityLabel={blog.title}
+        initialTheme={pageTheme}
+        publicHref={cmsPublicHref("blog", blog.slug)}
+        pageContext={{
+          entityType: "blog",
+          entityId: blogId,
+          entityName: blog.title,
+          blogSlug: blog.slug,
+        }}
+      >
+        <CmsLivePageSections />
+      </CmsLiveEditProvider>
     </main>
   );
 }

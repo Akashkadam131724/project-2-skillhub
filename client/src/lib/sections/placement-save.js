@@ -71,24 +71,70 @@ function invokeSavePlacement(savePlacement, section, patch) {
   return savePlacement(patch);
 }
 
-/** Save band background + theme on the placement layer (theme is page-level only). */
+/** Save band background + theme. Prefers one write on entity page placements. */
 export async function saveSectionBandForPlacement(
   section,
   { draft, savePlacement, contentLocked = false, pageKey, entityId }
 ) {
-  if (!contentLocked) {
-    await invokeSavePlacement(savePlacement, section, {
-      section_bg_img: draft.bgImg?.trim() || null,
-      section_bg_color: draft.bgColor?.trim() || null,
-    });
+  const supportsTheme = sectionSupportsBandTheme(
+    section?.section_key,
+    section?.render_key
+  );
+  const themeDb = supportsTheme
+    ? sectionThemeDbValue(draft.theme ?? "inherit")
+    : undefined;
+
+  const bgPatch = contentLocked
+    ? {}
+    : {
+        section_bg_img: draft.bgImg?.trim() || null,
+        section_bg_color: draft.bgColor?.trim() || null,
+      };
+
+  const scope = normalizeContentScope(section.content_scope);
+  const canSingleEntityWrite =
+    Boolean(entityId) &&
+    (section.is_entity_extra || scope === "page");
+
+  if (canSingleEntityWrite) {
+    const patch = { ...bgPatch };
+    if (supportsTheme) patch.section_theme = themeDb;
+    if (Object.keys(patch).length) {
+      await invokeSavePlacement(savePlacement, section, patch);
+    }
+    return {
+      localPatch: {
+        ...bgPatch,
+        ...(supportsTheme
+          ? {
+              section_theme: themeDb || "",
+              section_theme_local: themeDb,
+            }
+          : {}),
+      },
+    };
   }
-  if (
-    sectionSupportsBandTheme(section?.section_key, section?.render_key)
-  ) {
+
+  if (!contentLocked && Object.keys(bgPatch).length) {
+    await invokeSavePlacement(savePlacement, section, bgPatch);
+  }
+  if (supportsTheme) {
     await saveSectionThemeForPlacement(section, {
       pageKey,
       entityId,
       rawValue: draft.theme ?? "inherit",
     });
   }
+
+  return {
+    localPatch: {
+      ...bgPatch,
+      ...(supportsTheme
+        ? {
+            section_theme: themeDb || "",
+            section_theme_local: themeDb,
+          }
+        : {}),
+    },
+  };
 }

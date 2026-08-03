@@ -2,6 +2,7 @@
 
 import { useMemo } from "react";
 import { inputClass, btnSecondary } from "@/components/cms/admin/CmsUi";
+import { isBannerGradient, LIGHT_GRADIENT_PRESETS } from "@/lib/theme/banner-bg";
 import {
   defaultSurfacePattern,
   normalizeSurfacePattern,
@@ -33,9 +34,12 @@ const QUICK_COLORS = [
   { label: "Sky", bg: "#eef6fc" },
   { label: "Mint", bg: "#eef9f4" },
   { label: "Lavender", bg: "#f5f3ff" },
-  { label: "Charcoal", bg: "#0f172a", fg: "rgba(255,255,255,0.92)" },
-  { label: "Brand ink", bg: "var(--ink)" },
 ];
+
+const QUICK_GRADIENTS_LIGHT = LIGHT_GRADIENT_PRESETS.map((p) => ({
+  label: p.label,
+  bg: p.value,
+}));
 
 function newBandId() {
   return `band_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 7)}`;
@@ -55,9 +59,28 @@ function swatchStyle(bg) {
   return { backgroundColor: value };
 }
 
+function QuickBandChip({ preset, onClick }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="inline-flex items-center gap-1.5 rounded-md border border-slate-200 px-2 py-1 text-[11px] font-semibold dark:border-slate-700"
+    >
+      <span
+        className="size-3 rounded-sm ring-1 ring-black/10"
+        style={swatchStyle(preset.bg)}
+        aria-hidden
+      />
+      {preset.label}
+    </button>
+  );
+}
+
 function BandRow({ band, index, total, onChange, onRemove, onMove }) {
+  const bg = String(band.bg || "");
+  const isGradient = isBannerGradient(bg);
   const hexFallback =
-    band.bg?.startsWith("#") && band.bg.length >= 7 ? band.bg : "#ffffff";
+    bg.startsWith("#") && bg.length >= 7 ? bg : "#ffffff";
 
   return (
     <div className="flex flex-wrap items-center gap-2 rounded-lg border border-slate-200 p-2 dark:border-slate-700">
@@ -75,18 +98,21 @@ function BandRow({ band, index, total, onChange, onRemove, onMove }) {
         placeholder="Label"
         onChange={(e) => onChange({ ...band, label: e.target.value })}
       />
-      <input
-        type="color"
-        className="h-9 w-10 cursor-pointer rounded border border-slate-300 bg-white p-0.5 dark:border-slate-600"
-        value={hexFallback}
-        onChange={(e) => onChange({ ...band, bg: e.target.value })}
-        title="Pick color"
-      />
+      {!isGradient ? (
+        <input
+          type="color"
+          className="h-9 w-10 cursor-pointer rounded border border-slate-300 bg-white p-0.5 dark:border-slate-600"
+          value={hexFallback}
+          onChange={(e) => onChange({ ...band, bg: e.target.value })}
+          title="Pick color"
+        />
+      ) : null}
       <input
         className={`${inputClass} min-w-[7rem] flex-1 font-mono text-[11px]`}
-        value={band.bg || ""}
-        placeholder="#ffffff or gradient()"
+        value={bg}
+        placeholder="#ffffff or linear-gradient(…)"
         onChange={(e) => onChange({ ...band, bg: e.target.value })}
+        spellCheck={false}
       />
       <div className="flex gap-1">
         <button
@@ -294,26 +320,25 @@ export default function CmsSurfacePatternEditor({
               </p>
               <div className="flex flex-wrap gap-1.5">
                 {QUICK_COLORS.map((preset) => (
-                  <button
+                  <QuickBandChip
                     key={preset.label}
-                    type="button"
+                    preset={preset}
                     onClick={() => addBand(preset)}
-                    className="inline-flex items-center gap-1.5 rounded-md border border-slate-200 px-2 py-1 text-[11px] font-semibold dark:border-slate-700"
-                  >
-                    <span
-                      className="size-3 rounded-sm ring-1 ring-black/10"
-                      style={swatchStyle(preset.bg)}
-                      aria-hidden
-                    />
-                    {preset.label}
-                  </button>
+                  />
+                ))}
+                {QUICK_GRADIENTS_LIGHT.map((preset) => (
+                  <QuickBandChip
+                    key={preset.label}
+                    preset={preset}
+                    onClick={() => addBand(preset)}
+                  />
                 ))}
                 <button
                   type="button"
                   onClick={() => addBand()}
                   className="rounded-md border border-dashed border-slate-300 px-2 py-1 text-[11px] font-semibold text-slate-600 dark:border-slate-600"
                 >
-                  + Custom color
+                  + Custom
                 </button>
               </div>
             </div>

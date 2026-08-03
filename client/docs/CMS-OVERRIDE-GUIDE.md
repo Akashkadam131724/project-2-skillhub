@@ -244,7 +244,7 @@ flowchart TB
 | Section band priority | `client/src/lib/section-band-cms.js` |
 | Surface pattern | `client/src/lib/surface-patterns.js` |
 | Content scope | `client/src/lib/content-scope.js` |
-| Placement merge | `client/src/components/cms/CmsLivePageSections.js` → `mergePlacements()` |
+| Placement merge | `client/src/components/cms/pages/live/merge-placements.js` → `mergePlacements()` |
 
 ---
 

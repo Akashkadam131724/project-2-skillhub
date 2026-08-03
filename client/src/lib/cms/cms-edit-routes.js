@@ -118,3 +118,17 @@ export function cmsEditHrefFromPublicPath(pathname) {
 
   return cmsEditHref("content", path.replace(/^\//, ""));
 }
+
+/** Leave a dedicated live-edit route for the public page (or history / home). */
+export function exitCmsLiveEdit(router, publicHref) {
+  if (publicHref) {
+    router.push(publicHref);
+    router.refresh();
+    return;
+  }
+  if (typeof window !== "undefined" && window.history.length > 1) {
+    router.back();
+    return;
+  }
+  router.push("/");
+}
