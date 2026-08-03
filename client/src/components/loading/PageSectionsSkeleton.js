@@ -10,7 +10,7 @@ export default function PageSectionsSkeleton({ compact = false }) {
         aria-hidden
         role="presentation"
       >
-        <div className="mx-auto max-w-[1280px] px-4 sm:px-6 md:px-8 lg:px-0">
+        <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8">
           <div className="grid gap-8 lg:grid-cols-2 lg:items-start">
             <div className="space-y-4">
               <div className="h-8 w-4/5 max-w-md rounded-lg bg-slate-200 dark:bg-slate-800" />
@@ -36,7 +36,7 @@ export default function PageSectionsSkeleton({ compact = false }) {
   return (
     <div className="w-full animate-pulse" aria-hidden role="presentation">
       <section className="bg-white dark:bg-slate-950">
-        <div className="mx-auto max-w-[1280px] px-4 py-14 sm:px-6 sm:py-16 md:px-8 lg:px-0 lg:py-20">
+        <div className="mx-auto max-w-[1440px] px-4 py-14 sm:px-6 sm:py-16 lg:px-8 lg:py-20">
           <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:gap-14 xl:gap-16">
             <div className="flex min-w-0 flex-col">
               <div className="mb-4 h-7 w-48 max-w-full rounded-full bg-slate-200 dark:bg-slate-800" />
@@ -69,7 +69,7 @@ export default function PageSectionsSkeleton({ compact = false }) {
       </section>
 
       <section className="border-t border-slate-200/70 bg-slate-50 py-16 dark:border-slate-800 dark:bg-slate-900/40">
-        <div className="mx-auto max-w-[1280px] px-4 sm:px-6 md:px-8 lg:px-0">
+        <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8">
           <div className="mx-auto mb-10 h-8 w-64 max-w-full rounded-lg bg-slate-200 dark:bg-slate-800" />
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {[0, 1, 2, 3, 4, 5].map((i) => (

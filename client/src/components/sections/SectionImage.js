@@ -11,7 +11,7 @@ export default function SectionImage({
   alt = "",
   className = "",
   priority = false,
-  sizes = "(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 600px",
+  sizes = "(max-width: 768px) 100vw, (max-width: 1440px) 50vw, 720px",
   fill = false,
   width,
   height,

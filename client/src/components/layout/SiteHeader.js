@@ -91,7 +91,9 @@ export default async function SiteHeader() {
             <CartIcon />
           </IconButton>
 
-          <HeaderContactButton className="hidden lg:inline-flex" />
+          <span className="hidden lg:contents">
+            <HeaderContactButton />
+          </span>
 
           <HeaderNavSlot
             mode={mode}
