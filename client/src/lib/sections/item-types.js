@@ -13,17 +13,17 @@ function itemHasVisibleContent(item) {
   if (!item) return false;
   return Boolean(
     item.title ||
-      item.subtitle ||
-      !isRichTextEmpty(item.body) ||
-      item.label ||
-      item.value ||
-      item.image_url ||
-      item.bg_color ||
-      item.icon ||
-      item.href ||
-      (Array.isArray(item.buttons) && item.buttons.length) ||
-      // Tabs can exist as shells that only group children
-      String(item.item_type || "").toLowerCase() === "tab"
+    item.subtitle ||
+    !isRichTextEmpty(item.body) ||
+    item.label ||
+    item.value ||
+    item.image_url ||
+    item.bg_color ||
+    item.icon ||
+    item.href ||
+    (Array.isArray(item.buttons) && item.buttons.length) ||
+    // Tabs can exist as shells that only group children
+    String(item.item_type || "").toLowerCase() === "tab"
   );
 }
 
@@ -123,14 +123,14 @@ function hasActiveButtons(section) {
         b.status !== false &&
         Boolean(
           String(b.title || b.label || "").trim() ||
-            String(b.href || b.target_url || b.url || "").trim()
+          String(b.href || b.target_url || b.url || "").trim()
         )
     );
     if (live) return true;
   }
   return Boolean(
     String(section?.button_title || "").trim() ||
-      String(section?.target_url || "").trim()
+    String(section?.target_url || "").trim()
   );
 }
 
@@ -142,13 +142,13 @@ export function placementHasFieldContent(section) {
   if (!section) return false;
   return Boolean(
     String(section.section_title || "").trim() ||
-      String(section.sub_title || "").trim() ||
-      !isRichTextEmpty(section?.data?.body) ||
-      String(section.section_img_url || "").trim() ||
-      String(section.section_bg_img || "").trim() ||
-      String(section.section_bg_color || "").trim() ||
-      String(section.data?.bg_color || "").trim() ||
-      hasActiveButtons(section)
+    String(section.sub_title || "").trim() ||
+    !isRichTextEmpty(section?.data?.body) ||
+    String(section.section_img_url || "").trim() ||
+    String(section.section_bg_img || "").trim() ||
+    String(section.section_bg_color || "").trim() ||
+    String(section.data?.bg_color || "").trim() ||
+    hasActiveButtons(section)
   );
 }
 

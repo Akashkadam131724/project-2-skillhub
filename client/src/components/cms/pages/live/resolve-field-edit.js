@@ -1,6 +1,7 @@
+"use client";
+
 import {
   sectionUsesImage,
-  sectionUsesBg,
   sectionUsesItems,
 } from "@/lib/sections/section-registry";
 import { itemsConfigRenderKey } from "@/lib/sections/section-render-key";
@@ -12,7 +13,7 @@ import { FIELD_META } from "@/components/cms/pages/live/field-meta";
 
 /**
  * Open field drawer or apply side presets without opening UI.
- * Returns { opened, editing } or { presetHandled }.
+ * Returns { handled, editing? }.
  */
 export function resolveFieldEditRequest(
   section,
@@ -21,6 +22,7 @@ export function resolveFieldEditRequest(
   { savePlacement, reload, setError, setSaving }
 ) {
   let nextField = field;
+  // Band editor owns bg image + color
   if (nextField === "section_bg_img" || nextField === "section_bg_color") {
     nextField = "section_band";
   }
@@ -67,9 +69,6 @@ export function resolveFieldEditRequest(
     nextField === "section_img_url" &&
     !sectionUsesImage(section.section_key, itemsConfigRenderKey(section))
   ) {
-    return { handled: true };
-  }
-  if (nextField === "section_bg_img" && !sectionUsesBg(section.section_key)) {
     return { handled: true };
   }
 

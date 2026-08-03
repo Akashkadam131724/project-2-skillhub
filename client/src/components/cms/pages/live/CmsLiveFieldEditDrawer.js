@@ -5,7 +5,6 @@ import Link from "next/link";
 import Drawer from "@/components/ui/Drawer";
 import { SectionPreviewThumb, inputClass } from "@/components/cms/admin/CmsUi";
 import CmsSectionBandEditor from "@/components/cms/sections/CmsSectionBandEditor";
-import CmsBgColorPicker from "@/components/cms/editors/CmsBgColorPicker";
 import CmsButtonsEditor, {
   normalizeButtonsDraft,
   serializeButtonsDraft,
@@ -13,6 +12,7 @@ import CmsButtonsEditor, {
 import CmsItemsEditor, {
   normalizeItemsDraft,
   serializeItemsDraft,
+  validateItemsDraft,
 } from "@/components/cms/editors/CmsItemsEditor";
 import CmsRichTextEditor from "@/components/cms/editors/CmsRichTextEditor";
 import {
@@ -65,6 +65,7 @@ export default function CmsLiveFieldEditDrawer() {
   const [bandDraft, setBandDraft] = useState(() => bandDraftFromSection(null));
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
+  const [itemFieldErrors, setItemFieldErrors] = useState(null);
 
   const meta = editing ? FIELD_META[editing.field] : null;
   const itemsConfig =
@@ -103,6 +104,7 @@ export default function CmsLiveFieldEditDrawer() {
       setItemsDraft([]);
       setFieldValueState("");
       setError(null);
+      setItemFieldErrors(null);
       return;
     }
     const { section, field } = editing;
@@ -125,6 +127,7 @@ export default function CmsLiveFieldEditDrawer() {
       setItemsDraft([]);
     }
     setError(null);
+    setItemFieldErrors(null);
   }, [editing]);
 
   async function saveField(e) {
@@ -147,22 +150,29 @@ export default function CmsLiveFieldEditDrawer() {
           buttons: serializeButtonsDraft(buttonsDraftRef.current),
         });
       } else if (field === "items") {
+        const renderKey = itemsConfigRenderKey(section);
+        const validation = validateItemsDraft(
+          itemsDraftRef.current,
+          section.section_key,
+          renderKey
+        );
+        if (!validation.ok) {
+          setItemFieldErrors(validation.errorsByKey);
+          setError("Fix required item fields before saving");
+          return;
+        }
+        setItemFieldErrors(null);
         await savePlacement(section, {
           items: serializeItemsDraft(
             itemsDraftRef.current,
             section.section_key,
-            itemsConfigRenderKey(section)
+            renderKey
           ),
         });
       } else if (field === "body") {
         const value = sanitizeRichHtml(fieldValueState);
         await savePlacement(section, {
           data: { ...(section.data || {}), body: value || null },
-        });
-      } else if (field === "section_bg_color") {
-        const value = fieldValueState.trim();
-        await savePlacement(section, {
-          section_bg_color: value || null,
         });
       } else if (field === "faq_header_side") {
         const side = fieldValueState === "right" ? "right" : "left";
@@ -301,37 +311,8 @@ export default function CmsLiveFieldEditDrawer() {
                   sectionKey={editing.section.section_key}
                   renderKey={itemsConfigRenderKey(editing.section)}
                   expandItemButtons={Boolean(editing.expandItemButtons)}
+                  errorsByKey={itemFieldErrors}
                 />
-              ) : meta.input === "bg_color" ? (
-                <form onSubmit={saveField} className="space-y-3">
-                  <div>
-                    <span className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200">
-                      {meta.label}
-                    </span>
-                    <CmsBgColorPicker
-                      value={fieldValueState}
-                      onChange={setFieldValueState}
-                      variant="theme"
-                      defaultLabel="Default"
-                    />
-                  </div>
-                  <div className="flex gap-2">
-                    <button
-                      type="submit"
-                      disabled={saving}
-                      className="inline-flex items-center rounded-lg border-0 bg-brand px-3 py-2 text-sm font-semibold text-white hover:bg-brand-hover disabled:opacity-60"
-                    >
-                      {saving ? "Saving…" : "Save"}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={onClose}
-                      className="inline-flex items-center rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </form>
               ) : (
                 <form onSubmit={saveField} className="space-y-3">
                   <div className="block text-sm">
@@ -372,7 +353,7 @@ export default function CmsLiveFieldEditDrawer() {
                           // eslint-disable-next-line @next/next/no-img-element
                           <img
                             src={mediaUrl(fieldValueState)}
-                            alt="Background preview"
+                            alt="Image preview"
                             className="h-28 w-full rounded-lg object-cover"
                           />
                         ) : null}

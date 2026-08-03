@@ -246,6 +246,7 @@ export default function AddSectionTab({ onError }) {
                   alt={s.name}
                   className="h-16 w-full"
                   rounded="rounded-none"
+                  expandable={false}
                 />
                 <div className="flex flex-wrap gap-1 px-2 pt-1">
                   <ScopeBadge scope={s.content_scope} />

@@ -110,7 +110,8 @@ export function mergePlacements(
           : entityId
             ? null
             : tag.section_theme ?? null,
-      section_preview_img: catalogSection?.section_preview_img || "",
+      section_preview_img:
+        catalogSection?.section_preview_img || tag.section_preview_img || "",
       buttons: pickButtons(),
       items: pickItems(),
       data:
@@ -180,7 +181,10 @@ export function mergePlacements(
         content_scope === "global"
           ? catalogSection?.section_img_url || ""
           : extra.section_img_url || catalogSection?.section_img_url || "",
-      section_preview_img: catalogSection?.section_preview_img || "",
+      section_preview_img:
+        catalogSection?.section_preview_img ||
+        extra.section_preview_img ||
+        "",
       section_theme:
         content_scope === "global"
           ? catalogSection?.section_theme || ""

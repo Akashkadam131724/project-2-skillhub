@@ -15,11 +15,6 @@ export const FIELD_META = {
     input: "text",
     hint: "Label in the sticky on-page nav (falls back to section title)",
   },
-  section_bg_img: {
-    label: "Background image",
-    input: "image",
-    hint: "Upload an image or paste a URL for this section placement",
-  },
   section_img_url: {
     label: "Section image",
     input: "image",
@@ -29,11 +24,6 @@ export const FIELD_META = {
     label: "Body",
     input: "richtext",
     hint: "Rich text — lists, links, images, color, alignment (stored in section data)",
-  },
-  section_bg_color: {
-    label: "Background color",
-    input: "bg_color",
-    hint: "Solid color or gradient for this section band",
   },
   buttons: {
     label: "Buttons",
@@ -98,9 +88,6 @@ export function fieldValue(section, field) {
   if (field === "form_content_side") {
     const side = section?.data?.content_side;
     return side === "right" ? "right" : "left";
-  }
-  if (field === "section_bg_color") {
-    return section?.section_bg_color || section?.data?.bg_color || "";
   }
   return section?.[field] || "";
 }

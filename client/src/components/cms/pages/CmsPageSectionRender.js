@@ -11,24 +11,29 @@ import { resolveSectionComponent } from "@/lib/sections/section-registry-sync";
 import { itemsConfigRenderKey } from "@/lib/sections/section-render-key";
 import { SectionCmsProvider } from "@/components/cms/sections/SectionCmsContext";
 import FallbackSection from "@/components/sections/FallbackSection";
+import { useCmsLiveEdit } from "@/components/cms/pages/live/CmsLiveEditContext";
+import { useCmsLivePagePlacements } from "@/components/cms/pages/live/useCmsLivePagePlacements";
 
 /**
- * CMS live-edit placement renderer — eager section imports for instant preview.
+ * CMS live-edit placement renderer — page/theme/actions from live contexts.
+ * @param {{ section, surfaceTone, surfaceBand, surfaceBandIndex, sectionTheme }} placement
  */
-export default function CmsPageSectionRender({
-  section,
-  surfaceTone,
-  surfaceBand,
-  surfaceBandIndex,
-  sectionTheme = "inherit",
-  pageTheme,
-  pageContext,
-  catalog = [],
-  navSections,
-  onEditField,
-  onToggleVisibility,
-  onRemoveExtra,
-}) {
+export default function CmsPageSectionRender({ placement, navSections }) {
+  const {
+    section,
+    surfaceTone,
+    surfaceBand,
+    surfaceBandIndex,
+    sectionTheme = "inherit",
+  } = placement;
+  const { pageTheme, pageContext } = useCmsLiveEdit();
+  const {
+    catalog = [],
+    openFieldEdit,
+    toggleVisibility,
+    removeExtra,
+  } = useCmsLivePagePlacements();
+
   const key = section.section_key;
   const itemsRenderKey = itemsConfigRenderKey(section);
   const hidden = section.status === false;
@@ -42,7 +47,7 @@ export default function CmsPageSectionRender({
     sectionTheme,
     pageContext,
     navSections,
-    onEditField,
+    onEditField: openFieldEdit,
   });
 
   const Comp = resolveSectionComponent(key, itemsRenderKey) || FallbackSection;
@@ -68,9 +73,9 @@ export default function CmsPageSectionRender({
       section={section}
       preview={preview}
       hidden={hidden}
-      onEditField={onEditField}
-      onToggleVisibility={onToggleVisibility}
-      onRemoveExtra={onRemoveExtra}
+      onEditField={openFieldEdit}
+      onToggleVisibility={toggleVisibility}
+      onRemoveExtra={removeExtra}
     />
   );
 

@@ -11,6 +11,7 @@ import CmsButtonsEditor, {
 import CmsItemsEditor, {
   normalizeItemsDraft,
   serializeItemsDraft,
+  validateItemsDraft,
 } from "@/components/cms/editors/CmsItemsEditor";
 import {
   sectionUsesImage,
@@ -160,12 +161,14 @@ export default function CmsSectionLiveEditor({
   const [bandDraft, setBandDraft] = useState(() => bandDraftFromSection(null));
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [error, setError] = useState(null);
+  const [itemFieldErrors, setItemFieldErrors] = useState(null);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     setEditingField(null);
     setDrawerOpen(false);
     setError(null);
+    setItemFieldErrors(null);
   }, [section?.section_key, section?.placement_id, section?._id]);
 
   const { sectionTheme, surfaceTone, surfaceBand } = useMemo(
@@ -232,6 +235,7 @@ export default function CmsSectionLiveEditor({
     }
     setDrawerOpen(true);
     setError(null);
+    setItemFieldErrors(null);
   }
 
   function closeDrawer() {
@@ -241,6 +245,7 @@ export default function CmsSectionLiveEditor({
     setButtonsDraft([]);
     setItemsDraft([]);
     setBandDraft(bandDraftFromSection(null));
+    setItemFieldErrors(null);
   }
 
   async function saveField(e) {
@@ -272,6 +277,17 @@ export default function CmsSectionLiveEditor({
       if (editingField === "buttons") {
         patch = { buttons: serializeButtonsDraft(buttonsDraftRef.current) };
       } else if (editingField === "items") {
+        const validation = validateItemsDraft(
+          itemsDraftRef.current,
+          key,
+          itemsRenderKey
+        );
+        if (!validation.ok) {
+          setItemFieldErrors(validation.errorsByKey);
+          setError("Fix required item fields before saving");
+          return;
+        }
+        setItemFieldErrors(null);
         patch = {
           items: serializeItemsDraft(itemsDraftRef.current, key, itemsRenderKey),
         };
@@ -453,6 +469,7 @@ export default function CmsSectionLiveEditor({
                     onChange={setItemsDraft}
                     sectionKey={key}
                     renderKey={itemsRenderKey}
+                    errorsByKey={itemFieldErrors}
                   />
                 ) : meta.input === "bg_color" ? (
                   <form onSubmit={saveField} className="space-y-3">

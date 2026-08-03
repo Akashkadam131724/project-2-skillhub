@@ -10,14 +10,8 @@ import { useCmsLivePagePlacements } from "@/components/cms/pages/live/useCmsLive
 
 /** Live-edit placement stack (mirrors public render + CMS edit hooks). */
 export default function CmsLivePlacementStack() {
-  const { pageKey, pageTheme, pageContext } = useCmsLiveEdit();
-  const {
-    catalog,
-    visibleWithSurface,
-    openFieldEdit,
-    toggleVisibility,
-    removeExtra,
-  } = useCmsLivePagePlacements();
+  const { pageKey, pageTheme } = useCmsLiveEdit();
+  const { visibleWithSurface } = useCmsLivePagePlacements();
 
   return (
     <PageThemeShell theme={pageTheme}>
@@ -35,44 +29,24 @@ export default function CmsLivePlacementStack() {
           );
 
           const renderPlacements = (rows, baseIndex) =>
-            rows.map(
-              (
-                {
-                  section,
-                  surfaceTone,
-                  surfaceBand,
-                  surfaceBandIndex,
-                  sectionTheme,
-                },
-                relIndex
-              ) => {
-                const index = baseIndex + relIndex;
-                const navSections =
-                  section.section_key === "in_page_nav"
-                    ? visibleWithSurface
-                        .slice(index + 1)
-                        .map(({ section: s }) => s)
-                        .filter((s) => s.section_key !== "in_page_nav")
-                    : undefined;
-                return (
-                  <CmsPageSectionRender
-                    key={placementKey(section)}
-                    section={section}
-                    surfaceTone={surfaceTone}
-                    surfaceBand={surfaceBand}
-                    surfaceBandIndex={surfaceBandIndex}
-                    sectionTheme={sectionTheme}
-                    pageTheme={pageTheme}
-                    pageContext={pageContext}
-                    catalog={catalog}
-                    navSections={navSections}
-                    onEditField={openFieldEdit}
-                    onToggleVisibility={toggleVisibility}
-                    onRemoveExtra={removeExtra}
-                  />
-                );
-              }
-            );
+            rows.map((placement, relIndex) => {
+              const { section } = placement;
+              const index = baseIndex + relIndex;
+              const navSections =
+                section.section_key === "in_page_nav"
+                  ? visibleWithSurface
+                      .slice(index + 1)
+                      .map(({ section: s }) => s)
+                      .filter((s) => s.section_key !== "in_page_nav")
+                  : undefined;
+              return (
+                <CmsPageSectionRender
+                  key={placementKey(section)}
+                  placement={placement}
+                  navSections={navSections}
+                />
+              );
+            });
 
           if (navIndex === -1) {
             return renderPlacements(visibleWithSurface, 0);

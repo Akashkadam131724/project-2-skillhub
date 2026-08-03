@@ -8,7 +8,7 @@ const BenefitItemCard = dynamic(() => import("./cards/BenefitItemCard"));
 const StatItemCard = dynamic(() => import("./cards/StatItemCard"));
 const TestimonialItemCard = dynamic(() => import("./cards/TestimonialItemCard"));
 const CustomerTestimonialItemCard = dynamic(() =>
-  import("./cards/CustomerTestimonialItemCard"),
+  import("./cards/CustomerTestimonialItemCard")
 );
 const ResourceItemCard = dynamic(() => import("./cards/ResourceItemCard"));
 const TextMediaItemCard = dynamic(() => import("./cards/TextMediaItemCard"));
@@ -16,16 +16,46 @@ const CurriculumItemCard = dynamic(() => import("./cards/CurriculumItemCard"));
 const WhyChooseItemCard = dynamic(() => import("./cards/WhyChooseItemCard"));
 const HeroBannerItemCard = dynamic(() => import("./cards/HeroBannerItemCard"));
 const PartnerItemCard = dynamic(() => import("./cards/PartnerItemCard"));
+const GenericItemPreviewCard = dynamic(() =>
+  import("./cards/GenericItemPreviewCard")
+);
 const TrainingOptionCard = dynamic(() =>
-  import("@/components/sections/features/cards/TrainingOptionCard"),
+  import("@/components/sections/features/cards/TrainingOptionCard")
 );
 const AwardCard = dynamic(() =>
-  import("@/components/sections/features/cards/AwardCard"),
+  import("@/components/sections/features/cards/AwardCard")
 );
+
+/** Map SECTION_ITEMS_CONFIG.preview → GenericItemPreviewCard layout */
+const GENERIC_LAYOUTS = {
+  comparison_row: "comparison",
+  mosaic_tile: "media",
+  timeline_step: "step",
+  trust_badge: "media",
+  learning_step: "step",
+  form_highlight: "media",
+  team_member: "team",
+  spotlight: "overlay",
+  process_step: "step",
+  contact_channel: "contact",
+  bento_cell: "overlay",
+  gallery_panel: "overlay",
+  story_chapter: "overlay",
+  pillar: "overlay",
+  stack_card: "overlay",
+  feature_tab: "tab",
+  success_story: "success_story",
+  pricing_plan: "pricing",
+  template_card: "media",
+  builder_feature: "step",
+  domain_chip: "chip",
+  build_step: "step",
+  cast_profile: "portrait",
+};
 
 /**
  * Dispatch by SECTION_ITEMS_CONFIG.preview key.
- * CMS editor preview only — public sections import cards directly.
+ * Dedicated cards first; otherwise GenericItemPreviewCard layout for CMS.
  */
 export default function SectionItemCard({
   type,
@@ -105,11 +135,22 @@ export default function SectionItemCard({
       return <AwardCard item={item} preview={preview} />;
     case "partner":
       return <PartnerItemCard item={item} preview={preview} />;
-    default:
+    default: {
+      const layout = GENERIC_LAYOUTS[type];
+      if (layout && preview) {
+        return (
+          <GenericItemPreviewCard
+            layout={layout}
+            item={item}
+            index={index}
+          />
+        );
+      }
       return (
         <div className="rounded-xl border border-dashed border-slate-300 px-3 py-2 text-xs text-slate-500">
           {itemTitle(item) || "Item"}
         </div>
       );
+    }
   }
 }

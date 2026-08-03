@@ -1,23 +1,20 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import CmsButtonsEditor, {
+import {
   normalizeButtonsDraft,
   serializeButtonsDraft,
 } from "@/components/cms/editors/CmsButtonsEditor";
 import CmsItemPreview from "@/components/cms/editors/CmsItemPreview";
+import ItemFieldControl from "@/components/cms/editors/ItemFieldControl";
 import { getSectionItemsConfig } from "@/lib/sections/section-items-config";
 import {
-  BANNER_SOLID_PRESETS,
-  BANNER_GRADIENT_PRESETS,
-  isBannerGradient,
-} from "@/lib/theme/banner-bg";
-import CmsRichTextEditor from "@/components/cms/editors/CmsRichTextEditor";
+  getItemFieldDefs,
+  getItemFieldKeys,
+  validateSectionItem,
+} from "@/lib/sections/section-items-fields";
 import { isRichTextEmpty, sanitizeRichHtml } from "@/lib/utils/rich-text";
 import DragHandleIcon from "@/components/icons/DragHandleIcon";
-
-const inputClass =
-  "w-full rounded-lg border border-slate-300 bg-white px-2.5 py-2 text-sm outline-none focus:border-brand dark:border-slate-700 dark:bg-slate-900";
 
 const ALL_ITEM_FIELDS = [
   "title",
@@ -32,8 +29,8 @@ const ALL_ITEM_FIELDS = [
   "buttons",
 ];
 
-/** @deprecated use BANNER_SOLID_PRESETS — kept as alias for clarity in this file */
-const BG_COLOR_PRESETS = BANNER_SOLID_PRESETS;
+const inputClass =
+  "w-full rounded-lg border border-slate-300 bg-white px-2.5 py-2 text-sm outline-none focus:border-brand dark:border-slate-700 dark:bg-slate-900";
 
 let draftKeySeq = 0;
 function nextDraftKey() {
@@ -41,7 +38,6 @@ function nextDraftKey() {
   return `item-draft-${Date.now()}-${draftKeySeq}`;
 }
 
-/** Stable 24-char hex id so children can parent_id-reference a new tab before save */
 function nextObjectId() {
   const bytes = new Uint8Array(12);
   if (typeof crypto !== "undefined" && crypto.getRandomValues) {
@@ -71,21 +67,6 @@ function emptyItem(sort_order = 0, extras = {}) {
     status: true,
     ...extras,
   };
-}
-
-function fieldLabel(config, field, fallback, nested = false) {
-  if (nested && config?.childFieldLabels?.[field]) {
-    return config.childFieldLabels[field];
-  }
-  return config?.fieldLabels?.[field] || fallback;
-}
-
-function usesField(config, field, nested = false) {
-  const fields =
-    nested && Array.isArray(config?.childFields)
-      ? config.childFields
-      : config?.fields;
-  return Boolean(fields?.includes(field));
 }
 
 function itemStableId(item) {
@@ -132,12 +113,13 @@ export function normalizeItemsDraft(items) {
   });
 }
 
-/** Persist only fields this section’s UI uses (+ buttons if configured) */
 export function serializeItemsDraft(draft, sectionKey, renderKey = "") {
   const config = getSectionItemsConfig(sectionKey, renderKey);
   const nested = Boolean(config?.nestedTabs);
-  const tabFields = config?.fields || ALL_ITEM_FIELDS;
-  const childFields = config?.childFields || tabFields;
+  const tabFields = getItemFieldKeys(config, { child: false });
+  const childFields = getItemFieldKeys(config, { child: true });
+  const fallbackFields = tabFields.length ? tabFields : ALL_ITEM_FIELDS;
+  const childFallback = childFields.length ? childFields : fallbackFields;
 
   function isMongoId(value) {
     return /^[a-f\d]{24}$/i.test(String(value || ""));
@@ -163,7 +145,6 @@ export function serializeItemsDraft(draft, sectionKey, renderKey = "") {
     ) {
       return true;
     }
-    // Allow empty tab shells that only group children
     if (nested && String(item.item_type || "").toLowerCase() === "tab") {
       return true;
     }
@@ -173,12 +154,12 @@ export function serializeItemsDraft(draft, sectionKey, renderKey = "") {
   return (draft || [])
     .filter((item) => {
       const child = nested && isNestedChild(item);
-      const fields = child ? childFields : tabFields;
+      const fields = child ? childFallback : fallbackFields;
       return hasContent(item, fields);
     })
     .map((item, i) => {
       const child = nested && isNestedChild(item);
-      const fields = child ? childFields : tabFields;
+      const fields = child ? childFallback : fallbackFields;
       const out = {
         sort_order: i,
         status: item.status !== false,
@@ -193,7 +174,6 @@ export function serializeItemsDraft(draft, sectionKey, renderKey = "") {
         } else {
           out.item_type = "tab";
           out.parent_id = "";
-          // Ensure tabs always keep a stable id for children to reference
           if (!out._id) out._id = isMongoId(id) ? String(id) : nextObjectId();
         }
       }
@@ -215,6 +195,57 @@ export function serializeItemsDraft(draft, sectionKey, renderKey = "") {
     });
 }
 
+export function validateItemsDraft(draft, sectionKey, renderKey = "") {
+  const config = getSectionItemsConfig(sectionKey, renderKey);
+  if (!config) return { ok: true, errorsByKey: {} };
+  const nested = Boolean(config.nestedTabs);
+  const tabFields = getItemFieldKeys(config, { child: false });
+  const childFields = getItemFieldKeys(config, { child: true });
+  const fallbackFields = tabFields.length ? tabFields : ALL_ITEM_FIELDS;
+  const childFallback = childFields.length ? childFields : fallbackFields;
+
+  function hasContent(item, fields) {
+    if (fields.includes("title") && String(item.title || "").trim()) return true;
+    if (fields.includes("subtitle") && String(item.subtitle || "").trim())
+      return true;
+    if (fields.includes("body") && !isRichTextEmpty(item.body)) return true;
+    if (fields.includes("label") && String(item.label || "").trim()) return true;
+    if (fields.includes("value") && String(item.value || "").trim()) return true;
+    if (fields.includes("image_url") && String(item.image_url || "").trim())
+      return true;
+    if (fields.includes("bg_color") && String(item.bg_color || "").trim())
+      return true;
+    if (fields.includes("icon") && String(item.icon || "").trim()) return true;
+    if (fields.includes("href") && String(item.href || "").trim()) return true;
+    if (
+      fields.includes("buttons") &&
+      Array.isArray(item.buttons) &&
+      item.buttons.some((b) => String(b.label || "").trim())
+    ) {
+      return true;
+    }
+    if (nested && String(item.item_type || "").toLowerCase() === "tab") {
+      return true;
+    }
+    return false;
+  }
+
+  const errorsByKey = {};
+  let ok = true;
+  for (const item of draft || []) {
+    const child = nested && isNestedChild(item);
+    const fields = child ? childFallback : fallbackFields;
+    if (!hasContent(item, fields)) continue;
+    const result = validateSectionItem(item, config, { child });
+    if (!result.ok) {
+      ok = false;
+      const key = item._key || item._id || item.id;
+      if (key) errorsByKey[String(key)] = result.errors;
+    }
+  }
+  return { ok, errorsByKey };
+}
+
 function reorder(list, fromIndex, toIndex) {
   if (
     fromIndex === toIndex ||
@@ -231,18 +262,14 @@ function reorder(list, fromIndex, toIndex) {
   return next.map((b, i) => ({ ...b, sort_order: i }));
 }
 
-/**
- * Section-aware items editor — only fields the section UI uses,
- * with a live card preview that mirrors the real layout.
- *
- * onChange must accept a React setState updater: (prev) => next
- */
 export default function CmsItemsEditor({
   value = [],
   onChange,
   sectionKey = "",
   renderKey = "",
   expandItemButtons = false,
+  /** External Zod errors keyed by item _key/_id */
+  errorsByKey = null,
 }) {
   const config = getSectionItemsConfig(sectionKey, renderKey);
   const list = Array.isArray(value) ? value : [];
@@ -250,7 +277,26 @@ export default function CmsItemsEditor({
   const [dragIndex, setDragIndex] = useState(null);
   const [overIndex, setOverIndex] = useState(null);
   const [openButtons, setOpenButtons] = useState({});
+  const [fieldErrors, setFieldErrors] = useState({});
+  /** Fields the user edited since last external validation — hide those errors */
+  const [clearedFields, setClearedFields] = useState({});
   const dragIndexRef = useRef(null);
+
+  useEffect(() => {
+    setClearedFields({});
+  }, [errorsByKey]);
+
+  function errorsForItem(itemKey) {
+    const raw = {
+      ...(errorsByKey?.[itemKey] || {}),
+      ...(fieldErrors[itemKey] || {}),
+    };
+    const cleared = clearedFields[itemKey];
+    if (cleared) {
+      for (const k of cleared) delete raw[k];
+    }
+    return raw;
+  }
 
   useEffect(() => {
     if (!expandItemButtons || !list.length) return;
@@ -286,6 +332,20 @@ export default function CmsItemsEditor({
     commit((prev) =>
       prev.map((b, i) => (i === index ? { ...b, ...patch } : b))
     );
+    const item = list[index];
+    const key = item?._key || item?._id || index;
+    if (key != null && patch && typeof patch === "object") {
+      const keys = Object.keys(patch);
+      setClearedFields((prev) => ({
+        ...prev,
+        [key]: [...new Set([...(prev[key] || []), ...keys])],
+      }));
+      setFieldErrors((prev) => {
+        const cur = { ...(prev[key] || {}) };
+        for (const k of keys) delete cur[k];
+        return { ...prev, [key]: cur };
+      });
+    }
   }
 
   function removeAt(index) {
@@ -435,12 +495,8 @@ export default function CmsItemsEditor({
         const isOver =
           overIndex === index && dragIndex !== null && dragIndex !== index;
         const buttonsOpen = Boolean(openButtons[item._key || index]);
-        const btnCount = Array.isArray(item.buttons)
-          ? item.buttons.filter((b) => b?.label).length
-          : 0;
         const child = nested && isNestedChild(item);
         const tab = nested && isNestedTab(item);
-        const fieldsForItem = child;
 
         return (
           <div
@@ -524,7 +580,11 @@ export default function CmsItemsEditor({
                     ? "Live banner preview"
                     : "Preview"}
                 </p>
-                <CmsItemPreview preview={config.preview} item={item} />
+                <CmsItemPreview
+                  preview={config.preview}
+                  item={item}
+                  index={index}
+                />
               </div>
 
               <div className="space-y-2">
@@ -588,314 +648,26 @@ export default function CmsItemsEditor({
                   </div>
                 ) : null}
 
-                {usesField(config, "title", fieldsForItem) ? (
-                  <label className="block text-sm">
-                    <span className="mb-1 block text-xs font-medium text-slate-700 dark:text-slate-200">
-                      {fieldLabel(config, "title", "Title", fieldsForItem)}
-                    </span>
-                    <input
-                      className={inputClass}
-                      value={item.title}
-                      onChange={(e) =>
-                        updateAt(index, { title: e.target.value })
-                      }
-                    />
-                  </label>
-                ) : null}
-
-                {usesField(config, "subtitle", fieldsForItem) ? (
-                  <label className="block text-sm">
-                    <span className="mb-1 block text-xs font-medium text-slate-700 dark:text-slate-200">
-                      {fieldLabel(
-                        config,
-                        "subtitle",
-                        "Subtitle",
-                        fieldsForItem
-                      )}
-                    </span>
-                    <input
-                      className={inputClass}
-                      value={item.subtitle}
-                      onChange={(e) =>
-                        updateAt(index, { subtitle: e.target.value })
-                      }
-                    />
-                  </label>
-                ) : null}
-
-                {usesField(config, "body", fieldsForItem) ? (
-                  <div className="block text-sm">
-                    <span className="mb-1 block text-xs font-medium text-slate-700 dark:text-slate-200">
-                      {fieldLabel(config, "body", "Body", fieldsForItem)}
-                    </span>
-                    <CmsRichTextEditor
-                      key={`${item._key || item._id || index}-body`}
-                      value={item.body}
-                      onChange={(html) => updateAt(index, { body: html })}
-                      placeholder={`${fieldLabel(config, "body", "Body", fieldsForItem)}…`}
-                    />
-                  </div>
-                ) : null}
-
-                {usesField(config, "label", fieldsForItem) ||
-                usesField(config, "value", fieldsForItem) ? (
-                  <div className="grid gap-2 sm:grid-cols-2">
-                    {usesField(config, "value", fieldsForItem) ? (
-                      <label className="block text-sm">
-                        <span className="mb-1 block text-xs font-medium text-slate-700 dark:text-slate-200">
-                          {fieldLabel(
-                            config,
-                            "value",
-                            "Value",
-                            fieldsForItem
-                          )}
-                        </span>
-                        <input
-                          className={inputClass}
-                          value={item.value}
-                          onChange={(e) =>
-                            updateAt(index, { value: e.target.value })
-                          }
-                        />
-                      </label>
-                    ) : null}
-                    {usesField(config, "label", fieldsForItem) ? (
-                      <label className="block text-sm">
-                        <span className="mb-1 block text-xs font-medium text-slate-700 dark:text-slate-200">
-                          {fieldLabel(
-                            config,
-                            "label",
-                            "Label",
-                            fieldsForItem
-                          )}
-                        </span>
-                        <input
-                          className={inputClass}
-                          value={item.label}
-                          onChange={(e) =>
-                            updateAt(index, { label: e.target.value })
-                          }
-                        />
-                      </label>
-                    ) : null}
-                  </div>
-                ) : null}
-
-                {usesField(config, "image_url", fieldsForItem) ? (
-                  <label className="block text-sm">
-                    <span className="mb-1 block text-xs font-medium text-slate-700 dark:text-slate-200">
-                      {fieldLabel(
-                        config,
-                        "image_url",
-                        "Image URL",
-                        fieldsForItem
-                      )}
-                    </span>
-                    <input
-                      className={inputClass}
-                      value={item.image_url}
-                      onChange={(e) =>
-                        updateAt(index, { image_url: e.target.value })
-                      }
-                    />
-                  </label>
-                ) : null}
-
-                {usesField(config, "bg_color", fieldsForItem) ? (
-                  <div className="block text-sm">
-                    <span className="mb-1.5 block text-xs font-medium text-slate-700 dark:text-slate-200">
-                      {fieldLabel(
-                        config,
-                        "bg_color",
-                        "Background",
-                        fieldsForItem
-                      )}
-                    </span>
-                    <p className="mt-0 mb-2 text-[11px] text-slate-500">
-                      Solids and themed gradients for white text — with or
-                      without an image.
-                    </p>
-
-                    <p className="mb-1.5 text-[10px] font-semibold tracking-wide text-slate-400 uppercase">
-                      Solid
-                    </p>
-                    <div className="mb-3 flex flex-wrap gap-1.5">
-                      <button
-                        type="button"
-                        onClick={() => updateAt(index, { bg_color: "" })}
-                        className={`rounded-md border px-2 py-1 text-[11px] font-semibold ${
-                          !item.bg_color
-                            ? "border-brand bg-brand/10 text-brand"
-                            : "border-slate-200 text-slate-600 hover:border-slate-300 dark:border-slate-700 dark:text-slate-300"
-                        }`}
-                      >
-                        Default
-                      </button>
-                      {BG_COLOR_PRESETS.map((preset) => {
-                        const active =
-                          String(item.bg_color || "").toLowerCase() ===
-                          preset.value.toLowerCase();
-                        return (
-                          <button
-                            key={preset.value}
-                            type="button"
-                            title={preset.label}
-                            onClick={() =>
-                              updateAt(index, { bg_color: preset.value })
-                            }
-                            className={`inline-flex items-center gap-1.5 rounded-md border px-2 py-1 text-[11px] font-semibold ${
-                              active
-                                ? "border-brand ring-2 ring-brand/25"
-                                : "border-slate-200 dark:border-slate-700"
-                            }`}
-                          >
-                            <span
-                              className="size-3.5 rounded-sm ring-1 ring-black/10"
-                              style={{ backgroundColor: preset.value }}
-                              aria-hidden
-                            />
-                            {preset.label}
-                          </button>
-                        );
-                      })}
-                    </div>
-
-                    <p className="mb-1.5 text-[10px] font-semibold tracking-wide text-slate-400 uppercase">
-                      Gradients
-                    </p>
-                    <div className="mb-3 grid grid-cols-2 gap-1.5 sm:grid-cols-4">
-                      {BANNER_GRADIENT_PRESETS.map((preset) => {
-                        const active =
-                          String(item.bg_color || "").replace(/\s+/g, "") ===
-                          preset.value.replace(/\s+/g, "");
-                        return (
-                          <button
-                            key={preset.label}
-                            type="button"
-                            title={preset.label}
-                            onClick={() =>
-                              updateAt(index, { bg_color: preset.value })
-                            }
-                            className={`flex flex-col overflow-hidden rounded-lg border text-left transition ${
-                              active
-                                ? "border-brand ring-2 ring-brand/25"
-                                : "border-slate-200 hover:border-slate-300 dark:border-slate-700"
-                            }`}
-                          >
-                            <span
-                              className="h-10 w-full"
-                              style={{ backgroundImage: preset.value }}
-                              aria-hidden
-                            />
-                            <span className="px-2 py-1 text-[10px] font-semibold text-slate-700 dark:text-slate-200">
-                              {preset.label}
-                            </span>
-                          </button>
-                        );
-                      })}
-                    </div>
-
-                    <label className="flex flex-wrap items-center gap-2">
-                      <span className="text-[11px] font-medium text-slate-600 dark:text-slate-300">
-                        Custom
-                      </span>
-                      {!isBannerGradient(item.bg_color) ? (
-                        <input
-                          type="color"
-                          value={
-                            /^#[0-9a-fA-F]{6}$/.test(
-                              String(item.bg_color || "")
-                            )
-                              ? item.bg_color
-                              : "var(--ink)"
-                          }
-                          onChange={(e) =>
-                            updateAt(index, { bg_color: e.target.value })
-                          }
-                          className="h-8 w-10 cursor-pointer rounded border border-slate-300 bg-white p-0.5 dark:border-slate-700"
-                          aria-label="Custom background color"
-                        />
-                      ) : null}
-                      <input
-                        className={`${inputClass} min-w-0 flex-1 font-mono text-xs`}
-                        placeholder="#0b1f4d or linear-gradient(…)"
-                        value={item.bg_color || ""}
-                        onChange={(e) =>
-                          updateAt(index, { bg_color: e.target.value })
-                        }
-                      />
-                    </label>
-                  </div>
-                ) : null}
-
-                {usesField(config, "icon", fieldsForItem) ? (
-                  <label className="block text-sm">
-                    <span className="mb-1 block text-xs font-medium text-slate-700 dark:text-slate-200">
-                      {fieldLabel(config, "icon", "Icon", fieldsForItem)}
-                    </span>
-                    <input
-                      className={inputClass}
-                      value={item.icon}
-                      onChange={(e) =>
-                        updateAt(index, { icon: e.target.value })
-                      }
-                      placeholder="Image URL or path"
-                    />
-                  </label>
-                ) : null}
-
-                {usesField(config, "href", fieldsForItem) ? (
-                  <label className="block text-sm">
-                    <span className="mb-1 block text-xs font-medium text-slate-700 dark:text-slate-200">
-                      {fieldLabel(config, "href", "Link URL", fieldsForItem)}
-                    </span>
-                    <input
-                      className={inputClass}
-                      value={item.href}
-                      onChange={(e) =>
-                        updateAt(index, { href: e.target.value })
-                      }
-                      placeholder={
-                        fieldLabel(config, "href", "", fieldsForItem) ===
-                        "Video URL (optional)"
-                          ? "https://youtube.com/… or video link"
-                          : "/path or https://"
-                      }
-                    />
-                  </label>
-                ) : null}
-
-                {usesField(config, "buttons", fieldsForItem) ? (
-                  <div className="rounded-lg border border-slate-200 bg-white/70 p-2 dark:border-slate-700 dark:bg-slate-950/40">
-                    <button
-                      type="button"
-                      className="flex w-full items-center justify-between text-left text-xs font-semibold text-slate-700 dark:text-slate-200"
-                      onClick={() =>
-                        setOpenButtons((prev) => ({
-                          ...prev,
-                          [item._key || index]: !buttonsOpen,
-                        }))
-                      }
-                    >
-                      <span>
-                        Item buttons{btnCount ? ` (${btnCount})` : ""}
-                      </span>
-                      <span className="text-slate-400">
-                        {buttonsOpen ? "▾" : "▸"}
-                      </span>
-                    </button>
-                    {buttonsOpen ? (
-                      <div className="mt-2">
-                        <CmsButtonsEditor
-                          value={item.buttons || []}
-                          onChange={(buttonsOrUpdater) =>
-                            setItemButtons(index, buttonsOrUpdater)
-                          }
-                        />
-                      </div>
-                    ) : null}
-                  </div>
-                ) : null}
+                {getItemFieldDefs(config, { child }).map((field) => (
+                  <ItemFieldControl
+                    key={field.key}
+                    field={field}
+                    item={item}
+                    itemKey={item._key || item._id || index}
+                    error={errorsForItem(item._key || item._id || index)?.[field.key]}
+                    onChange={(patch) => updateAt(index, patch)}
+                    onButtonsChange={(buttonsOrUpdater) =>
+                      setItemButtons(index, buttonsOrUpdater)
+                    }
+                    buttonsOpen={buttonsOpen}
+                    onToggleButtons={() =>
+                      setOpenButtons((prev) => ({
+                        ...prev,
+                        [item._key || index]: !buttonsOpen,
+                      }))
+                    }
+                  />
+                ))}
 
                 <label className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-300">
                   <input

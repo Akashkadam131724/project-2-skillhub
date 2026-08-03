@@ -146,6 +146,7 @@ export function SectionPreviewThumb({
   return (
     <>
       <div
+        role={expandable ? "button" : undefined}
         tabIndex={expandable ? 0 : undefined}
         onClick={(e) => {
           if (!expandable) return;
@@ -161,8 +162,9 @@ export function SectionPreviewThumb({
             setOpen(true);
           }
         }}
-        className={`shrink-0 overflow-hidden ${rounded} ${natural ? "w-full" : className
-          } ${expandable ? "cursor-zoom-in" : ""}`}
+        className={`relative shrink-0 overflow-hidden bg-slate-100 dark:bg-slate-800 ${rounded} ${
+          natural ? "w-full" : className
+        } ${expandable ? "cursor-zoom-in" : ""}`}
         title={expandable ? "View full preview" : alt || "Section preview"}
         aria-label={
           expandable ? `View full preview${alt ? `: ${alt}` : ""}` : undefined
@@ -175,14 +177,14 @@ export function SectionPreviewThumb({
           className={
             natural
               ? "pointer-events-none block h-auto w-full"
-              : `pointer-events-none block h-full w-full ${objectFit}`
+              : `pointer-events-none absolute inset-0 h-full w-full ${objectFit}`
           }
         />
       </div>
 
       {open && expandable ? (
         <div
-          className="fixed inset-0 z-[90] flex flex-col bg-slate-950"
+          className="fixed inset-0 z-[110] flex flex-col bg-slate-950"
           role="dialog"
           aria-modal="true"
           aria-label={alt || "Section preview"}

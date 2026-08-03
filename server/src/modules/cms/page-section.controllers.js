@@ -48,26 +48,32 @@ function finalizeEntityPageSectionUpdate($set, existing, body) {
   return update;
 }
 
-/** API shape: section id + computed section_key (not stored on EntityPageSection). */
+/** API shape: section id + section_key / section_preview_img from Section catalog. */
 async function serializeEntityDocs(docs) {
   const list = Array.isArray(docs) ? docs : [docs];
   if (!list.length) return [];
 
-  const missingIds = new Set();
+  const idsNeedingLookup = new Set();
   for (const doc of list) {
     const sec = doc.section;
-    if (!sec || (typeof sec === "object" && sec.key)) continue;
+    if (sec && typeof sec === "object" && sec.key != null) {
+      if (!Object.prototype.hasOwnProperty.call(sec, "section_preview_img")) {
+        const id = sec._id ?? sec;
+        if (id) idsNeedingLookup.add(String(id));
+      }
+      continue;
+    }
     const id = sec?._id ?? sec;
-    if (id) missingIds.add(String(id));
+    if (id) idsNeedingLookup.add(String(id));
   }
 
-  const keyById = new Map();
-  if (missingIds.size) {
-    const sections = await Section.find({ _id: { $in: [...missingIds] } })
-      .select("key")
+  const metaById = new Map();
+  if (idsNeedingLookup.size) {
+    const sections = await Section.find({ _id: { $in: [...idsNeedingLookup] } })
+      .select("key section_preview_img")
       .lean();
     for (const s of sections) {
-      keyById.set(String(s._id), s.key);
+      metaById.set(String(s._id), s);
     }
   }
 
@@ -76,18 +82,32 @@ async function serializeEntityDocs(docs) {
     const sec = plain.section;
     let sectionId;
     let sectionKey = "";
-    if (sec && typeof sec === "object" && sec.key) {
+    let sectionPreviewImg = null;
+
+    if (sec && typeof sec === "object" && sec.key != null) {
       sectionId = sec._id;
       sectionKey = sec.key;
+      if (Object.prototype.hasOwnProperty.call(sec, "section_preview_img")) {
+        sectionPreviewImg = sec.section_preview_img || null;
+      }
     } else {
       sectionId = sec?._id ?? sec;
-      sectionKey = keyById.get(String(sectionId)) || "";
     }
+
+    const meta = metaById.get(String(sectionId));
+    if (meta) {
+      if (!sectionKey) sectionKey = meta.key || "";
+      if (sectionPreviewImg == null || sectionPreviewImg === "") {
+        sectionPreviewImg = meta.section_preview_img || null;
+      }
+    }
+
     return {
       ...plain,
       id: plain._id ?? plain.id,
       section: sectionId,
       section_key: sectionKey,
+      section_preview_img: sectionPreviewImg || null,
     };
   });
 }
@@ -690,7 +710,7 @@ export const getEntityPageSections = async (req, res) => {
       page_key: String(page_key).toLowerCase(),
       entity_id,
     })
-      .populate("section", "key")
+      .populate("section", "key section_preview_img")
       .sort({ sort_order: 1 })
       .lean();
 
