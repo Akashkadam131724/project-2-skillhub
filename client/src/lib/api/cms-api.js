@@ -48,9 +48,22 @@ export function getPage(key) {
 }
 
 export function getPageSectionsResolved(key, entityId, options = {}) {
+  const { view = "public", ...requestOptions } = options;
+  const query = { entityId };
+  // view=cms|full → full resolve payload for admin tools
+  if (view && view !== "cms" && view !== "full") {
+    query.view = view;
+
+  }
+
+  console.log(request(
+    `/pages/${encodeURIComponent(key)}/sections${toQuery(query)}`,
+    requestOptions
+  ), "------request")
+
   return request(
-    `/pages/${encodeURIComponent(key)}/sections${toQuery({ entityId })}`,
-    options
+    `/pages/${encodeURIComponent(key)}/sections${toQuery(query)}`,
+    requestOptions
   );
 }
 

@@ -1,6 +1,10 @@
 import Page from "./page.model.js";
 import { formatMongooseError } from "../../utils/formatMongooseError.js";
 import { resolvePageSections } from "./resolve.js";
+import {
+  isPublicViewRequest,
+  shapeResolvedForPublic,
+} from "./public-section-payload.js";
 import { emptyPageTheme, mergePageThemeSave, pickThemePatch } from "./theme.utils.js";
 
 export const createPage = async (req, res) => {
@@ -150,6 +154,13 @@ export const getResolvedSections = async (req, res) => {
       return res.status(result.error.status).json({
         success: false,
         message: result.error.message,
+      });
+    }
+
+    if (isPublicViewRequest(req.query)) {
+      return res.json({
+        success: true,
+        ...shapeResolvedForPublic(result),
       });
     }
 
