@@ -25,7 +25,7 @@ export default function EditorialBannerSection({
 }) {
   const ref = useRef(null);
   const [visible] = useState(true);
-  const img = mediaUrl(section_img_url || data?.image_url);
+  const img = mediaUrl(section_img_url);
   const body = data?.body || "";
   const fallbackBg = {
     backgroundImage:
@@ -57,9 +57,8 @@ export default function EditorialBannerSection({
         <img
           src={img}
           alt={mediaAlt(section_title, "Editorial banner")}
-          className={`absolute inset-0 h-full w-full object-cover transition duration-[1.4s] ease-out ${
-            visible ? "scale-100 opacity-100" : "scale-105 opacity-80"
-          }`}
+          className={`absolute inset-0 h-full w-full object-cover transition duration-[1.4s] ease-out ${visible ? "scale-100 opacity-100" : "scale-105 opacity-80"
+            }`}
         />
       ) : (
         <div className="absolute inset-0" style={fallbackBg} />
@@ -69,9 +68,8 @@ export default function EditorialBannerSection({
 
       <div className="relative mx-auto flex min-h-[70vh] max-w-[1400px] flex-col justify-end px-4 py-16 sm:min-h-[78vh] sm:px-6 sm:py-20 lg:px-8 lg:py-24">
         <div
-          className={`max-w-3xl transition duration-700 ease-out ${
-            visible ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0"
-          }`}
+          className={`max-w-3xl transition duration-700 ease-out ${visible ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0"
+            }`}
         >
           <CmsEditable
             cmsMode={cmsMode}

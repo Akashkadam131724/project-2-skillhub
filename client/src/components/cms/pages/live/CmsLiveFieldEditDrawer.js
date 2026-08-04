@@ -17,6 +17,7 @@ import CmsItemsEditor, {
 import CmsRichTextEditor from "@/components/cms/editors/CmsRichTextEditor";
 import {
   contentLockedAtLayer,
+  liveEditContentLayer,
   lockedContentHref,
   lockedContentMessage,
   normalizeContentScope,
@@ -134,12 +135,13 @@ export default function CmsLiveFieldEditDrawer() {
     e.preventDefault();
     if (!editing) return;
     const { section, field } = editing;
+    const editLayer = liveEditContentLayer();
     const pageContentLocked = contentLockedAtLayer(
       section.content_scope,
-      "page"
+      editLayer
     );
     if (pageContentLocked) {
-      setError(lockedContentMessage(section.content_scope, "page"));
+      setError(lockedContentMessage(section.content_scope, editLayer));
       return;
     }
     setSaving(true);
@@ -254,10 +256,16 @@ export default function CmsLiveFieldEditDrawer() {
               </p>
             </div>
           </div>
-          {contentLockedAtLayer(editing.section.content_scope, "page") ? (
+          {contentLockedAtLayer(
+            editing.section.content_scope,
+            liveEditContentLayer()
+          ) ? (
             <div className="space-y-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-3 text-sm text-amber-950 dark:border-amber-900 dark:bg-amber-950/40 dark:text-amber-100">
               <p className="m-0">
-                {lockedContentMessage(editing.section.content_scope, "page")}
+                {lockedContentMessage(
+                  editing.section.content_scope,
+                  liveEditContentLayer()
+                )}
               </p>
               <Link
                 href={lockedContentHref(editing.section.content_scope, {

@@ -136,19 +136,31 @@ function hasActiveButtons(section) {
 
 /**
  * Field-driven sections (overview, most heroes…): need at least one display field.
- * Title / subtitle / body / image / bg / CTA.
+ *
+ * Public pages (`cmsMode` false): only **content** counts — title, subtitle, body,
+ * section image, or CTAs. Band bg color / bg image alone must not show an empty shell.
+ *
+ * CMS mode: also treat band chrome as “present” so editors can open empty shells
+ * (though `shouldRenderPlacement` already always returns true in CMS).
  */
-export function placementHasFieldContent(section) {
+export function placementHasFieldContent(section, cmsMode = false) {
   if (!section) return false;
-  return Boolean(
+
+  const hasCopyOrMedia = Boolean(
     String(section.section_title || "").trim() ||
-    String(section.sub_title || "").trim() ||
-    !isRichTextEmpty(section?.data?.body) ||
-    String(section.section_img_url || "").trim() ||
+      String(section.sub_title || "").trim() ||
+      !isRichTextEmpty(section?.data?.body) ||
+      String(section.section_img_url || "").trim() ||
+      hasActiveButtons(section)
+  );
+  if (hasCopyOrMedia) return true;
+
+  if (!cmsMode) return false;
+
+  return Boolean(
     String(section.section_bg_img || "").trim() ||
-    String(section.section_bg_color || "").trim() ||
-    String(section.data?.bg_color || "").trim() ||
-    hasActiveButtons(section)
+      String(section.section_bg_color || "").trim() ||
+      String(section.data?.bg_color || "").trim()
   );
 }
 
@@ -169,10 +181,10 @@ const CONTEXT_BACKED_SECTION_KEYS = new Set([
 /**
  * True when this placement has something real to show on a public page.
  * - Item sections → active items
- * - Field sections → title / body / media / buttons
+ * - Field sections → title / body / media / buttons (not band color alone)
  * - Context sections → always (when status is on)
  */
-export function placementHasMeaningfulContent(section) {
+export function placementHasMeaningfulContent(section, cmsMode = false) {
   if (!section) return false;
   const key = String(section.section_key || "").toLowerCase();
 
@@ -183,12 +195,12 @@ export function placementHasMeaningfulContent(section) {
       resolveItemsForSection(key, section.items).length > 0;
     // Hero stats can be useful with copy alone (items optional in the UI)
     if (key === "hero_stats") {
-      return hasItems || placementHasFieldContent(section);
+      return hasItems || placementHasFieldContent(section, cmsMode);
     }
     return hasItems;
   }
 
-  return placementHasFieldContent(section);
+  return placementHasFieldContent(section, cmsMode);
 }
 
 /**
@@ -200,7 +212,7 @@ export function shouldRenderPlacement(section, cmsMode = false) {
   if (!section) return false;
   if (section.status === false) return false;
   if (cmsMode) return true;
-  return placementHasMeaningfulContent(section);
+  return placementHasMeaningfulContent(section, cmsMode);
 }
 
 /**

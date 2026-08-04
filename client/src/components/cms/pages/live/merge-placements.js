@@ -1,4 +1,4 @@
-import { normalizeContentScope } from "@/lib/cms/content-scope";
+import { resolveContentScope } from "@/lib/cms/content-scope";
 import { mergePlacementData, pickPlacementArrayField } from "@/lib/sections/placement-data";
 import { placementRenderKey } from "@/lib/sections/section-render-key";
 
@@ -30,9 +30,11 @@ export function mergePlacements(
     const catalogSection = catalogByKey.get(
       String(tag.section_key || "").toLowerCase()
     );
-    const content_scope = normalizeContentScope(
-      tag.content_scope || catalogSection?.content_scope
-    );
+    const content_scope = resolveContentScope({
+      scope: tag.content_scope || catalogSection?.content_scope,
+      sectionKey: tag.section_key,
+      catalogSection,
+    });
     const status =
       override?.status === false
         ? false
@@ -42,6 +44,9 @@ export function mergePlacements(
 
     const pick = (key, fallback = "") => {
       if (content_scope === "global") {
+        // API-enriched tag already carries Section content
+        const t = tag[key];
+        if (t !== null && t !== undefined && t !== "") return t;
         return catalogSection?.[key] ?? fallback;
       }
       if (content_scope === "template") {
@@ -58,6 +63,7 @@ export function mergePlacements(
 
     const pickButtons = () => {
       if (content_scope === "global") {
+        if (Array.isArray(tag.buttons)) return tag.buttons;
         return Array.isArray(catalogSection?.buttons)
           ? catalogSection.buttons
           : [];
@@ -70,6 +76,7 @@ export function mergePlacements(
 
     const pickItems = () => {
       if (content_scope === "global") {
+        if (Array.isArray(tag.items)) return tag.items;
         return Array.isArray(catalogSection?.items) ? catalogSection.items : [];
       }
       if (content_scope === "template") {
@@ -116,7 +123,7 @@ export function mergePlacements(
       items: pickItems(),
       data:
         content_scope === "global"
-          ? mergePlacementData(catalogSection?.data)
+          ? mergePlacementData(tag.data, catalogSection?.data)
           : content_scope === "template"
             ? mergePlacementData(catalogSection?.data, tag.data)
             : mergePlacementData(
@@ -134,10 +141,13 @@ export function mergePlacements(
     const catalogSection =
       catalogByKey.get(String(extra.section_key || "").toLowerCase()) ||
       catalogById.get(String(extra.section?._id || extra.section || ""));
-    const content_scope = normalizeContentScope(catalogSection?.content_scope);
     const sectionKey =
       extra.section_key || catalogSection?.key || "";
-    // Entity-only extras: still respect global lock; template scope uses extra as the placement content
+    const content_scope = resolveContentScope({
+      scope: catalogSection?.content_scope,
+      sectionKey,
+      catalogSection,
+    });
     return {
       placement_id: String(extra._id || extra.id),
       page_tag_id: null,
@@ -152,25 +162,26 @@ export function mergePlacements(
       sort_order: extra.sort_order ?? 99,
       section_title:
         content_scope === "global"
-          ? catalogSection?.section_title || ""
+          ? extra.section_title || catalogSection?.section_title || ""
           : extra.section_title || catalogSection?.section_title || "",
       sub_title:
         content_scope === "global"
-          ? catalogSection?.sub_title || ""
+          ? extra.sub_title || catalogSection?.sub_title || ""
           : extra.sub_title || catalogSection?.sub_title || "",
       in_page_nav_title:
         content_scope === "global"
-          ? catalogSection?.in_page_nav_title || ""
+          ? extra.in_page_nav_title || catalogSection?.in_page_nav_title || ""
           : extra.in_page_nav_title ||
             catalogSection?.in_page_nav_title ||
             "",
       section_bg_img:
         content_scope === "global"
-          ? catalogSection?.section_bg_img || ""
+          ? extra.section_bg_img || catalogSection?.section_bg_img || ""
           : extra.section_bg_img || catalogSection?.section_bg_img || "",
       section_bg_color:
         content_scope === "global"
-          ? catalogSection?.section_bg_color ||
+          ? extra.section_bg_color ||
+            catalogSection?.section_bg_color ||
             catalogSection?.data?.bg_color ||
             ""
           : extra.section_bg_color ||
@@ -179,7 +190,7 @@ export function mergePlacements(
             "",
       section_img_url:
         content_scope === "global"
-          ? catalogSection?.section_img_url || ""
+          ? extra.section_img_url || catalogSection?.section_img_url || ""
           : extra.section_img_url || catalogSection?.section_img_url || "",
       section_preview_img:
         catalogSection?.section_preview_img ||
@@ -187,7 +198,7 @@ export function mergePlacements(
         "",
       section_theme:
         content_scope === "global"
-          ? catalogSection?.section_theme || ""
+          ? extra.section_theme || catalogSection?.section_theme || ""
           : (() => {
               const v = extra.section_theme;
               if (v !== null && v !== undefined && String(v).trim() !== "")
@@ -196,23 +207,27 @@ export function mergePlacements(
             })(),
       section_theme_local:
         content_scope === "global"
-          ? catalogSection?.section_theme || ""
+          ? extra.section_theme || catalogSection?.section_theme || ""
           : extra.section_theme ?? null,
       buttons:
         content_scope === "global"
-          ? Array.isArray(catalogSection?.buttons)
-            ? catalogSection.buttons
-            : []
+          ? Array.isArray(extra.buttons)
+            ? extra.buttons
+            : Array.isArray(catalogSection?.buttons)
+              ? catalogSection.buttons
+              : []
           : pickPlacementArrayField("buttons", extra, catalogSection),
       items:
         content_scope === "global"
-          ? Array.isArray(catalogSection?.items)
-            ? catalogSection.items
-            : []
+          ? Array.isArray(extra.items)
+            ? extra.items
+            : Array.isArray(catalogSection?.items)
+              ? catalogSection.items
+              : []
           : pickPlacementArrayField("items", extra, catalogSection),
       data:
         content_scope === "global"
-          ? mergePlacementData(catalogSection?.data)
+          ? mergePlacementData(catalogSection?.data, extra.data)
           : mergePlacementData(catalogSection?.data, extra.data),
       status: extra.status !== false,
       entity_override_id: extra._id || extra.id,

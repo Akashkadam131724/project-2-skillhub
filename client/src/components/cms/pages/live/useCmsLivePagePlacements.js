@@ -14,6 +14,12 @@ import {
   upsertEntityPageSection,
 } from "@/lib/api/cms-api";
 import {
+  contentLockedAtLayer,
+  filterLockedPlacementPatch,
+  liveEditContentLayer,
+  lockedContentMessage,
+} from "@/lib/cms/content-scope";
+import {
   buildVisibleWithSurface,
   placementKey,
 } from "@/lib/sections/page-sections-stack";
@@ -57,6 +63,7 @@ export function CmsLivePlacementsProvider({ children }) {
       catalog: catalogRef.current,
       sortDisabled: sortDisabledRef.current,
       fetchPage: false,
+      fetchCatalog: false,
     });
     setSections(next);
     return next;
@@ -66,13 +73,12 @@ export function CmsLivePlacementsProvider({ children }) {
     if (!entityId || !pageKey) return;
     let alive = true;
     setLoading(true);
-    catalogLoadedRef.current = false;
-    setCatalog([]);
     (async () => {
       try {
         const data = await fetchLivePlacements(pageKey, entityId, {
-          catalog: [],
+          catalog: catalogRef.current,
           fetchPage: true,
+          fetchCatalog: false,
         });
         if (!alive) return;
         setSortDisabled(data.sortDisabled);
@@ -89,24 +95,14 @@ export function CmsLivePlacementsProvider({ children }) {
   }, [entityId, pageKey]);
 
   const ensureCatalog = useCallback(async () => {
-    if (catalogLoadedRef.current) return catalogRef.current;
+    if (catalogLoadedRef.current && catalogRef.current?.length) {
+      return catalogRef.current;
+    }
     setCatalogLoading(true);
     try {
       const next = await fetchSectionCatalog();
       catalogLoadedRef.current = true;
       setCatalog(next);
-      if (entityId && pageKey) {
-        const { sections: merged } = await fetchLivePlacements(
-          pageKey,
-          entityId,
-          {
-            catalog: next,
-            sortDisabled: sortDisabledRef.current,
-            fetchPage: false,
-          }
-        );
-        setSections(merged);
-      }
       return next;
     } catch (err) {
       setError(err.message || "Failed to load section catalog");
@@ -114,17 +110,26 @@ export function CmsLivePlacementsProvider({ children }) {
     } finally {
       setCatalogLoading(false);
     }
-  }, [entityId, pageKey]);
+  }, []);
 
   const savePlacement = useCallback(
     async (s, patch) => {
+      const layer = liveEditContentLayer();
+      const safePatch = filterLockedPlacementPatch(s, patch, layer);
+      if (
+        contentLockedAtLayer(s.content_scope, layer) &&
+        Object.keys(safePatch).length === 0
+      ) {
+        throw new Error(lockedContentMessage(s.content_scope, layer));
+      }
+      const body = safePatch;
       if (s.is_entity_extra || s.entity_override_id) {
         return upsertEntityPageSection({
           id: s.entity_override_id,
           page_key: pageKey,
           entity_id: entityId,
           section_key: s.section_key,
-          ...patch,
+          ...body,
         });
       }
       return upsertEntityPageSection({
@@ -132,7 +137,7 @@ export function CmsLivePlacementsProvider({ children }) {
         entity_id: entityId,
         section_key: s.section_key,
         page_tag_id: s.page_tag_id,
-        ...patch,
+        ...body,
       });
     },
     [entityId, pageKey]

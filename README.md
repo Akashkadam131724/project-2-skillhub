@@ -140,4 +140,7 @@ npm run dev            # http://localhost:3001
 ```
 
 CMS admin: `http://localhost:3001/cms`
-# project-2-skillhub
+
+### Client design system docs
+
+Section / button / theme documentation: [`client/documentation/`](./client/documentation/README.md) (Graphify architecture map included).

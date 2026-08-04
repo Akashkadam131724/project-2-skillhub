@@ -1,4 +1,8 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# SkillHub client
+
+Next.js 16 App Router frontend for SkillHub.
+
+**Design system docs** (sections, buttons, theme, items): [`documentation/README.md`](./documentation/README.md)
 
 ## Getting Started
 

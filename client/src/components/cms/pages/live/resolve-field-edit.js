@@ -7,6 +7,7 @@ import {
 import { itemsConfigRenderKey } from "@/lib/sections/section-render-key";
 import {
   contentLockedAtLayer,
+  liveEditContentLayer,
   lockedContentMessage,
 } from "@/lib/cms/content-scope";
 import { FIELD_META } from "@/components/cms/pages/live/field-meta";
@@ -30,10 +31,12 @@ export function resolveFieldEditRequest(
     return { handled: true };
   }
 
+  const editLayer = liveEditContentLayer();
+
   const applySidePreset = (dataKey) => {
     if (options.preset !== "left" && options.preset !== "right") return false;
-    if (contentLockedAtLayer(section.content_scope, "page")) {
-      setError(lockedContentMessage(section.content_scope, "page"));
+    if (contentLockedAtLayer(section.content_scope, editLayer)) {
+      setError(lockedContentMessage(section.content_scope, editLayer));
       return true;
     }
     setSaving(true);

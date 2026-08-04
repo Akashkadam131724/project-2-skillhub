@@ -1,5 +1,9 @@
-"use client";
-
+import {
+  contentLockedAtLayer,
+  contentScopeLabel,
+  liveEditContentLayer,
+  lockedContentHref,
+} from "@/lib/cms/content-scope";
 import CmsSectionToolbar from "@/components/cms/sections/CmsSectionToolbar";
 import {
   buildSectionCompProps,
@@ -26,7 +30,7 @@ export default function CmsPageSectionRender({ placement, navSections }) {
     surfaceBandIndex,
     sectionTheme = "inherit",
   } = placement;
-  const { pageTheme, pageContext } = useCmsLiveEdit();
+  const { pageKey, pageTheme, pageContext } = useCmsLiveEdit();
   const {
     catalog = [],
     openFieldEdit,
@@ -38,6 +42,14 @@ export default function CmsPageSectionRender({ placement, navSections }) {
   const itemsRenderKey = itemsConfigRenderKey(section);
   const hidden = section.status === false;
   const preview = previewSrc(section, catalog);
+  const editLayer = liveEditContentLayer();
+  const contentLocked = contentLockedAtLayer(section.content_scope, editLayer);
+  const lockedHref = lockedContentHref(section.content_scope, {
+    sectionKey: key,
+    pageKey,
+    tagId: section.page_tag_id,
+  });
+  const layerLabel = contentScopeLabel(section.content_scope);
 
   const { compProps, catalogKey } = buildSectionCompProps({
     section,
@@ -73,6 +85,9 @@ export default function CmsPageSectionRender({ placement, navSections }) {
       section={section}
       preview={preview}
       hidden={hidden}
+      layerLabel={layerLabel}
+      contentLocked={contentLocked}
+      contentLockedHref={lockedHref}
       onEditField={openFieldEdit}
       onToggleVisibility={toggleVisibility}
       onRemoveExtra={removeExtra}

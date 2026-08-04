@@ -6,7 +6,24 @@ import { formatMongooseError } from "../../utils/formatMongooseError.js";
 import {
   mergePlacementData,
   normalizePlacementDataPatch,
+  pickPlacementArrayField,
 } from "./placement-data.utils.js";
+
+const SECTION_CONTENT_SELECT =
+  "key name status content_scope section_title sub_title in_page_nav_title section_bg_img section_bg_color section_img_url section_theme section_preview_img buttons items data";
+
+function pickMappedField(primary, fallback, key) {
+  if (key === "section_theme") {
+    const v = primary?.[key];
+    if (v !== null && v !== undefined && String(v).trim() !== "") return v;
+    return fallback?.[key] ?? null;
+  }
+  const v = primary?.[key];
+  if (v !== null && v !== undefined && v !== "") return v;
+  const f = fallback?.[key];
+  if (f !== null && f !== undefined && f !== "") return f;
+  return key === "data" ? {} : "";
+}
 
 async function resolvePageAndSection(pageKey, sectionKey) {
   const page = await Page.findByKey(pageKey);
@@ -48,93 +65,144 @@ function finalizeEntityPageSectionUpdate($set, existing, body) {
   return update;
 }
 
-/** API shape: section id + section_key / section_preview_img from Section catalog. */
+/**
+ * Hydrate entity override / page-only extra with Section content by scope.
+ * Global → always Section. Otherwise entity fields cascade over Section defaults.
+ */
+function serializeEntityDoc(doc, section) {
+  const plain = doc.toObject ? doc.toObject({ virtuals: true }) : { ...doc };
+  const sectionId =
+    section?._id ??
+    (plain.section && typeof plain.section === "object"
+      ? plain.section._id
+      : plain.section);
+  const scope = normalizeContentScope(section?.content_scope);
+  const base = {
+    ...plain,
+    id: plain._id ?? plain.id,
+    section: sectionId,
+    section_key: section?.key || "",
+    section_name: section?.name || "",
+    content_scope: scope || "page",
+    section_preview_img: section?.section_preview_img || null,
+  };
+
+  if (!section) return base;
+
+  if (scope === "global") {
+    return {
+      ...base,
+      section_title: section.section_title ?? "",
+      sub_title: section.sub_title ?? "",
+      section_bg_img: section.section_bg_img ?? "",
+      section_bg_color: section.section_bg_color ?? "",
+      in_page_nav_title: section.in_page_nav_title ?? "",
+      section_img_url: section.section_img_url ?? "",
+      section_theme: section.section_theme ?? null,
+      buttons: Array.isArray(section.buttons) ? section.buttons : [],
+      items: Array.isArray(section.items) ? section.items : [],
+      data: mergePlacementData(section.data),
+    };
+  }
+
+  return {
+    ...base,
+    section_title: pickMappedField(plain, section, "section_title"),
+    sub_title: pickMappedField(plain, section, "sub_title"),
+    section_bg_img: pickMappedField(plain, section, "section_bg_img"),
+    section_bg_color: pickMappedField(plain, section, "section_bg_color"),
+    in_page_nav_title: pickMappedField(plain, section, "in_page_nav_title"),
+    section_img_url: pickMappedField(plain, section, "section_img_url"),
+    section_theme: pickMappedField(plain, section, "section_theme"),
+    buttons: pickPlacementArrayField("buttons", plain, section),
+    items: pickPlacementArrayField("items", plain, section),
+    data: mergePlacementData(section.data, plain.data),
+  };
+}
+
 async function serializeEntityDocs(docs) {
   const list = Array.isArray(docs) ? docs : [docs];
   if (!list.length) return [];
 
-  const idsNeedingLookup = new Set();
+  const ids = new Set();
   for (const doc of list) {
     const sec = doc.section;
-    if (sec && typeof sec === "object" && sec.key != null) {
-      if (!Object.prototype.hasOwnProperty.call(sec, "section_preview_img")) {
-        const id = sec._id ?? sec;
-        if (id) idsNeedingLookup.add(String(id));
-      }
-      continue;
-    }
-    const id = sec?._id ?? sec;
-    if (id) idsNeedingLookup.add(String(id));
+    const id =
+      sec && typeof sec === "object" ? sec._id ?? sec : sec?._id ?? sec;
+    if (id) ids.add(String(id));
   }
 
-  const metaById = new Map();
-  if (idsNeedingLookup.size) {
-    const sections = await Section.find({ _id: { $in: [...idsNeedingLookup] } })
-      .select("key section_preview_img")
+  const sectionById = new Map();
+  if (ids.size) {
+    const sections = await Section.find({ _id: { $in: [...ids] } })
+      .select(SECTION_CONTENT_SELECT)
       .lean();
     for (const s of sections) {
-      metaById.set(String(s._id), s);
+      sectionById.set(String(s._id), s);
     }
   }
 
   return list.map((doc) => {
     const plain = doc.toObject ? doc.toObject({ virtuals: true }) : { ...doc };
     const sec = plain.section;
-    let sectionId;
-    let sectionKey = "";
-    let sectionPreviewImg = null;
-
-    if (sec && typeof sec === "object" && sec.key != null) {
-      sectionId = sec._id;
-      sectionKey = sec.key;
-      if (Object.prototype.hasOwnProperty.call(sec, "section_preview_img")) {
-        sectionPreviewImg = sec.section_preview_img || null;
-      }
-    } else {
-      sectionId = sec?._id ?? sec;
-    }
-
-    const meta = metaById.get(String(sectionId));
-    if (meta) {
-      if (!sectionKey) sectionKey = meta.key || "";
-      if (sectionPreviewImg == null || sectionPreviewImg === "") {
-        sectionPreviewImg = meta.section_preview_img || null;
-      }
-    }
-
-    return {
-      ...plain,
-      id: plain._id ?? plain.id,
-      section: sectionId,
-      section_key: sectionKey,
-      section_preview_img: sectionPreviewImg || null,
-    };
+    const sectionId =
+      sec && typeof sec === "object" ? sec._id ?? sec : sec;
+    return serializeEntityDoc(doc, sectionById.get(String(sectionId)) || null);
   });
 }
 
+/**
+ * CMS tag payload — resolve content by Section.content_scope so
+ * GET /page-sections already carries display data (no full /sections fetch).
+ *
+ *  - global   → Section fields (tag keeps sort/status)
+ *  - template / page → tag over Section defaults
+ */
 function serializeTag(section, tag) {
-  if (!tag) return null;
-  return {
+  if (!tag || !section) return null;
+  const scope = normalizeContentScope(section.content_scope);
+  const base = {
     id: tag._id,
     section_id: section._id,
     section_key: section.key,
     section_name: section.name,
-    content_scope: normalizeContentScope(section.content_scope),
+    section_global_status: section.status,
+    content_scope: scope,
     page: tag.page,
     page_key: tag.page_key,
     sort_order: tag.sort_order,
-    section_title: tag.section_title,
-    sub_title: tag.sub_title,
-    section_bg_img: tag.section_bg_img,
-    section_bg_color: tag.section_bg_color,
-    in_page_nav_title: tag.in_page_nav_title,
-    section_img_url: tag.section_img_url,
-    section_theme: tag.section_theme ?? null,
-    section_preview_img: section.section_preview_img || null,
-    buttons: Array.isArray(tag.buttons) ? tag.buttons : undefined,
-    items: Array.isArray(tag.items) ? tag.items : undefined,
-    data: tag.data,
     status: tag.status,
+    section_preview_img: section.section_preview_img || null,
+  };
+
+  if (scope === "global") {
+    return {
+      ...base,
+      section_title: section.section_title ?? "",
+      sub_title: section.sub_title ?? "",
+      section_bg_img: section.section_bg_img ?? "",
+      section_bg_color: section.section_bg_color ?? "",
+      in_page_nav_title: section.in_page_nav_title ?? "",
+      section_img_url: section.section_img_url ?? "",
+      section_theme: section.section_theme ?? null,
+      buttons: Array.isArray(section.buttons) ? section.buttons : [],
+      items: Array.isArray(section.items) ? section.items : [],
+      data: mergePlacementData(section.data),
+    };
+  }
+
+  return {
+    ...base,
+    section_title: pickMappedField(tag, section, "section_title"),
+    sub_title: pickMappedField(tag, section, "sub_title"),
+    section_bg_img: pickMappedField(tag, section, "section_bg_img"),
+    section_bg_color: pickMappedField(tag, section, "section_bg_color"),
+    in_page_nav_title: pickMappedField(tag, section, "in_page_nav_title"),
+    section_img_url: pickMappedField(tag, section, "section_img_url"),
+    section_theme: pickMappedField(tag, section, "section_theme"),
+    buttons: pickPlacementArrayField("buttons", tag, section),
+    items: pickPlacementArrayField("items", tag, section),
+    data: mergePlacementData(section.data, tag.data),
   };
 }
 
@@ -242,29 +310,7 @@ export const getPageSections = async (req, res) => {
       for (const tag of section.pages || []) {
         if (pageKeyFilter && tag.page_key !== pageKeyFilter) continue;
         if (statusFilter !== null && tag.status !== statusFilter) continue;
-        tags.push({
-          id: tag._id,
-          section_id: section._id,
-          section_key: section.key,
-          section_name: section.name,
-          section_global_status: section.status,
-          content_scope: normalizeContentScope(section.content_scope),
-          page: tag.page,
-          page_key: tag.page_key,
-          sort_order: tag.sort_order,
-          section_title: tag.section_title,
-          sub_title: tag.sub_title,
-          section_bg_img: tag.section_bg_img,
-          section_bg_color: tag.section_bg_color,
-          in_page_nav_title: tag.in_page_nav_title,
-          section_img_url: tag.section_img_url,
-          section_theme: tag.section_theme ?? null,
-          section_preview_img: section.section_preview_img || null,
-          buttons: Array.isArray(tag.buttons) ? tag.buttons : undefined,
-          items: Array.isArray(tag.items) ? tag.items : undefined,
-          data: tag.data,
-          status: tag.status,
-        });
+        tags.push(serializeTag(section, tag));
       }
     }
 
@@ -710,7 +756,7 @@ export const getEntityPageSections = async (req, res) => {
       page_key: String(page_key).toLowerCase(),
       entity_id,
     })
-      .populate("section", "key section_preview_img")
+      .populate("section", SECTION_CONTENT_SELECT)
       .sort({ sort_order: 1 })
       .lean();
 

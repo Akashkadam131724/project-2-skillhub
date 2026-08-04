@@ -8,6 +8,8 @@
  * Legacy DB value "cascading" maps to "page".
  */
 
+import { SECTION_CATALOG } from "@/lib/sections/section-registry";
+
 export const CONTENT_SCOPES = ["global", "template", "page"];
 
 export function normalizeContentScope(scope) {
@@ -15,6 +17,51 @@ export function normalizeContentScope(scope) {
   if (s === "global") return "global";
   if (s === "template") return "template";
   // "cascading" (legacy) and "page"
+  return "page";
+}
+
+/** Client catalog hint when API/DB scope is missing or stale. */
+export function catalogContentScopeHint(sectionKey) {
+  const key = String(sectionKey || "").toLowerCase();
+  if (!key) return null;
+  const entry = SECTION_CATALOG.find((s) => s.key === key);
+  if (!entry?.content_scope) return null;
+  return normalizeContentScope(entry.content_scope);
+}
+
+/**
+ * Resolve scope for a live placement: explicit value → API catalog → client hint.
+ */
+export function resolveContentScope({
+  scope,
+  sectionKey,
+  catalogSection,
+} = {}) {
+  const fromExplicit = String(scope || "").toLowerCase().trim();
+  if (fromExplicit === "global" || fromExplicit === "template") {
+    return fromExplicit;
+  }
+  if (fromExplicit === "page" || fromExplicit === "cascading") {
+    // Prefer catalog/client hint when DB defaulted to page but catalog says global
+    const fromCatalog = normalizeContentScope(catalogSection?.content_scope);
+    if (fromCatalog === "global" || fromCatalog === "template") {
+      return fromCatalog;
+    }
+    const hint = catalogContentScopeHint(sectionKey);
+    if (hint === "global" || hint === "template") return hint;
+    return "page";
+  }
+  const fromCatalog = normalizeContentScope(catalogSection?.content_scope);
+  if (fromCatalog === "global" || fromCatalog === "template") {
+    return fromCatalog;
+  }
+  const hint = catalogContentScopeHint(sectionKey);
+  if (hint) return hint;
+  return "page";
+}
+
+/** Live entity / home editors always check locks at the page layer. */
+export function liveEditContentLayer() {
   return "page";
 }
 
@@ -55,4 +102,16 @@ export function lockedContentHref(scope, { sectionKey, pageKey, tagId } = {}) {
   }
   if (sectionKey) return `/cms/pages-content-sections/${sectionKey}`;
   return "/cms/pages-content-sections";
+}
+
+/** Fields that may still be written on a locked placement (visibility / order only). */
+export const LOCKED_PLACEMENT_ALLOWED_KEYS = new Set(["status", "sort_order"]);
+
+export function filterLockedPlacementPatch(section, patch, layer = "page") {
+  if (!contentLockedAtLayer(section?.content_scope, layer)) return patch;
+  const next = {};
+  for (const [key, value] of Object.entries(patch || {})) {
+    if (LOCKED_PLACEMENT_ALLOWED_KEYS.has(key)) next[key] = value;
+  }
+  return next;
 }
