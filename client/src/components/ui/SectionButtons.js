@@ -10,12 +10,12 @@ import DsButton from "./DsButton";
  * Renders a section's buttons array (or legacy button_title / target_url).
  */
 export default function SectionButtons({
-  buttons,
-  button_title,
-  target_url,
+  buttons = undefined,
+  button_title = undefined,
+  target_url = undefined,
   className = "flex flex-wrap items-center gap-3",
   buttonClassName = "",
-  onFormOpen,
+  onFormOpen = undefined,
   inverted = false,
   /** inherit | light | dark — use light for buttons inside white cards on dark bands */
   surface = "inherit",

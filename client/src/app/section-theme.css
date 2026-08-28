@@ -2,7 +2,7 @@
  * Section theme — swap token sets on the band; light islands reset tokens for cards/forms.
  *
  * Architecture: see `lib/section-design-system.js` and primitives in
- * `components/sections/design/`.
+ * `components/sections/shared/design/`.
  *
  * Band: [data-section-theme="light" | "dark"]  → --band-*, fields, typography
  * Light island: [data-section-surface="light-card"] / [data-light-surface]

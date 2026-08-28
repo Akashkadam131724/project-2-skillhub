@@ -1,6 +1,6 @@
 import { fetchAllContents } from "@/lib/api";
 import { isGalleryContentPage } from "@/lib/content/content-catalog";
-import ContentPageGallery from "@/components/catalog/ContentPageGallery";
+import ContentPageGallery from "./ContentPageGallery";
 
 export const metadata = {
   title: "Content pages catalog",

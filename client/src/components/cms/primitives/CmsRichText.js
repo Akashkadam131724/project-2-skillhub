@@ -5,9 +5,10 @@ import { sanitizeRichHtml, isRichTextEmpty } from "@/lib/utils/rich-text";
 /**
  * Safe rich HTML display for section / item body.
  * Legacy plain text is converted to paragraphs inside sanitizeRichHtml.
+ * @param {{ html?: string, className?: string, empty?: import("react").ReactNode }} props
  */
 export default function CmsRichText({
-  html,
+  html = "",
   className = "",
   empty = null,
 }) {

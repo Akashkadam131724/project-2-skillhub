@@ -81,5 +81,5 @@ export default function MySection({
 | Button UI | `src/components/ui/DsButton.js`, `SectionButtons.js` |
 | Section chrome | `src/components/sections/SectionFrame.js` |
 | Content width | `src/components/sections/SectionWrapper.js` |
-| Design primitives | `src/components/sections/design/` |
+| Design primitives | `src/components/sections/shared/design/` |
 | Items field schema | `src/lib/sections/section-items-config.js`, `section-items-fields.js` |

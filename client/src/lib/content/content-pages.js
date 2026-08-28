@@ -21,6 +21,7 @@ export const HOME_PAGE_KEY = "home";
 export const RESERVED_CONTENT_SEGMENTS = new Set([
   "api",
   "cms",
+  "demo",
   "vendor",
   "product",
   "industry",
@@ -29,6 +30,7 @@ export const RESERVED_CONTENT_SEGMENTS = new Set([
   "blog",
   "course-catalog",
   "catalog",
+  "section",
   "_next",
   "favicon.ico",
   "robots.txt",

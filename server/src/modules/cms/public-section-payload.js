@@ -13,6 +13,24 @@ const CONTEXT_BACKED_KEYS = new Set([
   "related_courses",
 ]);
 
+/** Keep in sync with client accordion/lib/placement.ts → isFaqItemShowable */
+const FAQ_SECTION_KEYS = new Set(["faq", "faq_two_column"]);
+
+function itemQuestion(item) {
+  return item?.title || item?.q || item?.question || "";
+}
+
+function itemAnswer(item) {
+  return item?.body || item?.a || item?.answer || "";
+}
+
+function isFaqItemShowable(item) {
+  if (!item || item.status === false) return false;
+  const question = String(itemQuestion(item) || "").trim();
+  if (!question) return false;
+  return !isRichTextEmpty(itemAnswer(item));
+}
+
 function isRichTextEmpty(html) {
   if (html == null) return true;
   const text = String(html)
@@ -23,8 +41,12 @@ function isRichTextEmpty(html) {
   return !text;
 }
 
-function itemHasContent(item) {
+function itemHasContent(item, sectionKey = "") {
   if (!item || item.status === false) return false;
+  const key = String(sectionKey || "").toLowerCase();
+  if (FAQ_SECTION_KEYS.has(key)) {
+    return isFaqItemShowable(item);
+  }
   return Boolean(
     String(item.title || "").trim() ||
       String(item.subtitle || "").trim() ||
@@ -47,10 +69,10 @@ function itemHasContent(item) {
   );
 }
 
-function activeItems(items) {
+function activeItems(items, sectionKey = "") {
   if (!Array.isArray(items)) return [];
   return items
-    .filter(itemHasContent)
+    .filter((item) => itemHasContent(item, sectionKey))
     .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0));
 }
 
@@ -93,7 +115,7 @@ export function placementHasPublicContent(section) {
 
   if (CONTEXT_BACKED_KEYS.has(key)) return true;
 
-  const items = activeItems(section.items);
+  const items = activeItems(section.items, key);
   if (items.length) return true;
 
   return hasFieldContent(section);
@@ -101,7 +123,8 @@ export function placementHasPublicContent(section) {
 
 /** Slim placement for public JSON — no CMS status/sources/ids noise. */
 export function toPublicSectionPayload(section) {
-  const items = activeItems(section.items);
+  const key = String(section.section_key || "").toLowerCase();
+  const items = activeItems(section.items, key);
   const buttons = activeButtons(section.buttons);
 
   return {

@@ -40,6 +40,12 @@ function widthClassFor(size, pct) {
 
 /**
  * @param {object} props
+ * @param {boolean} props.open
+ * @param {() => void} props.onClose
+ * @param {string} [props.title]
+ * @param {import("react").ReactNode} [props.children]
+ * @param {"left"|"right"} [props.side]
+ * @param {string} [props.size]
  * @param {boolean} [props.widthControl] — show 50/70/100% width toggles (CMS edit drawers)
  * @param {50|70|100} [props.defaultWidthPct] — initial % when widthControl is on
  */

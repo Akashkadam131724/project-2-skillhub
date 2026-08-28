@@ -48,7 +48,9 @@ Placement-level band background + `data-section-theme`. Applied by CMS/public pl
 
 ## Design primitives
 
-`src/components/sections/design/`
+**Not CMS sections** — shared layout surfaces under `shared/` (alongside `CardPlaceholder`). Category folders (`content/`, `data/`, …) are registry sections.
+
+`src/components/sections/shared/design/`
 
 | Component | Use when |
 |-----------|----------|

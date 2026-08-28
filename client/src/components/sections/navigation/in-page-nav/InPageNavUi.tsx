@@ -1,0 +1,109 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import SectionWrapper from "@/components/sections/SectionWrapper";
+import type { InPageNavUiProps } from "./lib/types";
+
+/** Sticky in-page nav — scrolls to `cms-section-{placement_id}`. */
+export default function InPageNavUi({
+  items,
+  preview = false,
+  id,
+}: InPageNavUiProps) {
+  const [activeId, setActiveId] = useState(items[0]?.id || null);
+
+  useEffect(() => {
+    setActiveId(items[0]?.id || null);
+  }, [items]);
+
+  useEffect(() => {
+    if (!items.length || preview) return undefined;
+
+    const nodes = items
+      .map((item) => document.getElementById(item.targetId))
+      .filter((node): node is HTMLElement => node != null);
+
+    if (!nodes.length) return undefined;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((e) => e.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+        if (visible[0]?.target?.id) {
+          const match = items.find((i) => i.targetId === visible[0].target.id);
+          if (match) setActiveId(match.id);
+        }
+      },
+      {
+        rootMargin: "-40% 0px -45% 0px",
+        threshold: [0, 0.25, 0.5, 0.75, 1],
+      }
+    );
+
+    nodes.forEach((n) => observer.observe(n));
+    return () => observer.disconnect();
+  }, [items, preview]);
+
+  if (!items.length) {
+    if (!preview) return null;
+    return (
+      <nav
+        id={id || undefined}
+        aria-label="On this page"
+        className="sticky top-[var(--site-header-h,4.25rem)] z-40 w-full border-b border-slate-200/80 bg-white/80 backdrop-blur-xl"
+      >
+        <SectionWrapper className="py-3">
+          <p className="m-0 text-xs text-slate-400 italic">
+            No nav links yet — add in-page nav titles on sections below.
+          </p>
+        </SectionWrapper>
+      </nav>
+    );
+  }
+
+  if (items.length < 2 && !preview) return null;
+
+  function scrollTo(targetId: string) {
+    document.getElementById(targetId)?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  }
+
+  return (
+    <nav
+      id={id || undefined}
+      aria-label="On this page"
+      className="sticky top-[var(--site-header-h,4.25rem)] z-40 w-full border-b border-slate-200/70 bg-white/90 backdrop-blur-xl supports-[backdrop-filter]:bg-white/80 dark:supports-[backdrop-filter]:bg-slate-950/80"
+    >
+      <SectionWrapper className="py-0">
+        <ul className="m-0 -mb-px flex list-none gap-0 overflow-x-auto p-0 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          {items.map((item, index) => {
+            const active = item.id === activeId;
+            return (
+              <li key={item.id} className="shrink-0">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setActiveId(item.id);
+                    scrollTo(item.targetId);
+                  }}
+                  className={`inline-flex items-center border-b-2 bg-transparent py-3.5 text-sm font-medium transition ${
+                    index === 0 ? "pl-0 pr-4" : "px-4"
+                  } ${
+                    active
+                      ? "border-brand text-brand"
+                      : "border-transparent text-slate-500 hover:border-slate-300 hover:text-ink dark:text-slate-400 dark:hover:border-slate-600 dark:hover:text-white"
+                  }`}
+                >
+                  {item.label}
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      </SectionWrapper>
+    </nav>
+  );
+}

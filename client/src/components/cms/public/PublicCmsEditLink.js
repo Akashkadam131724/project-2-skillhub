@@ -9,8 +9,9 @@ import { cmsEditHrefFromPublicPath } from "@/lib/cms/cms-edit-routes";
 /**
  * Centered bottom edit FAB — links to CMS live-edit for the current public page.
  *
- * Client-only after mount: pathname in the public layout must not run during SSR
- * or it can trigger repeated RSC refetches on dynamic content pages (Next 16).
+ * Renders null until mount so pathname isn't used during SSR (avoids RSC churn
+ * on dynamic content pages). Do not wrap with next/dynamic ssr:false — that
+ * forces BAILOUT_TO_CLIENT_SIDE_RENDERING for the whole public layout.
  */
 export default function PublicCmsEditLink() {
   const pathname = usePathname();

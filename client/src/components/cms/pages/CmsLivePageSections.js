@@ -26,18 +26,18 @@ function CmsLivePageSectionsView() {
       {loading ? (
         <div className="px-4 py-16 text-center text-sm text-slate-500">
           Loading sections…
-        </div>
+            </div>
       ) : (
         <CmsLivePlacementStack />
       )}
       <CmsLiveFieldEditDrawer />
-    </div>
+            </div>
   );
 }
 
 /** Live section editor — identity from CmsLiveEditProvider, placements from CmsLivePlacementsProvider. */
 export default function CmsLivePageSections() {
-  return (
+            return (
     <CmsLivePlacementsProvider>
       <CmsLivePageSectionsView />
     </CmsLivePlacementsProvider>

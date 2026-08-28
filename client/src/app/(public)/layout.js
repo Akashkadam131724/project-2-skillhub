@@ -1,6 +1,6 @@
 import SiteHeader from "@/components/layout/SiteHeader";
 import SiteFooter from "@/components/layout/SiteFooter";
-import PublicCmsEditLinkLazy from "@/components/cms/public/PublicCmsEditLinkLazy";
+import PublicCmsEditLink from "@/components/cms/public/PublicCmsEditLink";
 
 export default function PublicLayout({ children }) {
   return (
@@ -8,7 +8,7 @@ export default function PublicLayout({ children }) {
       <SiteHeader />
       {children}
       <SiteFooter />
-      <PublicCmsEditLinkLazy />
+      <PublicCmsEditLink />
     </>
   );
 }

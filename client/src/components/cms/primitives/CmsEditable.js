@@ -8,10 +8,10 @@ import PencilIcon from "@/components/icons/PencilIcon";
  */
 export default function CmsEditable({
   cmsMode = false,
-  field,
-  label,
-  onEditField,
-  children,
+  field = undefined,
+  label = undefined,
+  onEditField = undefined,
+  children = null,
   className = "",
   inverted = false,
 }) {

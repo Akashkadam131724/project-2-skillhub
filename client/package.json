@@ -12,7 +12,8 @@
     "analyze:webpack": "ANALYZE=true next build --webpack",
     "analyze:open": "open .next/analyze/client.html",
     "start": "next start -p 3001",
-    "lint": "eslint"
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@tiptap/extension-color": "^3.27.4",
@@ -34,8 +35,12 @@
   "devDependencies": {
     "@next/bundle-analyzer": "^16.2.10",
     "@tailwindcss/postcss": "^4",
+    "@types/node": "^26.4.0",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.5",
     "eslint": "^9",
     "eslint-config-next": "16.2.10",
-    "tailwindcss": "^4"
+    "tailwindcss": "^4",
+    "typescript": "^6.0.3"
   }
 }

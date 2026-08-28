@@ -64,7 +64,7 @@ import {
 import {
   MasonryQuotesSection,
   TestimonialsSection,
-  CustomerTestimonialsCarousel,
+  CustomerTestimonialsSection,
   PartnersMarqueeSection,
 } from "@/components/sections/social_proof";
 import { StatsSection, MetricRailSection } from "@/components/sections/data";
@@ -123,7 +123,7 @@ export const SECTION_COMPONENTS = {
   awards: AwardsSection,
   in_page_nav: InPageNavSection,
   testimonials: TestimonialsSection,
-  customer_testimonials: CustomerTestimonialsCarousel,
+  customer_testimonials: CustomerTestimonialsSection,
   faq: FaqSection,
   resources: ResourcesSection,
   products: ProductsSection,

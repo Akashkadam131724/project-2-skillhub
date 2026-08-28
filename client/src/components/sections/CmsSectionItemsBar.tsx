@@ -1,0 +1,66 @@
+"use client";
+
+import { getSectionItemsConfig } from "@/lib/sections/section-items-config";
+import { useSectionCmsKeys } from "@/components/cms/sections/SectionCmsContext";
+
+export type CmsSectionItemsBarProps = {
+  sectionKey?: string;
+  renderKey?: string | null;
+  cmsMode?: boolean;
+  onEditField?: (field: string, extra?: unknown) => void;
+  itemCount?: number;
+  className?: string;
+};
+
+/**
+ * CMS control placed next to the cards — label comes from section config
+ * (FAQ items, Benefit cards, Stats, …) not a generic "Items".
+ */
+export default function CmsSectionItemsBar({
+  sectionKey: sectionKeyProp,
+  renderKey: renderKeyProp,
+  cmsMode = false,
+  onEditField,
+  itemCount = 0,
+  className = "",
+}: CmsSectionItemsBarProps) {
+  const ctx = useSectionCmsKeys();
+  const sectionKey = sectionKeyProp || ctx.sectionKey;
+  const renderKey =
+    renderKeyProp !== undefined && renderKeyProp !== null
+      ? renderKeyProp
+      : ctx.renderKey;
+
+  if (!cmsMode) return null;
+  const config = getSectionItemsConfig(sectionKey, renderKey);
+  if (!config) return null;
+
+  const label = config.actionLabel || config.label || "Items";
+
+  return (
+    <div
+      className={`mb-3 flex flex-wrap items-center justify-between gap-2 ${className}`.trim()}
+    >
+      <p className="section-theme-muted m-0 text-[11px] font-semibold tracking-wide uppercase">
+        {config.label}
+        {itemCount ? (
+          <span className="section-theme-subtle ml-1.5 font-normal normal-case">
+            · {itemCount}
+          </span>
+        ) : null}
+      </p>
+      <button
+        type="button"
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          onEditField?.("items");
+        }}
+        className="inline-flex items-center gap-1.5 rounded-lg border border-dashed border-slate-300 bg-white px-3 py-1.5 text-[11px] font-semibold text-slate-700 transition hover:border-brand hover:text-brand dark:text-slate-200"
+      >
+        <span aria-hidden>{itemCount ? "✎" : "+"}</span>
+        {itemCount ? `Edit ${label}` : `Add ${label}`}
+      </button>
+    </div>
+  );
+}

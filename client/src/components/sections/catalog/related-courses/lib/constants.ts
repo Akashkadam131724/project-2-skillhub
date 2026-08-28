@@ -1,0 +1,1 @@
+export const RELATED_COURSES_FEATURED_LIMIT = 6;
