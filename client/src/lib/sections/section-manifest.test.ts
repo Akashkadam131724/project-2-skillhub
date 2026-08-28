@@ -44,10 +44,9 @@ describe("section manifest", () => {
     }
   });
 
-  it("keeps behavior keys aligned with SECTION_SURFACE entries", () => {
-    const manifestKeys = new Set(getManifestBehaviorKeys());
-    for (const key of manifestKeys) {
-      expect(isKnownSectionKey(key), `manifest key not in catalog: ${key}`).toBe(
+  it("keeps manifest behavior keys registered with public loaders", () => {
+    for (const key of getManifestBehaviorKeys()) {
+      expect(isKnownSectionKey(key), `missing public loader for ${key}`).toBe(
         true
       );
     }

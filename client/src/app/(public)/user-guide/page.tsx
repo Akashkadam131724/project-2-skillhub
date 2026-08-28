@@ -51,6 +51,10 @@ export default function DemoIndexPage() {
           >
             Vendor link grid
           </Link>
+          {" · "}
+          <Link href="/user-guide/test" className="text-brand hover:underline">
+            Test sandbox
+          </Link>
         </p>
       </SectionWrapper>
 
