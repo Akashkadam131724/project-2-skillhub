@@ -268,6 +268,7 @@ export const SECTION_INHERIT_DARK_BAND_KEYS = new Set([
   "editorial_banner",
   "video_banner",
   "metric_rail",
+  "vendor_link_grid",
 ]);
 
 /**

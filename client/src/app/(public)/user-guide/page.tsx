@@ -44,6 +44,13 @@ export default function DemoIndexPage() {
           >
             Hero gradient slider (WIP)
           </Link>
+          {" · "}
+          <Link
+            href="/user-guide/vendor-links-grid"
+            className="text-brand hover:underline"
+          >
+            Vendor links grid (WIP)
+          </Link>
         </p>
       </SectionWrapper>
 

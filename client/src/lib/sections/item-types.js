@@ -203,6 +203,12 @@ export function placementHasMeaningfulContent(section, cmsMode = false) {
     if (key === "hero_stats") {
       return hasItems || placementHasFieldContent(section, cmsMode);
     }
+    // Vendor grid: left copy/buttons or CMS items; public falls back to built-in links
+    if (behavior === "vendor_link_grid") {
+      if (placementHasFieldContent(section, cmsMode)) return true;
+      if (hasItems) return true;
+      return !cmsMode;
+    }
     return hasItems;
   }
 

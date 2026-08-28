@@ -273,6 +273,18 @@ export const SECTION_MANIFEST: Record<string, SectionManifestEntry> = {
     () => import("@/components/sections/hero/video-banner/VideoBannerPublicSection"),
     { loadStatic: () => import("@/components/sections/hero/video-banner/VideoBannerStatic") }
   ),
+  vendor_link_grid: defineSection(
+    () =>
+      import(
+        "@/components/sections/content/vendor-links-grid/VendorLinksGridPublicSection"
+      ),
+    {
+      loadStatic: () =>
+        import(
+          "@/components/sections/content/vendor-links-grid/VendorLinksGridStatic"
+        ),
+    }
+  ),
   website_build_steps: defineSection(
     () => import("@/components/sections/content/website-build-steps/WebsiteBuildStepsPublicSection"),
     { loadStatic: () => import("@/components/sections/content/website-build-steps/WebsiteBuildStepsStatic") }

@@ -336,6 +336,7 @@ export default function CmsSectionLiveEditor({
           hidden={hidden}
           layerLabel={layerLabel}
           contentLocked={contentLocked}
+          contentLockedHref={contentLockedHref}
           onEditField={(_section, field) => openFieldEdit(field)}
           onToggleVisibility={
             showVisibilityToggle && onToggleStatus
@@ -428,6 +429,8 @@ export default function CmsSectionLiveEditor({
                 {contentLockedHref ? (
                   <Link
                     href={contentLockedHref}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="inline-flex font-semibold text-brand no-underline"
                   >
                     {contentLockedHref.includes("/placements/")

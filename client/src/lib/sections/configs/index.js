@@ -42,6 +42,8 @@ import { TEMPLATE_GALLERY_ITEMS_CONFIG } from "@/components/sections/content/tem
 
 import { TEXT_MEDIA_ITEMS_CONFIG } from "@/components/sections/content/text-media/lib/cms-config.js";
 
+import { VENDOR_LINK_GRID_ITEMS_CONFIG } from "@/components/sections/content/vendor-links-grid/lib/cms-config.js";
+
 import { WEBSITE_BUILD_STEPS_ITEMS_CONFIG } from "@/components/sections/content/website-build-steps/lib/cms-config.js";
 
 import { METRIC_RAIL_ITEMS_CONFIG } from "@/components/sections/data/metric-rail/lib/cms-config.js";
@@ -138,6 +140,8 @@ export const SECTION_COMPONENT_ITEM_CONFIGS = {
   template_gallery: TEMPLATE_GALLERY_ITEMS_CONFIG,
 
   text_media: TEXT_MEDIA_ITEMS_CONFIG,
+
+  vendor_link_grid: VENDOR_LINK_GRID_ITEMS_CONFIG,
 
   pricing_tiers: PRICING_TIERS_ITEMS_CONFIG,
 

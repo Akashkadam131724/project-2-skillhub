@@ -17,6 +17,11 @@ function sectionDisplayName(sectionKey) {
   return SECTION_CATALOG.find((s) => s.key === key)?.name || key;
 }
 
+function stopPropagation(e) {
+  e.stopPropagation();
+}
+
+/** Buttons only — do not use on `<Link>` (preventDefault blocks navigation). */
 function stopBubble(e) {
   e.preventDefault();
   e.stopPropagation();
@@ -144,9 +149,11 @@ export default function CmsSectionToolbar({
           contentLockedHref ? (
             <Link
               href={contentLockedHref}
+              target="_blank"
+              rel="noopener noreferrer"
               className="rounded bg-amber-600 px-1.5 py-0.5 text-[10px] font-semibold text-white no-underline hover:bg-amber-500"
-              title="Edit at the owning layer"
-              onClick={stopBubble}
+              title="Edit at the owning layer (opens in new tab)"
+              onClick={stopPropagation}
             >
               Locked · edit source
             </Link>
@@ -194,9 +201,11 @@ export default function CmsSectionToolbar({
                 {contentLocked && contentLockedHref ? (
                   <Link
                     href={contentLockedHref}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="flex w-full items-center rounded-md px-3 py-2 text-left text-sm font-medium text-brand no-underline hover:bg-slate-100 dark:hover:bg-slate-800"
                     onClick={(e) => {
-                      stopBubble(e);
+                      stopPropagation(e);
                       setOpen(false);
                     }}
                   >

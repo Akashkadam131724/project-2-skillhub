@@ -114,6 +114,7 @@ export const SECTION_CATALOG_META = {
   hero_asymmetric: { category: "hero" },
   hero_dual_cta: { category: "hero" },
   hero_gradient_slider: { category: "hero" },
+  vendor_link_grid: { category: "content" },
 };
 
 /** Reserved for optional seed hints — bands inherit site `surface_mode` by default. */

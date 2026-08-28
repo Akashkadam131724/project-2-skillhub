@@ -3,6 +3,7 @@
  * Each variant owns its config in `lib/cms-capabilities.ts`; register here.
  */
 import { HERO_GRADIENT_SLIDER_CMS_CAPABILITIES } from "@/components/sections/hero/hero-gradient-slider/lib/cms-capabilities";
+import { VENDOR_LINKS_GRID_CMS_CAPABILITIES } from "@/components/sections/content/vendor-links-grid/lib/cms-capabilities";
 import { resolveSectionBehaviorKey } from "./section-items-config";
 import type { SectionCmsCapabilities } from "./section-cms-capabilities-types";
 
@@ -29,6 +30,7 @@ export const SECTION_COMPONENT_CMS_CAPABILITIES: Record<
   SectionCmsCapabilities
 > = {
   hero_gradient_slider: HERO_GRADIENT_SLIDER_CMS_CAPABILITIES,
+  vendor_link_grid: VENDOR_LINKS_GRID_CMS_CAPABILITIES,
 };
 
 export function getSectionCmsCapabilities(

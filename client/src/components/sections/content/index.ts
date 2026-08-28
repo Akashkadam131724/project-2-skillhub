@@ -148,6 +148,13 @@ export {
 } from "./latest-blogs";
 
 export {
+  VendorLinksGridSection,
+  VendorLinksGridPublicSection,
+  VendorLinksGridStatic,
+  VendorLinksGridUi,
+} from "./vendor-links-grid";
+
+export {
 
   default as ContactChannelCard,
 

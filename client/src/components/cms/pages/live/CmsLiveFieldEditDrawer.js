@@ -273,6 +273,8 @@ export default function CmsLiveFieldEditDrawer() {
                   pageKey,
                   tagId: editing.section.page_tag_id,
                 })}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="inline-flex font-semibold text-brand no-underline"
               >
                 Edit at{" "}

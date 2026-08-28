@@ -15,6 +15,7 @@ import {
   WebsiteBuildStepsSection,
   LatestBlogsSection,
   TextMediaSection,
+  VendorLinksGridSection,
 } from "@/components/sections/content";
 import {
   KeyBenefitsSection,
@@ -148,6 +149,7 @@ export const SECTION_COMPONENTS = {
   media_mosaic: MediaMosaicSection,
   timeline_vertical: TimelineVerticalSection,
   trust_badges: TrustBadgesSection,
+  vendor_link_grid: VendorLinksGridSection,
   split_cta: SplitCtaSection,
   learning_path: LearningPathSection,
   faq_two_column: FaqTwoColumnSection,
