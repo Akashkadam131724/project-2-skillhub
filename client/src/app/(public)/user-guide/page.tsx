@@ -42,14 +42,14 @@ export default function DemoIndexPage() {
             href="/user-guide/hero-gradient-slider"
             className="text-brand hover:underline"
           >
-            Hero gradient slider (WIP)
+            Hero gradient slider
           </Link>
           {" · "}
           <Link
             href="/user-guide/vendor-links-grid"
             className="text-brand hover:underline"
           >
-            Vendor links grid (WIP)
+            Vendor link grid
           </Link>
         </p>
       </SectionWrapper>

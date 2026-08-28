@@ -2,65 +2,126 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { HeroGradientSliderStatic } from "@/components/sections/hero/hero-gradient-slider";
 import SectionWrapper from "@/components/sections/SectionWrapper";
+import GuideStepsPanel, {
+  type GuideStep,
+} from "@/app/(public)/user-guide/_components/GuideStepsPanel";
 
 export const metadata: Metadata = {
-  title: "Hero gradient slider (static) · SkillHub",
+  title: "Hero gradient slider · SkillHub",
   description:
-    "Static UI preview for the hero gradient slider section before CMS wiring.",
+    "Static UI preview and full integration steps for hero_gradient_slider.",
 };
 
-const INTEGRATION_CHECKLIST = [
+const BUILD_STEPS: GuideStep[] = [
   {
-    step: "1. Ui + Static",
+    title: "Ui + Static",
     detail:
-      "Pure presentation (HeroGradientSliderUi) and hard-coded demo (HeroGradientSliderStatic). No CMS imports in Ui.",
+      "HeroGradientSliderUi (presentation) and HeroGradientSliderStatic (baked-in NetCom demo slides). No CMS imports inside Ui.",
     status: "done",
   },
   {
-    step: "2. lib/",
+    title: "lib/types.ts + lib/static-demo.ts",
     detail:
-      "types.ts, static-demo.ts, then map.ts (API/CMS → slides), placement.ts, cms-config.js for item fields.",
+      "Slide shape, default gradient bg, demo image URLs, stats row, and CTA labels.",
+    status: "done",
+  },
+  {
+    title: "Public + Section adapters",
+    detail:
+      "HeroGradientSliderPublicSection and HeroGradientSliderSection currently render the static demo only — CMS field mapping not wired yet.",
     status: "partial",
   },
   {
-    step: "3. Public + Section adapters",
+    title: "Register in section-registry.js",
     detail:
-      "HeroGradientSliderPublicSection + HeroGradientSliderSection render static demo (no CMS fields yet).",
+      'SECTION_CATALOG entry key: hero_gradient_slider (category: hero). Mirror in server/src/modules/cms/section.catalog.js.',
     status: "done",
   },
   {
-    step: "4. SECTION_CATALOG",
+    title: "section-manifest.ts",
     detail:
-      "Registered as hero_gradient_slider in section-registry.js + server section.catalog.js.",
+      "defineSection with loadPublic → HeroGradientSliderPublicSection and loadStatic → HeroGradientSliderStatic.",
     status: "done",
   },
   {
-    step: "5. section-manifest.ts",
+    title: "section-registry-sync.js",
     detail:
-      "loadPublic + loadStatic registered — drives public pages and user-guide.",
+      "HeroGradientSliderSection for CMS live-edit / content-section preview.",
     status: "done",
   },
   {
-    step: "6. section-registry-sync.js",
-    detail: "HeroGradientSliderSection wired for CMS live-edit preview.",
+    title: "lib/cms-capabilities.ts",
+    detail:
+      'mode: "static" — toolbar shows visibility only; pencils disabled until content mode is enabled.',
     status: "done",
   },
   {
-    step: "7. configs/index.js",
-    detail: "Import HERO_GRADIENT_SLIDER_ITEMS_CONFIG if section uses items[].",
+    title: "item-types.js STATIC_RENDER",
+    detail:
+      "Empty CMS fields still show the demo on public pages (placement visibility only).",
+    status: "done",
+  },
+  {
+    title: "section-theme.js",
+    detail:
+      "Own full-bleed band + fixed dark palette (band theme editor hidden for now).",
+    status: "done",
+  },
+  {
+    title: "lib/map.ts + lib/placement.ts + lib/cms-config.js",
+    detail:
+      "Map items[] → slides; placement showability; per-slide CMS item fields (image, title, body, video URL, buttons).",
     status: "todo",
   },
   {
-    step: "8. Tests",
-    detail: "map.test.ts, optional PublicSection render test, manifest catalog test.",
+    title: "configs/index.js",
+    detail: "Import HERO_GRADIENT_SLIDER_ITEMS_CONFIG when items[] are added.",
     status: "todo",
   },
   {
-    step: "9. graphify update client",
-    detail: "Refresh architecture graph after new variant lands.",
+    title: "Switch cms-capabilities to content mode",
+    detail:
+      "Enable section_title, body, buttons, items; turn on sectionBand when gradient should follow ink/brand.",
+    status: "todo",
+  },
+  {
+    title: "Tests + graphify",
+    detail:
+      "map.test.ts, manifest catalog test, then graphify update client from project-2-skillhub/.",
     status: "todo",
   },
 ];
+
+const CMS_STEPS: GuideStep[] = [
+  {
+    title: "Create the section row (Mongo / seed)",
+    detail:
+      'Insert a Section document with key hero_gradient_slider, name "Hero — Gradient Slider", category hero. render_key can match section_key.',
+  },
+  {
+    title: "Tag on a page template",
+    detail:
+      "In CMS → Pages → pick template (e.g. home) → add section mapping with section_key hero_gradient_slider, sort_order, status: true.",
+  },
+  {
+    title: "Live page today",
+    detail:
+      "Home live edit (/cms/home/edit): section renders demo slides even with empty fields. Toolbar shows Static badge — only show/hide works.",
+  },
+  {
+    title: "After CMS wiring (future)",
+    detail:
+      "Edit slides via items drawer, band via Section band…, global vs page scope same as other hero sections.",
+  },
+];
+
+const DB_EXAMPLE = `{
+  "key": "hero_gradient_slider",
+  "name": "Hero — Gradient Slider",
+  "category": "hero",
+  "section_key": "hero_gradient_slider",
+  "render_key": "hero_gradient_slider"
+}`;
 
 export default function HeroGradientSliderTestPage() {
   return (
@@ -73,43 +134,26 @@ export default function HeroGradientSliderTestPage() {
           {" / Hero gradient slider"}
         </p>
         <h1 className="section-theme-heading mt-2 mb-0 text-2xl font-semibold tracking-tight sm:text-3xl">
-          Static UI — new section workflow
+          Hero gradient slider
         </h1>
         <p className="section-theme-muted mt-3 mb-0 max-w-3xl text-sm leading-relaxed">
-          Preview below uses baked-in demo slides. On a live page, add a placement
-          with <code className="text-xs">section_key</code> and{" "}
-          <code className="text-xs">render_key</code> set to{" "}
-          <code className="text-xs">hero_gradient_slider</code> — CMS fields can
-          stay empty; the static banner still renders.
+          Legacy port of <strong>TWHomepageBanner3</strong>. Preview below is the
+          static demo. Registered behavior key:{" "}
+          <code className="text-xs">hero_gradient_slider</code>.
         </p>
 
-        <div className="mt-8 rounded-2xl border border-slate-200 p-5 dark:border-slate-800">
-          <h2 className="section-theme-heading m-0 text-sm font-semibold">
-            Integration checklist
-          </h2>
-          <ul className="section-theme-muted mt-4 mb-0 list-none space-y-3 p-0 text-sm">
-            {INTEGRATION_CHECKLIST.map((item) => (
-              <li key={item.step} className="flex gap-3">
-                <span
-                  className={`mt-0.5 shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${
-                    item.status === "done"
-                      ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300"
-                      : item.status === "partial"
-                        ? "bg-amber-100 text-amber-900 dark:bg-amber-950 dark:text-amber-200"
-                        : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300"
-                  }`}
-                >
-                  {item.status}
-                </span>
-                <div>
-                  <p className="section-theme-heading m-0 font-medium">
-                    {item.step}
-                  </p>
-                  <p className="m-0 mt-0.5 leading-relaxed">{item.detail}</p>
-                </div>
-              </li>
-            ))}
-          </ul>
+        <div className="mt-8 grid gap-6 lg:grid-cols-2">
+          <GuideStepsPanel title="Developer — build & register" steps={BUILD_STEPS} />
+          <GuideStepsPanel title="CMS — add to a page" steps={CMS_STEPS} />
+        </div>
+
+        <div className="section-theme-muted mt-6 rounded-2xl border border-slate-200 p-5 text-sm dark:border-slate-800">
+          <p className="section-theme-heading m-0 font-medium">
+            Example placement payload
+          </p>
+          <pre className="mt-3 mb-0 overflow-x-auto rounded-lg bg-slate-50 p-3 text-xs dark:bg-slate-900">
+            {DB_EXAMPLE}
+          </pre>
         </div>
       </SectionWrapper>
 
@@ -117,7 +161,7 @@ export default function HeroGradientSliderTestPage() {
 
       <SectionWrapper className="border-t border-slate-200 py-8 dark:border-slate-800">
         <p className="section-theme-muted m-0 text-sm">
-          Files:{" "}
+          Source:{" "}
           <code className="text-xs">
             components/sections/hero/hero-gradient-slider/
           </code>
