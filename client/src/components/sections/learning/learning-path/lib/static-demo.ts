@@ -2,7 +2,7 @@ import type { LearningPathStepUiItem } from "./types";
 
 export const LEARNING_PATH_STATIC_DEMO = {
   title: "Azure administrator path",
-  subtitle: "Static demo via LearningPathStatic.",
+  subtitle: "Structured paths from fundamentals to role-ready credentials.",
   items: [
     {
       id: "lp1",

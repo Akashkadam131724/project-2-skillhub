@@ -2,7 +2,7 @@ import type { CustomerTestimonialUiItem } from "./types";
 
 export const CUSTOMER_TESTIMONIALS_STATIC_DEMO = {
   title: "Customer stories",
-  subtitle: "Static demo via CustomerTestimonialsStatic.",
+  subtitle: "How global teams consolidated vendors and launched faster.",
   items: [
     {
       id: "ct1",

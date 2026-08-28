@@ -2,7 +2,7 @@ import type { SuccessStoryUiItem } from "../../shared/lib/types";
 
 export const SUCCESS_STORIES_STATIC_DEMO = {
   title: "Client Success Stories: How We Empower Teams",
-  subtitle: "Static demo via TabsSuccessStoriesStatic.",
+  subtitle: "Customer wins across cloud migration, security, and leadership.",
   stories: [
     {
       id: "ss1",

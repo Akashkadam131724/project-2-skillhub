@@ -2,7 +2,7 @@ import type { PartnerLogoUiItem } from "./types";
 
 export const PARTNERS_MARQUEE_STATIC_DEMO = {
   title: "Trusted by industry leaders",
-  subtitle: "Static demo via PartnersMarqueeStatic.",
+  subtitle: "Enterprise teams across finance, tech, and healthcare.",
   items: [
     {
       id: "p1",

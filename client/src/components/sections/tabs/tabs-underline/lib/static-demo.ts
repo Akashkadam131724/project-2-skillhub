@@ -2,7 +2,7 @@ import type { TabUiItem } from "../../shared/lib/types";
 
 export const TABS_UNDERLINE_STATIC_DEMO = {
   title: "Underline editorial tabs",
-  subtitle: "Static demo via TabsUnderlineStatic.",
+  subtitle: "Editorial tab strip for programs, resources, and outcomes.",
   tabs: [
     {
       id: "tu1",

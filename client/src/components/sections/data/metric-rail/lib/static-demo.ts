@@ -3,7 +3,7 @@ import type { MetricRailUiItem } from "./types";
 /** Hard-coded metric rail — used by {@link MetricRailStatic}. */
 export const METRIC_RAIL_STATIC_DEMO = {
   title: "Platform metrics",
-  subtitle: "Static demo via MetricRailStatic — no API.",
+  subtitle: "Proof points that reinforce your value proposition.",
   items: [
     { id: "m1", value: "58", label: "Sections" },
     { id: "m2", value: "9", label: "Categories" },

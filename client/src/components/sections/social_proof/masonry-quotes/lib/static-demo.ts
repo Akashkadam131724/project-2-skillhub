@@ -2,7 +2,7 @@ import type { MasonryQuoteUiItem } from "./types";
 
 export const MASONRY_QUOTES_STATIC_DEMO = {
   title: "Loved by teams everywhere",
-  subtitle: "Static demo via MasonryQuotesStatic.",
+  subtitle: "Voices from practitioners, managers, and program owners.",
   items: [
     {
       id: "mq1",

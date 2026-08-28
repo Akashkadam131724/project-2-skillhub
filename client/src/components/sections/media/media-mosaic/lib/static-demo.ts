@@ -2,7 +2,7 @@ import type { MediaMosaicTileUiItem } from "./types";
 
 export const MEDIA_MOSAIC_STATIC_DEMO = {
   title: "Media mosaic",
-  subtitle: "Static demo via MediaMosaicStatic.",
+  subtitle: "Workshops, keynotes, and classroom moments from our programs.",
   items: [
     {
       id: "m1",

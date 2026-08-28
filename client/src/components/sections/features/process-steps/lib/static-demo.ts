@@ -3,7 +3,7 @@ import type { ProcessStepUiItem } from "./types";
 /** Hard-coded process steps — used by {@link ProcessStepsStatic}. */
 export const PROCESS_STEPS_STATIC_DEMO = {
   title: "From catalog to capability",
-  subtitle: "Static demo via ProcessStepsStatic — no API.",
+  subtitle: "From discovery to certified—in four clear stages.",
   items: [
     {
       id: "p1",

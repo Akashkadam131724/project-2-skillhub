@@ -9,7 +9,7 @@ export type FaqStaticProps = {
 
 /**
  * Static FAQ — hard-coded demo data into {@link FaqUi}.
- * Use for /demo, section library samples, Storybook.
+ * Use for /user-guide, section library samples, Storybook.
  * Swap data in `lib/static-demo.ts` (FAQ_STATIC_DEMO).
  */
 export default function FaqStatic({

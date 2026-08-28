@@ -2,7 +2,7 @@ import type { TabUiItem } from "../../shared/lib/types";
 
 export const TABS_HORIZONTAL_STATIC_DEMO = {
   title: "Horizontal pill tabs",
-  subtitle: "Static demo via TabsHorizontalStatic.",
+  subtitle: "Switch between delivery formats without losing context.",
   tabs: [
     {
       id: "th1",

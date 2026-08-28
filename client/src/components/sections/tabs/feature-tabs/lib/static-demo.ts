@@ -2,7 +2,7 @@ import type { TabUiItem } from "../../shared/lib/types";
 
 export const FEATURE_TABS_STATIC_DEMO = {
   title: "Vertical tabs — catalog paths",
-  subtitle: "Static demo via FeatureTabsStatic — no API.",
+  subtitle: "Compare vendors, products, and certification tracks in one view.",
   tabs: [
     {
       id: "ft1",

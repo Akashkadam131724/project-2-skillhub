@@ -4,7 +4,7 @@ import type { WhyChooseUiItem } from "./types";
 export const WHY_CHOOSE_STATIC_DEMO = {
   eyebrow: "Why SkillHub",
   title: "Built for training teams that move fast",
-  subtitle: "Static demo via WhyChooseStatic — no API.",
+  subtitle: "Reasons customers switch from spreadsheets and legacy LMS tools.",
   items: [
     {
       id: "w1",

@@ -3,7 +3,7 @@ import type { StatUiItem } from "./types";
 /** Hard-coded stats — used by {@link StatsStatic}. */
 export const STATS_STATIC_DEMO = {
   title: "SkillHub by the numbers",
-  subtitle: "Static demo via StatsStatic — no API.",
+  subtitle: "Completion, engagement, and credential velocity at a glance.",
   items: [
     { id: "s1", value: "1M+", label: "Learners trained" },
     { id: "s2", value: "50+", label: "Vendor partners" },

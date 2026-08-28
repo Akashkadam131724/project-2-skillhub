@@ -3,7 +3,7 @@ import type { KeyBenefitsUiItem } from "./types";
 /** Hard-coded key benefits — used by {@link KeyBenefitsStatic}. */
 export const KEY_BENEFITS_STATIC_DEMO = {
   title: "Why teams choose SkillHub",
-  subtitle: "Static demo via KeyBenefitsStatic — no API.",
+  subtitle: "What sets SkillHub apart for enterprise L&D teams.",
   items: [
     {
       id: "b1",

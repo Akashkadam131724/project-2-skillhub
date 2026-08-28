@@ -17,7 +17,7 @@ export default function SplitCtaStatic() {
         <SectionButtons
           buttons={sortActiveButtons([
             { label: "Get started", href: "/contact", variant: "primary" },
-            { label: "View demo", href: "/demo", variant: "secondary" },
+            { label: "View user guide", href: "/user-guide", variant: "secondary" },
           ])}
           inverted
           className="flex flex-wrap items-center gap-3 [&_a]:rounded-lg [&_a]:px-4 [&_a]:py-2.5"

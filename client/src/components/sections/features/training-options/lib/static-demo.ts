@@ -3,7 +3,7 @@ import type { TrainingOptionUiItem } from "./types";
 /** Hard-coded training options — used by {@link TrainingOptionsStatic}. */
 export const TRAINING_OPTIONS_STATIC_DEMO = {
   title: "Flexible training options",
-  subtitle: "Static demo via TrainingOptionsStatic — no API.",
+  subtitle: "Flexible formats for every team size and budget.",
   items: [
     {
       id: "t1",

@@ -2,7 +2,7 @@ import type { TestimonialUiItem } from "./types";
 
 export const TESTIMONIALS_STATIC_DEMO = {
   title: "What learners say",
-  subtitle: "Static demo via TestimonialsStatic.",
+  subtitle: "Real quotes from L&D and enablement leaders using SkillHub.",
   items: [
     {
       id: "t1",

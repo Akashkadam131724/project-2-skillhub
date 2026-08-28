@@ -3,7 +3,7 @@ import type { TimelineStepUiItem } from "./types";
 /** Hard-coded timeline — used by {@link TimelineVerticalStatic}. */
 export const TIMELINE_VERTICAL_STATIC_DEMO = {
   title: "How we onboard your team",
-  subtitle: "Static demo via TimelineVerticalStatic — no API.",
+  subtitle: "From pilot to enterprise rollout—milestones that matter.",
   items: [
     {
       id: "t1",

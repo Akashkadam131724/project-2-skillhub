@@ -3,7 +3,7 @@ import type { AwardUiItem } from "./types";
 /** Hard-coded awards — used by {@link AwardsStatic}. */
 export const AWARDS_STATIC_DEMO = {
   title: "Awards & recognition",
-  subtitle: "Static demo via AwardsStatic — no API.",
+  subtitle: "Industry recognition for training excellence and learner outcomes.",
   items: [
     {
       id: "a1",

@@ -15,7 +15,7 @@ export default function OverviewStatic() {
         body={OVERVIEW_STATIC_DEMO.data.body}
         footer={
           <Link
-            href="/demo"
+            href="/user-guide"
             className="section-theme-heading mt-2 inline-flex items-center gap-2 rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-semibold no-underline transition hover:border-brand hover:text-brand sm:mt-3"
           >
             Learn more <span aria-hidden>→</span>
