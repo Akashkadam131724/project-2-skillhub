@@ -7,6 +7,9 @@ import {
   SECTION_CATALOG,
   sectionUsesImage,
 } from "@/lib/sections/section-registry";
+import {
+  resolveSectionToolbarVisibility,
+} from "@/lib/sections/section-cms-capabilities";
 import MoreHorizontalIcon from "@/components/icons/MoreHorizontalIcon";
 
 function sectionDisplayName(sectionKey) {
@@ -53,8 +56,25 @@ export default function CmsSectionToolbar({
   const rootRef = useRef(null);
   const sectionKey = section?.section_key || section?.key;
   const renderKey = section?.render_key || "";
-  const showImage = sectionUsesImage(sectionKey, renderKey);
   const previewSrc = preview ?? section?.section_preview_img;
+  const toolbar = resolveSectionToolbarVisibility(sectionKey, renderKey, {
+    sectionUsesImage,
+  });
+  const isStatic = toolbar.mode === "static";
+  const staticHint = toolbar.staticHint;
+
+  const showNavTitle = toolbar.navTitle;
+  const showImage = toolbar.sectionImage;
+  const showBand = toolbar.sectionBand;
+  const showVisibility = toolbar.visibility;
+  const showRemoveExtra =
+    section?.is_entity_extra && toolbar.removeExtra;
+
+  const hasEditItems = showNavTitle || showImage || showBand;
+  const hasMenuActions =
+    hasEditItems ||
+    (showVisibility && onToggleVisibility) ||
+    showRemoveExtra;
 
   function editField(field) {
     if (!onEditField) return;
@@ -112,6 +132,14 @@ export default function CmsSectionToolbar({
             {layerLabel}
           </span>
         ) : null}
+        {isStatic ? (
+          <span
+            className="rounded bg-violet-700 px-1.5 py-0.5 text-[10px] font-semibold text-white"
+            title={staticHint || "Static content — limited CMS fields"}
+          >
+            Static
+          </span>
+        ) : null}
         {contentLocked ? (
           contentLockedHref ? (
             <Link
@@ -142,78 +170,97 @@ export default function CmsSectionToolbar({
           </span>
         ) : null}
 
-        <div className="relative">
-          <button
-            type="button"
-            onClick={(e) => {
-              stopBubble(e);
-              setOpen((v) => !v);
-            }}
-            className="inline-flex size-8 items-center justify-center rounded-full border border-slate-200/80 bg-white text-slate-600 shadow hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
-            aria-label={`Section actions for ${sectionDisplayName(sectionKey)}`}
-            aria-expanded={open}
-            aria-haspopup="menu"
-          >
-            <MoreHorizontalIcon />
-          </button>
-
-          {open ? (
-            <div
-              role="menu"
-              className="absolute top-[calc(100%+0.375rem)] right-0 z-20 min-w-[11rem] rounded-lg border border-slate-200 bg-white p-1 shadow-lg dark:border-slate-700 dark:bg-slate-900"
+        {hasMenuActions ? (
+          <div className="relative">
+            <button
+              type="button"
+              onClick={(e) => {
+                stopBubble(e);
+                setOpen((v) => !v);
+              }}
+              className="inline-flex size-8 items-center justify-center rounded-full border border-slate-200/80 bg-white text-slate-600 shadow hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
+              aria-label={`Section actions for ${sectionDisplayName(sectionKey)}`}
+              aria-expanded={open}
+              aria-haspopup="menu"
             >
-              {contentLocked && contentLockedHref ? (
-                <Link
-                  href={contentLockedHref}
-                  className="flex w-full items-center rounded-md px-3 py-2 text-left text-sm font-medium text-brand no-underline hover:bg-slate-100 dark:hover:bg-slate-800"
-                  onClick={(e) => {
-                    stopBubble(e);
-                    setOpen(false);
-                  }}
-                >
-                  Edit at source layer →
-                </Link>
-              ) : null}
-              <MenuItem
-                onClick={() => runAction(() => editField("in_page_nav_title"))}
+              <MoreHorizontalIcon />
+            </button>
+
+            {open ? (
+              <div
+                role="menu"
+                className="absolute top-[calc(100%+0.375rem)] right-0 z-20 min-w-[11rem] rounded-lg border border-slate-200 bg-white p-1 shadow-lg dark:border-slate-700 dark:bg-slate-900"
               >
-                {contentLocked ? "Nav title (view)" : "Edit nav title"}
-              </MenuItem>
-              {showImage ? (
-                <MenuItem
-                  onClick={() => runAction(() => editField("section_img_url"))}
-                >
-                  {contentLocked ? "Section image (view)" : "Edit section image"}
-                </MenuItem>
-              ) : null}
-              <MenuItem
-                onClick={() => runAction(() => editField("section_band"))}
-              >
-                {contentLocked ? "Section band (view)" : "Section band…"}
-              </MenuItem>
-              {onToggleVisibility ? (
-                <>
-                  <div className="my-1 border-t border-slate-100 dark:border-slate-800" />
+                {contentLocked && contentLockedHref ? (
+                  <Link
+                    href={contentLockedHref}
+                    className="flex w-full items-center rounded-md px-3 py-2 text-left text-sm font-medium text-brand no-underline hover:bg-slate-100 dark:hover:bg-slate-800"
+                    onClick={(e) => {
+                      stopBubble(e);
+                      setOpen(false);
+                    }}
+                  >
+                    Edit at source layer →
+                  </Link>
+                ) : null}
+                {isStatic && staticHint ? (
+                  <p className="m-0 px-3 py-2 text-xs leading-snug text-slate-500 dark:text-slate-400">
+                    {staticHint}
+                  </p>
+                ) : null}
+                {showNavTitle ? (
                   <MenuItem
                     onClick={() =>
-                      runAction(() => onToggleVisibility?.(section))
+                      runAction(() => editField("in_page_nav_title"))
                     }
                   >
-                    {hidden ? "Show section" : "Hide section"}
+                    {contentLocked ? "Nav title (view)" : "Edit nav title"}
                   </MenuItem>
-                </>
-              ) : null}
-              {section?.is_entity_extra ? (
-                <MenuItem
-                  danger
-                  onClick={() => runAction(() => onRemoveExtra?.(section))}
-                >
-                  Remove from page
-                </MenuItem>
-              ) : null}
-            </div>
-          ) : null}
-        </div>
+                ) : null}
+                {showImage ? (
+                  <MenuItem
+                    onClick={() =>
+                      runAction(() => editField("section_img_url"))
+                    }
+                  >
+                    {contentLocked
+                      ? "Section image (view)"
+                      : "Edit section image"}
+                  </MenuItem>
+                ) : null}
+                {showBand ? (
+                  <MenuItem
+                    onClick={() => runAction(() => editField("section_band"))}
+                  >
+                    {contentLocked ? "Section band (view)" : "Section band…"}
+                  </MenuItem>
+                ) : null}
+                {showVisibility && onToggleVisibility ? (
+                  <>
+                    {hasEditItems ? (
+                      <div className="my-1 border-t border-slate-100 dark:border-slate-800" />
+                    ) : null}
+                    <MenuItem
+                      onClick={() =>
+                        runAction(() => onToggleVisibility?.(section))
+                      }
+                    >
+                      {hidden ? "Show section" : "Hide section"}
+                    </MenuItem>
+                  </>
+                ) : null}
+                {showRemoveExtra ? (
+                  <MenuItem
+                    danger
+                    onClick={() => runAction(() => onRemoveExtra?.(section))}
+                  >
+                    Remove from page
+                  </MenuItem>
+                ) : null}
+              </div>
+            ) : null}
+          </div>
+        ) : null}
       </div>
     </div>
   );

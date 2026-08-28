@@ -1,6 +1,7 @@
 /** Keep in sync with server/src/modules/cms/item.schema.js */
 
 import {
+  resolveSectionBehaviorKey,
   sectionUsesItems,
 } from "@/lib/sections/section-items-config";
 import { isRichTextEmpty } from "@/lib/utils/rich-text";
@@ -178,6 +179,9 @@ const CONTEXT_BACKED_SECTION_KEYS = new Set([
   "related_courses",
 ]);
 
+/** Renders baked-in static UI — empty CMS fields still show on public pages. */
+const STATIC_RENDER_SECTION_KEYS = new Set(["hero_gradient_slider"]);
+
 /**
  * True when this placement has something real to show on a public page.
  * - Item sections → active items
@@ -187,8 +191,10 @@ const CONTEXT_BACKED_SECTION_KEYS = new Set([
 export function placementHasMeaningfulContent(section, cmsMode = false) {
   if (!section) return false;
   const key = String(section.section_key || "").toLowerCase();
+  const behavior = resolveSectionBehaviorKey(key, section.render_key);
 
   if (CONTEXT_BACKED_SECTION_KEYS.has(key)) return true;
+  if (STATIC_RENDER_SECTION_KEYS.has(behavior)) return true;
 
   if (sectionUsesItems(key, section.render_key)) {
     const hasItems =

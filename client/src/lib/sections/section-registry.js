@@ -75,6 +75,7 @@ export const SECTION_SURFACE = {
   hero_stats: "alt",
   hero_asymmetric: "alt",
   hero_dual_cta: "alt",
+  hero_gradient_slider: "fixed",
   promo_modal: "fixed",
   newsletter_band: "alt",
   form_split: "alt",
@@ -236,6 +237,12 @@ export const SECTION_CATALOG = [
   { key: "hero_stats", name: "Hero — Stats", category: "hero", tags: ["hero", "metrics"] },
   { key: "hero_asymmetric", name: "Hero — Asymmetric", category: "hero", tags: ["hero", "asymmetric"] },
   { key: "hero_dual_cta", name: "Hero — Dual CTA", category: "hero", tags: ["hero", "cta"] },
+  {
+    key: "hero_gradient_slider",
+    name: "Hero — Gradient Slider",
+    category: "hero",
+    tags: ["hero", "slider", "gradient"],
+  },
 ];
 
 export const KNOWN_SECTION_KEYS = SECTION_CATALOG.map((s) => s.key);

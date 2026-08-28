@@ -37,6 +37,13 @@ export default function DemoIndexPage() {
           <Link href="/user-guide/buttons" className="text-brand hover:underline">
             Button system
           </Link>
+          {" · "}
+          <Link
+            href="/user-guide/hero-gradient-slider"
+            className="text-brand hover:underline"
+          >
+            Hero gradient slider (WIP)
+          </Link>
         </p>
       </SectionWrapper>
 

@@ -1,5 +1,6 @@
 "use client";
 
+import { sectionCmsFieldAllowed } from "@/lib/sections/section-cms-capabilities";
 import {
   sectionUsesImage,
   sectionUsesItems,
@@ -71,6 +72,16 @@ export function resolveFieldEditRequest(
   if (
     nextField === "section_img_url" &&
     !sectionUsesImage(section.section_key, itemsConfigRenderKey(section))
+  ) {
+    return { handled: true };
+  }
+
+  if (
+    !sectionCmsFieldAllowed(
+      section.section_key,
+      itemsConfigRenderKey(section),
+      nextField
+    )
   ) {
     return { handled: true };
   }

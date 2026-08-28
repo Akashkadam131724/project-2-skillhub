@@ -172,6 +172,7 @@ export const SECTION_FIXED_BAND_THEME_KEYS = new Set([
   "domain_search_band",
   "horizon_gallery",
   "hero_media",
+  "hero_gradient_slider",
   /* Fixed light / warm palette */
   "orbit_hero",
   "template_gallery",
@@ -204,6 +205,7 @@ export function sectionFixedBandThemeHint(sectionKey, renderKey) {
       "domain_search_band",
       "horizon_gallery",
       "hero_media",
+      "hero_gradient_slider",
     ]);
     if (darkKeys.has(key)) {
       return "This section uses a fixed dark band with light text — band theme does not apply.";
@@ -222,6 +224,7 @@ export function sectionFixedBandThemeHint(sectionKey, renderKey) {
  */
 export const SECTION_OWN_BAND_KEYS = new Set([
   "hero_media",
+  "hero_gradient_slider",
   "editorial_banner",
   "statement_band",
   "video_banner",

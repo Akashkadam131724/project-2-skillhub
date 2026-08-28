@@ -50,6 +50,10 @@ export { default as VideoBannerSection } from "./video-banner/VideoBannerSection
 export { default as VideoBannerPublicSection } from "./video-banner/VideoBannerPublicSection";
 export { default as VideoBannerStatic } from "./video-banner/VideoBannerStatic";
 
+export { default as HeroGradientSliderSection } from "./hero-gradient-slider/HeroGradientSliderSection";
+export { default as HeroGradientSliderPublicSection } from "./hero-gradient-slider/HeroGradientSliderPublicSection";
+export { default as HeroGradientSliderStatic } from "./hero-gradient-slider/HeroGradientSliderStatic";
+
 export { default as HeroBannerItemCard } from "./shared/HeroBannerItemCard";
 export {
   HeroTitle,

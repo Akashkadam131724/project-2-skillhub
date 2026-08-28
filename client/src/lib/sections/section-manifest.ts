@@ -105,6 +105,18 @@ export const SECTION_MANIFEST: Record<string, SectionManifestEntry> = {
     () => import("@/components/sections/hero/hero-dual-cta/HeroDualCtaPublicSection"),
     { loadStatic: () => import("@/components/sections/hero/hero-dual-cta/HeroDualCtaStatic") }
   ),
+  hero_gradient_slider: defineSection(
+    () =>
+      import(
+        "@/components/sections/hero/hero-gradient-slider/HeroGradientSliderPublicSection"
+      ),
+    {
+      loadStatic: () =>
+        import(
+          "@/components/sections/hero/hero-gradient-slider/HeroGradientSliderStatic"
+        ),
+    }
+  ),
   hero_media: defineSection(
     () => import("@/components/sections/hero/hero-media/HeroMediaPublicSection"),
     { loadStatic: () => import("@/components/sections/hero/hero-media/HeroMediaStatic") }
