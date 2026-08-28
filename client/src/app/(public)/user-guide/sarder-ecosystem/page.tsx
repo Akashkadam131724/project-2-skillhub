@@ -32,21 +32,22 @@ const BUILD_STEPS: GuideStep[] = [
     status: "done",
   },
   {
-    title: "CMS — title + subtitle + logo",
-    detail: "Enable section_title, sub_title, section_img_url on left column.",
-    status: "todo",
+    title: "CMS — title + subtitle + logo (done)",
+    detail:
+      "Pencils on section_title, sub_title, section_img_url (brand logo). Section band hidden in toolbar.",
+    status: "done",
   },
   {
-    title: "CMS — groups (items)",
+    title: "CMS — groups + logo rows (done)",
     detail:
-      "Nested items: group title + child rows (logo, label, href, disabled). cms-config.js + map.ts.",
-    status: "todo",
+      "Nested items: parent = group title; children = logo (image_url), label (title), alt (subtitle), URL (href empty = non-clickable).",
+    status: "done",
   },
   {
-    title: "Switch archetype",
+    title: "configs + map + placement (done)",
     detail:
-      'Change blueprint from static → hybrid/items; wire placement.ts and remove from STATIC_RENDER_SECTION_KEYS.',
-    status: "todo",
+      "SARDER_ECOSYSTEM_ITEMS_CONFIG, map.ts (groupItemsByTabs), placement.ts, hybrid blueprint.",
+    status: "done",
   },
 ];
 
@@ -54,11 +55,25 @@ const CMS_STEPS: GuideStep[] = [
   {
     title: "Add section to page",
     detail:
-      'CMS → Pages → add mapping with section_key sarder_ecosystem. Static phase: built-in demo always renders.',
+      "CMS → Pages → add mapping with section_key sarder_ecosystem.",
   },
   {
-    title: "Live editor (static)",
-    detail: "Visibility toggle only — toolbar shows static hint until fields are enabled.",
+    title: "Edit left column",
+    detail: "Pencil title, subtitle, and brand logo (section image).",
+  },
+  {
+    title: "Edit groups",
+    detail:
+      "Items drawer → Add group (parent row with title). Inside each group, add child rows: logo, label, optional URL.",
+  },
+  {
+    title: "Add new rows",
+    detail:
+      "Use + in items editor to add groups or logo links. Reorder with sort_order. Empty URL = disabled card (no link).",
+  },
+  {
+    title: "Section band",
+    detail: "Hidden — fixed #f5f5f5 background is built into the section UI.",
   },
 ];
 
@@ -77,8 +92,8 @@ export default function SarderEcosystemGuidePage() {
         </h1>
         <p className="section-theme-muted mt-3 mb-0 max-w-3xl text-sm leading-relaxed">
           Legacy port of <strong>SarderEcosystem</strong>. Behavior key:{" "}
-          <code className="text-xs">sarder_ecosystem</code> — static phase first;
-          CMS fields enabled incrementally.
+          <code className="text-xs">sarder_ecosystem</code> — full CMS with nested
+          groups; section band hidden in toolbar.
         </p>
 
         <div className="mt-8 grid gap-6 lg:grid-cols-2">

@@ -86,6 +86,7 @@ export const SECTION_CATALOG_ENTRIES = [
     category: "content",
     tags: ["ecosystem", "logos", "spine", "partners"],
     surface: "fixed",
+    usesSectionImage: true,
   }),
   defineCatalogEntry({ key: "hero_classic", name: "Hero — Classic", category: "hero", tags: ["hero", "cta"], usesSectionImage: true }),
   defineCatalogEntry({ key: "hero_split", name: "Hero — Split", category: "hero", tags: ["hero", "split"], usesSectionImage: true }),
