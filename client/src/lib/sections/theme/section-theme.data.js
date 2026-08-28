@@ -45,6 +45,7 @@ export const SECTION_FIXED_BAND_THEME_KEYS = new Set([
   /* Fixed light / warm palette */
   "orbit_hero",
   "template_gallery",
+  "sarder_ecosystem",
   /* Chrome / overlay */
   "in_page_nav",
   "promo_modal",
@@ -68,6 +69,7 @@ export const SECTION_FIXED_DARK_BAND_KEYS = new Set([
 export const SECTION_FIXED_LIGHT_BAND_KEYS = new Set([
   "orbit_hero",
   "template_gallery",
+  "sarder_ecosystem",
 ]);
 
 /**
@@ -85,6 +87,7 @@ export const SECTION_OWN_BAND_KEYS = new Set([
   "domain_search_band",
   "horizon_gallery",
   "template_gallery",
+  "sarder_ecosystem",
 ]);
 
 /**

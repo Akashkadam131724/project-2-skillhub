@@ -1,5 +1,5 @@
 import type { SectionCmsCapabilities } from "@/lib/sections/section-cms-capabilities-types";
-import { DEFAULT_SECTION_CMS_CAPABILITIES } from "@/lib/sections/section-cms-capabilities";
+import { DEFAULT_SECTION_CMS_CAPABILITIES } from "@/lib/sections/section-cms-capabilities-default";
 import { defineCatalogEntry } from "@/lib/sections/catalog/define-catalog-entry";
 import type { SectionArchetype, SectionBandProfile, SectionBlueprint } from "./section-blueprint-types";
 

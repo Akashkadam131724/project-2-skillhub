@@ -55,6 +55,13 @@ export default function DemoIndexPage() {
           <Link href="/user-guide/test" className="text-brand hover:underline">
             Test sandbox
           </Link>
+          {" · "}
+          <Link
+            href="/user-guide/sarder-ecosystem"
+            className="text-brand hover:underline"
+          >
+            Sarder ecosystem
+          </Link>
         </p>
       </SectionWrapper>
 

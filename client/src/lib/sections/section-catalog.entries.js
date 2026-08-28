@@ -80,6 +80,13 @@ export const SECTION_CATALOG_ENTRIES = [
     tags: ["content", "links", "vendors", "grid"],
     contentScope: "global",
   }),
+  defineCatalogEntry({
+    key: "sarder_ecosystem",
+    name: "Sarder Ecosystem",
+    category: "content",
+    tags: ["ecosystem", "logos", "spine", "partners"],
+    surface: "fixed",
+  }),
   defineCatalogEntry({ key: "hero_classic", name: "Hero — Classic", category: "hero", tags: ["hero", "cta"], usesSectionImage: true }),
   defineCatalogEntry({ key: "hero_split", name: "Hero — Split", category: "hero", tags: ["hero", "split"], usesSectionImage: true }),
   defineCatalogEntry({ key: "hero_centered", name: "Hero — Centered", category: "hero", tags: ["hero", "centered"] }),

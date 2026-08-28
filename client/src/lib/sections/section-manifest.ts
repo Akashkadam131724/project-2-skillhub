@@ -285,6 +285,18 @@ export const SECTION_MANIFEST: Record<string, SectionManifestEntry> = {
         ),
     }
   ),
+  sarder_ecosystem: defineSection(
+    () =>
+      import(
+        "@/components/sections/content/sarder-ecosystem/SarderEcosystemPublicSection"
+      ),
+    {
+      loadStatic: () =>
+        import(
+          "@/components/sections/content/sarder-ecosystem/SarderEcosystemStatic"
+        ),
+    }
+  ),
   website_build_steps: defineSection(
     () => import("@/components/sections/content/website-build-steps/WebsiteBuildStepsPublicSection"),
     { loadStatic: () => import("@/components/sections/content/website-build-steps/WebsiteBuildStepsStatic") }

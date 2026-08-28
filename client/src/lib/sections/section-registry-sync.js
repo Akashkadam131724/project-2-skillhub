@@ -16,6 +16,7 @@ import {
   LatestBlogsSection,
   TextMediaSection,
   VendorLinksGridSection,
+  SarderEcosystemSection,
 } from "@/components/sections/content";
 import {
   KeyBenefitsSection,
@@ -150,6 +151,7 @@ export const SECTION_COMPONENTS = {
   timeline_vertical: TimelineVerticalSection,
   trust_badges: TrustBadgesSection,
   vendor_link_grid: VendorLinksGridSection,
+  sarder_ecosystem: SarderEcosystemSection,
   split_cta: SplitCtaSection,
   learning_path: LearningPathSection,
   faq_two_column: FaqTwoColumnSection,
