@@ -124,17 +124,19 @@ export { default as ValuePropsSection } from "./ValuePropsSection";
 value_props: ValuePropsSection,
 ```
 
-### 5. Register for **public pages** (lazy)
+### 5. Register for **public pages** and **user-guide** (lazy)
 
-`src/lib/sections/section-component-loaders.js`
+`src/lib/sections/section-manifest.ts` — **single registry** for public + static imports:
 
-```js
-value_props: () =>
-  import("@/components/sections/features/ValuePropsSection"),
+```ts
+value_props: defineSection(
+  () => import("@/components/sections/features/value-props/ValuePropsPublicSection"),
+  { loadStatic: () => import("@/components/sections/features/value-props/ValuePropsStatic") }
+),
 ```
 
-Public path: `PublicPageSections` → `LazySectionBody` → this map.  
-Live edit path: eager `SECTION_COMPONENTS`. **Both must stay in sync.**
+`section-component-loaders.js` and the user-guide read from this manifest automatically.  
+Live edit still uses eager `SECTION_COMPONENTS` in `section-registry-sync.js`. **Keep manifest + sync in sync.**
 
 ### 6. Client catalog metadata
 

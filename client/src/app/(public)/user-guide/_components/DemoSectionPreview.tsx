@@ -6,11 +6,12 @@ import { resolvePromoModalConfig } from "@/components/sections/overlays/promo-mo
 import { PROMO_MODAL_STATIC_DEMO } from "@/components/sections/overlays/promo-modal/lib/static-demo";
 import SectionWrapper from "@/components/sections/SectionWrapper";
 import SectionButtons from "@/components/ui/SectionButtons";
-import { SECTION_STATIC_LOADERS } from "@/lib/demo/section-static-loaders";
 import {
+  getManifestEntry,
   isSectionStaticSpecial,
   isSectionStaticUnavailable,
-} from "@/lib/demo/section-static-registry";
+  resolveStaticLoader,
+} from "@/lib/sections/section-manifest-resolve";
 import { sortActiveButtons } from "@/lib/utils/button-types";
 
 type PreviewComponent = ComponentType<{ id?: string }>;
@@ -54,8 +55,7 @@ function PromoModalPreview() {
             <div className="mt-6 flex flex-wrap gap-3">
               <SectionButtons buttons={buttons} />
             </div>
-          ) : null
-        }
+          ) : null}
       />
     </SectionWrapper>
   );
@@ -83,22 +83,24 @@ function UnavailablePreview({
 export default function DemoSectionPreview({
   sectionKey,
   name,
+  renderKey,
 }: {
   sectionKey: string;
   name: string;
+  renderKey?: string;
 }) {
   const [Component, setComponent] = useState<PreviewComponent | null>(null);
   const [failed, setFailed] = useState(false);
 
   useEffect(() => {
     if (
-      isSectionStaticUnavailable(sectionKey) ||
-      isSectionStaticSpecial(sectionKey)
+      isSectionStaticUnavailable(sectionKey, renderKey) ||
+      isSectionStaticSpecial(sectionKey, renderKey)
     ) {
       return undefined;
     }
 
-    const loader = SECTION_STATIC_LOADERS[sectionKey];
+    const loader = resolveStaticLoader(sectionKey, renderKey);
     if (!loader) {
       return undefined;
     }
@@ -109,7 +111,7 @@ export default function DemoSectionPreview({
 
     loader()
       .then((mod) => {
-        if (active) setComponent(() => mod.default);
+        if (active) setComponent(() => mod.default as PreviewComponent);
       })
       .catch(() => {
         if (active) setFailed(true);
@@ -118,17 +120,17 @@ export default function DemoSectionPreview({
     return () => {
       active = false;
     };
-  }, [sectionKey]);
+  }, [sectionKey, renderKey]);
 
-  if (isSectionStaticUnavailable(sectionKey)) {
+  if (isSectionStaticUnavailable(sectionKey, renderKey)) {
     return <UnavailablePreview name={name} sectionKey={sectionKey} />;
   }
 
-  if (isSectionStaticSpecial(sectionKey)) {
+  if (isSectionStaticSpecial(sectionKey, renderKey)) {
     return <PromoModalPreview />;
   }
 
-  if (!SECTION_STATIC_LOADERS[sectionKey]) {
+  if (!getManifestEntry(sectionKey, renderKey)?.loadStatic) {
     return (
       <SectionWrapper className="py-10">
         <p className="section-theme-muted m-0 text-sm">

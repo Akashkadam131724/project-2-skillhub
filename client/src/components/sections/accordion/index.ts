@@ -14,7 +14,7 @@
  * 1. Copy faq/ → accordion/<variant>/
  * 2. Add lib/cms-config.js + register in lib/sections/configs
  * 3. Export from variant index + accordion/index.ts
- * 4. Wire Public in section-component-loaders.js
+ * 4. Register in section-manifest.ts (+ section-registry-sync.js for CMS)
  * 5. Wire Cms in section-registry-sync.js
  */
 export * from "./faq";

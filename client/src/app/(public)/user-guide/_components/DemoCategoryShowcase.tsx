@@ -112,7 +112,11 @@ export default function DemoCategoryShowcase({
             </div>
           </SectionWrapper>
 
-          <DemoSectionPreview sectionKey={section.key} name={section.name} />
+          <DemoSectionPreview
+            sectionKey={section.key}
+            name={section.name}
+            renderKey={section.render_key}
+          />
         </article>
       ))}
 

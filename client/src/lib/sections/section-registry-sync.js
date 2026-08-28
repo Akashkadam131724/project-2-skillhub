@@ -1,6 +1,6 @@
 /**
  * Eager section components — CMS live edit / preview only.
- * Public pages use section-component-loaders.js instead.
+ * Public pages use section-component-loaders.js (reads section-manifest.ts).
  */
 import {
   OverviewSection,
