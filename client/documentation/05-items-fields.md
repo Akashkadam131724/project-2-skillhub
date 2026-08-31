@@ -4,9 +4,9 @@ Many sections are **item-driven** (`items[]` on the placement). CMS forms and va
 
 ## Config
 
-`src/lib/sections/section-items-config.js`
+`src/lib/sections/section-items-config.ts`
 
-```js
+```ts
 export const SECTION_ITEMS_CONFIG = {
   faq: {
     label: "FAQ",
@@ -38,7 +38,7 @@ Resolve behavior key with `resolveSectionBehaviorKey(sectionKey, renderKey)` (al
 
 ## Field types
 
-From `section-items-fields.js` → `ITEM_FIELD_TYPES`:
+From `section-items-fields.ts` → `ITEM_FIELD_TYPES`:
 
 | `type` | Control |
 |--------|---------|
@@ -83,4 +83,4 @@ Empty draft rows are skipped on save validation; only rows with content are chec
 
 ## Item accessors
 
-Prefer helpers in `src/lib/sections/item-types.js` (`itemQuestion`, `itemAnswer`, `resolveItemsForSection`, …) over reading raw keys in section JSX.
+Prefer helpers in `src/lib/sections/item-types.ts` (`itemQuestion`, `itemAnswer`, `resolveItemsForSection`, …) over reading raw keys in section JSX.

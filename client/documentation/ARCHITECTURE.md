@@ -7,20 +7,35 @@ Interactive: open [`../graphify-out/graph.html`](../graphify-out/graph.html).
 Refresh the graph after large refactors:
 
 ```bash
-cd client
-graphify update .
-# optional: graphify cluster-only .   # rebuild communities / report
+cd project-2-skillhub/client
+graphify update client
+# optional: graphify cluster-only client/graphify-out/graph.json
 ```
 
 Useful queries:
 
 ```bash
-graphify explain "section-design-system" --graph graphify-out/graph.json
-graphify explain "DsButton" --graph graphify-out/graph.json
-graphify explain "SectionFrame" --graph graphify-out/graph.json
-graphify query "section buttons surfaces theme" --budget 3000 --graph graphify-out/graph.json
-graphify god-nodes --top 15 --graph graphify-out/graph.json
+graphify explain "section-design-system" --graph client/graphify-out/graph.json
+graphify explain "DsButton" --graph client/graphify-out/graph.json
+graphify explain "SectionFrame" --graph client/graphify-out/graph.json
+graphify query "section buttons surfaces theme" --budget 3000 --graph client/graphify-out/graph.json
+graphify god-nodes --top 15 --graph client/graphify-out/graph.json
 ```
+
+---
+
+## `src/` layout (summary)
+
+| Folder | Role |
+|--------|------|
+| `app/` | Routes, layouts, API routes |
+| `components/` | Sections, CMS UI, catalog |
+| `context/` | `CmsLiveEdit`, placements, section CMS keys, theme editor |
+| `hooks/` | Shared hooks (`useSlugParam`, debounce, CMS re-exports) |
+| `lib/` | API, section registry, theme, item schemas |
+| `styles/` | Global CSS + section tokens |
+
+Details: [00-src-layout.md](./00-src-layout.md).
 
 ---
 
@@ -34,8 +49,8 @@ graphify god-nodes --top 15 --graph graphify-out/graph.json
                     └────────────┬─────────────┘
            ┌─────────────────────┼─────────────────────┐
            ▼                     ▼                     ▼
-   section-theme.js      design/* primitives    many section *.js
-   section-theme.css     SectionLightCard       forms, stats, FAQ…
+   section-theme.ts       design/* primitives    many section *.tsx
+   styles/section-theme   SectionLightCard       forms, stats, FAQ…
                          SectionBand
                          SectionMediaOverlay
 
@@ -52,11 +67,11 @@ graphify god-nodes --top 15 --graph graphify-out/graph.json
                                          SectionButtons
                                                 │
                                                 ▼
-                                            DsButton  (~25 consumers)
+                                            DsButton
                                                 │
                               ┌─────────────────┼─────────────────┐
                               ▼                 ▼                 ▼
-                       button-types.js   section-buttons.css   CMS editors
+                       button-types.ts   section-buttons.css   CMS editors
                        normalizeButton   .section-btn--*
 ```
 
@@ -72,15 +87,18 @@ Public
         → FaqSection | TabsSection | … (shared components)
 
 Live edit
-  CmsLivePageSections / CmsPageSectionRender (cmsMode: true)
-    → same section components + CmsEditable / items bar / drawers
+  CmsLivePageSections
+    → CmsLiveEditProvider (context/)
+    → CmsLivePlacementsProvider (context/)
+    → CmsPageSectionRender (cmsMode: true)
+      → same section components + CmsEditable / items bar / drawers
 ```
 
 ---
 
 ## Button community (Graphify)
 
-Community centered on `button-types.js` / `DsButton.js` also includes:
+Community centered on `button-types.ts` / `DsButton.tsx` also includes:
 
 - `CmsButtonsEditor`, `button-class-catalog`, `button-system`
 - `SectionButtons`, header / search / catalog CTAs
@@ -92,7 +110,7 @@ Changing `BUTTON_VARIANTS`, action resolution, or `.section-btn` CSS affects thi
 
 ## Items / CMS community
 
-- `section-items-config.js` + `section-items-fields.js` (Zod)
+- `section-items-config.ts` + `section-items-fields.ts` (Zod)
 - `CmsItemsEditor` / `ItemFieldControl`
 - `CmsLiveFieldEditDrawer` / `CmsSectionLiveEditor`
 - Preview: `GenericItemPreviewCard`, per-section `preview` keys
@@ -104,13 +122,14 @@ Changing `BUTTON_VARIANTS`, action resolution, or `.section-btn` CSS affects thi
 | Change | Also verify |
 |--------|-------------|
 | Max-width / gutters | `SectionWrapper`, skeleton, `SectionImage` sizes |
-| Band tokens | `section-theme.css`, light-card / glass presets |
-| Button variant | `button-types.js`, `section-buttons.css`, server `button.schema.js` |
-| Item field shape | `section-items-config.js`, Zod helpers, `ItemFieldControl` |
-| New section | Registry loaders, items config (if item-driven), showcase sample |
+| Band tokens | `styles/section-theme.css`, light-card / glass presets |
+| Button variant | `button-types.ts`, `styles/section-buttons.css`, server `button.schema.js` |
+| Item field shape | `section-items-config.ts`, Zod helpers, `ItemFieldControl` |
+| New section | `section-manifest.ts` + `section-registry-sync.ts`, items config, showcase sample |
+| Live-edit state | `context/CmsLivePlacementsContext.tsx`, `components/cms/pages/types.ts` |
 
 ---
 
 ## Existing override docs
 
-Theme / band / content priority: [`../docs/CMS-OVERRIDE-GUIDE.md`](../docs/CMS-OVERRIDE-GUIDE.md).
+Theme / band / content priority: [CMS-OVERRIDE-GUIDE.md](./CMS-OVERRIDE-GUIDE.md).

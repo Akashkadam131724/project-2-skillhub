@@ -1,8 +1,8 @@
 # 04 — Theme & tokens
 
-CSS lives in `src/app/section-theme.css`. Runtime theme merge lives in `src/lib/theme` + `src/lib/sections/section-theme.js`.
+CSS lives in `src/styles/section-theme.css` (imported via `src/styles/globals.css` in the root layout). Runtime theme merge lives in `src/lib/theme/` + `src/lib/sections/section-theme.ts`.
 
-Override priority (site → page → section band) is documented in [`../docs/CMS-OVERRIDE-GUIDE.md`](../docs/CMS-OVERRIDE-GUIDE.md).
+Override priority (site → page → section band) is documented in [CMS-OVERRIDE-GUIDE.md](./CMS-OVERRIDE-GUIDE.md).
 
 ## Band themes
 
@@ -30,7 +30,7 @@ Set on the placement surface:
 | `section-theme-placeholder` | Empty CMS placeholders |
 | `section-field` / `section-field-label` | Form controls |
 
-Equivalent JS: `DS_TEXT`, `DS_FIELD` from `section-design-system.js`.
+Equivalent TS: `DS_TEXT`, `DS_FIELD` from `section-design-system.ts`.
 
 ## Fixed palettes (never swap with band alone)
 
@@ -61,4 +61,4 @@ Transparent sections show the page background; opaque bands cover it.
 
 ## Tabs
 
-Tab strips use `src/app/section-tabs.css` (separate from band tokens). Prefer existing tab section components over inventing new tab chrome.
+Tab strips use `src/styles/section-tabs.css` (separate from band tokens). Prefer existing tab section components over inventing new tab chrome.

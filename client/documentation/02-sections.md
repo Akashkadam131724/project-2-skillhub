@@ -4,7 +4,7 @@
 
 ### `SectionWrapper`
 
-`src/components/sections/SectionWrapper.js`
+`src/components/sections/SectionWrapper.tsx`
 
 Global **content width** for every section (header, public stack, section interiors).
 
@@ -20,7 +20,7 @@ Details: [06 — Layout shell](./06-layout-shell.md).
 
 ### `SectionFrame`
 
-`src/components/sections/SectionFrame.js`
+`src/components/sections/SectionFrame.tsx`
 
 Standard section chrome used by FAQ, stats, tabs, benefits, directories, etc.
 
@@ -40,7 +40,7 @@ Standard section chrome used by FAQ, stats, tabs, benefits, directories, etc.
 
 ### `SectionSurface`
 
-`src/components/sections/SectionSurface.js`
+`src/components/sections/SectionSurface.tsx`
 
 Placement-level band background + `data-section-theme`. Applied by CMS/public placement shells — section authors usually don’t call this directly.
 
@@ -48,9 +48,7 @@ Placement-level band background + `data-section-theme`. Applied by CMS/public pl
 
 ## Design primitives
 
-**Not CMS sections** — shared layout surfaces under `shared/` (alongside `CardPlaceholder`). Category folders (`content/`, `data/`, …) are registry sections.
-
-`src/components/sections/shared/design/`
+**Not CMS sections** — shared layout surfaces under `shared/design/` (alongside `CardPlaceholder`). Category folders (`content/`, `data/`, …) are registry sections.
 
 | Component | Use when |
 |-----------|----------|
@@ -59,9 +57,9 @@ Placement-level band background + `data-section-theme`. Applied by CMS/public pl
 | `SectionMediaOverlay` | Text/CTA over photo or gradient |
 | `SectionBrandGlow` | Soft brand radial decoration |
 
-Helpers from `section-design-system.js`:
+Helpers from `section-design-system.ts`:
 
-```js
+```ts
 import {
   sectionLightCardSurfaceProps,
   sectionGlassCardSurfaceProps,
@@ -86,7 +84,7 @@ Also set `data-light-surface` with light cards so nested buttons/fields inherit 
 
 ## Typography & fields
 
-```js
+```ts
 DS_TEXT.heading      // section-theme-heading
 DS_TEXT.muted        // section-theme-muted
 DS_TEXT.subtle       // section-theme-subtle
@@ -105,12 +103,14 @@ DS_CARD.chip         // section-ui-chip
 
 ## CMS wiring inside sections
 
-Typical pattern (see `FaqSection.js`):
+Typical pattern (see `FaqSection` and similar):
 
 1. Accept `cmsMode`, `onEditField`, `buttons`, `onFormOpen`.
 2. Pass them through to `SectionFrame`.
 3. Optionally render `CmsSectionItemsBar` (returns `null` when `!cmsMode`).
 4. On empty items: `if (!items.length && !cmsMode) return null;` else show `EmptyItemsHint` in CMS.
+
+`CmsSectionItemsBar` reads `sectionKey` / `renderKey` from `SectionCmsProvider` (`src/context/SectionCmsContext.tsx`) when props are omitted.
 
 Public path builds props with `cmsMode: false` in `PageSectionRender` / `buildSectionCompProps`.
 
@@ -118,7 +118,7 @@ Public path builds props with `cmsMode: false` in `PageSectionRender` / `buildSe
 
 ## Padding tokens
 
-```js
+```ts
 SECTION_BAND_PADDING_SM  // py-14 sm:py-16 lg:py-20  (SectionFrame default)
 SECTION_BAND_PADDING_LG  // py-16 sm:py-20 lg:py-24
 ```

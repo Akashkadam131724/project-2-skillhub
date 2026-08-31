@@ -4,8 +4,8 @@
 
 Single place to tune site content width and gutters:
 
-```jsx
-// src/components/sections/SectionWrapper.js
+```tsx
+// src/components/sections/SectionWrapper.tsx
 "relative mx-auto w-full max-w-[1440px] px-4 sm:px-6 lg:px-8"
 ```
 

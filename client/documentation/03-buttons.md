@@ -1,6 +1,6 @@
 # 03 — Buttons
 
-Design-system CTAs are **data objects** (CMS-shaped) rendered by **`DsButton`**. Keep client + server schemas aligned (`lib/utils/button-types.js` ↔ `server/.../button.schema.js`).
+Design-system CTAs are **data objects** (CMS-shaped) rendered by **`DsButton`**. Keep client + server schemas aligned (`lib/utils/button-types.ts` ↔ `server/.../button.schema.js`).
 
 ## Components
 
@@ -12,15 +12,15 @@ Design-system CTAs are **data objects** (CMS-shaped) rendered by **`DsButton`**.
 | `CmsButtonsEditor` | CMS editor UI |
 | `HeaderContactButton` | Site header CTA wrapper |
 
-CSS: `src/app/section-buttons.css` (base class `.section-btn`).
+CSS: `src/styles/section-buttons.css` (base class `.section-btn`).
 
-Constants: `DS_BUTTON` in `section-design-system.js`.
+Constants: `DS_BUTTON` in `section-design-system.ts`.
 
 ---
 
 ## Button object shape
 
-```js
+```ts
 {
   label: "Contact us",
   variant: "primary",      // see variants
@@ -62,7 +62,7 @@ Normalize with `normalizeButton()` before trusting values.
 
 Dark-band CTA pair (recommended):
 
-```js
+```ts
 DS_BUTTON.darkCtaSet
 // [{ variant: "primary", … }, { variant: "outline", … }]
 ```
@@ -87,7 +87,7 @@ DS_BUTTON.darkCtaSet
 
 Buttons inherit band/card tokens. Force palette when needed:
 
-```jsx
+```tsx
 <DsButton button={btn} surface="light" />   // white card on dark band
 <DsButton button={btn} surface="dark" />    // glass / dark CTA
 <DsButton button={btn} inverted />          // legacy alias → dark
@@ -101,7 +101,7 @@ Or data attrs from `DS_BUTTON.surfaceLight` / `surfaceDark`.
 
 ## Usage examples
 
-```jsx
+```tsx
 import DsButton from "@/components/ui/DsButton";
 import SectionButtons from "@/components/ui/SectionButtons";
 
@@ -124,7 +124,7 @@ import SectionButtons from "@/components/ui/SectionButtons";
 
 Custom color tokens (CSS variables):
 
-```jsx
+```tsx
 <DsButton
   button={btn}
   custom={{ bg: "#fff", fg: "#0b1f4d", hoverBg: "#f1f5f9" }}
@@ -141,7 +141,7 @@ Maps to `--ds-btn-custom-*` (see `buttonCustomStyle` / `DS_BUTTON.customTokens`)
 
 **Do this:**
 
-```jsx
+```tsx
 <span className="hidden lg:contents">
   <HeaderContactButton />
 </span>
@@ -153,4 +153,4 @@ Maps to `--ds-btn-custom-*` (see `buttonCustomStyle` / `DS_BUTTON.customTokens`)
 
 ## Graphify
 
-`DsButton` is a hub (~25 edges): `SectionButtons`, header, search, catalog, CMS editor, pricing, contact forms. Changing button contracts ripples widely — prefer extending via `normalizeButton` + CSS variants over one-off class hacks.
+`DsButton` is a hub: `SectionButtons`, header, search, catalog, CMS editor, pricing, contact forms. Changing button contracts ripples widely — prefer extending via `normalizeButton` + CSS variants over one-off class hacks.

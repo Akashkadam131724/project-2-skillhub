@@ -2,6 +2,8 @@
 
 SkillHub sections are **full-bleed bands** with a **constrained content shell**. Styling is token-driven so the same section works on light or dark bands and inside CMS live-edit.
 
+The client `src/` tree is fully **TypeScript** — see [00 — `src/` layout](./00-src-layout.md) for folder roles.
+
 ## Layers (outside → in)
 
 ```
@@ -22,7 +24,7 @@ SkillHub sections are **full-bleed bands** with a **constrained content shell**.
 └─────────────────────────────────────────────────────────────┘
 ```
 
-Source of truth for this model: `src/lib/sections/section-design-system.js`.
+Source of truth for this model: `src/lib/sections/section-design-system.ts`.
 
 ## Rules (non-negotiable)
 
@@ -37,26 +39,31 @@ Source of truth for this model: `src/lib/sections/section-design-system.js`.
 | Path | Entry | `cmsMode` |
 |------|--------|-----------|
 | Public pages | `PublicPageSections` → `PageSectionRender` → `LazySectionBody` | `false` |
-| Live edit | `CmsLivePageSections` / `CmsPageSectionRender` | `true` |
+| Live edit | `CmsLivePageSections` → `CmsPageSectionRender` | `true` |
 
 The **same section component** is used in both paths. CMS helpers (`CmsEditable`, `CmsSectionItemsBar`, empty hints) no-op when `cmsMode` is false.
 
+Live-edit state:
+
+- Page identity → `CmsLiveEditProvider` (`src/context/CmsLiveEditContext.tsx`)
+- Placements / field drawer → `CmsLivePlacementsProvider` (`src/context/CmsLivePlacementsContext.tsx`)
+
 ## CSS packages
 
-Imported from `src/app/globals.css`:
+Imported from `src/styles/globals.css` (loaded in `src/app/layout.tsx`):
 
 | File | Role |
 |------|------|
-| `section-theme.css` | `--band-*`, `--card-*`, `--field-*`, typography utilities |
-| `section-buttons.css` | `.section-btn` variants / sizes / shapes |
-| `section-tabs.css` | Tab strip tokens |
+| `styles/section-theme.css` | `--band-*`, `--card-*`, `--field-*`, typography utilities |
+| `styles/section-buttons.css` | `.section-btn` variants / sizes / shapes |
+| `styles/section-tabs.css` | Tab strip tokens |
 
 ## Graphify notes
 
 From the client graph (`graphify-out/graph.json`):
 
-- **`section-design-system.js`** — high-degree hub (~38 edges); imported by forms, stats, contact, design primitives, theme helpers.
-- **`SectionFrame`** — used by most catalog / feature / FAQ / timeline sections (~39 edges).
+- **`section-design-system.ts`** — high-degree hub; imported by forms, stats, contact, design primitives, theme helpers.
+- **`SectionFrame`** — used by most catalog / feature / FAQ / timeline sections.
 - **`DsButton`** — shared by section footers, header CTA, search, catalog cards, CMS button editor.
 
 See [ARCHITECTURE.md](./ARCHITECTURE.md) for the dependency map.
