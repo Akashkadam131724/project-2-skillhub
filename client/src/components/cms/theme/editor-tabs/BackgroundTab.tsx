@@ -2,7 +2,7 @@
 
 import { Field, inputClass } from "@/components/cms/admin/CmsUi";
 import CmsBgColorPicker from "@/components/cms/editors/CmsBgColorPicker";
-import { useCmsThemeEditor } from "@/components/cms/theme/editor-tabs/CmsThemeEditorContext";
+import { useCmsThemeEditor } from "@/context/CmsThemeEditorContext";
 
 /** Page background color + image tab. */
 export default function BackgroundTab() {

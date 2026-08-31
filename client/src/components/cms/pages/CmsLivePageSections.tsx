@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import {
   CmsLivePlacementsProvider,
   useCmsLivePagePlacements,
-} from "@/components/cms/pages/live/useCmsLivePagePlacements";
+} from "@/context/CmsLivePlacementsContext";
 import CmsLiveModeBar from "@/components/cms/pages/live/CmsLiveModeBar";
 import CmsLivePlacementStack from "@/components/cms/pages/live/CmsLivePlacementStack";
 import CmsLiveFieldEditDrawer from "@/components/cms/pages/live/CmsLiveFieldEditDrawer";

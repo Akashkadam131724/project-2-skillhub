@@ -20,7 +20,7 @@ import {
 import { isRichTextEmpty, sanitizeRichHtml } from "@/lib/utils/rich-text";
 import type { BlogEditForm, BlogRecord } from "../../entity-types";
 import { formFromBlog } from "../../blog-form";
-import { useSlugParam } from "../../use-slug-param";
+import { useSlugParam } from "@/hooks/useSlugParam";
 
 export default function CmsBlogEditPage() {
   const blogSlug = useSlugParam();

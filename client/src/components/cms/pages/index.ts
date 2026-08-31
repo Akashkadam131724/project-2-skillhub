@@ -7,11 +7,11 @@ export { default as ResolvedPageSections } from "./ResolvedPageSections";
 export {
   CmsLiveEditProvider,
   useCmsLiveEdit,
-} from "./live/CmsLiveEditContext";
+} from "@/context/CmsLiveEditContext";
 export {
   CmsLivePlacementsProvider,
   useCmsLivePagePlacements,
-} from "./live/useCmsLivePagePlacements";
+} from "@/context/CmsLivePlacementsContext";
 export { mergePlacements } from "./live/merge-placements";
 export {
   fetchLivePlacements,

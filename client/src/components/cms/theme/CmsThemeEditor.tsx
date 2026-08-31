@@ -6,7 +6,7 @@ import CmsOverrideGuide from "@/components/cms/theme/CmsOverrideGuide";
 import {
   CmsThemeEditorProvider,
   useCmsThemeEditor,
-} from "@/components/cms/theme/editor-tabs/CmsThemeEditorContext";
+} from "@/context/CmsThemeEditorContext";
 import ColorsTab from "@/components/cms/theme/editor-tabs/ColorsTab";
 import SurfaceTab from "@/components/cms/theme/editor-tabs/SurfaceTab";
 import BackgroundTab from "@/components/cms/theme/editor-tabs/BackgroundTab";

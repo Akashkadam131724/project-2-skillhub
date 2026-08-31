@@ -17,7 +17,7 @@ import {
   btnDanger,
 } from "@/components/cms/admin/CmsUi";
 import type { IndustryForm, IndustryListItem } from "../../entity-types";
-import { useSlugParam } from "../../use-slug-param";
+import { useSlugParam } from "@/hooks/useSlugParam";
 
 export default function CmsIndustryEditPage() {
   const industrySlug = useSlugParam();

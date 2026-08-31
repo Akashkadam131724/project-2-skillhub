@@ -13,7 +13,7 @@ export { default as LazySectionBody } from "./LazySectionBody";
 export {
   SectionCmsProvider,
   useSectionCmsKeys,
-} from "./SectionCmsContext";
+} from "@/context/SectionCmsContext";
 export {
   buildSectionCompProps,
   PageSectionPlacementShell,

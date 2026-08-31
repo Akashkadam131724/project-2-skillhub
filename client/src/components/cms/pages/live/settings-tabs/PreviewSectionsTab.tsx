@@ -3,7 +3,7 @@
 import CmsPagePreviewStack from "@/components/cms/sections/CmsPagePreviewStack";
 import { placementKey } from "@/lib/sections/page-sections-stack";
 import { previewSrc } from "@/components/cms/pages/live/field-meta";
-import { useCmsLivePagePlacements } from "@/components/cms/pages/live/useCmsLivePagePlacements";
+import { useCmsLivePagePlacements } from "@/context/CmsLivePlacementsContext";
 
 /** Compact mapped-order preview stack. */
 export default function PreviewSectionsTab() {

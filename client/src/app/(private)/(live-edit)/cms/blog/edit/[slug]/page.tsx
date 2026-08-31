@@ -9,7 +9,7 @@ import BlogArticleBody from "@/components/blog/BlogArticleBody";
 import BlogCard from "@/components/blog/BlogCard";
 import BlogTableOfContents from "@/components/blog/BlogTableOfContents";
 import CmsLivePageSections from "@/components/cms/pages/CmsLivePageSections";
-import { CmsLiveEditProvider } from "@/components/cms/pages/live/CmsLiveEditContext";
+import { CmsLiveEditProvider } from "@/context/CmsLiveEditContext";
 import SectionWrapper from "@/components/sections/SectionWrapper";
 import { prepareBlogContentWithToc } from "@/lib/utils/blog-toc";
 import { asBlogSummary } from "@/lib/types/blog";

@@ -11,7 +11,7 @@ import { defaultSiteTheme } from "@/lib/theme";
 import type {
   CmsLiveEditContextValue,
   CmsLiveEditProviderProps,
-} from "../types";
+} from "@/components/cms/pages/types";
 
 const CmsLiveEditContext = createContext<CmsLiveEditContextValue | null>(null);
 

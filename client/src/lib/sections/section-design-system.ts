@@ -14,9 +14,9 @@
  * - Photos / gradients with light type: `SectionMediaOverlay`.
  * - Brand accents (`text-brand`) are OK on any layer.
  *
- * CSS tokens live in `app/section-theme.css` (`--band-*`, `--card-*`, `--field-*`).
- * Buttons: `app/section-buttons.css` + `components/ui/DsButton.js` + `lib/utils/button-types.js`.
- * Tabs: `app/section-tabs.css`.
+ * CSS tokens live in `styles/section-theme.css` (`--band-*`, `--card-*`, `--field-*`).
+ * Buttons: `styles/section-buttons.css` + `components/ui/DsButton.js` + `lib/utils/button-types.js`.
+ * Tabs: `styles/section-tabs.css`.
  */
 
 export const SECTION_SURFACE_LIGHT_CARD = "light-card";

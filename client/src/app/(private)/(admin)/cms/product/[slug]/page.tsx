@@ -18,7 +18,7 @@ import {
 } from "@/components/cms/admin/CmsUi";
 import type { ProductEditForm, ProductRecord, SelectOption } from "../../entity-types";
 import { vendorIdFromProduct } from "../../entity-types";
-import { useSlugParam } from "../../use-slug-param";
+import { useSlugParam } from "@/hooks/useSlugParam";
 
 function formFromProduct(data: ProductRecord): ProductEditForm {
   return {

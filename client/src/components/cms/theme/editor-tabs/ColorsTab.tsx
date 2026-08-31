@@ -2,7 +2,7 @@
 
 import { THEME_PRESETS } from "@/lib/theme";
 import { Field, inputClass } from "@/components/cms/admin/CmsUi";
-import { useCmsThemeEditor } from "@/components/cms/theme/editor-tabs/CmsThemeEditorContext";
+import { useCmsThemeEditor } from "@/context/CmsThemeEditorContext";
 
 const COLOR_FIELDS = [
   { key: "brand_primary", label: "Brand", fallback: "#1b4de4" },

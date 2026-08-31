@@ -5,8 +5,8 @@ import { SectionPreviewThumb } from "@/components/cms/admin/CmsUi";
 import { ScopeBadge } from "@/components/cms/sections/CmsSectionFilters";
 import { placementKey } from "@/lib/sections/page-sections-stack";
 import { previewSrc } from "@/components/cms/pages/live/field-meta";
-import { useCmsLiveEdit } from "@/components/cms/pages/live/CmsLiveEditContext";
-import { useCmsLivePagePlacements } from "@/components/cms/pages/live/useCmsLivePagePlacements";
+import { useCmsLiveEdit } from "@/context/CmsLiveEditContext";
+import { useCmsLivePagePlacements } from "@/context/CmsLivePlacementsContext";
 import type { MappedSectionsTabProps } from "../../types";
 
 /** Mapped placements list — show/hide/remove/reorder. */

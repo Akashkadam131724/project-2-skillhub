@@ -23,7 +23,7 @@ import {
 } from "@/components/cms/admin/CmsUi";
 import type { CourseEditForm, CourseRecord, SelectOption } from "../../entity-types";
 import { idFromRef, idsFromRefs } from "../../entity-types";
-import { useSlugParam } from "../../use-slug-param";
+import { useSlugParam } from "@/hooks/useSlugParam";
 
 function formFromCourse(data: CourseRecord): CourseEditForm {
   return {

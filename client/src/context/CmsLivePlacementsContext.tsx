@@ -23,7 +23,7 @@ import {
   buildVisibleWithSurface,
   placementKey,
 } from "@/lib/sections/page-sections-stack";
-import { useCmsLiveEdit } from "@/components/cms/pages/live/CmsLiveEditContext";
+import { useCmsLiveEdit } from "@/context/CmsLiveEditContext";
 import {
   fetchLivePlacements,
   fetchSectionCatalog,
@@ -37,7 +37,7 @@ import type {
   PagePlacement,
   PlacementWithSurface,
   SectionCatalogEntry,
-} from "../types";
+} from "@/components/cms/pages/types";
 
 const CmsLivePlacementsContext =
   createContext<CmsLivePlacementsContextValue | null>(null);

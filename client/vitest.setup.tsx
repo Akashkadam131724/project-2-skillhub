@@ -36,7 +36,7 @@ vi.mock("@/components/cms/sections/CmsButtonsManageBar", () => ({
   default: () => <div data-testid="cms-buttons-manage-bar" />,
 }));
 
-vi.mock("@/components/cms/sections/SectionCmsContext", () => ({
+vi.mock("@/context/SectionCmsContext", () => ({
   useSectionCmsKeys: () => ({
     sectionKey: "test_section",
     renderKey: null,

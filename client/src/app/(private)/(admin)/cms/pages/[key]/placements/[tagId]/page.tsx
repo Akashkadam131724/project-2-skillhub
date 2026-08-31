@@ -34,7 +34,7 @@ import type {
   PagePlacementTag,
   PageTemplateRecord,
 } from "../../../../entity-types";
-import { useKeyTagParams } from "../../../../use-slug-param";
+import { useKeyTagParams } from "@/hooks/useSlugParam";
 
 export default function CmsPagePlacementDetailPage() {
   const { pageKey, placementId } = useKeyTagParams();

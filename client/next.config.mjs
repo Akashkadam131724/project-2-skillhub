@@ -63,8 +63,7 @@ function uploadRemotePatterns() {
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Parent workspace has its own package-lock; pin Turbopack to this app
-  // so CSS @imports like ./section-theme.css resolve from src/app/, not client/.
+  // Parent workspace has its own package-lock; pin Turbopack to this app root.
   turbopack: {
     root: clientRoot,
   },

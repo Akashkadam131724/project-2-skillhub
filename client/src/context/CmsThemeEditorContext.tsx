@@ -10,7 +10,7 @@ import type {
   CmsThemeEditorContextValue,
   CmsThemeEditorProviderProps,
   PageThemeDraft,
-} from "../types";
+} from "@/components/cms/theme/types";
 
 const CmsThemeEditorContext = createContext<CmsThemeEditorContextValue | null>(
   null

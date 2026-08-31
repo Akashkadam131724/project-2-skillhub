@@ -11,7 +11,7 @@ import {
   themeForApiSave,
 } from "@/lib/theme";
 import { getPage, getSiteTheme, updatePage } from "@/lib/api/cms-api";
-import { useCmsLiveEdit } from "@/components/cms/pages/live/CmsLiveEditContext";
+import { useCmsLiveEdit } from "@/context/CmsLiveEditContext";
 import type { PageThemeDraft } from "@/components/cms/theme/types";
 import type { ThemeSettingsTabProps } from "../../types";
 

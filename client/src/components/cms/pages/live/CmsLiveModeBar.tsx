@@ -5,8 +5,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import SettingsIcon from "@/components/icons/SettingsIcon";
 import { exitCmsLiveEdit } from "@/lib/cms/cms-edit-routes";
-import { useCmsLiveEdit } from "@/components/cms/pages/live/CmsLiveEditContext";
-import { useCmsLivePagePlacements } from "@/components/cms/pages/live/useCmsLivePagePlacements";
+import { useCmsLiveEdit } from "@/context/CmsLiveEditContext";
+import { useCmsLivePagePlacements } from "@/context/CmsLivePlacementsContext";
 import CmsLivePageSettingsDrawer from "@/components/cms/pages/live/CmsLivePageSettingsDrawer";
 
 /** Fixed emerald CMS bar + page settings drawer. */

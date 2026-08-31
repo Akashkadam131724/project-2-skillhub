@@ -1,6 +1,6 @@
 "use client";
 
-import { CmsLiveEditProvider } from "@/components/cms/pages/live/CmsLiveEditContext";
+import { CmsLiveEditProvider } from "@/context/CmsLiveEditContext";
 import CmsLivePageSections from "@/components/cms/pages/CmsLivePageSections";
 import type { SectionLibraryPageBodyProps } from "./types";
 

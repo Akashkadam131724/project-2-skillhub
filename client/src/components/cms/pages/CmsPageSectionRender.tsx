@@ -13,10 +13,10 @@ import {
 } from "@/components/cms/sections/page-section-placement";
 import { resolveSectionComponent } from "@/lib/sections/section-registry-sync";
 import { itemsConfigRenderKey } from "@/lib/sections/section-render-key";
-import { SectionCmsProvider } from "@/components/cms/sections/SectionCmsContext";
+import { SectionCmsProvider } from "@/context/SectionCmsContext";
 import FallbackSection from "@/components/sections/FallbackSection";
-import { useCmsLiveEdit } from "@/components/cms/pages/live/CmsLiveEditContext";
-import { useCmsLivePagePlacements } from "@/components/cms/pages/live/useCmsLivePagePlacements";
+import { useCmsLiveEdit } from "@/context/CmsLiveEditContext";
+import { useCmsLivePagePlacements } from "@/context/CmsLivePlacementsContext";
 import type { CmsPageSectionRenderProps } from "./types";
 
 /**

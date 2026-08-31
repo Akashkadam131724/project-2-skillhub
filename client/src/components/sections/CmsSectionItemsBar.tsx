@@ -1,7 +1,7 @@
 "use client";
 
 import { getSectionItemsConfig } from "@/lib/sections/section-items-config";
-import { useSectionCmsKeys } from "@/components/cms/sections/SectionCmsContext";
+import { useSectionCmsKeys } from "@/context/SectionCmsContext";
 
 export type CmsSectionItemsBarProps = {
   sectionKey?: string;

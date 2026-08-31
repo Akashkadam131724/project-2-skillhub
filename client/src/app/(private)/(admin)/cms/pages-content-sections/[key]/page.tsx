@@ -35,7 +35,7 @@ import {
   btnSecondary,
 } from "@/components/cms/admin/CmsUi";
 import type { ApiRecord, SectionCatalogDoc, SectionMetaForm } from "../../entity-types";
-import { useKeyParam } from "../../use-slug-param";
+import { useKeyParam } from "@/hooks/useSlugParam";
 
 const emptyMeta: SectionMetaForm = {
   name: "",

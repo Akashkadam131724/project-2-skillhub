@@ -39,8 +39,8 @@ import {
   fieldValue,
   previewSrc,
 } from "@/components/cms/pages/live/field-meta";
-import { useCmsLiveEdit } from "@/components/cms/pages/live/CmsLiveEditContext";
-import { useCmsLivePagePlacements } from "@/components/cms/pages/live/useCmsLivePagePlacements";
+import { useCmsLiveEdit } from "@/context/CmsLiveEditContext";
+import { useCmsLivePagePlacements } from "@/context/CmsLivePlacementsContext";
 import type { ButtonDraft, SectionItemDraft } from "@/components/cms/editors/types";
 import type { BandDraft } from "@/components/cms/sections/types";
 import type { FieldMetaKey } from "../types";

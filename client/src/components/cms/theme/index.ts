@@ -6,7 +6,7 @@ export { default as PageThemeShell } from "./PageThemeShell";
 export {
   CmsThemeEditorProvider,
   useCmsThemeEditor,
-} from "./editor-tabs/CmsThemeEditorContext";
+} from "@/context/CmsThemeEditorContext";
 export type {
   BandRowProps,
   CmsOverrideGuideProps,

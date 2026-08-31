@@ -2,7 +2,7 @@
 
 import { Field } from "@/components/cms/admin/CmsUi";
 import CmsSurfacePatternEditor from "@/components/cms/theme/CmsSurfacePatternEditor";
-import { useCmsThemeEditor } from "@/components/cms/theme/editor-tabs/CmsThemeEditorContext";
+import { useCmsThemeEditor } from "@/context/CmsThemeEditorContext";
 import type { SurfacePattern } from "../types";
 
 /** Section band / surface pattern tab. */

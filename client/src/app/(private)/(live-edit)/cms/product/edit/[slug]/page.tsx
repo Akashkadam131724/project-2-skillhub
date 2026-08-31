@@ -10,7 +10,7 @@ import {
   NotFoundState,
 } from "@/components/detail/DetailShell";
 import CmsLivePageSections from "@/components/cms/pages/CmsLivePageSections";
-import { CmsLiveEditProvider } from "@/components/cms/pages/live/CmsLiveEditContext";
+import { CmsLiveEditProvider } from "@/context/CmsLiveEditContext";
 import type { SlugPageProps } from "@/app/types";
 
 function resolveVendorId(

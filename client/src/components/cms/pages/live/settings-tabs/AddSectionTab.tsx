@@ -15,7 +15,7 @@ import {
   sectionKind,
 } from "@/components/cms/sections/CmsSectionFilters";
 import { normalizeContentScope } from "@/lib/cms/content-scope";
-import { useCmsLivePagePlacements } from "@/components/cms/pages/live/useCmsLivePagePlacements";
+import { useCmsLivePagePlacements } from "@/context/CmsLivePlacementsContext";
 import type { AddSectionTabProps } from "../../types";
 
 /** Add-section picker — owns filters + lazy catalog load. */

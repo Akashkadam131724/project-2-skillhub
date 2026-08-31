@@ -1,7 +1,7 @@
 import { fetchContentByPath } from "@/lib/api";
 import { fetchLiveEditPageTheme } from "@/lib/cms/live-edit-theme";
 import { cmsPublicHref } from "@/lib/cms/cms-edit-routes";
-import { CmsLiveEditProvider } from "@/components/cms/pages/live/CmsLiveEditContext";
+import { CmsLiveEditProvider } from "@/context/CmsLiveEditContext";
 import CmsLivePageSections from "@/components/cms/pages/CmsLivePageSections";
 
 export const metadata = {

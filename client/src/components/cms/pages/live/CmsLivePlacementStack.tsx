@@ -5,8 +5,8 @@ import SectionWrapper from "@/components/sections/SectionWrapper";
 import CmsPageSectionRender from "@/components/cms/pages/CmsPageSectionRender";
 import PageThemeShell from "@/components/cms/theme/PageThemeShell";
 import { placementKey } from "@/lib/sections/page-sections-stack";
-import { useCmsLiveEdit } from "@/components/cms/pages/live/CmsLiveEditContext";
-import { useCmsLivePagePlacements } from "@/components/cms/pages/live/useCmsLivePagePlacements";
+import { useCmsLiveEdit } from "@/context/CmsLiveEditContext";
+import { useCmsLivePagePlacements } from "@/context/CmsLivePlacementsContext";
 import type { PlacementWithSurface } from "../types";
 
 /** Live-edit placement stack (mirrors public render + CMS edit hooks). */

@@ -57,7 +57,7 @@ import type {
   PlacementForm,
   SectionCatalogDoc,
 } from "../../entity-types";
-import { useKeyParam } from "../../use-slug-param";
+import { useKeyParam } from "@/hooks/useSlugParam";
 
 type PageTab = "mapped" | "add" | "preview" | "theme";
 

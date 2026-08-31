@@ -9,7 +9,7 @@ import {
 } from "@/lib/content/content-pages";
 import { cmsPublicHref } from "@/lib/cms/cms-edit-routes";
 import CmsLivePageSections from "@/components/cms/pages/CmsLivePageSections";
-import { CmsLiveEditProvider } from "@/components/cms/pages/live/CmsLiveEditContext";
+import { CmsLiveEditProvider } from "@/context/CmsLiveEditContext";
 import type { SlugArrayPageProps } from "@/app/types";
 
 export async function generateMetadata({

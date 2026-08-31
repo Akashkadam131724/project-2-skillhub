@@ -1,6 +1,6 @@
 import type { CSSProperties } from "react";
 import { Fraunces, Manrope } from "next/font/google";
-import "./globals.css";
+import "@/styles/globals.css";
 import { fetchSiteThemeForLayout } from "@/lib/theme/site-theme-server";
 import { themeCssVars } from "@/lib/theme";
 import type { AppLayoutProps } from "./types";

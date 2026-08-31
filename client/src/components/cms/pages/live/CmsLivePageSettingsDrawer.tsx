@@ -3,8 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Drawer from "@/components/ui/Drawer";
-import { useCmsLiveEdit } from "@/components/cms/pages/live/CmsLiveEditContext";
-import { useCmsLivePagePlacements } from "@/components/cms/pages/live/useCmsLivePagePlacements";
+import { useCmsLiveEdit } from "@/context/CmsLiveEditContext";
+import { useCmsLivePagePlacements } from "@/context/CmsLivePlacementsContext";
 import MappedSectionsTab from "@/components/cms/pages/live/settings-tabs/MappedSectionsTab";
 import AddSectionTab from "@/components/cms/pages/live/settings-tabs/AddSectionTab";
 import PreviewSectionsTab from "@/components/cms/pages/live/settings-tabs/PreviewSectionsTab";

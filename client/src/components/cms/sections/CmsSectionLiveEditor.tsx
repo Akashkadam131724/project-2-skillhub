@@ -23,7 +23,7 @@ import {
 } from "@/lib/sections/section-registry";
 import { resolveSectionComponent } from "@/lib/sections/section-registry-sync";
 import { itemsConfigRenderKey } from "@/lib/sections/section-render-key";
-import { SectionCmsProvider } from "@/components/cms/sections/SectionCmsContext";
+import { SectionCmsProvider } from "@/context/SectionCmsContext";
 import FallbackSection from "@/components/sections/FallbackSection";
 import { mediaUrl, uploadCmsImage } from "@/lib/api/cms-api";
 import { mediaAlt } from "@/lib/utils/media-alt";

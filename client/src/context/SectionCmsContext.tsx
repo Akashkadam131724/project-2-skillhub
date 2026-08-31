@@ -2,7 +2,7 @@
 
 import { createContext, useContext } from "react";
 import { itemsConfigRenderKey } from "@/lib/sections/section-render-key";
-import type { SectionCmsContextValue, SectionCmsProviderProps } from "./types";
+import type { SectionCmsContextValue, SectionCmsProviderProps } from "@/components/cms/sections/types";
 
 const SectionCmsContext = createContext<SectionCmsContextValue>({
   sectionKey: "",

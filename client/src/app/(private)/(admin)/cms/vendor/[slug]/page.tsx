@@ -17,7 +17,7 @@ import {
   btnDanger,
 } from "@/components/cms/admin/CmsUi";
 import type { VendorEditForm, VendorRecord } from "../../entity-types";
-import { useSlugParam } from "../../use-slug-param";
+import { useSlugParam } from "@/hooks/useSlugParam";
 
 function formFromVendor(data: VendorRecord): VendorEditForm {
   return {
