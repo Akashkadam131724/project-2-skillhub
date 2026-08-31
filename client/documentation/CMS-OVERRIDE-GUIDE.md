@@ -241,10 +241,12 @@ flowchart TB
 | Area | Code |
 |------|------|
 | Theme merge | `server/src/modules/cms/theme.utils.js` → `mergeTheme()` |
-| Section band priority | `client/src/lib/section-band-cms.js` |
-| Surface pattern | `client/src/lib/surface-patterns.js` |
-| Content scope | `client/src/lib/content-scope.js` |
-| Placement merge | `client/src/components/cms/pages/live/merge-placements.js` → `mergePlacements()` |
+| Section band priority | `client/src/lib/sections/section-band-cms.ts` |
+| Surface pattern | `client/src/lib/theme/surface-patterns.ts` |
+| Content scope | `client/src/lib/cms/content-scope.ts` |
+| Placement merge | `client/src/components/cms/pages/live/merge-placements.ts` → `mergePlacements()` |
+| Live-edit placements | `client/src/context/CmsLivePlacementsContext.tsx` |
+| Theme editor UI | `client/src/context/CmsThemeEditorContext.tsx` |
 
 ---
 

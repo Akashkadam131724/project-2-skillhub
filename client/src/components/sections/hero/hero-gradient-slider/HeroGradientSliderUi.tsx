@@ -14,6 +14,7 @@ import HeroGradientSliderCtaButtons from "./HeroGradientSliderCtaButtons";
 import HeroGradientSliderImage from "./HeroGradientSliderImage";
 import HeroGradientSliderPlayIcon from "./HeroGradientSliderPlayIcon";
 import HeroGradientSliderStatsRow from "./HeroGradientSliderStatsRow";
+import { SECTION_CONTENT_INSET_CLASS } from "@/components/sections/SectionWrapper";
 import { HERO_GRADIENT_SLIDER_DEFAULT_BG } from "./lib/static-demo";
 import type { HeroGradientSliderUiProps } from "./lib/types";
 import "./hero-gradient-slider.css";
@@ -90,7 +91,7 @@ export default function HeroGradientSliderUi({
         <div className="relative z-[1] flex w-full items-center lg:w-[60%]">
           <div
             key={slide.id}
-            className="hp-content-enter flex w-full flex-col justify-center space-y-6 px-6 py-8 sm:py-12 lg:space-y-8 lg:px-8 lg:py-[60px] lg:pl-[max(2rem,calc((100vw-80rem)/2))] lg:py-0"
+            className={`hp-content-enter flex w-full flex-col justify-center space-y-6 py-8 sm:py-12 lg:space-y-8 lg:py-[60px] lg:py-0 ${SECTION_CONTENT_INSET_CLASS}`}
           >
             <div className="space-y-4 lg:space-y-6">
               <h1 className="m-0 text-[40px] font-semibold leading-tight tracking-tight text-white sm:text-[36px] lg:text-[40px]">

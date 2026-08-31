@@ -26,13 +26,13 @@ src/components/sections/
   navigation/| overlays/| social_proof/| tabs/ | timeline/ | trust/
 ```
 
-Example: features → `src/components/sections/features/ValuePropsSection.js`.
+Example: features → `src/components/sections/features/value-props/ValuePropsSection.tsx`.
 
 ### 2. Write the section component
 
-Follow an existing simple item section such as `KeyBenefitsSection.js`.
+Follow an existing simple item section such as `KeyBenefitsSection.tsx` (`features/key-benefits/`).
 
-```jsx
+```tsx
 "use client";
 
 import CmsSectionItemsBar from "@/components/sections/CmsSectionItemsBar";
@@ -51,7 +51,7 @@ export default function ValuePropsSection({
   buttons,
   onFormOpen,
   ...frameProps
-}) {
+}: ValuePropsSectionProps) {
   const items = resolveItemsForSection(section_key, mappingItems);
   if (!items.length && !cmsMode) return null;
 
@@ -104,23 +104,23 @@ export default function ValuePropsSection({
 - Accept `cmsMode` / `onEditField` / `buttons` / `onFormOpen` and pass through.
 - Public: hide empty item sections (`!items.length && !cmsMode → null`).
 
-Optional card extraction: `src/components/sections/cards/ValuePropCard.js`.
+Optional card extraction: `src/components/sections/cards/ValuePropCard.tsx`.
 
 ### 3. Export from the folder barrel
 
-```js
-// features/index.js
-export { default as ValuePropsSection } from "./ValuePropsSection";
+```ts
+// features/index.ts
+export { default as ValuePropsSection } from "./value-props/ValuePropsSection";
 ```
 
 ### 4. Register for **live edit** (eager)
 
-`src/lib/sections/section-registry-sync.js`
+`src/lib/sections/section-registry-sync.ts`
 
 1. Import `ValuePropsSection` from the features barrel.  
 2. Add to `SECTION_COMPONENTS`:
 
-```js
+```ts
 value_props: ValuePropsSection,
 ```
 
@@ -135,14 +135,14 @@ value_props: defineSection(
 ),
 ```
 
-`section-component-loaders.js` and the user-guide read from this manifest automatically.  
-Live edit still uses eager `SECTION_COMPONENTS` in `section-registry-sync.js`. **Keep manifest + sync in sync.**
+`section-component-loaders.ts` and the user-guide read from this manifest automatically.  
+Live edit still uses eager `SECTION_COMPONENTS` in `section-registry-sync.ts`. **Keep manifest + sync in sync.**
 
 ### 6. Client catalog metadata
 
-`src/lib/sections/section-registry.js`
+`src/lib/sections/section-registry.ts`
 
-```js
+```ts
 // SECTION_CATALOG
 { key: "value_props", name: "Value Props", category: "features", tags: ["cards", "benefits"] },
 
@@ -154,9 +154,9 @@ If the layout uses `section_img_url`, add the key to `SECTION_USES_IMAGE`.
 
 ### 7. Items CMS form (if item-driven)
 
-`src/lib/sections/section-items-config.js`
+`src/lib/sections/section-items-config.ts`
 
-```js
+```ts
 value_props: {
   label: "Value props",
   actionLabel: "props",
@@ -189,9 +189,9 @@ Then create/seed a `Section` document with `key: "value_props"` (CMS UI or seed 
 
 | Task | Where |
 |------|--------|
-| Showcase / library sample | `src/lib/sections/showcase/static-samples.js` |
-| Theme band exceptions | `section-theme.js` (`SECTION_OWN_BAND_KEYS`, skip keys, fixed theme) |
-| Behavior alias | `BEHAVIOR_ALIASES` in `section-items-config.js` (e.g. old key → new render) |
+| Showcase / library sample | `src/lib/sections/showcase/static-samples.ts` |
+| Theme band exceptions | `section-theme.ts` (`SECTION_OWN_BAND_KEYS`, skip keys, fixed theme) |
+| Behavior alias | `BEHAVIOR_ALIASES` in `section-items-config.ts` (e.g. old key → new render) |
 | Item preview art | `GenericItemPreviewCard` + `preview` key |
 
 ### 10. Smoke-test
@@ -203,29 +203,31 @@ Then create/seed a `Section` document with `key: "value_props"` (CMS UI or seed 
 5. **Live edit**: pencils, items editor, save, band theme.  
 6. Dark band: cards/forms still readable (use light island / glass card if needed).
 
+Optional: `npm run typecheck` before committing.
+
 ---
 
 ## Registration map (what talks to what)
 
 ```
-┌─────────────────────┐     ┌──────────────────────────────┐
-│ ValuePropsSection.js│◄────│ section-registry-sync.js     │  live edit
-│                     │     │ SECTION_COMPONENTS           │
-│                     │◄────│ section-component-loaders.js │  public lazy
-└──────────┬──────────┘     └──────────────────────────────┘
+┌──────────────────────────┐     ┌──────────────────────────────┐
+│ ValuePropsSection.tsx    │◄────│ section-registry-sync.ts     │  live edit
+│                          │     │ SECTION_COMPONENTS           │
+│                          │◄────│ section-component-loaders.ts │  public lazy
+└──────────┬───────────────┘     └──────────────────────────────┘
            │
            ▼
-┌─────────────────────┐     ┌──────────────────────────────┐
-│ SECTION_CATALOG     │     │ SECTION_ITEMS_CONFIG         │
-│ SECTION_SURFACE     │     │ (CMS item fields + Zod)      │
-│ (client registry)   │     └──────────────────────────────┘
-└──────────┬──────────┘
+┌──────────────────────────┐     ┌──────────────────────────────┐
+│ SECTION_CATALOG          │     │ SECTION_ITEMS_CONFIG         │
+│ SECTION_SURFACE          │     │ (CMS item fields + Zod)      │
+│ (section-registry.ts)    │     └──────────────────────────────┘
+└──────────┬───────────────┘
            │
            ▼
-┌─────────────────────┐
-│ section.catalog.js  │  server meta + DB Section.key
-│ (server)            │
-└─────────────────────┘
+┌──────────────────────────┐
+│ section.catalog.js       │  server meta + DB Section.key
+│ (server)                 │
+└──────────────────────────┘
 ```
 
 Forget one registration → section missing in CMS, blank on public, or FallbackSection.
@@ -254,7 +256,7 @@ Use when the piece is **not** a page placement.
 
 Example card:
 
-```jsx
+```tsx
 export default function ValuePropCard({ title, subtitle, onDarkBand = false }) {
   return (
     <div
@@ -300,9 +302,10 @@ Avoid copy-pasting entire sections for a spacing tweak.
 
 ## Related docs
 
+- [00 — `src/` layout](./00-src-layout.md)  
 - [01 — Overview](./01-overview.md)  
 - [02 — Sections](./02-sections.md)  
 - [03 — Buttons](./03-buttons.md)  
 - [05 — Items & fields](./05-items-fields.md)  
 - [ARCHITECTURE](./ARCHITECTURE.md) (Graphify)  
-- [CMS override guide](../docs/CMS-OVERRIDE-GUIDE.md)
+- [CMS override guide](./CMS-OVERRIDE-GUIDE.md)
