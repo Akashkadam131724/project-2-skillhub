@@ -36,14 +36,6 @@ export const HERO_GRADIENT_SLIDER_STATIC_SLIDES: HeroGradientSliderSlide[] = [
         sort_order: 0,
         status: true,
       },
-      {
-        label: "Talk to sales",
-        variant: "outline",
-        action_type: "url",
-        target_url: "/contact-us",
-        sort_order: 1,
-        status: true,
-      },
     ],
   },
   {

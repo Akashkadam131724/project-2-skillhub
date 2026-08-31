@@ -3,16 +3,10 @@
 import { useEffect, useRef, useState } from "react";
 import ChevronLeftIcon from "@/components/icons/ChevronLeftIcon";
 import ChevronRightIcon from "@/components/icons/ChevronRightIcon";
-import YoutubeModal from "@/components/ui/YoutubeModal";
-import {
-  youtubeEmbedUrl,
-  youtubeWatchUrl,
-} from "@/lib/utils/button-types";
 import { mediaAlt } from "@/lib/utils/media-alt";
 import HeroGradientSliderAnimatedBg from "./HeroGradientSliderAnimatedBg";
 import HeroGradientSliderCtaButtons from "./HeroGradientSliderCtaButtons";
 import HeroGradientSliderImage from "./HeroGradientSliderImage";
-import HeroGradientSliderPlayIcon from "./HeroGradientSliderPlayIcon";
 import HeroGradientSliderStatsRow from "./HeroGradientSliderStatsRow";
 import { SECTION_CONTENT_INSET_CLASS } from "@/components/sections/SectionWrapper";
 import { HERO_GRADIENT_SLIDER_DEFAULT_BG } from "./lib/static-demo";
@@ -28,18 +22,13 @@ export default function HeroGradientSliderUi({
 }: HeroGradientSliderUiProps) {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
-  const [isVideoOpen, setIsVideoOpen] = useState(false);
   const autoPlayRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const count = slides.length;
   const slide = count ? slides[Math.min(currentSlide, count - 1)] : null;
   const bgStyle = slide?.bgColor || HERO_GRADIENT_SLIDER_DEFAULT_BG;
   const videoUrl = slide?.videoUrl?.trim() || "";
-  const embedSrc = videoUrl
-    ? youtubeEmbedUrl(videoUrl, { autoplay: true })
-    : null;
-  const watchHref = videoUrl ? youtubeWatchUrl(videoUrl) || videoUrl : null;
-  const hasVideo = Boolean(videoUrl && embedSrc);
+  const hasSideImage = Boolean(slide?.sideImageUrl?.trim());
   const showStats =
     currentSlide === FIRST_SLIDE_INDEX && slide?.showStats !== false;
 
@@ -53,7 +42,7 @@ export default function HeroGradientSliderUi({
       autoPlayRef.current = null;
     }
 
-    if (count <= 1 || isFormModalOpen || isVideoOpen || !autoplayMs) return;
+    if (count <= 1 || isFormModalOpen || !autoplayMs) return;
 
     autoPlayRef.current = setTimeout(() => {
       setCurrentSlide((prev) => (prev + 1) % count);
@@ -65,7 +54,7 @@ export default function HeroGradientSliderUi({
         autoPlayRef.current = null;
       }
     };
-  }, [currentSlide, count, isFormModalOpen, isVideoOpen, autoplayMs]);
+  }, [currentSlide, count, isFormModalOpen, autoplayMs]);
 
   if (!count || !slide) return null;
 
@@ -105,67 +94,27 @@ export default function HeroGradientSliderUi({
 
             <HeroGradientSliderCtaButtons
               buttons={slide.buttons}
+              videoUrl={videoUrl}
               onFormOpenChange={setIsFormModalOpen}
             />
 
             {showStats ? <HeroGradientSliderStatsRow /> : null}
-
-            {hasVideo ? (
-              <button
-                type="button"
-                onClick={() => setIsVideoOpen(true)}
-                className="mt-4 rounded-full transition duration-200 hover:scale-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/80 lg:hidden"
-                aria-label="Play video"
-              >
-                <HeroGradientSliderPlayIcon />
-              </button>
-            ) : null}
           </div>
         </div>
 
-        {/* Image Section — desktop */}
-        <div
-          key={`image-${slide.id}`}
-          className="hp-image-enter relative hidden h-auto w-full overflow-hidden lg:block lg:w-1/2"
-        >
-          <div className="hp-image-inner relative flex h-full w-full items-stretch">
-            {hasVideo ? (
-              <button
-                type="button"
-                onClick={() => setIsVideoOpen(true)}
-                className="absolute left-1/2 top-1/2 z-10 -translate-x-1/2 -translate-y-1/2 rounded-full transition duration-200 hover:scale-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/80"
-                aria-label="Play video"
-              >
-                <HeroGradientSliderPlayIcon />
-              </button>
-            ) : null}
-
-            <HeroGradientSliderImage
-              src={slide.sideImageUrl}
-              alt={mediaAlt(slide.title, "Banner")}
-              className="h-full w-full shrink-0 object-cover object-[center_75%] lg:object-center"
-            />
-          </div>
-        </div>
-
-        {/* Image Section — mobile */}
-        {slide.sideImageUrl ? (
-          <div className="relative aspect-[4/3] w-full lg:hidden">
-            <HeroGradientSliderImage
-              src={slide.sideImageUrl}
-              alt={mediaAlt(slide.title, "Banner")}
-              className="h-full w-full object-cover object-center"
-            />
-            {hasVideo ? (
-              <button
-                type="button"
-                onClick={() => setIsVideoOpen(true)}
-                className="absolute inset-0 flex items-center justify-center bg-black/20"
-                aria-label="Play video"
-              >
-                <HeroGradientSliderPlayIcon />
-              </button>
-            ) : null}
+        {/* Side image — desktop only (hidden on mobile & tablet) */}
+        {hasSideImage ? (
+          <div
+            key={`image-${slide.id}`}
+            className="hp-image-enter relative hidden h-auto w-full overflow-hidden lg:block lg:w-1/2"
+          >
+            <div className="hp-image-inner relative flex h-full w-full items-stretch">
+              <HeroGradientSliderImage
+                src={slide.sideImageUrl}
+                alt={mediaAlt(slide.title, "Banner")}
+                className="h-full w-full shrink-0 object-cover object-center"
+              />
+            </div>
           </div>
         ) : null}
       </div>
@@ -218,14 +167,6 @@ export default function HeroGradientSliderUi({
           </div>
         </div>
       ) : null}
-
-      <YoutubeModal
-        open={isVideoOpen}
-        title={slide.title}
-        embedSrc={embedSrc}
-        watchHref={watchHref}
-        onClose={() => setIsVideoOpen(false)}
-      />
     </section>
   );
 }
