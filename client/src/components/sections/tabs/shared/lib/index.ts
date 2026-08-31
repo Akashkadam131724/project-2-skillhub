@@ -1,4 +1,4 @@
-export { nestedTabsItemsConfig } from "./nested-tabs-cms-config.js";
+export { nestedTabsItemsConfig } from "./nested-tabs-cms-config";
 export {
   isNestedTabShowable,
   isTabChildShowable,

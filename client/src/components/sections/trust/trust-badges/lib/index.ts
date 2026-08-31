@@ -1,4 +1,4 @@
-export { TRUST_BADGES_ITEMS_CONFIG } from "./cms-config.js";
+export { TRUST_BADGES_ITEMS_CONFIG } from "./cms-config";
 export {
   isTrustBadgeShowable,
   resolveTrustBadgeUiItems,

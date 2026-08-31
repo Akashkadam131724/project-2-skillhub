@@ -1,4 +1,4 @@
-export { CURRICULUM_ITEMS_CONFIG } from "./cms-config.js";
+export { CURRICULUM_ITEMS_CONFIG } from "./cms-config";
 export {
   isCurriculumItemShowable,
   resolveCurriculumUiItems,

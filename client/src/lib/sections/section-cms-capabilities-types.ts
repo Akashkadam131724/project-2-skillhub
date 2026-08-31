@@ -12,6 +12,6 @@ export type SectionCmsToolbarCapabilities = {
 export type SectionCmsCapabilities = {
   mode: SectionCmsMode;
   staticHint?: string;
-  toolbar: SectionCmsToolbarCapabilities;
+  toolbar: Partial<SectionCmsToolbarCapabilities>;
   fields?: Record<string, boolean>;
 };

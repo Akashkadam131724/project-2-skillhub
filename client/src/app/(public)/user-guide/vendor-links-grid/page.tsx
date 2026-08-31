@@ -22,7 +22,7 @@ const BUILD_STEPS: GuideStep[] = [
   {
     title: "lib/ adapters",
     detail:
-      "types.ts, static-demo.ts, map.ts (items → links + static fallback), placement.ts, band.ts, cms-config.js (title, href, image_url per row).",
+      "types.ts, static-demo.ts, map.ts (items → links + static fallback), placement.ts, band.ts, cms-config (title, href, image_url per row).",
     status: "done",
   },
   {

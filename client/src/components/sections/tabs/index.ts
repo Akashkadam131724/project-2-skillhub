@@ -1,5 +1,5 @@
 /**
- * Tabs category — Ui / Static / Public / Cms + lib/cms-config.js
+ * Tabs category — Ui / Static / Public / Cms + lib/cms-config
  *
  * Nested tab variants share `shared/TabsNestedUi`.
  */

@@ -1,9 +1,9 @@
-// @ts-nocheck
 "use client";
 
 import { useEffect, useState } from "react";
 import { mediaUrl } from "@/lib/api/cms-api";
 import { resolveItemsForSection, itemTitle } from "@/lib/sections/item-types";
+import type { ItemLike } from "@/lib/sections/item-types";
 import { bannerBgStyle, bannerOverlayStyle } from "@/lib/theme/banner-bg";
 import { isRichTextEmpty } from "@/lib/utils/rich-text";
 import CmsRichText from "@/components/cms/primitives/CmsRichText";
@@ -14,11 +14,19 @@ import SectionWrapper from "@/components/sections/SectionWrapper";
 import HeroSlideSideMedia from "../shared/HeroSlideSideMedia";
 import ChevronLeftIcon from "@/components/icons/ChevronLeftIcon";
 import ChevronRightIcon from "@/components/icons/ChevronRightIcon";
+import type { HeroMediaUiProps } from "./lib/types";
 
-function SlideCopy({ item, cmsMode, onEditField, onFormOpen }) {
-  const title = itemTitle(item) || item?.title || "";
-  const subtitle = item?.subtitle || "";
-  const body = item?.body || "";
+type SlideCopyProps = {
+  item: ItemLike;
+  cmsMode?: boolean;
+  onEditField?: HeroMediaUiProps["onEditField"];
+  onFormOpen?: HeroMediaUiProps["onFormOpen"];
+};
+
+function SlideCopy({ item, cmsMode, onEditField, onFormOpen }: SlideCopyProps) {
+  const title = itemTitle(item) || String(item?.title || "");
+  const subtitle = String(item?.subtitle || "");
+  const body = String(item?.body || "");
   const buttons = Array.isArray(item?.buttons) ? item.buttons : [];
 
   return (
@@ -62,10 +70,10 @@ function SlideCopy({ item, cmsMode, onEditField, onFormOpen }) {
 export default function HeroMediaUi({
   items: mappingItems,
   section_key = "hero_media",
-  cmsMode,
+  cmsMode = false,
   onEditField,
   onFormOpen,
-}) {
+}: HeroMediaUiProps) {
   const items = resolveItemsForSection(section_key, mappingItems);
   const [index, setIndex] = useState(0);
   const [videoOpen, setVideoOpen] = useState(false);
@@ -86,13 +94,13 @@ export default function HeroMediaUi({
 
   const count = items.length;
   const current = count ? items[Math.min(index, count - 1)] : null;
-  const bgUrl = current ? mediaUrl(current.image_url || "") : "";
-  const bgValue = current?.bg_color || "";
+  const bgUrl = current ? mediaUrl(String(current.image_url || "")) : "";
+  const bgValue = String(current?.bg_color || "");
   const hasSide =
-    Boolean(current && mediaUrl(current.icon || "")) ||
+    Boolean(current && mediaUrl(String(current.icon || ""))) ||
     (cmsMode && Boolean(current));
 
-  function go(delta) {
+  function go(delta: number) {
     if (!count) return;
     setIndex((i) => (i + delta + count) % count);
   }
@@ -163,7 +171,7 @@ export default function HeroMediaUi({
                 <div className="flex items-center gap-2" role="tablist">
                   {items.map((item, i) => (
                     <button
-                      key={item._id || item.id || i}
+                      key={String(item._id || item.id || i)}
                       type="button"
                       role="tab"
                       aria-selected={i === index}

@@ -1,4 +1,4 @@
-export { TRAINING_OPTIONS_ITEMS_CONFIG } from "./cms-config.js";
+export { TRAINING_OPTIONS_ITEMS_CONFIG } from "./cms-config";
 export {
   isTrainingOptionShowable,
   resolveTrainingOptionUiItems,

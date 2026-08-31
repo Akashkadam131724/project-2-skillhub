@@ -1,5 +1,5 @@
 /**
- * Trust category — Ui / Static / Public / Cms + lib/cms-config.js
+ * Trust category — Ui / Static / Public / Cms + lib/cms-config
  */
 export {
   TrustBadgesSection,

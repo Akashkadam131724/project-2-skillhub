@@ -1,4 +1,4 @@
-export { CAST_PROFILES_ITEMS_CONFIG } from "./cms-config.js";
+export { CAST_PROFILES_ITEMS_CONFIG } from "./cms-config";
 export {
   isCastProfileShowable,
   resolveCastProfileUiItems,

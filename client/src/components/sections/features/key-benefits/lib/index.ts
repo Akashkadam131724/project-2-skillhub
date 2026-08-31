@@ -1,4 +1,4 @@
-export { KEY_BENEFITS_ITEMS_CONFIG } from "./cms-config.js";
+export { KEY_BENEFITS_ITEMS_CONFIG } from "./cms-config";
 export {
   isKeyBenefitShowable,
   resolveKeyBenefitsUiItems,

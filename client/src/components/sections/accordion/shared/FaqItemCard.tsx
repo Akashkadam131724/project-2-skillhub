@@ -1,5 +1,6 @@
 "use client";
 
+import type { CmsButtonData } from "@/components/ui/types";
 import CmsRichText from "@/components/cms/primitives/CmsRichText";
 import SectionButtons from "@/components/ui/SectionButtons";
 import CardPlaceholder from "@/components/sections/shared/CardPlaceholder";
@@ -34,10 +35,10 @@ export default function FaqItemCard({
 }: FaqItemCardProps) {
   const q = question ?? (item ? itemQuestion(item) : "");
   const a = answer ?? (item ? itemAnswer(item) : "");
-  const list = Array.isArray(buttons)
-    ? buttons
+  const list: CmsButtonData[] = Array.isArray(buttons)
+    ? (buttons as CmsButtonData[])
     : Array.isArray(item?.buttons)
-      ? item.buttons
+      ? (item.buttons as CmsButtonData[])
       : [];
   const hasButtons = list.length > 0;
   const n = String((index ?? 0) + 1).padStart(2, "0");

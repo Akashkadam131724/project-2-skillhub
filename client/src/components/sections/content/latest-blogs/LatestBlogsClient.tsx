@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import BlogCard from "@/components/blog/BlogCard";
+import { asBlogSummary } from "@/lib/types/blog";
+import type { BlogSummary } from "@/lib/types/blog";
 import { fetchBlogs } from "@/lib/api";
 import LatestBlogsUi from "./LatestBlogsUi";
 import {
@@ -26,7 +28,7 @@ export default function LatestBlogsClient({
 }) {
   const limit = resolveLatestBlogsLimit(data);
   const category = resolveLatestBlogsCategory(data);
-  const [blogs, setBlogs] = useState<Record<string, unknown>[]>([]);
+  const [blogs, setBlogs] = useState<BlogSummary[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -37,7 +39,13 @@ export default function LatestBlogsClient({
       ...(category ? { category } : {}),
     })
       .then((response) => {
-        if (alive) setBlogs(response.data || []);
+        if (alive) {
+          setBlogs(
+            ((response.data as unknown[]) || [])
+              .map(asBlogSummary)
+              .filter((blog): blog is BlogSummary => blog !== null)
+          );
+        }
       })
       .catch(() => {
         if (alive) setBlogs([]);
@@ -65,7 +73,7 @@ export default function LatestBlogsClient({
     <div className="grid gap-6 md:grid-cols-3">
       {blogs.map((blog) => (
         <BlogCard
-          key={String(blog._id || blog.id || blog.slug)}
+          key={blog._id || blog.id || blog.slug}
           blog={blog}
         />
       ))}

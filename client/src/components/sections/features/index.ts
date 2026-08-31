@@ -1,5 +1,5 @@
 /**
- * Features category — Ui / Static / Public / Cms + lib/cms-config.js
+ * Features category — Ui / Static / Public / Cms + lib/cms-config
  */
 export {
   KeyBenefitsSection,

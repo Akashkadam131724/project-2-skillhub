@@ -1,4 +1,4 @@
-export { TIMELINE_VERTICAL_ITEMS_CONFIG } from "./cms-config.js";
+export { TIMELINE_VERTICAL_ITEMS_CONFIG } from "./cms-config";
 export {
   isTimelineStepShowable,
   resolveTimelineStepUiItems,

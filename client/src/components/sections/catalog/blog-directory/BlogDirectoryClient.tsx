@@ -3,6 +3,8 @@
 import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import BlogCard from "@/components/blog/BlogCard";
+import { asBlogSummary } from "@/lib/types/blog";
+import type { BlogSummary } from "@/lib/types/blog";
 import CatalogPager from "../shared/CatalogPager";
 import CatalogScrollAnchor from "../shared/CatalogScrollAnchor";
 import CatalogSearch from "../shared/CatalogSearch";
@@ -32,8 +34,13 @@ export default function BlogDirectoryClient({
   const q = String(searchParams.get("q") || "").trim();
   const limit = resolveBlogDirectoryLimit(data);
 
-  const [result, setResult] = useState({
-    data: [] as Record<string, unknown>[],
+  const [result, setResult] = useState<{
+    data: BlogSummary[];
+    total: number;
+    page: number;
+    totalPages: number;
+  }>({
+    data: [],
     total: 0,
     page: 1,
     totalPages: 1,
@@ -51,14 +58,20 @@ export default function BlogDirectoryClient({
     })
       .then((response) => {
         if (!alive) return;
-        setResult(
-          (response as typeof result) || {
-            data: [],
-            total: 0,
-            page: 1,
-            totalPages: 1,
-          }
-        );
+        const raw = response as {
+          data?: unknown[];
+          total?: number;
+          page?: number;
+          totalPages?: number;
+        };
+        setResult({
+          data: (raw.data || [])
+            .map(asBlogSummary)
+            .filter((blog): blog is BlogSummary => blog !== null),
+          total: raw.total ?? 0,
+          page: raw.page ?? 1,
+          totalPages: raw.totalPages ?? 1,
+        });
         setError("");
       })
       .catch((err) => {
@@ -138,7 +151,7 @@ export default function BlogDirectoryClient({
           >
             {(showFeatured ? remaining : blogs).map((blog) => (
               <BlogCard
-                key={String(blog._id || blog.id || blog.slug)}
+                key={blog._id || blog.id || blog.slug}
                 blog={blog}
               />
             ))}

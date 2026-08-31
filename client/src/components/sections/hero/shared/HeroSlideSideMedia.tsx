@@ -1,15 +1,22 @@
-// @ts-nocheck
 "use client";
 
 import { useCallback, useState } from "react";
 import { mediaUrl } from "@/lib/api/cms-api";
 import { mediaAlt } from "@/lib/utils/media-alt";
+import type { ItemLike } from "@/lib/sections/item-types";
 import {
   youtubeEmbedUrl,
   youtubeWatchUrl,
 } from "@/lib/utils/button-types";
 import YoutubeModal from "@/components/ui/YoutubeModal";
 import PlayIcon from "@/components/icons/PlayIcon";
+
+export type HeroSlideSideMediaProps = {
+  item: ItemLike;
+  cmsMode?: boolean;
+  className?: string;
+  onVideoOpenChange?: (open: boolean) => void;
+};
 
 /**
  * Full-height right-panel media — covers the right side of the banner.
@@ -20,9 +27,9 @@ export default function HeroSlideSideMedia({
   cmsMode = false,
   className = "",
   onVideoOpenChange,
-}) {
+}: HeroSlideSideMediaProps) {
   const [open, setOpen] = useState(false);
-  const sideImg = mediaUrl(item?.icon || "");
+  const sideImg = mediaUrl(String(item?.icon || ""));
   const videoUrl = String(item?.href || "").trim();
   const embedSrc = videoUrl
     ? youtubeEmbedUrl(videoUrl, { autoplay: false })
@@ -31,7 +38,7 @@ export default function HeroSlideSideMedia({
   const hasVideo = Boolean(videoUrl);
 
   const setVideoOpen = useCallback(
-    (next) => {
+    (next: boolean) => {
       setOpen(next);
       onVideoOpenChange?.(next);
     },
@@ -110,7 +117,7 @@ export default function HeroSlideSideMedia({
 
       <YoutubeModal
         open={open}
-        title={item?.title || "Video"}
+        title={String(item?.title || "Video")}
         embedSrc={embedSrc}
         watchHref={watchHref}
         onClose={() => setVideoOpen(false)}

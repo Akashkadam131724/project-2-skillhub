@@ -1,4 +1,3 @@
-// @ts-nocheck
 "use client";
 
 import HeroDualCtaUi from "./HeroDualCtaUi";

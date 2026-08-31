@@ -1,4 +1,4 @@
-export { CUSTOMER_TESTIMONIALS_ITEMS_CONFIG } from "./cms-config.js";
+export { CUSTOMER_TESTIMONIALS_ITEMS_CONFIG } from "./cms-config";
 export {
   isCustomerTestimonialShowable,
   resolveCustomerTestimonialUiItems,

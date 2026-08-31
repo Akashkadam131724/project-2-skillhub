@@ -1,4 +1,4 @@
-export { TEXT_MEDIA_ITEMS_CONFIG } from "./cms-config.js";
+export { TEXT_MEDIA_ITEMS_CONFIG } from "./cms-config";
 export {
   isTextMediaItemShowable,
   resolveTextMediaUiItems,

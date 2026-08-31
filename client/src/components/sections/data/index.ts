@@ -1,7 +1,7 @@
 /**
  * Data category — stats & metric proof sections.
  *
- * Ui / Static / Public / Cms + lib/cms-config.js
+ * Ui / Static / Public / Cms + lib/cms-config
  */
 export {
   StatsSection,

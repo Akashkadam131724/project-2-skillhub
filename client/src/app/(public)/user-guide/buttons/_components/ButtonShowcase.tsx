@@ -291,10 +291,8 @@ export default function ButtonShowcase() {
           <div className="section-ui-card rounded-2xl border p-4 sm:p-5">
             {/* CmsButtonsEditor is untyped JS — draft shape matches normalizeButtonsDraft */}
             <CmsButtonsEditor
-              value={draft as never[]}
-              onChange={(updater: (prev: typeof draft) => typeof draft) =>
-                setDraft((prev) => updater(prev))
-              }
+              value={draft}
+              onChange={setDraft}
             />
           </div>
 

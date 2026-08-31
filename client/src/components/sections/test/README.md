@@ -22,7 +22,8 @@ your-section-name/
   lib/
     types.ts
     static-demo.ts
-    cms-capabilities.ts     # export from blueprint resolver or hand-tune
+    cms-config.ts          # item fields (if items/hybrid)
+    cms-capabilities.ts
   index.ts
 ```
 

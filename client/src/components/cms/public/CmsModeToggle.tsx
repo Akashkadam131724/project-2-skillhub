@@ -1,0 +1,84 @@
+"use client";
+
+import Link from "next/link";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { cmsEditHrefFromPublicPath } from "@/lib/cms/cms-edit-routes";
+import type { CmsModeToggleProps } from "./types";
+
+/**
+ * CMS On/Off + Admin — used in site header (when CMS off) and CMS top bar.
+ */
+export default function CmsModeToggle({
+  variant = "header",
+  showAdmin = true,
+}: CmsModeToggleProps = {}) {
+  const pathname = usePathname();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  if (!pathname || pathname === "/cms" || pathname.startsWith("/cms/")) {
+    return null;
+  }
+
+  const on = String(searchParams.get("cms") || "").toLowerCase() === "true";
+
+  if (variant === "header" && on) {
+    return null;
+  }
+
+  function toggle() {
+    const editPath = cmsEditHrefFromPublicPath(pathname);
+    if (!on && editPath) {
+      router.push(editPath, { scroll: false });
+      return;
+    }
+    const params = new URLSearchParams(searchParams.toString());
+    if (on) params.delete("cms");
+    else params.set("cms", "true");
+    const qs = params.toString();
+    router.push(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
+  }
+
+  const isBar = variant === "bar";
+
+  return (
+    <div className="flex items-center gap-1.5">
+      <button
+        type="button"
+        onClick={toggle}
+        aria-pressed={on}
+        title={on ? "Turn off page CMS edit mode" : "Turn on page CMS edit mode"}
+        className={`inline-flex items-center gap-1.5 rounded-xl px-2.5 py-1.5 text-xs font-semibold tracking-wide uppercase transition ${
+          isBar
+            ? on
+              ? "bg-amber-500 text-white hover:bg-amber-600"
+              : "text-emerald-900 hover:bg-emerald-100 dark:text-emerald-100 dark:hover:bg-emerald-900/60"
+            : on
+              ? "bg-amber-500 text-white hover:bg-amber-600"
+              : "border border-slate-200/80 bg-white/70 text-slate-600 hover:border-ink/20 hover:bg-white hover:text-ink dark:border-slate-700 dark:bg-slate-900/70 dark:text-slate-300 dark:hover:bg-slate-900"
+        }`}
+      >
+        <span
+          className={`size-1.5 rounded-full ${
+            on ? "bg-white" : isBar ? "bg-emerald-700/50" : "bg-brand"
+          }`}
+          aria-hidden
+        />
+        CMS {on ? "On" : "Off"}
+      </button>
+      {showAdmin ? (
+        <Link
+          href="/cms"
+          className={`rounded-xl px-2.5 py-1.5 text-xs font-semibold tracking-wide no-underline uppercase ${
+            isBar
+              ? "text-emerald-900 hover:bg-emerald-100 dark:text-emerald-100 dark:hover:bg-emerald-900/60"
+              : "hidden border border-slate-200/80 bg-white/70 text-slate-600 hover:border-ink/20 hover:bg-white hover:text-ink sm:inline-flex dark:border-slate-700 dark:bg-slate-900/70 dark:text-slate-300 dark:hover:bg-slate-900"
+          }`}
+          title="CMS admin"
+        >
+          Admin
+        </Link>
+      ) : null}
+    </div>
+  );
+}

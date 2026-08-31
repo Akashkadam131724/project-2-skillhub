@@ -1,4 +1,4 @@
-export { COMPARISON_TABLE_ITEMS_CONFIG } from "./cms-config.js";
+export { COMPARISON_TABLE_ITEMS_CONFIG } from "./cms-config";
 export {
   isComparisonItemShowable,
   resolveComparisonUiItems,

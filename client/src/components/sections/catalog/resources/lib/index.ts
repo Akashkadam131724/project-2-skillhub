@@ -1,4 +1,4 @@
-export { RESOURCES_ITEMS_CONFIG } from "./cms-config.js";
+export { RESOURCES_ITEMS_CONFIG } from "./cms-config";
 export {
   isResourceItemShowable,
   resolveResourcesUiItems,

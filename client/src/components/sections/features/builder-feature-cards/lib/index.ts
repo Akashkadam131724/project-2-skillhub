@@ -1,4 +1,4 @@
-export { BUILDER_FEATURE_CARDS_ITEMS_CONFIG } from "./cms-config.js";
+export { BUILDER_FEATURE_CARDS_ITEMS_CONFIG } from "./cms-config";
 export {
   isBuilderFeatureCardShowable,
   resolveBuilderFeatureCardUiItems,

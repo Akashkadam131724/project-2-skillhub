@@ -68,7 +68,7 @@ const BUILD_STEPS: GuideStep[] = [
     status: "done",
   },
   {
-    title: "lib/map.ts + lib/placement.ts + lib/cms-config.js",
+    title: "lib/map.ts + lib/placement.ts + lib/cms-config",
     detail:
       "Map items[] → slides; placement showability; per-slide CMS item fields (image, title, body, video URL, buttons).",
     status: "todo",

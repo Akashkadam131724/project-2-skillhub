@@ -1,4 +1,4 @@
-export { CONTACT_FORM_ITEMS_CONFIG } from "./cms-config.js";
+export { CONTACT_FORM_ITEMS_CONFIG } from "./cms-config";
 export {
   isContactChannelShowable,
   resolveContactChannelUiItems,

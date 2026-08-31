@@ -1,4 +1,4 @@
-export { CARD_STACK_ITEMS_CONFIG } from "./cms-config.js";
+export { CARD_STACK_ITEMS_CONFIG } from "./cms-config";
 export {
   isCardStackItemShowable,
   resolveCardStackUiItems,

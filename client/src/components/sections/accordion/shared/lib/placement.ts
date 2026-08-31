@@ -35,5 +35,8 @@ export function validateFaqItem(
   item: unknown,
   itemsConfig: { fields?: unknown[]; [key: string]: unknown }
 ) {
-  return validateSectionItem(item, itemsConfig);
+  return validateSectionItem(
+    (item && typeof item === "object" ? item : {}) as Record<string, unknown>,
+    itemsConfig as import("@/lib/sections/section-items-fields").SectionItemsConfig
+  );
 }

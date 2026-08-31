@@ -1,4 +1,4 @@
-export { AWARDS_ITEMS_CONFIG } from "./cms-config.js";
+export { AWARDS_ITEMS_CONFIG } from "./cms-config";
 export {
   isAwardShowable,
   resolveAwardUiItems,

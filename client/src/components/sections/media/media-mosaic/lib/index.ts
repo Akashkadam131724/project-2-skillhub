@@ -1,4 +1,4 @@
-export { MEDIA_MOSAIC_ITEMS_CONFIG } from "./cms-config.js";
+export { MEDIA_MOSAIC_ITEMS_CONFIG } from "./cms-config";
 export {
   isMediaMosaicTileShowable,
   resolveMediaMosaicTileUiItems,

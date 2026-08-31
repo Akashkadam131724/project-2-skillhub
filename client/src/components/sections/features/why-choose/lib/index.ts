@@ -1,4 +1,4 @@
-export { WHY_CHOOSE_ITEMS_CONFIG } from "./cms-config.js";
+export { WHY_CHOOSE_ITEMS_CONFIG } from "./cms-config";
 export {
   isWhyChooseShowable,
   resolveWhyChooseUiItems,

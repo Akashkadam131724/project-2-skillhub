@@ -1,4 +1,4 @@
-export { PARTNERS_MARQUEE_ITEMS_CONFIG } from "./cms-config.js";
+export { PARTNERS_MARQUEE_ITEMS_CONFIG } from "./cms-config";
 export {
   isPartnerLogoShowable,
   resolvePartnerLogoUiItems,

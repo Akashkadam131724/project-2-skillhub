@@ -1,4 +1,4 @@
-export { PRICING_TIERS_ITEMS_CONFIG } from "./cms-config.js";
+export { PRICING_TIERS_ITEMS_CONFIG } from "./cms-config";
 export {
   isFeaturedPlan,
   isPricingTierShowable,

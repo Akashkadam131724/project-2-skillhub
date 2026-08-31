@@ -1,4 +1,4 @@
-import { resolveSectionBehaviorKey } from "./section-items-config.js";
+import { resolveSectionBehaviorKey } from "./section-items-config";
 import { SECTION_MANIFEST } from "./section-manifest";
 import type { SectionManifestEntry, SectionUserGuidePreview } from "./section-manifest-types";
 

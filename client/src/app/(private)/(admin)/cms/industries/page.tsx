@@ -1,0 +1,214 @@
+"use client";
+
+import { useState, type FormEvent } from "react";
+import { fetchIndustries } from "@/lib/api";
+import {
+  createIndustry,
+  deleteIndustry,
+  restoreIndustry,
+  updateIndustry,
+} from "@/lib/api/entity-cms-api";
+import { cmsEditHref, cmsPublicHref } from "@/lib/cms/cms-edit-routes";
+import { nextToggleStatus } from "@/lib/cms/cms-list-filters";
+import { useCmsEntityList } from "@/hooks/useCmsEntityList";
+import CmsEntityListPanel from "@/components/cms/admin/CmsEntityListPanel";
+import CmsEntityRowActions, {
+  CmsEntityStatusBadge,
+} from "@/components/cms/admin/CmsEntityRowActions";
+import {
+  cmsEntityListMetaClass,
+  cmsEntityListPrimaryClass,
+  cmsEntityListRowClass,
+  cmsEntityListTitleClass,
+} from "@/components/cms/admin/cms-entity-list-row";
+import {
+  CmsHeading,
+  CmsPanel,
+  Field,
+  ErrorBanner,
+  inputClass,
+  btnPrimary,
+} from "@/components/cms/admin/CmsUi";
+import type { IndustryForm, IndustryListItem } from "../entity-types";
+
+const emptyForm: IndustryForm = {
+  name: "",
+  description: "",
+  status: "active",
+  sortOrder: 0,
+};
+
+export default function CmsIndustriesPage() {
+  const {
+    filter,
+    setFilter,
+    page,
+    setPage,
+    limit,
+    totalPages,
+    items,
+    total,
+    loading,
+    error,
+    setError,
+    onSearchChange,
+    reload,
+  } = useCmsEntityList<IndustryListItem>(fetchIndustries);
+  const [saving, setSaving] = useState(false);
+  const [showForm, setShowForm] = useState(false);
+  const [form, setForm] = useState(emptyForm);
+
+  async function onCreate(e: FormEvent) {
+    e.preventDefault();
+    setSaving(true);
+    setError(null);
+    try {
+      const res = await createIndustry({
+        name: form.name.trim(),
+        description: form.description.trim(),
+        status: form.status,
+        sortOrder: Number(form.sortOrder) || 0,
+      });
+      setForm(emptyForm);
+      setShowForm(false);
+      window.location.href = `/cms/industry/${(res.data as IndustryListItem).slug}`;
+    } catch (err) {
+      setError(err);
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function onToggleStatus(item: IndustryListItem) {
+    try {
+      await updateIndustry(String(item.slug), {
+        status: nextToggleStatus(item.status),
+      });
+      await reload();
+    } catch (err) {
+      setError(err);
+    }
+  }
+
+  async function onDelete(item: IndustryListItem) {
+    if (!confirm(`Delete industry "${item.name}"?`)) return;
+    try {
+      await deleteIndustry(String(item.slug));
+      await reload();
+    } catch (err) {
+      setError(err);
+    }
+  }
+
+  async function onRestore(item: IndustryListItem) {
+    try {
+      await restoreIndustry(String(item.slug));
+      await reload();
+    } catch (err) {
+      setError(err);
+    }
+  }
+
+  return (
+    <div className="w-full">
+      <CmsHeading
+        title="Industries"
+        subtitle="Manage industry taxonomy used on courses and detail pages."
+        actions={
+          <button
+            type="button"
+            className={btnPrimary}
+            onClick={() => setShowForm((v) => !v)}
+          >
+            {showForm ? "Cancel" : "Add industry"}
+          </button>
+        }
+      />
+      <ErrorBanner error={error} />
+
+      {showForm ? (
+        <CmsPanel title="New industry" className="mb-4">
+          <form onSubmit={onCreate} className="grid gap-3 sm:grid-cols-2">
+            <Field label="Name">
+              <input
+                className={inputClass}
+                required
+                value={form.name}
+                onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+              />
+            </Field>
+            <Field label="Status">
+              <select
+                className={inputClass}
+                value={form.status}
+                onChange={(e) => setForm((f) => ({ ...f, status: e.target.value }))}
+              >
+                <option value="active">active</option>
+                <option value="inactive">inactive</option>
+              </select>
+            </Field>
+            <Field label="Sort order">
+              <input
+                type="number"
+                className={inputClass}
+                value={form.sortOrder}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, sortOrder: Number(e.target.value) || 0 }))
+                }
+              />
+            </Field>
+            <Field label="Description" className="sm:col-span-2">
+              <textarea
+                className={`${inputClass} min-h-[72px]`}
+                value={form.description}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, description: e.target.value }))
+                }
+              />
+            </Field>
+            <div className="sm:col-span-2">
+              <button type="submit" className={btnPrimary} disabled={saving}>
+                {saving ? "Creating…" : "Create industry"}
+              </button>
+            </div>
+          </form>
+        </CmsPanel>
+      ) : null}
+
+      <CmsEntityListPanel
+        title="All industries"
+        items={items}
+        loading={loading}
+        total={total ?? 0}
+        page={page}
+        totalPages={totalPages}
+        limit={limit}
+        onPageChange={setPage}
+        onSearchChange={onSearchChange}
+        filter={filter}
+        onFilterChange={setFilter}
+        searchPlaceholder="Search industries…"
+        renderItem={(item) => (
+          <li key={item.slug} className={cmsEntityListRowClass()}>
+            <div className={cmsEntityListPrimaryClass()}>
+              <div className="flex flex-wrap items-center gap-2">
+                <p className={cmsEntityListTitleClass()}>{item.name}</p>
+                <CmsEntityStatusBadge item={item} />
+              </div>
+              <p className={cmsEntityListMetaClass()}>/industry/{item.slug}</p>
+            </div>
+            <CmsEntityRowActions
+              item={item}
+              editHref={`/cms/industry/${item.slug}`}
+              publicHref={cmsPublicHref("industry", String(item.slug))}
+              liveEditHref={cmsEditHref("industry", String(item.slug))}
+              onToggleStatus={(item) => onToggleStatus(item as IndustryListItem)}
+              onDelete={(item) => onDelete(item as IndustryListItem)}
+              onRestore={(item) => onRestore(item as IndustryListItem)}
+            />
+          </li>
+        )}
+      />
+    </div>
+  );
+}

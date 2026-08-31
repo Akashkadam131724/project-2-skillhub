@@ -57,7 +57,11 @@ export default function HeroGradientSliderCtaButtons({
   onFormOpenChange,
 }: HeroGradientSliderCtaButtonsProps) {
   const active = buttons
-    .map((b) => normalizeButton(b))
+    .map((b) =>
+      normalizeButton(
+        b && typeof b === "object" ? (b as Record<string, unknown>) : {}
+      )
+    )
     .filter((b) => b.label && b.status !== false);
 
   const primary = active[0];

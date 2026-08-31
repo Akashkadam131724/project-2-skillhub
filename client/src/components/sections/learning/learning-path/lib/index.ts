@@ -1,4 +1,4 @@
-export { LEARNING_PATH_ITEMS_CONFIG } from "./cms-config.js";
+export { LEARNING_PATH_ITEMS_CONFIG } from "./cms-config";
 export {
   isLearningPathStepShowable,
   resolveLearningPathStepUiItems,

@@ -1,4 +1,4 @@
-export { PROCESS_STEPS_ITEMS_CONFIG } from "./cms-config.js";
+export { PROCESS_STEPS_ITEMS_CONFIG } from "./cms-config";
 export {
   isProcessStepShowable,
   resolveProcessStepUiItems,

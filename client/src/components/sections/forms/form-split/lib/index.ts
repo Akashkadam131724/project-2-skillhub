@@ -1,5 +1,5 @@
 export { normalizeFormContentSide } from "./content-side";
-export { FORM_SPLIT_ITEMS_CONFIG } from "./cms-config.js";
+export { FORM_SPLIT_ITEMS_CONFIG } from "./cms-config";
 export {
   isFormHighlightShowable,
   resolveFormHighlightUiItems,

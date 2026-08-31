@@ -30,7 +30,7 @@ export function getSectionCmsCapabilities(
   sectionKey?: string | null,
   renderKey?: string | null
 ): SectionCmsCapabilities {
-  const behavior = resolveSectionBehaviorKey(sectionKey, renderKey ?? undefined);
+  const behavior = resolveSectionBehaviorKey(sectionKey ?? undefined, renderKey ?? undefined);
   return (
     SECTION_COMPONENT_CMS_CAPABILITIES[behavior] ||
     DEFAULT_SECTION_CMS_CAPABILITIES
@@ -52,10 +52,10 @@ export function sectionCmsStaticHint(
 }
 
 function resolveToolbarFlag(
-  value: boolean | "auto",
+  value: boolean | "auto" | undefined,
   autoFn: () => boolean
 ): boolean {
-  if (value === "auto") return autoFn();
+  if (value === "auto" || value === undefined) return autoFn();
   return Boolean(value);
 }
 

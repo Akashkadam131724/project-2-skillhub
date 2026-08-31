@@ -1,4 +1,4 @@
-export { MASONRY_QUOTES_ITEMS_CONFIG } from "./cms-config.js";
+export { MASONRY_QUOTES_ITEMS_CONFIG } from "./cms-config";
 export {
   isMasonryQuoteShowable,
   resolveMasonryQuoteUiItems,

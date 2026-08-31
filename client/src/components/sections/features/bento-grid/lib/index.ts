@@ -1,4 +1,4 @@
-export { BENTO_GRID_ITEMS_CONFIG } from "./cms-config.js";
+export { BENTO_GRID_ITEMS_CONFIG } from "./cms-config";
 export {
   isBentoGridCellShowable,
   resolveBentoGridUiItems,

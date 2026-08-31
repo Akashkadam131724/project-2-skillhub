@@ -4,7 +4,7 @@
 
  *
 
- * Item-list variants: Ui / Static / Public / Cms + lib/cms-config.js
+ * Item-list variants: Ui / Static / Public / Cms + lib/cms-config
 
  * Field / API variants: Ui / Client / Public / Cms + lib/
 

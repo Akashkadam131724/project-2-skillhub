@@ -1,12 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { SECTION_CATALOG, isKnownSectionKey } from "./section-registry.js";
-import { SECTION_COMPONENT_ITEM_CONFIGS } from "./configs/index.js";
+import { SECTION_CATALOG, isKnownSectionKey } from "./section-registry";
+import { SECTION_COMPONENT_ITEM_CONFIGS } from "./configs/index";
 import { SECTION_MANIFEST } from "./section-manifest";
 import {
   getManifestEntry,
   getManifestBehaviorKeys,
 } from "./section-manifest-resolve";
-import { resolveSectionBehaviorKey } from "./section-items-config.js";
+import { resolveSectionBehaviorKey } from "./section-items-config";
 
 const CORE_KEYS = [
   "hero_centered",
