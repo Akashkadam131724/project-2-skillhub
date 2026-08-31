@@ -1,10 +1,12 @@
 "use client";
 
 import { useCallback, useState } from "react";
+import { SectionLayoutRoot } from "@/components/sections/layout";
 import SectionButtons from "@/components/ui/SectionButtons";
 import YoutubeModal from "@/components/ui/YoutubeModal";
 import PlayIcon from "@/components/icons/PlayIcon";
 import SuccessStoryTabIcon from "@/components/icons/SuccessStoryTabIcon";
+import { DS_RADIUS, sectionClassNames } from "@/lib/layout/section-layout-system";
 import { mediaAlt } from "@/lib/utils/media-alt";
 import {
   sortActiveButtons,
@@ -79,7 +81,12 @@ function StoryPanel({
 
   return (
     <>
-      <div className="overflow-hidden rounded-2xl border border-slate-200 shadow-xl dark:border-slate-800">
+      <div
+        className={sectionClassNames(
+          DS_RADIUS.card,
+          "overflow-hidden border border-slate-200 shadow-xl dark:border-slate-800"
+        )}
+      >
         <div className="grid lg:grid-cols-2">
           <div
             className="flex min-h-[280px] flex-col justify-center px-8 py-10 sm:px-10 sm:py-12 lg:min-h-[360px]"
@@ -162,6 +169,7 @@ export default function SuccessStoriesUi({
   subtitleSlot,
   itemsBar,
   emptyState = null,
+  footer = null,
   stories = [],
   preview = false,
   onFormOpen,
@@ -171,33 +179,46 @@ export default function SuccessStoriesUi({
   const [active, setActive] = useState(0);
   const current = stories[Math.min(active, Math.max(stories.length - 1, 0))];
 
+  const centeredTitleClass =
+    "text-center font-[family-name:var(--font-display)] text-3xl leading-tight font-semibold tracking-tight sm:text-4xl";
+  const centeredSubtitleClass =
+    "m-0 mt-3 text-center text-base section-theme-muted";
+
+  const showHeader = Boolean(
+    titleSlot || title || subtitleSlot || subtitle
+  );
+
   return (
-    <section
-      id={id || undefined}
-      className={`relative w-full overflow-hidden bg-transparent py-14 sm:py-16 lg:py-20 ${className}`.trim()}
+    <SectionLayoutRoot
+      id={id}
+      className={className}
+      itemsBar={itemsBar}
+      emptyState={emptyState}
+      footer={footer}
+      items={stories}
+      hasBodyContent
     >
-      <div className="mx-auto max-w-[1440px] px-4 sm:px-6 lg:px-8">
-        {(titleSlot != null || title || subtitleSlot != null || subtitle) && (
-          <header className="mx-auto mb-8 max-w-4xl text-center sm:mb-10">
-            {titleSlot != null ? (
-              titleSlot
-            ) : title ? (
-              <h2 className="section-theme-heading m-0 font-[family-name:var(--font-display)] text-3xl leading-tight font-semibold tracking-tight sm:text-4xl">
-                {title}
-              </h2>
-            ) : null}
-            {subtitleSlot != null ? (
-              <div className="mt-3">{subtitleSlot}</div>
-            ) : subtitle ? (
-              <p className="section-theme-muted m-0 mt-3 text-base">{subtitle}</p>
-            ) : null}
-          </header>
-        )}
+      {showHeader ? (
+        <header className="mx-auto mb-8 max-w-4xl text-center sm:mb-10">
+          {titleSlot != null ? (
+            titleSlot
+          ) : title ? (
+            <h2
+              className={`section-theme-heading m-0 ${centeredTitleClass}`}
+            >
+              {title}
+            </h2>
+          ) : null}
+          {subtitleSlot != null ? (
+            <div className="mt-3">{subtitleSlot}</div>
+          ) : subtitle ? (
+            <p className={centeredSubtitleClass}>{subtitle}</p>
+          ) : null}
+        </header>
+      ) : null}
 
-        {itemsBar}
-
-        {stories.length ? (
-          <div className="space-y-6">
+      {stories.length ? (
+        <div className="space-y-6">
             <div
               role="tablist"
               aria-label="Success stories"
@@ -218,10 +239,7 @@ export default function SuccessStoriesUi({
               onFormOpen={onFormOpen}
             />
           </div>
-        ) : (
-          emptyState
-        )}
-      </div>
-    </section>
+        ) : null}
+    </SectionLayoutRoot>
   );
 }

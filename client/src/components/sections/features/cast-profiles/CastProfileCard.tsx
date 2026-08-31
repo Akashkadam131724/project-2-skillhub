@@ -1,6 +1,6 @@
 import CmsRichText from "@/components/cms/primitives/CmsRichText";
 import { SectionMediaOverlay } from "@/components/sections/shared/design";
-import { DS_TEXT } from "@/lib/sections/section-design-system";
+import { DS_RADIUS, DS_TEXT, sectionClassNames } from "@/lib/sections/section-design-system";
 import { isRichTextEmpty } from "@/lib/utils/rich-text";
 import type { CastProfileUiItem } from "./lib/types";
 
@@ -29,7 +29,12 @@ export default function CastProfileCard({
       }`}
       style={{ transitionDelay: `${delay}ms` }}
     >
-      <SectionMediaOverlay className="relative h-80 w-full shrink-0 overflow-hidden rounded-2xl bg-slate-900 shadow-lg ring-1 ring-black/10 sm:aspect-[3/4] sm:h-auto">
+      <SectionMediaOverlay
+        className={sectionClassNames(
+          "relative h-80 w-full shrink-0 overflow-hidden bg-slate-900 shadow-lg ring-1 ring-black/10 sm:aspect-[3/4] sm:h-auto",
+          DS_RADIUS.nested
+        )}
+      >
         {item.imageUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img

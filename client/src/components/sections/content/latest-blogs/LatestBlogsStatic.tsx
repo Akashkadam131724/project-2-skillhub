@@ -1,3 +1,4 @@
+import { DS_RADIUS, sectionClassNames } from "@/lib/sections/section-design-system";
 import LatestBlogsUi from "./LatestBlogsUi";
 
 export default function LatestBlogsStatic() {
@@ -7,7 +8,10 @@ export default function LatestBlogsStatic() {
         {Array.from({ length: 3 }).map((_, index) => (
           <div
             key={index}
-            className="h-[25rem] animate-pulse rounded-[1.75rem] bg-slate-200 dark:bg-slate-800"
+            className={sectionClassNames(
+              DS_RADIUS.media,
+              "h-[25rem] animate-pulse bg-slate-200 dark:bg-slate-800"
+            )}
           />
         ))}
       </div>

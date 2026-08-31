@@ -3,6 +3,7 @@
 import CardPlaceholder from "@/components/sections/shared/CardPlaceholder";
 import { mediaUrl } from "@/lib/api/cms-api";
 import { itemTitle } from "@/lib/sections/item-types";
+import { DS_RADIUS, sectionClassNames } from "@/lib/layout/section-layout-system";
 import { DS_TEXT } from "@/lib/sections/section-design-system";
 import type { TrustBadgeUiItem } from "./lib/types";
 
@@ -44,7 +45,10 @@ export default function TrustBadgeItemCard({
     <article
       data-section-surface="light-card"
       data-light-surface=""
-      className="section-light-card section-ui-card flex flex-col items-center justify-center rounded-2xl border px-4 py-6 text-center"
+      className={sectionClassNames(
+        "section-light-card section-ui-card flex flex-col items-center justify-center border px-4 py-6 text-center",
+        DS_RADIUS.card
+      )}
     >
       {data.imageUrl ? (
         // eslint-disable-next-line @next/next/no-img-element

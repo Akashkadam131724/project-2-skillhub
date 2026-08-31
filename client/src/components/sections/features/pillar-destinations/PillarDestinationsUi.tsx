@@ -1,11 +1,12 @@
 "use client";
 
+import { SectionLayoutRoot } from "@/components/sections/layout";
+
 import { useEffect, useRef, useState } from "react";
 import ArrowRightIcon from "@/components/icons/ArrowRightIcon";
 import CmsRichText from "@/components/cms/primitives/CmsRichText";
 import FeatureCardPlaceholder from "@/components/sections/features/cards/FeatureCardPlaceholder";
 import MobileCardPeekRow from "@/components/sections/MobileCardPeekRow";
-import SectionWrapper from "@/components/sections/SectionWrapper";
 import { isRichTextEmpty } from "@/lib/utils/rich-text";
 import type {
   PillarDestinationsUiItem,
@@ -144,37 +145,18 @@ export default function PillarDestinationsUi({
 
   return (
     <div ref={ref}>
-      <section
-        id={id || undefined}
-        className={`relative w-full overflow-hidden bg-transparent py-14 sm:py-16 lg:py-20 ${className}`.trim()}
-      >
-        <SectionWrapper>
-          {showHeader ? (
-            <header
-              className={`flex flex-col gap-2.5 sm:gap-3 ${
-                items.length || itemsBar || emptyState ? "mb-8 sm:mb-10" : ""
-              }`}
-            >
-              {titleSlot != null ? (
-                titleSlot
-              ) : showTitle ? (
-                <h2 className="section-theme-heading m-0 max-w-3xl font-[family-name:var(--font-display)] text-3xl leading-[1.1] font-semibold tracking-tight sm:text-4xl">
-                  {title}
-                </h2>
-              ) : null}
-              {subtitleSlot != null ? (
-                subtitleSlot
-              ) : showSubtitle ? (
-                <p className="section-theme-muted m-0 max-w-2xl text-base leading-relaxed">
-                  {subtitle}
-                </p>
-              ) : null}
-            </header>
-          ) : null}
-
-          {itemsBar}
-
-          {items.length ? (
+          <SectionLayoutRoot
+      id={id}
+      className={className}
+      title={title}
+      subtitle={subtitle}
+      titleSlot={titleSlot}
+      subtitleSlot={subtitleSlot}
+      itemsBar={itemsBar}
+      emptyState={emptyState}
+      items={items}
+    >
+{items.length ? (
             <MobileCardPeekRow
               gridFrom="md"
               gapClassName="gap-4 lg:gap-5"
@@ -193,8 +175,7 @@ export default function PillarDestinationsUi({
           ) : (
             emptyState
           )}
-        </SectionWrapper>
-      </section>
+    </SectionLayoutRoot>
     </div>
   );
 }

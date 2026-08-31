@@ -1,11 +1,7 @@
 "use client";
 
-import SectionFrame from "@/components/sections/SectionFrame";
-import SectionButtons from "@/components/ui/SectionButtons";
-import {
-  buttonsFromLegacy,
-  sortActiveButtons,
-} from "@/lib/utils/button-types";
+import SectionButtonsFooter from "@/components/sections/SectionButtonsFooter";
+import { cmsSectionHeaderSlots } from "@/components/sections/shared/CmsSectionHeaderSlots";
 import NewsletterBandUi from "./NewsletterBandUi";
 import { isNewsletterBandPlacementShowable } from "./lib/placement";
 import type { NewsletterBandSectionProps } from "./lib/types";
@@ -20,14 +16,9 @@ export default function NewsletterBandSection({
   cmsMode,
   onEditField,
   onFormOpen,
-  ...frameProps
+  id,
 }: NewsletterBandSectionProps) {
   const placeholder = data.email_placeholder || "Work email";
-  const list = sortActiveButtons(
-    Array.isArray(buttons) && buttons.length
-      ? buttons
-      : buttonsFromLegacy(button_title, target_url)
-  );
 
   if (
     !isNewsletterBandPlacementShowable(
@@ -45,32 +36,29 @@ export default function NewsletterBandSection({
   }
 
   return (
-    <SectionFrame
-      title={section_title}
-      subtitle={sub_title}
+    <NewsletterBandUi
+      id={id}
       eyebrow="Stay in the loop"
-      cmsMode={cmsMode}
-      onEditField={onEditField}
-      buttonsFooter={false}
-      {...frameProps}
-    >
-      <NewsletterBandUi
-        placeholder={placeholder}
-        readOnly={!cmsMode}
-        formFooter={
-          list.length ? (
-            <SectionButtons
-              buttons={list}
-              onFormOpen={onFormOpen}
-              className="flex shrink-0 flex-wrap items-center gap-2 sm:flex-nowrap"
-            />
-          ) : cmsMode ? (
-            <p className="self-center text-xs text-slate-400 italic">
-              Add section buttons for submit CTA
-            </p>
-          ) : null
-        }
-      />
-    </SectionFrame>
+      {...cmsSectionHeaderSlots({
+        section_title,
+        sub_title,
+        onEditField,
+        cmsMode,
+      })}
+      placeholder={placeholder}
+      readOnly={!cmsMode}
+      formFooter={
+        <SectionButtonsFooter
+          buttons={buttons}
+          button_title={button_title}
+          target_url={target_url}
+          cmsMode={cmsMode}
+          onEditField={onEditField}
+          onFormOpen={onFormOpen}
+          className="shrink-0"
+          buttonsClassName="flex shrink-0 flex-wrap items-center gap-2 sm:flex-nowrap"
+        />
+      }
+    />
   );
 }

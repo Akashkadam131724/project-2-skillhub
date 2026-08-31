@@ -1,8 +1,7 @@
-import SectionButtons from "@/components/ui/SectionButtons";
 import {
-  buttonsFromLegacy,
-  sortActiveButtons,
-} from "@/lib/utils/button-types";
+  publicSectionButtonsFooter,
+  resolvePlacementButtons,
+} from "@/components/sections/shared/public-section-footer";
 import { isPlacementDarkBand } from "@/lib/sections/section-theme";
 import TabsNestedUi from "./TabsNestedUi";
 import { resolveTabUiItems } from "./lib/map";
@@ -53,12 +52,6 @@ export default function NestedTabsPublicSection({
     surfaceBand,
   });
 
-  const list = sortActiveButtons(
-    Array.isArray(buttons) && buttons.length
-      ? buttons
-      : buttonsFromLegacy(button_title, target_url)
-  );
-
   return (
     <TabsNestedUi
       layout={layout}
@@ -68,18 +61,13 @@ export default function NestedTabsPublicSection({
       subtitle={sub_title}
       tabs={tabs}
       onFormOpen={onFormOpen}
-      footer={
-        list.length ? (
-          <div className="mt-6 sm:mt-8">
-            <SectionButtons
-              buttons={list}
-              onFormOpen={onFormOpen}
-              inverted={onDarkBand}
-              className="flex flex-wrap items-center gap-3"
-            />
-          </div>
-        ) : null
-      }
+      footer={publicSectionButtonsFooter({
+        buttons,
+        button_title,
+        target_url,
+        onFormOpen,
+        inverted: onDarkBand,
+      })}
     />
   );
 }

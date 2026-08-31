@@ -5,6 +5,11 @@ import ProductCard from "./ProductCard";
 import DsButton from "@/components/ui/DsButton";
 import { EmptyState } from "@/components/detail/DetailShell";
 import { fetchProductsByVendor } from "@/lib/api";
+import { SectionItemGrid, SectionStack } from "@/components/sections/layout";
+import {
+  DS_RADIUS,
+  sectionClassNames,
+} from "@/lib/layout/section-layout-system";
 import ProductsUi from "./ProductsUi";
 import { PRODUCTS_INITIAL_VISIBLE } from "./lib/constants";
 import {
@@ -97,14 +102,17 @@ export default function ProductsClient({
     body = <EmptyState message="No vendor context available for products." />;
   } else if (loading) {
     body = (
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <SectionItemGrid cols={3} peekOnMobile={false}>
         {Array.from({ length: 3 }).map((_, i) => (
           <div
             key={i}
-            className="h-40 animate-pulse rounded-[1.35rem] bg-slate-200/70 dark:bg-slate-800"
+            className={sectionClassNames(
+              DS_RADIUS.tile,
+              "h-40 animate-pulse bg-slate-200/70 dark:bg-slate-800"
+            )}
           />
         ))}
-      </div>
+      </SectionItemGrid>
     );
   } else if (error) {
     body = <p className="m-0 text-sm text-rose-600">{error}</p>;
@@ -112,16 +120,18 @@ export default function ProductsClient({
     body = <EmptyState message="No products to show yet." />;
   } else {
     body = (
-      <div>
-        <ul className="m-0 grid list-none gap-4 p-0 sm:grid-cols-2 lg:grid-cols-3">
+      <SectionStack gap="stackSm">
+        <SectionItemGrid cols={3} peekOnMobile={false}>
           {visible.map((product, i) => (
-            <li key={String(product._id || product.id)}>
-              <ProductCard product={product} index={i} />
-            </li>
+            <ProductCard
+              key={String(product._id || product.id)}
+              product={product}
+              index={i}
+            />
           ))}
-        </ul>
+        </SectionItemGrid>
         {hasMore ? (
-          <div className="mt-8 flex justify-center">
+          <div className="flex justify-center">
             <DsButton
               label={
                 expanded ? "Show less" : `View more (${remaining} more)`
@@ -134,7 +144,7 @@ export default function ProductsClient({
             />
           </div>
         ) : null}
-      </div>
+      </SectionStack>
     );
   }
 

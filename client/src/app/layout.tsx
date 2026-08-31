@@ -1,5 +1,6 @@
 import type { CSSProperties } from "react";
 import { Fraunces, Manrope } from "next/font/google";
+import DevLayoutRuler from "@/components/dev/DevLayoutRuler";
 import "@/styles/globals.css";
 import { fetchSiteThemeForLayout } from "@/lib/theme/site-theme-server";
 import { themeCssVars } from "@/lib/theme";
@@ -43,6 +44,7 @@ export default async function RootLayout({ children }: AppLayoutProps) {
     >
       <body className="flex min-h-full flex-col bg-white antialiased" suppressHydrationWarning>
         {children}
+        <DevLayoutRuler />
       </body>
     </html>
   );

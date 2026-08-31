@@ -36,7 +36,8 @@ export default function HeroAsymmetricPublicSection({
       footer={heroLayoutPublicFooter(props, {
         onFormOpen,
         inverted: true,
-        className: "mt-0 flex flex-col items-stretch gap-3",
+        className: "mt-0",
+        buttonsClassName: "flex flex-col items-stretch gap-3",
       })}
     />
   );

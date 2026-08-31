@@ -1,6 +1,10 @@
 "use client";
 
 import { Suspense } from "react";
+import {
+  DS_RADIUS,
+  sectionClassNames,
+} from "@/lib/layout/section-layout-system";
 import BlogDirectoryClient from "./BlogDirectoryClient";
 import BlogDirectoryUi from "./BlogDirectoryUi";
 import {
@@ -20,7 +24,12 @@ function BlogDirectoryFallback({
       title={resolveBlogDirectoryTitle(section_title)}
       subtitle={resolveBlogDirectorySubtitle(sub_title) || undefined}
     >
-      <div className="h-40 animate-pulse rounded-[1.25rem] bg-slate-200/60 dark:bg-slate-800" />
+      <div
+        className={sectionClassNames(
+          DS_RADIUS.accordion,
+          "h-40 animate-pulse bg-slate-200/60 dark:bg-slate-800"
+        )}
+      />
     </BlogDirectoryUi>
   );
 }

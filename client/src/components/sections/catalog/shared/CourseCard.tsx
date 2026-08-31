@@ -5,6 +5,10 @@ import SkillLevelIcon from "@/components/icons/SkillLevelIcon";
 import IndustryIcon from "@/components/icons/IndustryIcon";
 import SkillingAreaIcon from "@/components/icons/SkillingAreaIcon";
 import ProductIcon from "@/components/icons/ProductIcon";
+import {
+  DS_RADIUS,
+  sectionClassNames,
+} from "@/lib/layout/section-layout-system";
 import type { CourseCardProps } from "./types";
 
 function formatNames(
@@ -71,7 +75,12 @@ export default function CourseCard({ course }: CourseCardProps) {
   const courseHref = course.slug ? `/course/${course.slug}` : null;
 
   return (
-    <article className="group relative h-full overflow-hidden rounded-[1.35rem] border border-slate-200/80 bg-white p-5 shadow-[0_16px_40px_-32px_color-mix(in_srgb,var(--ink)_35%,transparent)] transition hover:-translate-y-1 hover:border-brand/25 dark:border-slate-800 dark:bg-slate-950">
+    <article
+      className={sectionClassNames(
+        DS_RADIUS.tile,
+        "group relative h-full overflow-hidden border border-slate-200/80 bg-white p-5 shadow-[0_16px_40px_-32px_color-mix(in_srgb,var(--ink)_35%,transparent)] transition hover:-translate-y-1 hover:border-brand/25 dark:border-slate-800 dark:bg-slate-950"
+      )}
+    >
       <div
         aria-hidden
         className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-ink via-brand to-ink opacity-80"

@@ -14,36 +14,36 @@ export function DirectoryCards({
 }) {
   if (type === "product") {
     return items.map((product) => (
-      <li key={String(product._id || product.id)}>
-        <ProductCatalogCard product={product} />
-      </li>
+      <ProductCatalogCard
+        key={String(product._id || product.id)}
+        product={product}
+      />
     ));
   }
   if (type === "industry") {
     return items.map((industry) => (
-      <li key={String(industry._id || industry.id)}>
-        <TaxonomyCatalogCard
-          item={industry}
-          href={`/industry/${industry.slug}`}
-          metaLabel="Browse courses for this industry"
-        />
-      </li>
+      <TaxonomyCatalogCard
+        key={String(industry._id || industry.id)}
+        item={industry}
+        href={`/industry/${industry.slug}`}
+        metaLabel="Browse courses for this industry"
+      />
     ));
   }
   if (type === "skilling_area") {
     return items.map((area) => (
-      <li key={String(area._id || area.id)}>
-        <TaxonomyCatalogCard
-          item={area}
-          href={`/skilling-area/${area.slug}`}
-          metaLabel="Browse courses in this skilling area"
-        />
-      </li>
+      <TaxonomyCatalogCard
+        key={String(area._id || area.id)}
+        item={area}
+        href={`/skilling-area/${area.slug}`}
+        metaLabel="Browse courses in this skilling area"
+      />
     ));
   }
   return items.map((vendor) => (
-    <li key={String(vendor._id || vendor.id)}>
-      <VendorCatalogCard vendor={vendor} />
-    </li>
+    <VendorCatalogCard
+      key={String(vendor._id || vendor.id)}
+      vendor={vendor}
+    />
   ));
 }

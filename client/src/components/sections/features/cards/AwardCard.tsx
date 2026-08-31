@@ -5,6 +5,7 @@ import { mediaUrl } from "@/lib/api/cms-api";
 import { mediaAlt } from "@/lib/utils/media-alt";
 import { isRichTextEmpty } from "@/lib/utils/rich-text";
 import { itemTitle } from "@/lib/sections/item-types";
+import { DS_RADIUS, sectionClassNames } from "@/lib/sections/section-design-system";
 import FeatureCardPlaceholder from "./FeatureCardPlaceholder";
 
 export type AwardCardProps = {
@@ -41,13 +42,26 @@ export default function AwardCard({
   const n = String(index + 1).padStart(2, "0");
 
   return (
-    <article className="group relative flex h-full flex-col overflow-hidden rounded-[1.5rem] border border-slate-200/70 bg-gradient-to-b from-white to-slate-50 p-6 transition duration-500 hover:-translate-y-1 hover:border-brand/25 dark:border-slate-800 dark:from-slate-950 dark:to-slate-900 sm:p-7">
+    <article
+      className={sectionClassNames(
+        DS_RADIUS.card,
+        "group relative flex h-full flex-col overflow-hidden border border-slate-200/70 bg-gradient-to-b from-white to-slate-50 p-6 transition duration-500 hover:-translate-y-1 hover:border-brand/25 dark:border-slate-800 dark:from-slate-950 dark:to-slate-900 sm:p-7"
+      )}
+    >
       <div
         aria-hidden
-        className="pointer-events-none absolute -top-10 -right-8 size-36 rounded-full bg-brand/10 blur-2xl transition group-hover:bg-brand/20"
+        className={sectionClassNames(
+          DS_RADIUS.pill,
+          "pointer-events-none absolute -top-10 -right-8 size-36 bg-brand/10 blur-2xl transition group-hover:bg-brand/20"
+        )}
       />
       <div className="relative mb-5 flex items-start justify-between gap-3">
-        <div className="flex h-24 w-28 items-center justify-center rounded-2xl bg-white ring-1 ring-slate-200/80 dark:bg-slate-950 dark:ring-slate-800">
+        <div
+          className={sectionClassNames(
+            DS_RADIUS.icon,
+            "flex h-24 w-28 items-center justify-center bg-white ring-1 ring-slate-200/80 dark:bg-slate-950 dark:ring-slate-800"
+          )}
+        >
           {imgSrc ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img

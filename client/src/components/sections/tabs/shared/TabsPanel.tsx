@@ -1,5 +1,6 @@
 import CmsRichText from "@/components/cms/primitives/CmsRichText";
 import SectionButtons from "@/components/ui/SectionButtons";
+import { DS_RADIUS, sectionClassNames } from "@/lib/layout/section-layout-system";
 import { mediaAlt } from "@/lib/utils/media-alt";
 import { isRichTextEmpty } from "@/lib/utils/rich-text";
 import TabsChildCard from "./TabsChildCard";
@@ -24,11 +25,13 @@ export default function TabsPanel({
 
   return (
     <div
-      className={`overflow-hidden rounded-[1.75rem] border shadow-lg ${
+      className={sectionClassNames(
+        DS_RADIUS.media,
+        "overflow-hidden border shadow-lg",
         lightPanel
           ? "border-slate-200 bg-white"
           : "border-slate-200 bg-slate-950 dark:border-slate-800"
-      }`}
+      )}
     >
       {(photo || current?.title) && !lightPanel ? (
         <div className="relative aspect-[16/10]">

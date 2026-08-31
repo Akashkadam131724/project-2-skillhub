@@ -1,8 +1,7 @@
-import SectionButtons from "@/components/ui/SectionButtons";
 import {
-  buttonsFromLegacy,
-  sortActiveButtons,
-} from "@/lib/utils/button-types";
+  publicSectionButtonsFooter,
+  resolvePlacementButtons,
+} from "@/components/sections/shared/public-section-footer";
 import TimelineVerticalUi from "./TimelineVerticalUi";
 import { resolveTimelineStepUiItems } from "./lib/map";
 import { isTimelineVerticalPlacementShowable } from "./lib/placement";
@@ -42,12 +41,6 @@ export default function TimelineVerticalPublicSection({
   const items = resolveTimelineStepUiItems(section_key, mappingItems);
   if (!items.length) return null;
 
-  const list = sortActiveButtons(
-    Array.isArray(buttons) && buttons.length
-      ? buttons
-      : buttonsFromLegacy(button_title, target_url)
-  );
-
   return (
     <TimelineVerticalUi
       id={id}
@@ -55,17 +48,12 @@ export default function TimelineVerticalPublicSection({
       title={section_title}
       subtitle={sub_title}
       items={items}
-      footer={
-        list.length ? (
-          <div className="mt-6 sm:mt-8">
-            <SectionButtons
-              buttons={list}
-              onFormOpen={onFormOpen}
-              className="flex flex-wrap items-center gap-3"
-            />
-          </div>
-        ) : null
-      }
+      footer={publicSectionButtonsFooter({
+        buttons,
+        button_title,
+        target_url,
+        onFormOpen,
+      })}
     />
   );
 }

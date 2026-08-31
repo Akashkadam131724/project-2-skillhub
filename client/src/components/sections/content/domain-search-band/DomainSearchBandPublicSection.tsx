@@ -1,8 +1,4 @@
-import SectionButtons from "@/components/ui/SectionButtons";
-import {
-  buttonsFromLegacy,
-  sortActiveButtons,
-} from "@/lib/utils/button-types";
+import { publicSectionButtonsFooter } from "@/components/sections/shared/public-section-footer";
 import DomainSearchBandUi from "./DomainSearchBandUi";
 import { resolveDomainChipUiItems } from "./lib/map";
 import { isDomainSearchBandPlacementShowable } from "./lib/placement";
@@ -37,11 +33,6 @@ export default function DomainSearchBandPublicSection({
   }
 
   const items = resolveDomainChipUiItems(section_key, mappingItems);
-  const list = sortActiveButtons(
-    Array.isArray(buttons) && buttons.length
-      ? buttons
-      : buttonsFromLegacy(button_title, target_url)
-  );
 
   return (
     <DomainSearchBandUi
@@ -50,16 +41,14 @@ export default function DomainSearchBandPublicSection({
       subtitle={sub_title}
       domain={data?.domain || "yourbrand.com"}
       items={items}
-      footer={
-        list.length ? (
-          <SectionButtons
-            buttons={list}
-            onFormOpen={onFormOpen}
-            inverted
-            className="mt-8 flex flex-wrap items-center gap-3"
-          />
-        ) : null
-      }
+      footer={publicSectionButtonsFooter({
+        buttons,
+        button_title,
+        target_url,
+        onFormOpen,
+        inverted: true,
+        className: "mt-8 flex flex-wrap items-center gap-3",
+      })}
     />
   );
 }

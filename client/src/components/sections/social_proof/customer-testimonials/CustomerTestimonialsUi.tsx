@@ -1,9 +1,10 @@
 "use client";
 
+import { SectionLayoutRoot } from "@/components/sections/layout";
+
 import { useEffect, useState } from "react";
 import ChevronLeftSmIcon from "@/components/icons/ChevronLeftSmIcon";
 import ChevronRightSmIcon from "@/components/icons/ChevronRightSmIcon";
-import SectionWrapper from "@/components/sections/SectionWrapper";
 import TestimonialSlide from "./TestimonialSlide";
 import type { CustomerTestimonialsUiProps } from "./lib/types";
 
@@ -43,51 +44,23 @@ export default function CustomerTestimonialsUi({
   }
 
   const showEyebrow = eyebrowSlot != null || Boolean(eyebrow);
-  const showTitle = titleSlot != null || Boolean(title);
-  const showSubtitle = subtitleSlot != null || Boolean(subtitle);
-  const showHeader = Boolean(showEyebrow || showTitle || showSubtitle);
 
   return (
-    <section
-      id={id || undefined}
-      className={`relative w-full overflow-hidden bg-transparent py-14 sm:py-16 lg:py-20 ${className}`.trim()}
+        <SectionLayoutRoot
+      id={id}
+      className={className}
+      eyebrow={eyebrow}
+      eyebrowSlot={eyebrowSlot}
+      title={title}
+      subtitle={subtitle}
+      titleSlot={titleSlot}
+      subtitleSlot={subtitleSlot}
+      itemsBar={itemsBar}
+      emptyState={emptyState}
+      footer={footer}
+      items={items}
     >
-      <SectionWrapper>
-        {showHeader ? (
-          <header
-            className={`flex max-w-3xl flex-col gap-2.5 sm:gap-3 ${
-              items.length || itemsBar || emptyState || footer
-                ? "mb-8 sm:mb-10"
-                : ""
-            }`}
-          >
-            {eyebrowSlot != null ? (
-              eyebrowSlot
-            ) : showEyebrow ? (
-              <p className="text-brand m-0 text-[11px] font-semibold tracking-[0.22em] uppercase">
-                {eyebrow}
-              </p>
-            ) : null}
-            {titleSlot != null ? (
-              titleSlot
-            ) : showTitle ? (
-              <h2 className="section-theme-heading m-0 font-[family-name:var(--font-display)] text-3xl leading-[1.1] font-semibold tracking-tight sm:text-4xl">
-                {title}
-              </h2>
-            ) : null}
-            {subtitleSlot != null ? (
-              subtitleSlot
-            ) : showSubtitle ? (
-              <p className="section-theme-muted m-0 max-w-2xl text-base leading-relaxed">
-                {subtitle}
-              </p>
-            ) : null}
-          </header>
-        ) : null}
-
-        {itemsBar}
-
-        {count ? (
+{count ? (
           <div>
             <div className="relative overflow-hidden">
               <div
@@ -149,9 +122,6 @@ export default function CustomerTestimonialsUi({
         ) : (
           emptyState
         )}
-
-        {footer}
-      </SectionWrapper>
-    </section>
+    </SectionLayoutRoot>
   );
 }

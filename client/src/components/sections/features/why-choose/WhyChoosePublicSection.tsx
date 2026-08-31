@@ -1,9 +1,5 @@
-import SectionButtons from "@/components/ui/SectionButtons";
+import { publicSectionButtonsFooter } from "@/components/sections/shared/public-section-footer";
 import { isPlacementDarkBand } from "@/lib/sections/section-theme";
-import {
-  buttonsFromLegacy,
-  sortActiveButtons,
-} from "@/lib/utils/button-types";
 import WhyChooseUi from "./WhyChooseUi";
 import { resolveWhyChooseUiItems } from "./lib/map";
 import { isWhyChoosePlacementShowable } from "./lib/placement";
@@ -55,12 +51,6 @@ export default function WhyChoosePublicSection({
     surfaceBand,
   });
 
-  const list = sortActiveButtons(
-    Array.isArray(buttons) && buttons.length
-      ? buttons
-      : buttonsFromLegacy(button_title, target_url)
-  );
-
   return (
     <WhyChooseUi
       id={id}
@@ -69,18 +59,14 @@ export default function WhyChoosePublicSection({
       subtitle={sub_title}
       items={items}
       onDarkBand={onDarkBand}
-      footer={
-        list.length ? (
-          <div className="mt-8 sm:mt-10">
-            <SectionButtons
-              buttons={list}
-              onFormOpen={onFormOpen}
-              inverted={onDarkBand}
-              className="flex flex-wrap items-center gap-3"
-            />
-          </div>
-        ) : null
-      }
+      footer={publicSectionButtonsFooter({
+        buttons,
+        button_title,
+        target_url,
+        onFormOpen,
+        inverted: onDarkBand,
+        className: "mt-8 sm:mt-10",
+      })}
     />
   );
 }

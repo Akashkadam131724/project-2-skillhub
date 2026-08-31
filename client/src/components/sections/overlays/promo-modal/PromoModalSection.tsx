@@ -1,11 +1,7 @@
 "use client";
 
-import CmsEditable from "@/components/cms/primitives/CmsEditable";
-import SectionButtons from "@/components/ui/SectionButtons";
-import {
-  buttonsFromLegacy,
-  sortActiveButtons,
-} from "@/lib/utils/button-types";
+import { cmsSectionChrome } from "@/components/sections/shared/cms-section-chrome";
+import { cmsSectionHeaderSlots } from "@/components/sections/shared/CmsSectionHeaderSlots";
 import PromoModalCmsPreview from "./PromoModalCmsPreview";
 import { resolvePromoModalConfig } from "./lib/map";
 import { isPromoModalPlacementShowable } from "./lib/placement";
@@ -40,58 +36,23 @@ export default function PromoModalSection({
     return null;
   }
 
-  const list = sortActiveButtons(
-    Array.isArray(buttons) && buttons.length
-      ? buttons
-      : buttonsFromLegacy(button_title, target_url)
-  );
-
   return (
     <PromoModalCmsPreview
       delayMs={delayMs}
       storageKey={storageKey}
-      titleSlot={
-        <CmsEditable
-          cmsMode
-          field="section_title"
-          label="Title"
-          onEditField={onEditField}
-        >
-          {section_title ? (
-            <h2 className="section-theme-heading mt-2 text-xl font-semibold">
-              {section_title}
-            </h2>
-          ) : (
-            <h2 className="section-theme-placeholder mt-2 text-xl font-semibold italic">
-              Modal title…
-            </h2>
-          )}
-        </CmsEditable>
-      }
-      subtitleSlot={
-        <CmsEditable
-          cmsMode
-          field="sub_title"
-          label="Subtitle"
-          onEditField={onEditField}
-        >
-          {sub_title ? (
-            <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
-              {sub_title}
-            </p>
-          ) : (
-            <p className="section-theme-placeholder mt-1 text-sm italic">
-              Add subtitle…
-            </p>
-          )}
-        </CmsEditable>
-      }
+      {...cmsSectionHeaderSlots({ section_title, sub_title, onEditField })}
       footer={
-        list.length ? (
-          <div className="mt-4">
-            <SectionButtons buttons={list} onFormOpen={onFormOpen} />
-          </div>
-        ) : null
+        cmsSectionChrome({
+          section_key: "promo_modal",
+          itemCount: 0,
+          onEditField,
+          buttons,
+          button_title,
+          target_url,
+          onFormOpen,
+          footerClassName: "mt-4",
+          withItems: false,
+        }).footer
       }
     />
   );

@@ -12,6 +12,7 @@ Living docs for the **section design system**: bands, surfaces, typography, butt
 | [05 — Items & fields](./05-items-fields.md) | `SECTION_ITEMS_CONFIG`, Zod rules, CMS editors |
 | [06 — Layout shell](./06-layout-shell.md) | `SectionWrapper`, max-width, gutters |
 | [07 — Create a new component](./07-create-new-component.md) | End-to-end guide: CMS section + shared UI |
+| [08 — Layout system](./08-layout-system.md) | `DS_SPACE`, grids, `SectionHeader`, `SectionSplit` |
 | [ARCHITECTURE](./ARCHITECTURE.md) | Graphify map — hubs & dependency paths |
 
 Related:
@@ -76,6 +77,8 @@ export default function MySection({
 |---------|------|
 | `src/` layout | [00-src-layout.md](./00-src-layout.md) |
 | DS constants & helpers | `src/lib/sections/section-design-system.ts` |
+| Layout spacing + grids | `src/lib/layout/section-layout-system.ts` |
+| Layout primitives | `src/components/sections/layout/` |
 | Theme computation | `src/lib/sections/section-theme.ts`, `src/lib/theme/` |
 | Global + band CSS | `src/styles/globals.css`, `section-theme.css` |
 | Button CSS | `src/styles/section-buttons.css` |

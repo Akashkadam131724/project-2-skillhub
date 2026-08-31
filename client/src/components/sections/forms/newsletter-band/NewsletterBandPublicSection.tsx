@@ -1,9 +1,4 @@
-import SectionFrame from "@/components/sections/SectionFrame";
-import SectionButtons from "@/components/ui/SectionButtons";
-import {
-  buttonsFromLegacy,
-  sortActiveButtons,
-} from "@/lib/utils/button-types";
+import { publicSectionButtonsFooter } from "@/components/sections/shared/public-section-footer";
 import NewsletterBandUi from "./NewsletterBandUi";
 import { isNewsletterBandPlacementShowable } from "./lib/placement";
 import type { NewsletterBandSectionProps } from "./lib/types";
@@ -16,7 +11,7 @@ export default function NewsletterBandPublicSection({
   button_title,
   target_url,
   onFormOpen,
-  ...frameProps
+  id,
 }: NewsletterBandSectionProps) {
   if (
     !isNewsletterBandPlacementShowable(
@@ -34,33 +29,22 @@ export default function NewsletterBandPublicSection({
   }
 
   const placeholder = data.email_placeholder || "Work email";
-  const list = sortActiveButtons(
-    Array.isArray(buttons) && buttons.length
-      ? buttons
-      : buttonsFromLegacy(button_title, target_url)
-  );
 
   return (
-    <SectionFrame
+    <NewsletterBandUi
+      id={id}
+      eyebrow="Stay in the loop"
       title={section_title}
       subtitle={sub_title}
-      eyebrow="Stay in the loop"
-      buttonsFooter={false}
-      {...frameProps}
-    >
-      <NewsletterBandUi
-        placeholder={placeholder}
-        readOnly
-        formFooter={
-          list.length ? (
-            <SectionButtons
-              buttons={list}
-              onFormOpen={onFormOpen}
-              className="flex shrink-0 flex-wrap items-center gap-2 sm:flex-nowrap"
-            />
-          ) : null
-        }
-      />
-    </SectionFrame>
+      placeholder={placeholder}
+      readOnly
+      formFooter={publicSectionButtonsFooter({
+        buttons,
+        button_title,
+        target_url,
+        onFormOpen,
+        className: "flex shrink-0 flex-wrap items-center gap-2 sm:flex-nowrap",
+      })}
+    />
   );
 }

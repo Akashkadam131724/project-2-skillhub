@@ -3,12 +3,10 @@
 import { useState, type ReactNode } from "react";
 import CmsRichText from "@/components/cms/primitives/CmsRichText";
 import ContactChannelCard from "../shared/ContactChannelCard";
-import {
-  SectionBand,
-  SectionBrandGlow,
-  SectionLightCard,
-} from "@/components/sections/shared/design";
-import { DS_FIELD, DS_TEXT } from "@/lib/sections/section-design-system";
+import { SectionLayoutRoot } from "@/components/sections/layout";
+import { SectionBrandGlow, SectionLightCard } from "@/components/sections/shared/design";
+import { DS_FIELD, DS_TEXT, sectionClassNames } from "@/lib/sections/section-design-system";
+import { DS_RADIUS } from "@/lib/layout/section-layout-system";
 import { isRichTextEmpty } from "@/lib/utils/rich-text";
 import DsButton from "@/components/ui/DsButton";
 import type { ContactFormUiProps } from "./lib/types";
@@ -128,11 +126,12 @@ export default function ContactFormUi({
   const showChannels = channelsSlot != null || channels.length > 0;
 
   return (
-    <SectionBand
-      id={id || undefined}
-      decor={<SectionBrandGlow />}
-      wrapper
+    <SectionLayoutRoot
+      id={id}
       className={className}
+      padding="lg"
+      decor={<SectionBrandGlow />}
+      hasBodyContent
     >
       <div className="relative grid gap-10 lg:grid-cols-12 lg:gap-12 xl:gap-16">
         <div className="lg:col-span-5">
@@ -187,7 +186,9 @@ export default function ContactFormUi({
         </div>
 
         <div className="lg:col-span-7">
-          <SectionLightCard className="rounded-[1.75rem] p-5 sm:p-7 lg:p-8">
+          <SectionLightCard
+            className={sectionClassNames(DS_RADIUS.panel, "p-5 sm:p-7 lg:p-8")}
+          >
             <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
               <div>
                 <h3 className={`m-0 text-lg font-semibold ${DS_TEXT.heading}`}>
@@ -386,6 +387,6 @@ export default function ContactFormUi({
           </SectionLightCard>
         </div>
       </div>
-    </SectionBand>
+    </SectionLayoutRoot>
   );
 }

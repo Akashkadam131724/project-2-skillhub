@@ -1,8 +1,6 @@
 import type { CSSProperties } from "react";
-import SectionWrapper from "@/components/sections/SectionWrapper";
-import {
-  SPLIT_CTA_THEME_BAND_CLASS,
-} from "./lib/band";
+import { SectionLayoutRoot } from "@/components/sections/layout";
+import { SPLIT_CTA_THEME_BAND_CLASS } from "./lib/band";
 import type { SplitCtaUiProps } from "./lib/types";
 
 export default function SplitCtaUi({
@@ -51,25 +49,28 @@ export default function SplitCtaUi({
     </div>
   );
 
+  const sectionStyle: CSSProperties | undefined = bandStyle || undefined;
+
   return (
-    <section
-      id={id || undefined}
-      className={`relative w-full overflow-hidden py-0 ${
+    <SectionLayoutRoot
+      id={id}
+      className={`py-0 ${
         useThemeBand && !bandStyle ? SPLIT_CTA_THEME_BAND_CLASS : ""
       }`}
-      style={bandStyle || undefined}
+      padding="none"
+      layout="wrapper"
+      sectionStyle={sectionStyle}
+      hasBodyContent
     >
-      <SectionWrapper>
-        {imageSideControl}
-        <div
-          className={`flex items-end gap-0 md:gap-[90px] lg:gap-[120px] xl:gap-[180px] ${
-            imageSide === "left" ? "flex-row-reverse" : "flex-row"
-          }`}
-        >
-          {copyCol}
-          {imageCol}
-        </div>
-      </SectionWrapper>
-    </section>
+      {imageSideControl}
+      <div
+        className={`flex items-end gap-0 md:gap-[90px] lg:gap-[120px] xl:gap-[180px] ${
+          imageSide === "left" ? "flex-row-reverse" : "flex-row"
+        }`}
+      >
+        {copyCol}
+        {imageCol}
+      </div>
+    </SectionLayoutRoot>
   );
 }

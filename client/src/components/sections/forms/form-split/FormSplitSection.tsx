@@ -1,11 +1,15 @@
 "use client";
 
+import { cmsSectionChrome } from "@/components/sections/shared/cms-section-chrome";
 import CmsEditable from "@/components/cms/primitives/CmsEditable";
 import CmsRichText from "@/components/cms/primitives/CmsRichText";
-import CmsSectionItemsBar from "@/components/sections/CmsSectionItemsBar";
-import SectionButtonsFooter from "@/components/sections/SectionButtonsFooter";
+import { cmsSectionHeaderSlots } from "@/components/sections/shared/CmsSectionHeaderSlots";
 import { SectionLightCard } from "@/components/sections/shared/design";
-import { DS_TEXT } from "@/lib/sections/section-design-system";
+import {
+  DS_RADIUS,
+  DS_TYPE,
+  sectionClassNames,
+} from "@/lib/layout/section-layout-system";
 import { isRichTextEmpty } from "@/lib/utils/rich-text";
 import FormSplitUi from "./FormSplitUi";
 import { normalizeFormContentSide } from "./lib/content-side";
@@ -63,9 +67,30 @@ export default function FormSplitSection({
       formKey={formKey}
       submitLabel={submitLabel}
       successMessage={data?.success_message}
+      {...cmsSectionHeaderSlots({
+        section_title,
+        sub_title,
+        onEditField,
+        cmsMode,
+      })}
+      {...cmsSectionChrome({
+        section_key,
+        itemCount: items.length,
+        onEditField,
+        buttons,
+        button_title,
+        target_url,
+        onFormOpen,
+        footerClassName: "mt-6",
+      })}
       contentSideSlot={
         cmsMode ? (
-          <div className="mb-4 flex flex-wrap items-center gap-2 rounded-xl border border-dashed border-slate-200 bg-slate-50/80 p-2">
+          <div
+            className={sectionClassNames(
+              DS_RADIUS.panel,
+              "mb-4 flex flex-wrap items-center gap-2 border border-dashed border-slate-200 bg-slate-50/80 p-2"
+            )}
+          >
             <span className="text-[11px] font-semibold text-slate-500 uppercase">
               Content column
             </span>
@@ -91,38 +116,6 @@ export default function FormSplitSection({
           </div>
         ) : undefined
       }
-      titleSlot={
-        <CmsEditable
-          cmsMode={cmsMode}
-          field="section_title"
-          label="Title"
-          onEditField={onEditField}
-        >
-          {section_title || cmsMode ? (
-            <h2
-              className={`mt-3 mb-0 font-[family-name:var(--font-display)] text-3xl leading-tight font-semibold tracking-tight ${DS_TEXT.heading} sm:text-4xl`}
-            >
-              {section_title || (cmsMode ? "Add title…" : null)}
-            </h2>
-          ) : null}
-        </CmsEditable>
-      }
-      subtitleSlot={
-        <CmsEditable
-          cmsMode={cmsMode}
-          field="sub_title"
-          label="Subtitle"
-          onEditField={onEditField}
-        >
-          {sub_title || cmsMode ? (
-            <p
-              className={`${DS_TEXT.muted} mt-4 mb-0 text-base leading-relaxed sm:text-lg`}
-            >
-              {sub_title || (cmsMode ? "Add subtitle…" : null)}
-            </p>
-          ) : null}
-        </CmsEditable>
-      }
       bodySlot={
         !isRichTextEmpty(body) || cmsMode ? (
           <CmsEditable
@@ -133,10 +126,15 @@ export default function FormSplitSection({
           >
             <CmsRichText
               html={body}
-              className={`${DS_TEXT.muted} mt-4 text-sm leading-relaxed`}
+              className={sectionClassNames(DS_TYPE.body, "text-sm")}
               empty={
                 cmsMode ? (
-                  <p className={`${DS_TEXT.placeholder} m-0 italic`}>
+                  <p
+                    className={sectionClassNames(
+                      DS_TYPE.placeholderSubtitle,
+                      "m-0"
+                    )}
+                  >
                     Optional body…
                   </p>
                 ) : null
@@ -145,43 +143,34 @@ export default function FormSplitSection({
           </CmsEditable>
         ) : undefined
       }
-      footer={
-        <SectionButtonsFooter
-          buttons={buttons}
-          button_title={button_title}
-          target_url={target_url}
-          cmsMode={cmsMode}
-          onEditField={onEditField}
-          onFormOpen={onFormOpen}
-          className="mt-6"
-        />
-      }
-      itemsBar={
-        items.length || cmsMode ? (
-          <CmsSectionItemsBar
-            sectionKey={section_key}
-            cmsMode={cmsMode}
-            onEditField={onEditField}
-            itemCount={items.length}
-            className="mt-6"
-          />
-        ) : undefined
-      }
       highlightsSlot={
         items.length || cmsMode ? (
           <ul className="m-0 mt-4 grid list-none gap-3 p-0">
             {items.map((item, i) => (
               <li key={item.id ?? i}>
-                <SectionLightCard className="rounded-2xl px-4 py-3 shadow-none">
+                <SectionLightCard
+                  className={sectionClassNames(
+                    DS_RADIUS.nested,
+                    "px-4 py-3 shadow-none"
+                  )}
+                >
                   {item.title ? (
                     <span
-                      className={`text-sm font-semibold ${DS_TEXT.heading}`}
+                      className={sectionClassNames(
+                        DS_TYPE.body,
+                        "text-sm font-semibold"
+                      )}
                     >
                       {item.title}
                     </span>
                   ) : null}
                   {item.subtitle ? (
-                    <span className={`mt-1 block text-sm ${DS_TEXT.muted}`}>
+                    <span
+                      className={sectionClassNames(
+                        DS_TYPE.body,
+                        "mt-1 block text-sm"
+                      )}
+                    >
                       {item.subtitle}
                     </span>
                   ) : null}

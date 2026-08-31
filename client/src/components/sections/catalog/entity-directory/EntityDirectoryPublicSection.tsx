@@ -1,6 +1,10 @@
 "use client";
 
 import { Suspense } from "react";
+import {
+  DS_RADIUS,
+  sectionClassNames,
+} from "@/lib/layout/section-layout-system";
 import EntityDirectoryClient from "./EntityDirectoryClient";
 import EntityDirectoryUi from "./EntityDirectoryUi";
 import { DIRECTORY_META } from "./lib/directory-meta";
@@ -29,7 +33,12 @@ function EntityDirectoryFallback({
       subtitle={sub_title || undefined}
       eyebrow={meta.label}
     >
-      <div className="h-40 animate-pulse rounded-[1.25rem] bg-slate-200/60 dark:bg-slate-800" />
+      <div
+        className={sectionClassNames(
+          DS_RADIUS.accordion,
+          "h-40 animate-pulse bg-slate-200/60 dark:bg-slate-800"
+        )}
+      />
     </EntityDirectoryUi>
   );
 }

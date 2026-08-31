@@ -1,9 +1,7 @@
 "use client";
 
-import CmsEditable from "@/components/cms/primitives/CmsEditable";
-import CmsSectionItemsBar from "@/components/sections/CmsSectionItemsBar";
-import EmptyItemsHint from "@/components/sections/EmptyItemsHint";
-import SectionButtonsFooter from "@/components/sections/SectionButtonsFooter";
+import { cmsSectionChrome } from "@/components/sections/shared/cms-section-chrome";
+import { cmsSectionHeaderSlots } from "@/components/sections/shared/CmsSectionHeaderSlots";
 import FaqTwoColumnUi from "./FaqTwoColumnUi";
 import { faqDarkBand, resolveFaqUiItems } from "../shared/lib/map";
 import type { FaqSectionProps } from "../shared/lib/types";
@@ -47,6 +45,17 @@ export default function FaqTwoColumnSection({
       darkBand={darkBand}
       preview
       items={items}
+      {...cmsSectionChrome({
+        section_key,
+        itemCount: items.length,
+        onEditField,
+        buttons,
+        button_title,
+        target_url,
+        onFormOpen,
+        onDarkBand: darkBand,
+        footerClassName: "mt-2 sm:mt-4",
+      })}
       headerControls={
         <div className="flex flex-wrap items-center gap-2 rounded-xl border border-dashed border-slate-200 bg-slate-50/80 p-2">
           <span className="text-[11px] font-semibold text-slate-500 uppercase">
@@ -71,69 +80,8 @@ export default function FaqTwoColumnSection({
           </span>
         </div>
       }
-      titleSlot={
-        <CmsEditable
-          cmsMode
-          field="section_title"
-          label="Title"
-          onEditField={onEditField}
-        >
-          {section_title ? (
-            <h2 className="m-0 font-[family-name:var(--font-display)] text-3xl leading-[1.1] font-semibold tracking-tight section-theme-heading sm:text-4xl">
-              {section_title}
-            </h2>
-          ) : (
-            <h2 className="m-0 font-[family-name:var(--font-display)] text-3xl leading-[1.1] font-semibold tracking-tight section-theme-heading sm:text-4xl">
-              <span className="section-theme-placeholder italic">
-                Add title…
-              </span>
-            </h2>
-          )}
-        </CmsEditable>
-      }
-      subtitleSlot={
-        <CmsEditable
-          cmsMode
-          field="sub_title"
-          label="Subtitle"
-          onEditField={onEditField}
-        >
-          {sub_title ? (
-            <p className="m-0 text-base leading-relaxed section-theme-muted">
-              {sub_title}
-            </p>
-          ) : (
-            <p className="m-0 text-base leading-relaxed section-theme-muted">
-              <span className="section-theme-placeholder italic">
-                Add subtitle…
-              </span>
-            </p>
-          )}
-        </CmsEditable>
-      }
-      itemsBar={
-        <CmsSectionItemsBar
-          sectionKey={section_key}
-          cmsMode
-          onEditField={onEditField}
-          itemCount={items.length}
-        />
-      }
-      emptyState={
-        <EmptyItemsHint sectionKey={section_key} onEditField={onEditField} />
-      }
-      footer={
-        <SectionButtonsFooter
-          buttons={buttons}
-          button_title={button_title}
-          target_url={target_url}
-          cmsMode
-          onEditField={onEditField}
-          onFormOpen={onFormOpen}
-          inverted={darkBand}
-          className="mt-2 sm:mt-4"
-        />
-      }
+      {...cmsSectionHeaderSlots({ section_title, sub_title, onEditField })}
+
     />
   );
 }

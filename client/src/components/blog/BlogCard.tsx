@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { mediaUrl } from "@/lib/api/cms-api";
+import { DS_RADIUS, sectionClassNames } from "@/lib/sections/section-design-system";
 import type { BlogCardProps } from "./types";
 
 function formatDate(value?: string): string {
@@ -17,9 +18,11 @@ export default function BlogCard({ blog, featured = false }: BlogCardProps) {
 
   return (
     <article
-      className={`group relative overflow-hidden rounded-[1.75rem] border border-slate-200/80 bg-white shadow-[0_16px_50px_-35px_rgba(15,23,42,0.45)] transition duration-300 hover:-translate-y-1 hover:border-brand/25 hover:shadow-[0_24px_60px_-32px_rgba(15,23,42,0.5)] dark:border-slate-800 dark:bg-slate-900 ${
+      className={sectionClassNames(
+        DS_RADIUS.media,
+        "group relative overflow-hidden border border-slate-200/80 bg-white shadow-[0_16px_50px_-35px_rgba(15,23,42,0.45)] transition duration-300 hover:-translate-y-1 hover:border-brand/25 hover:shadow-[0_24px_60px_-32px_rgba(15,23,42,0.5)] dark:border-slate-800 dark:bg-slate-900",
         featured ? "grid min-h-full md:grid-cols-[1.08fr_0.92fr]" : "flex h-full flex-col"
-      }`}
+      )}
     >
       <Link
         href={`/blog/${blog.slug}`}

@@ -24,6 +24,7 @@ src/
 | `hooks/` | `useDebouncedValue`, `useSlugParam`, CMS hook re-exports | Heavy domain logic (use `lib/`) |
 | `lib/` | `cms-api`, section registry, theme math, Zod item schemas | React components |
 | `styles/` | `globals.css`, `section-theme.css`, button/tab tokens | Per-component CSS (colocate with component) |
+| `lib/layout/` | Section rail tokens, `DS_SPACE` / `DS_GRID` / `DS_TYPE` | React components |
 
 ## Key entry points
 

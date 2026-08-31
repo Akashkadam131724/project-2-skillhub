@@ -1,9 +1,8 @@
-import SectionButtons from "@/components/ui/SectionButtons";
-import FaqUi from "./FaqUi";
 import {
-  buttonsFromLegacy,
-  sortActiveButtons,
-} from "@/lib/utils/button-types";
+  publicSectionButtonsFooter,
+  resolvePlacementButtons,
+} from "@/components/sections/shared/public-section-footer";
+import FaqUi from "./FaqUi";
 import { faqDarkBand, resolveFaqUiItems } from "../shared/lib/map";
 import { isFaqPlacementShowable } from "../shared/lib/placement";
 import type { FaqSectionProps } from "../shared/lib/types";
@@ -54,12 +53,6 @@ export default function FaqPublicSection({
 
   if (!items.length) return null;
 
-  const list = sortActiveButtons(
-    Array.isArray(buttons) && buttons.length
-      ? buttons
-      : buttonsFromLegacy(button_title, target_url)
-  );
-
   return (
     <FaqUi
       id={id}
@@ -68,18 +61,13 @@ export default function FaqPublicSection({
       subtitle={sub_title}
       items={items}
       darkBand={darkBand}
-      footer={
-        list.length ? (
-          <div className="mt-6 sm:mt-8">
-            <SectionButtons
-              buttons={list}
-              onFormOpen={onFormOpen}
-              inverted={darkBand}
-              className="flex flex-wrap items-center gap-3"
-            />
-          </div>
-        ) : null
-      }
+      footer={publicSectionButtonsFooter({
+        buttons,
+        button_title,
+        target_url,
+        onFormOpen,
+        inverted: darkBand,
+      })}
     />
   );
 }

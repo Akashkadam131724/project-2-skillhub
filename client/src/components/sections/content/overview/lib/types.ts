@@ -15,6 +15,8 @@ export type OverviewSectionProps = {
 
 export type OverviewUiProps = {
   id?: string;
+  className?: string;
+  eyebrow?: string;
   imageUrl?: string | null;
   imageAlt?: string;
   showImage?: boolean;

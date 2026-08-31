@@ -1,11 +1,6 @@
-import SectionButtons from "@/components/ui/SectionButtons";
-import SectionFrame from "@/components/sections/SectionFrame";
+import { publicSectionButtonsFooter } from "@/components/sections/shared/public-section-footer";
 import { mediaUrl } from "@/lib/api/cms-api";
 import { mediaAlt } from "@/lib/utils/media-alt";
-import {
-  buttonsFromLegacy,
-  sortActiveButtons,
-} from "@/lib/utils/button-types";
 import OverviewUi from "./OverviewUi";
 import { isOverviewPlacementShowable } from "./lib/placement";
 import type { OverviewSectionProps } from "./lib/types";
@@ -19,7 +14,7 @@ export default function OverviewPublicSection({
   button_title,
   target_url,
   onFormOpen,
-  ...frameProps
+  id,
 }: OverviewSectionProps) {
   if (
     !isOverviewPlacementShowable(
@@ -39,31 +34,23 @@ export default function OverviewPublicSection({
   }
 
   const imgUrl = mediaUrl(section_img_url);
-  const list = sortActiveButtons(
-    Array.isArray(buttons) && buttons.length
-      ? buttons
-      : buttonsFromLegacy(button_title, target_url)
-  );
 
   return (
-    <SectionFrame eyebrow="Overview" {...frameProps}>
-      <OverviewUi
-        showImage={Boolean(imgUrl)}
-        imageUrl={imgUrl}
-        imageAlt={mediaAlt(section_title, "Overview")}
-        title={section_title}
-        subtitle={sub_title}
-        body={data?.body}
-        footer={
-          list.length ? (
-            <SectionButtons
-              buttons={list}
-              onFormOpen={onFormOpen}
-              className="mt-2 flex flex-wrap items-center gap-3 sm:mt-3"
-            />
-          ) : null
-        }
-      />
-    </SectionFrame>
+    <OverviewUi
+      id={id}
+      showImage={Boolean(imgUrl)}
+      imageUrl={imgUrl}
+      imageAlt={mediaAlt(section_title, "Overview")}
+      title={section_title}
+      subtitle={sub_title}
+      body={data?.body}
+      footer={publicSectionButtonsFooter({
+        buttons,
+        button_title,
+        target_url,
+        onFormOpen,
+        className: "mt-2 flex flex-wrap items-center gap-3 sm:mt-3",
+      })}
+    />
   );
 }

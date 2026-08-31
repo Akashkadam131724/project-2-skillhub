@@ -2,6 +2,7 @@
 
 import CmsRichText from "@/components/cms/primitives/CmsRichText";
 import CardPlaceholder from "@/components/sections/shared/CardPlaceholder";
+import { DS_RADIUS, sectionClassNames } from "@/lib/layout/section-layout-system";
 import { isRichTextEmpty } from "@/lib/utils/rich-text";
 import type { TestimonialUiItem } from "./lib/types";
 
@@ -21,7 +22,12 @@ export default function TestimonialItemCard({
     row.author || String(row.title || "");
 
   return (
-    <blockquote className="section-ui-card m-0 rounded-xl border p-4">
+    <blockquote
+      className={sectionClassNames(
+        "section-ui-card m-0 border p-4",
+        DS_RADIUS.panel
+      )}
+    >
       {!isRichTextEmpty(quote) || preview ? (
         <CmsRichText
           html={quote}

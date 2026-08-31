@@ -1,9 +1,5 @@
-import SectionButtons from "@/components/ui/SectionButtons";
+import { publicSectionButtonsFooter } from "@/components/sections/shared/public-section-footer";
 import { isPlacementDarkBand } from "@/lib/sections/section-theme";
-import {
-  buttonsFromLegacy,
-  sortActiveButtons,
-} from "@/lib/utils/button-types";
 import StatsUi from "./StatsUi";
 import { resolveStatUiItems } from "./lib/map";
 import { isStatsPlacementShowable } from "./lib/placement";
@@ -53,12 +49,6 @@ export default function StatsPublicSection({
     surfaceBand,
   });
 
-  const list = sortActiveButtons(
-    Array.isArray(buttons) && buttons.length
-      ? buttons
-      : buttonsFromLegacy(button_title, target_url)
-  );
-
   return (
     <StatsUi
       id={id}
@@ -66,18 +56,13 @@ export default function StatsPublicSection({
       subtitle={sub_title}
       items={items}
       onDarkBand={onDarkBand}
-      footer={
-        list.length ? (
-          <div className="mt-6 sm:mt-8">
-            <SectionButtons
-              buttons={list}
-              onFormOpen={onFormOpen}
-              inverted={onDarkBand}
-              className="flex flex-wrap items-center gap-3"
-            />
-          </div>
-        ) : null
-      }
+      footer={publicSectionButtonsFooter({
+        buttons,
+        button_title,
+        target_url,
+        onFormOpen,
+        inverted: onDarkBand,
+      })}
     />
   );
 }

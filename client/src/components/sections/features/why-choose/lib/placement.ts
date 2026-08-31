@@ -1,23 +1,8 @@
-import {
-  sectionProbeFromProps,
-  shouldRenderPlacement,
-} from "@/lib/sections/item-types";
+import { createPlacementGuard } from "@/lib/sections/placement-guard";
 import { isWhyChooseShowable } from "./map";
 import type { WhyChooseSectionProps } from "./types";
 
-export function isWhyChoosePlacementShowable(
-  props: WhyChooseSectionProps,
-  cmsMode = false
-): boolean {
-  if (cmsMode) return true;
-  if (
-    !shouldRenderPlacement(
-      sectionProbeFromProps(props.section_key || "why_choose", props),
-      false
-    )
-  ) {
-    return false;
-  }
-  const items = Array.isArray(props.items) ? props.items : [];
-  return items.some(isWhyChooseShowable);
-}
+export const isWhyChoosePlacementShowable = createPlacementGuard<WhyChooseSectionProps>(
+  "why_choose",
+  isWhyChooseShowable
+);

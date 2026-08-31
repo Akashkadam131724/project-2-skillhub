@@ -9,6 +9,7 @@ import {
 import { hasMediaUrl } from "@/components/sections/hero/shared/hero-fields";
 import { resolveHeroImageUrl } from "@/components/sections/hero/shared/lib/public-map";
 import { isHeroPlacementShowable } from "@/components/sections/hero/shared/lib/placement";
+import { DS_RADIUS, sectionClassNames } from "@/lib/layout/section-layout-system";
 import type { HeroSplitSectionProps } from "./lib/types";
 
 /** CMS-only hero_split adapter → {@link HeroSplitUi}. */
@@ -66,7 +67,10 @@ export default function HeroSplitSection({
             onEditField={onEditField}
             title={section_title}
             className="w-full"
-            imgClassName="aspect-[4/3] w-full rounded-2xl object-cover"
+            imgClassName={sectionClassNames(
+              DS_RADIUS.media,
+              "aspect-[4/3] w-full object-cover"
+            )}
           />
         ) : undefined
       }

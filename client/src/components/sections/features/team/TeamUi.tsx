@@ -1,5 +1,5 @@
+import { SectionLayoutRoot } from "@/components/sections/layout";
 import MobileCardPeekRow from "@/components/sections/MobileCardPeekRow";
-import SectionWrapper from "@/components/sections/SectionWrapper";
 import TeamMemberItemCard from "./TeamMemberItemCard";
 import type { TeamUiProps } from "./lib/types";
 
@@ -23,37 +23,18 @@ export default function TeamUi({
   const showHeader = showTitle || showSubtitle;
 
   return (
-    <section
-      id={id || undefined}
-      className={`relative w-full overflow-hidden bg-transparent py-14 sm:py-16 lg:py-20 ${className}`.trim()}
+        <SectionLayoutRoot
+      id={id}
+      className={className}
+      title={title}
+      subtitle={subtitle}
+      titleSlot={titleSlot}
+      subtitleSlot={subtitleSlot}
+      itemsBar={itemsBar}
+      emptyState={emptyState}
+      items={items}
     >
-      <SectionWrapper>
-        {showHeader ? (
-          <header
-            className={`flex flex-col gap-2.5 sm:gap-3 ${
-              items.length || itemsBar || emptyState ? "mb-8 sm:mb-10" : ""
-            }`}
-          >
-            {titleSlot != null ? (
-              titleSlot
-            ) : showTitle ? (
-              <h2 className="section-theme-heading m-0 max-w-3xl font-[family-name:var(--font-display)] text-3xl leading-[1.1] font-semibold tracking-tight sm:text-4xl">
-                {title}
-              </h2>
-            ) : null}
-            {subtitleSlot != null ? (
-              subtitleSlot
-            ) : showSubtitle ? (
-              <p className="section-theme-muted m-0 max-w-2xl text-base leading-relaxed">
-                {subtitle}
-              </p>
-            ) : null}
-          </header>
-        ) : null}
-
-        {itemsBar}
-
-        {items.length ? (
+{items.length ? (
           <MobileCardPeekRow
             gapClassName="gap-5"
             gridClassName="sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
@@ -69,7 +50,6 @@ export default function TeamUi({
         ) : (
           emptyState
         )}
-      </SectionWrapper>
-    </section>
+    </SectionLayoutRoot>
   );
 }

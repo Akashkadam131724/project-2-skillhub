@@ -1,3 +1,4 @@
+import { createStaticFallbackItemsGuard } from "@/lib/sections/placement-guard";
 import { isRichTextEmpty } from "@/lib/utils/rich-text";
 import { resolveVendorLinksGridLinks } from "./map";
 import type { VendorLinksGridSectionProps } from "./types";
@@ -31,16 +32,8 @@ function hasActiveButtons(props: VendorLinksGridSectionProps) {
   );
 }
 
-export function isVendorLinkGridPlacementShowable(
-  props: VendorLinksGridSectionProps,
-  cmsMode = false
-): boolean {
-  if (cmsMode) return true;
-  if (String(props.section_title || "").trim()) return true;
-  if (!isRichTextEmpty(props.data?.body)) return true;
-  if (hasActiveButtons(props)) return true;
-  return (
-    resolveVendorLinksGridLinks(props.items, { fallbackStatic: true }).length >
-    0
+export const isVendorLinkGridPlacementShowable =
+  createStaticFallbackItemsGuard<VendorLinksGridSectionProps>(
+    (items, options) => resolveVendorLinksGridLinks(items, options),
+    { hasButtons: hasActiveButtons }
   );
-}

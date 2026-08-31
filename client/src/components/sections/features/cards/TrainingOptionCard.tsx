@@ -8,6 +8,8 @@ import { isRichTextEmpty } from "@/lib/utils/rich-text";
 import { itemTitle } from "@/lib/sections/item-types";
 import {
   DS_TEXT,
+  DS_RADIUS,
+  sectionClassNames,
   sectionLightCardSurfaceProps,
 } from "@/lib/sections/section-design-system";
 import FeatureCardPlaceholder from "./FeatureCardPlaceholder";
@@ -59,12 +61,17 @@ export default function TrainingOptionCard({
 
   const surfaceProps = onDarkBand
     ? sectionLightCardSurfaceProps(
-        "group section-ui-card flex h-full flex-col overflow-hidden rounded-[1.5rem] border shadow-[0_28px_70px_-40px_color-mix(in_srgb,var(--ink)_35%,transparent)] transition duration-500 hover:-translate-y-1"
+        sectionClassNames(
+          DS_RADIUS.card,
+          "group section-ui-card flex h-full flex-col overflow-hidden border shadow-[0_28px_70px_-40px_color-mix(in_srgb,var(--ink)_35%,transparent)] transition duration-500 hover:-translate-y-1"
+        )
       )
     : {
         "data-always-light-text": "",
-        className:
-          "group flex h-full flex-col overflow-hidden rounded-[1.5rem] border border-ink bg-ink text-white shadow-[0_28px_70px_-40px_color-mix(in_srgb,var(--ink)_55%,transparent)] transition duration-500 hover:-translate-y-1",
+        className: sectionClassNames(
+          DS_RADIUS.card,
+          "group flex h-full flex-col overflow-hidden border border-ink bg-ink text-white shadow-[0_28px_70px_-40px_color-mix(in_srgb,var(--ink)_55%,transparent)] transition duration-500 hover:-translate-y-1"
+        ),
       };
 
   const titleClass = onDarkBand
@@ -87,8 +94,11 @@ export default function TrainingOptionCard({
     "absolute inset-0 bg-gradient-to-t from-ink via-ink/35 to-transparent";
 
   const indexBadgeClass = onDarkBand
-    ? "absolute top-4 left-4 rounded-full bg-ink px-2.5 py-1 text-[11px] font-semibold tracking-[0.16em] text-white"
-    : "absolute top-4 left-4 rounded-full bg-white/12 px-2.5 py-1 text-[11px] font-semibold tracking-[0.16em] text-white/85 backdrop-blur-sm";
+    ? sectionClassNames(DS_RADIUS.pill, "absolute top-4 left-4 bg-ink px-2.5 py-1 text-[11px] font-semibold tracking-[0.16em] text-white")
+    : sectionClassNames(
+        DS_RADIUS.pill,
+        "absolute top-4 left-4 bg-white/12 px-2.5 py-1 text-[11px] font-semibold tracking-[0.16em] text-white/85 backdrop-blur-sm"
+      );
 
   return (
     <article {...surfaceProps}>

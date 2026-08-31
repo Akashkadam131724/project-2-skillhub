@@ -1,4 +1,5 @@
 import CmsRichText from "@/components/cms/primitives/CmsRichText";
+import { DS_RADIUS, sectionClassNames } from "@/lib/sections/section-design-system";
 import { mediaAlt } from "@/lib/utils/media-alt";
 import { isRichTextEmpty } from "@/lib/utils/rich-text";
 import type { BentoGridUiItem } from "./lib/types";
@@ -15,11 +16,12 @@ function BentoGridCell({ item, index, visible }: BentoGridCellProps) {
 
   return (
     <article
-      className={`group relative flex h-full min-h-[220px] flex-col justify-end overflow-hidden rounded-3xl border border-slate-200/80 bg-slate-950 text-white transition duration-700 ease-out dark:border-slate-800 ${
-        isHero ? "sm:min-h-[420px]" : "sm:min-h-[220px]"
-      } ${
+      className={sectionClassNames(
+        "group relative flex h-full min-h-[220px] flex-col justify-end overflow-hidden border border-slate-200/80 bg-slate-950 text-white transition duration-700 ease-out dark:border-slate-800",
+        DS_RADIUS.empty,
+        isHero ? "sm:min-h-[420px]" : "sm:min-h-[220px]",
         visible ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0"
-      }`}
+      )}
       style={{ transitionDelay: `${delay}ms` }}
     >
       {item.imageUrl ? (

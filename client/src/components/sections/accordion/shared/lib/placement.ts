@@ -1,3 +1,4 @@
+import { createPlacementGuard } from "@/lib/sections/placement-guard";
 import {
   sectionProbeFromProps,
   shouldRenderPlacement,
@@ -20,6 +21,12 @@ export function faqPlacementProbe(props: FaqSectionProps) {
   return sectionProbeFromProps(props.section_key || "faq", props);
 }
 
+const isFaqItemsShowable = createPlacementGuard<FaqSectionProps>(
+  "faq",
+  isFaqItemShowable,
+  { placementProbe: false }
+);
+
 /** CMS: always show. Public: enabled + ≥1 complete Q+A row. */
 export function isFaqPlacementShowable(
   props: FaqSectionProps,
@@ -27,8 +34,7 @@ export function isFaqPlacementShowable(
 ): boolean {
   if (cmsMode) return true;
   if (!shouldRenderPlacement(faqPlacementProbe(props), false)) return false;
-  const items = Array.isArray(props.items) ? props.items : [];
-  return items.some(isFaqItemShowable);
+  return isFaqItemsShowable(props, false);
 }
 
 export function validateFaqItem(

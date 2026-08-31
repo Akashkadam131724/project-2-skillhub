@@ -81,6 +81,7 @@ export type SuccessStoriesUiProps = {
   subtitleSlot?: ReactNode;
   itemsBar?: ReactNode;
   emptyState?: ReactNode;
+  footer?: ReactNode;
   stories?: SuccessStoryUiItem[];
   preview?: boolean;
   onFormOpen?: (formKey: string, button?: unknown) => void;

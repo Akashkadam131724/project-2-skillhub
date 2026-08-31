@@ -1,5 +1,5 @@
 import CmsRichText from "@/components/cms/primitives/CmsRichText";
-import { SectionBand } from "@/components/sections/shared/design";
+import { SectionLayoutRoot } from "@/components/sections/layout";
 import { DS_TEXT } from "@/lib/sections/section-design-system";
 import { isRichTextEmpty } from "@/lib/utils/rich-text";
 import VendorLinksGridBandDecor from "./VendorLinksGridBandDecor";
@@ -36,11 +36,11 @@ export default function VendorLinksGridUi({
   const bodyClass = `mb-4 text-base leading-relaxed ${DS_TEXT.muted}`;
 
   return (
-    <SectionBand
+    <SectionLayoutRoot
       id={id}
-      decor={<VendorLinksGridBandDecor darkBand={onDarkBand} />}
-      wrapper
       className={className}
+      decor={<VendorLinksGridBandDecor darkBand={onDarkBand} />}
+      hasBodyContent
     >
       <div className="flex flex-col gap-8 lg:flex-row lg:gap-12">
         <div className="animate-in fade-in slide-in-from-left-4 space-y-3 duration-700 lg:w-2/5">
@@ -75,6 +75,6 @@ export default function VendorLinksGridUi({
           </div>
         ) : null}
       </div>
-    </SectionBand>
+    </SectionLayoutRoot>
   );
 }

@@ -1,5 +1,6 @@
 import CmsRichText from "@/components/cms/primitives/CmsRichText";
 import SectionButtons from "@/components/ui/SectionButtons";
+import { DS_RADIUS, sectionClassNames } from "@/lib/layout/section-layout-system";
 import { mediaAlt } from "@/lib/utils/media-alt";
 import { isRichTextEmpty } from "@/lib/utils/rich-text";
 import { tabChildPanelButtons } from "./lib/tab-panel";
@@ -20,11 +21,11 @@ export default function TabsChildCard({
   return (
     <article
       data-light-surface={dark ? undefined : ""}
-      className={`flex h-full flex-col overflow-hidden rounded-2xl border ${
-        dark
-          ? "border-white/15 bg-white/5"
-          : "border-slate-200 bg-white"
-      }`}
+      className={sectionClassNames(
+        DS_RADIUS.nested,
+        "flex h-full flex-col overflow-hidden border",
+        dark ? "border-white/15 bg-white/5" : "border-slate-200 bg-white"
+      )}
     >
       {item.imageUrl ? (
         // eslint-disable-next-line @next/next/no-img-element

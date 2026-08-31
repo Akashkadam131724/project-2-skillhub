@@ -39,7 +39,8 @@ export default function HeroClassicPublicSection({
       imageUrl={resolveHeroImageUrl(section_img_url, data)}
       footer={heroLayoutPublicFooter(props, {
         onFormOpen,
-        className: "mt-7 flex flex-wrap items-center gap-3 sm:mt-8",
+        className: "mt-7 sm:mt-8",
+        buttonsClassName: "flex flex-wrap items-center gap-3",
       })}
     />
   );

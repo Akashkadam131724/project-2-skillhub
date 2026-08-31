@@ -1,7 +1,7 @@
 "use client";
 
 import type { ElementType, ReactNode } from "react";
-import SectionButtonsFooter from "@/components/sections/SectionButtonsFooter";
+import { cmsSectionChrome } from "@/components/sections/shared/cms-section-chrome";
 import {
   HeroBodyCms,
   HeroSubtitleCms,
@@ -67,19 +67,19 @@ export function heroLayoutCmsFooter(
   className = "",
   options: { inverted?: boolean; buttonsClassName?: string } = {}
 ): ReactNode {
-  return (
-    <SectionButtonsFooter
-      buttons={props.buttons}
-      button_title={props.button_title}
-      target_url={props.target_url}
-      cmsMode
-      onEditField={props.onEditField}
-      onFormOpen={props.onFormOpen}
-      inverted={options.inverted}
-      className={className}
-      buttonsClassName={options.buttonsClassName}
-    />
-  );
+  return cmsSectionChrome({
+    section_key: "hero",
+    itemCount: 0,
+    onEditField: props.onEditField,
+    buttons: props.buttons,
+    button_title: props.button_title,
+    target_url: props.target_url,
+    onFormOpen: props.onFormOpen,
+    inverted: options.inverted,
+    footerClassName: className,
+    buttonsClassName: options.buttonsClassName,
+    withItems: false,
+  }).footer;
 }
 
 export { HeroBodyCms, HeroImageCms } from "./hero-cms-fields";

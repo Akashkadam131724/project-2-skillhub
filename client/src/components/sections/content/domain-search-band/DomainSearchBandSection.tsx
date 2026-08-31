@@ -1,9 +1,7 @@
 "use client";
 
-import CmsEditable from "@/components/cms/primitives/CmsEditable";
-import CmsSectionItemsBar from "@/components/sections/CmsSectionItemsBar";
-import EmptyItemsHint from "@/components/sections/EmptyItemsHint";
-import SectionButtonsFooter from "@/components/sections/SectionButtonsFooter";
+import { cmsSectionChrome } from "@/components/sections/shared/cms-section-chrome";
+import { cmsSectionHeaderSlots } from "@/components/sections/shared/CmsSectionHeaderSlots";
 import DomainSearchBandUi from "./DomainSearchBandUi";
 import { resolveDomainChipUiItems } from "./lib/map";
 import { isDomainSearchBandPlacementShowable } from "./lib/placement";
@@ -48,62 +46,29 @@ export default function DomainSearchBandSection({
     <DomainSearchBandUi
       id={id}
       domain={domain}
-      titleSlot={
-        <CmsEditable
-          cmsMode={cmsMode}
-          field="section_title"
-          label="Title"
-          onEditField={onEditField}
-        >
-          {section_title || cmsMode ? (
-            <h2 className="m-0 font-[family-name:var(--font-display)] text-3xl font-semibold tracking-tight text-white sm:text-4xl">
-              {section_title || "Find your domain"}
-            </h2>
-          ) : null}
-        </CmsEditable>
-      }
-      subtitleSlot={
-        <CmsEditable
-          cmsMode={cmsMode}
-          field="sub_title"
-          label="Subtitle"
-          onEditField={onEditField}
-        >
-          {sub_title || cmsMode ? (
-            <p className="mt-3 mb-0 max-w-md text-base text-white/65">
-              {sub_title ||
-                "Search for a name that makes your idea official."}
-            </p>
-          ) : null}
-        </CmsEditable>
-      }
+      {...cmsSectionHeaderSlots({
+        section_title:
+          section_title || (cmsMode ? "Find your domain" : undefined),
+        sub_title:
+          sub_title ||
+          (cmsMode ? "Search for a name that makes your idea official." : undefined),
+        onEditField,
+        cmsMode,
+        inverted: true,
+        subtitleClassName: "max-w-md",
+      })}
       items={items}
-      emptyState={
-        cmsMode ? (
-          <EmptyItemsHint sectionKey={section_key} onEditField={onEditField} />
-        ) : null
-      }
-      itemsBar={
-        <CmsSectionItemsBar
-          sectionKey={section_key}
-          cmsMode={cmsMode}
-          onEditField={onEditField}
-          itemCount={items.length}
-          className="mt-4 [&_button]:border-white/40 [&_button]:bg-white/10 [&_button]:text-white [&_p]:text-white/70"
-        />
-      }
-      footer={
-        <SectionButtonsFooter
-          buttons={buttons}
-          button_title={button_title}
-          target_url={target_url}
-          cmsMode={cmsMode}
-          onEditField={onEditField}
-          onFormOpen={onFormOpen}
-          inverted
-          className="mt-8"
-        />
-      }
+      {...cmsSectionChrome({
+        section_key,
+        itemCount: items.length,
+        onEditField,
+        buttons,
+        button_title,
+        target_url,
+        onFormOpen,
+        footerClassName: "mt-8",
+      })}
+
     />
   );
 }

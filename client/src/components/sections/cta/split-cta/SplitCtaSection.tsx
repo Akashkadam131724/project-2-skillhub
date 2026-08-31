@@ -1,9 +1,14 @@
 "use client";
 
-import CmsEditable from "@/components/cms/primitives/CmsEditable";
-import SectionButtonsFooter from "@/components/sections/SectionButtonsFooter";
+import { cmsSectionChrome } from "@/components/sections/shared/cms-section-chrome";
+import { cmsSectionHeaderSlots } from "@/components/sections/shared/CmsSectionHeaderSlots";
 import { mediaUrl } from "@/lib/api/cms-api";
+import { sectionClassNames } from "@/lib/layout/section-layout-system";
 import SplitCtaUi from "./SplitCtaUi";
+import {
+  SPLIT_CTA_SUBTITLE_CLASS,
+  SPLIT_CTA_TITLE_CLASS,
+} from "./lib/band";
 import {
   normalizeSplitCtaImageSide,
   resolveSplitCtaBandStyle,
@@ -54,51 +59,42 @@ export default function SplitCtaSection({
       imageSide={imageSide}
       bandStyle={bandStyle}
       useThemeBand={!bandStyle}
-      titleSlot={
-        <CmsEditable
-          cmsMode={cmsMode}
-          field="section_title"
-          label="Title"
-          onEditField={onEditField}
-        >
-          {section_title || cmsMode ? (
-            <h2 className="m-0 mb-3 max-w-xl text-[22px] leading-[30px] font-semibold text-white md:mb-3 md:text-xl md:leading-[26px] lg:mb-[18px] lg:text-[26px] lg:leading-9 xl:text-[32px] xl:leading-[42px]">
-              {section_title || (
-                <span className="text-white/40 italic">Add title…</span>
-              )}
-            </h2>
-          ) : null}
-        </CmsEditable>
-      }
-      subtitleSlot={
-        <CmsEditable
-          cmsMode={cmsMode}
-          field="sub_title"
-          label="Subtitle"
-          onEditField={onEditField}
-        >
-          {sub_title || cmsMode ? (
-            <p className="m-0 mb-6 max-w-xl text-base leading-6 font-normal text-white/90 md:mb-[26px] md:text-sm md:leading-[18px] lg:mb-[34px] lg:text-sm lg:leading-[22px] xl:text-base xl:leading-6">
-              {sub_title || (
-                <span className="text-white/40 italic">Add subtitle…</span>
-              )}
-            </p>
-          ) : null}
-        </CmsEditable>
-      }
-      footer={
-        <SectionButtonsFooter
-          buttons={buttons}
-          button_title={button_title}
-          target_url={target_url}
-          cmsMode={cmsMode}
-          onEditField={onEditField}
-          onFormOpen={onFormOpen}
-          inverted
-          className="mt-0"
-          buttonsClassName="flex flex-wrap items-center gap-3 [&_a]:rounded-lg [&_a]:px-4 [&_a]:py-2.5"
-        />
-      }
+      {...(cmsMode
+        ? cmsSectionHeaderSlots({
+            section_title,
+            sub_title,
+            onEditField,
+            inverted: true,
+            cmsMode,
+            titleClassName: SPLIT_CTA_TITLE_CLASS,
+            subtitleClassName: SPLIT_CTA_SUBTITLE_CLASS,
+            titlePlaceholderClassName: sectionClassNames(
+              SPLIT_CTA_TITLE_CLASS,
+              "text-white/40 italic"
+            ),
+            subtitlePlaceholderClassName: sectionClassNames(
+              SPLIT_CTA_SUBTITLE_CLASS,
+              "text-white/40 italic"
+            ),
+          })
+        : {
+            title: section_title || undefined,
+            subtitle: sub_title || undefined,
+          })}
+      {...cmsSectionChrome({
+        section_key: "split_cta",
+        itemCount: 0,
+        onEditField,
+        buttons,
+        button_title,
+        target_url,
+        onFormOpen,
+        inverted: true,
+        footerClassName: "mt-0",
+        buttonsClassName:
+          "flex flex-wrap items-center gap-3 [&_a]:rounded-lg [&_a]:px-4 [&_a]:py-2.5",
+        withItems: false,
+      })}
       imageSideControl={
         cmsMode ? (
           <div className="flex flex-wrap items-center gap-2 border-b border-white/15 py-2">

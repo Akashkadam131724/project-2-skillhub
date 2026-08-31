@@ -3,6 +3,11 @@
 import CmsRichText from "@/components/cms/primitives/CmsRichText";
 import SectionButtons from "@/components/ui/SectionButtons";
 import CardPlaceholder from "@/components/sections/shared/CardPlaceholder";
+import {
+  DS_RADIUS,
+  DS_TYPE,
+  sectionClassNames,
+} from "@/lib/layout/section-layout-system";
 import { isRichTextEmpty } from "@/lib/utils/rich-text";
 import type { LearningPathStepUiItem } from "./lib/types";
 
@@ -28,9 +33,17 @@ export default function LearningPathStepItemCard({
     <article
       data-section-surface="light-card"
       data-light-surface=""
-      className="section-light-card section-ui-card flex gap-4 rounded-2xl border p-5 sm:gap-6 sm:p-6"
+      className={sectionClassNames(
+        "section-light-card section-ui-card flex gap-4 border p-5 sm:gap-6 sm:p-6",
+        DS_RADIUS.card
+      )}
     >
-      <span className="text-brand flex size-10 shrink-0 items-center justify-center rounded-xl bg-brand/10 font-[family-name:var(--font-display)] text-lg font-bold">
+      <span
+        className={sectionClassNames(
+          "text-brand flex size-10 shrink-0 items-center justify-center bg-brand/10 font-[family-name:var(--font-display)] text-lg font-bold",
+          DS_RADIUS.iconSm
+        )}
+      >
         {stepNumber}
       </span>
       <div className="min-w-0 flex-1">
@@ -47,7 +60,7 @@ export default function LearningPathStepItemCard({
         {!isRichTextEmpty(body) || preview ? (
           <CmsRichText
             html={body}
-            className="section-theme-muted mt-2 text-[15px] leading-relaxed"
+            className={sectionClassNames(DS_TYPE.body, "mt-2 text-[15px]")}
             empty={
               preview ? (
                 <p className="section-theme-muted m-0 mt-2 text-[15px] leading-relaxed italic">

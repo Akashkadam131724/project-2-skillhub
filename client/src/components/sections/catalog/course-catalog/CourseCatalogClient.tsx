@@ -4,6 +4,15 @@ import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { fetchCatalog, fetchCatalogFilters } from "@/lib/api";
 import { mergeCatalogParams, CATALOG_PAGE_SIZE } from "@/lib/api/catalogParams";
+import {
+  SectionItemGrid,
+  SectionSplit,
+  SectionStack,
+} from "@/components/sections/layout";
+import {
+  DS_RADIUS,
+  sectionClassNames,
+} from "@/lib/layout/section-layout-system";
 import CatalogFilters from "../shared/CatalogFilters";
 import CatalogSearch from "../shared/CatalogSearch";
 import CatalogScrollAnchor from "../shared/CatalogScrollAnchor";
@@ -110,15 +119,69 @@ export default function CourseCatalogClient({
   );
   const showFilters = visibleGroups.length > 0;
 
+  const catalogBody = (
+    <SectionStack gap="stackSm" as="section" className="min-w-0">
+      <CatalogScrollAnchor className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <h3 className="m-0 font-[family-name:var(--font-display)] text-2xl font-semibold tracking-tight text-ink dark:text-white">
+          {loading
+            ? "…"
+            : error
+              ? "—"
+              : `${total.toLocaleString("en-US")} ${heading}`}
+        </h3>
+        <CatalogSearch lockedParams={baseParams} />
+      </CatalogScrollAnchor>
+
+      {error ? <p className="m-0 text-sm text-rose-600">{error}</p> : null}
+
+      {!error && !loading && courses.length === 0 ? (
+        <p
+          className={sectionClassNames(
+            DS_RADIUS.accordion,
+            "m-0 border border-slate-200 bg-slate-50 p-6 text-sm text-slate-500 dark:border-slate-800 dark:bg-slate-900/50"
+          )}
+        >
+          No courses match these filters.
+        </p>
+      ) : null}
+
+      {loading ? (
+        <SectionItemGrid cols={2} peekOnMobile={false}>
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div
+              key={i}
+              className={sectionClassNames(
+                DS_RADIUS.tile,
+                "h-44 animate-pulse bg-slate-200/70 dark:bg-slate-800"
+              )}
+            />
+          ))}
+        </SectionItemGrid>
+      ) : (
+        <SectionItemGrid cols={2} peekOnMobile={false}>
+          {courses.map((course) => (
+            <CourseCard key={String(course._id || course.id)} course={course} />
+          ))}
+        </SectionItemGrid>
+      )}
+
+      <CatalogPager
+        page={currentPage}
+        totalPages={totalPages}
+        lockedParams={baseParams}
+      />
+    </SectionStack>
+  );
+
+  if (!showFilters) {
+    return catalogBody;
+  }
+
   return (
-    <div
-      className={
-        showFilters
-          ? "grid items-start gap-6 lg:grid-cols-[300px_1fr]"
-          : "grid items-start gap-6"
-      }
-    >
-      {showFilters ? (
+    <SectionSplit
+      variant="grid"
+      ratio="sidebar-380"
+      left={
         <aside className="min-w-0">
           <CatalogFilters
             groups={visibleGroups}
@@ -126,55 +189,8 @@ export default function CourseCatalogClient({
             lockedKeys={lockedKeys}
           />
         </aside>
-      ) : null}
-
-      <section className="min-w-0">
-        <CatalogScrollAnchor className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <h3 className="m-0 font-[family-name:var(--font-display)] text-2xl font-semibold tracking-tight text-ink dark:text-white">
-            {loading
-              ? "…"
-              : error
-                ? "—"
-                : `${total.toLocaleString("en-US")} ${heading}`}
-          </h3>
-          <CatalogSearch lockedParams={baseParams} />
-        </CatalogScrollAnchor>
-
-        {error ? <p className="mb-4 text-sm text-rose-600">{error}</p> : null}
-
-        {!error && !loading && courses.length === 0 ? (
-          <p className="rounded-[1.25rem] border border-slate-200 bg-slate-50 p-6 text-sm text-slate-500 dark:border-slate-800 dark:bg-slate-900/50">
-            No courses match these filters.
-          </p>
-        ) : null}
-
-        {loading ? (
-          <div className="grid gap-4 sm:grid-cols-2">
-            {Array.from({ length: 4 }).map((_, i) => (
-              <div
-                key={i}
-                className="h-44 animate-pulse rounded-[1.35rem] bg-slate-200/70 dark:bg-slate-800"
-              />
-            ))}
-          </div>
-        ) : (
-          <ul className="m-0 grid list-none gap-4 p-0 sm:grid-cols-2">
-            {courses.map((course) => (
-              <li key={String(course._id || course.id)}>
-                <CourseCard course={course} />
-              </li>
-            ))}
-          </ul>
-        )}
-
-        <div className="mt-5">
-          <CatalogPager
-            page={currentPage}
-            totalPages={totalPages}
-            lockedParams={baseParams}
-          />
-        </div>
-      </section>
-    </div>
+      }
+      right={catalogBody}
+    />
   );
 }

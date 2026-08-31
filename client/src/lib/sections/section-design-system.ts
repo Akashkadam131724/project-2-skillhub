@@ -17,7 +17,13 @@
  * CSS tokens live in `styles/section-theme.css` (`--band-*`, `--card-*`, `--field-*`).
  * Buttons: `styles/section-buttons.css` + `components/ui/DsButton.js` + `lib/utils/button-types.js`.
  * Tabs: `styles/section-tabs.css`.
+ * Radius: `DS_RADIUS` in `section-layout-system.ts` (re-exported below).
  */
+
+import {
+  DS_RADIUS,
+  type DsRadiusKey,
+} from "@/lib/layout/section-layout-system";
 
 export const SECTION_SURFACE_LIGHT_CARD = "light-card";
 export const SECTION_SURFACE_DARK_OVERLAY = "dark-overlay";
@@ -38,6 +44,10 @@ export const SECTION_BAND_PADDING_SM =
   "py-14 sm:py-16 lg:py-20";
 export const SECTION_BAND_PADDING_LG =
   "py-16 sm:py-20 lg:py-24";
+
+/** CMS items bar on dark bands — pair with `onDarkBand` / `inverted` */
+export const CMS_DARK_BAND_ITEMS_BAR_CLASS =
+  "[&_p]:text-white/70 [&_button]:border-white/40 [&_button]:bg-white/10 [&_button]:text-white [&_button:hover]:border-white [&_button:hover]:text-white";
 
 /** Typography + fields — use inside band or inside a surface preset */
 export const DS_TEXT = {
@@ -119,6 +129,22 @@ export const DS_BAND = {
 export const SECTION_ITEM_TITLE_CLASS = DS_TEXT.heading;
 /** @deprecated use DS_TEXT.muted */
 export const SECTION_ITEM_MUTED_CLASS = DS_TEXT.muted;
+
+/** Layout spacing + grid — see `@/lib/layout/section-layout-system` */
+export {
+  DS_SPACE,
+  DS_GRID,
+  DS_TYPE,
+  DS_RADIUS,
+  DS_SPLIT_GAP,
+  sectionGridColsClass,
+  type DsRadiusKey,
+} from "@/lib/layout/section-layout-system";
+
+/** Card shell radius + optional extra classes (no surface tokens). */
+export function sectionCardRadiusClass(radius: DsRadiusKey = "card", extra = "") {
+  return sectionClassNames(DS_RADIUS[radius], extra);
+}
 
 export function sectionClassNames(...parts: Array<string | false | null | undefined>) {
   return parts.filter(Boolean).join(" ");

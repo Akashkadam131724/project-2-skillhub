@@ -1,23 +1,8 @@
-import {
-  sectionProbeFromProps,
-  shouldRenderPlacement,
-} from "@/lib/sections/item-types";
+import { createPlacementGuard } from "@/lib/sections/placement-guard";
 import { isVideoBannerItemShowable } from "./map";
 import type { VideoBannerSectionProps } from "./types";
 
-export function isVideoBannerPlacementShowable(
-  props: VideoBannerSectionProps,
-  cmsMode = false
-): boolean {
-  if (cmsMode) return true;
-  if (
-    !shouldRenderPlacement(
-      sectionProbeFromProps(props.section_key || "video_banner", props),
-      false
-    )
-  ) {
-    return false;
-  }
-  const items = Array.isArray(props.items) ? props.items : [];
-  return items.some(isVideoBannerItemShowable);
-}
+export const isVideoBannerPlacementShowable = createPlacementGuard<VideoBannerSectionProps>(
+  "video_banner",
+  isVideoBannerItemShowable
+);

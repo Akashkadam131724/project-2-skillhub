@@ -7,6 +7,7 @@ import { mediaAlt } from "@/lib/utils/media-alt";
 import { isRichTextEmpty } from "@/lib/utils/rich-text";
 import { itemTitle } from "@/lib/sections/item-types";
 import CardPlaceholder from "@/components/sections/shared/CardPlaceholder";
+import { DS_RADIUS, sectionClassNames } from "@/lib/sections/section-design-system";
 
 export type WhyChooseItemCardProps = {
   item?: {
@@ -49,11 +50,19 @@ export default function WhyChooseItemCard({
     return (
       <article
         data-light-surface
-        className="group relative flex h-full flex-col overflow-hidden rounded-[1.35rem] border border-slate-200/90 bg-white p-6 shadow-[0_12px_40px_-28px_color-mix(in_srgb,var(--ink)_25%,transparent)] transition hover:border-brand/25 hover:shadow-md sm:p-7"
+        className={sectionClassNames(
+          DS_RADIUS.tile,
+          "group relative flex h-full flex-col overflow-hidden border border-slate-200/90 bg-white p-6 shadow-[0_12px_40px_-28px_color-mix(in_srgb,var(--ink)_25%,transparent)] transition hover:border-brand/25 hover:shadow-md sm:p-7"
+        )}
       >
         <div className="relative mb-5 flex items-start justify-between gap-3">
           {showIcon ? (
-            <div className="flex size-14 items-center justify-center rounded-2xl bg-brand-soft ring-1 ring-brand/10">
+            <div
+              className={sectionClassNames(
+                DS_RADIUS.icon,
+                "flex size-14 items-center justify-center bg-brand-soft ring-1 ring-brand/10"
+              )}
+            >
               {imgSrc ? (
                 <SectionImage
                   src={imgSrc}
@@ -65,7 +74,7 @@ export default function WhyChooseItemCard({
                   className="max-h-8 max-w-8 object-contain"
                 />
               ) : (
-                <div className="size-8 rounded-xl bg-brand/20" />
+                <div className={sectionClassNames(DS_RADIUS.iconSm, "size-8 bg-brand/20")} />
               )}
             </div>
           ) : null}
@@ -95,14 +104,27 @@ export default function WhyChooseItemCard({
   }
 
   return (
-    <article className="group relative flex h-full flex-col overflow-hidden rounded-[1.35rem] border border-white/12 bg-white/[0.06] p-6 backdrop-blur-sm transition hover:border-white/25 hover:bg-white/[0.1] sm:p-7">
+    <article
+      className={sectionClassNames(
+        DS_RADIUS.tile,
+        "group relative flex h-full flex-col overflow-hidden border border-white/12 bg-white/[0.06] p-6 backdrop-blur-sm transition hover:border-white/25 hover:bg-white/[0.1] sm:p-7"
+      )}
+    >
       <div
         aria-hidden
-        className="pointer-events-none absolute -right-8 -bottom-10 size-28 rounded-full bg-brand/20 blur-2xl transition group-hover:bg-brand/35"
+        className={sectionClassNames(
+          DS_RADIUS.pill,
+          "pointer-events-none absolute -right-8 -bottom-10 size-28 bg-brand/20 blur-2xl transition group-hover:bg-brand/35"
+        )}
       />
       <div className="relative mb-5 flex items-start justify-between gap-3">
         {showIcon ? (
-          <div className="flex size-14 items-center justify-center rounded-2xl bg-white/12 ring-1 ring-white/15">
+          <div
+            className={sectionClassNames(
+              DS_RADIUS.icon,
+              "flex size-14 items-center justify-center bg-white/12 ring-1 ring-white/15"
+            )}
+          >
             {imgSrc ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
@@ -111,7 +133,7 @@ export default function WhyChooseItemCard({
                 className="max-h-8 max-w-8 object-contain"
               />
             ) : (
-              <div className="size-8 rounded-xl bg-brand/30" />
+              <div className={sectionClassNames(DS_RADIUS.iconSm, "size-8 bg-brand/30")} />
             )}
           </div>
         ) : null}

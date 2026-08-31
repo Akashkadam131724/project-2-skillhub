@@ -1,8 +1,4 @@
-import SectionButtons from "@/components/ui/SectionButtons";
-import {
-  buttonsFromLegacy,
-  sortActiveButtons,
-} from "@/lib/utils/button-types";
+import { publicSectionButtonsFooter } from "@/components/sections/shared/public-section-footer";
 import ContactUsUi from "./ContactUsUi";
 import { resolveContactChannelUiItems } from "./lib/map";
 import { isContactUsPlacementShowable } from "./lib/placement";
@@ -38,11 +34,6 @@ export default function ContactUsPublicSection({
   }
 
   const items = resolveContactChannelUiItems(section_key, mappingItems);
-  const list = sortActiveButtons(
-    Array.isArray(buttons) && buttons.length
-      ? buttons
-      : buttonsFromLegacy(button_title, target_url)
-  );
 
   return (
     <ContactUsUi
@@ -51,15 +42,13 @@ export default function ContactUsPublicSection({
       subtitle={sub_title}
       body={data?.body}
       items={items}
-      footer={
-        list.length ? (
-          <SectionButtons
-            buttons={list}
-            onFormOpen={onFormOpen}
-            className="mt-8 flex flex-wrap items-center gap-3"
-          />
-        ) : null
-      }
+      footer={publicSectionButtonsFooter({
+        buttons,
+        button_title,
+        target_url,
+        onFormOpen,
+        className: "mt-8 flex flex-wrap items-center gap-3",
+      })}
     />
   );
 }

@@ -35,7 +35,8 @@ export default function HeroCenteredPublicSection({
       body={data?.body}
       footer={heroLayoutPublicFooter(props, {
         onFormOpen,
-        className: "mt-8 flex flex-wrap items-center justify-center gap-3",
+        className: "mt-8",
+        buttonsClassName: "flex flex-wrap items-center justify-center gap-3",
       })}
     />
   );

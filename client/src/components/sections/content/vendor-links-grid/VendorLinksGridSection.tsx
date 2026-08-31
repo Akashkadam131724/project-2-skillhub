@@ -4,10 +4,9 @@ import CmsEditable from "@/components/cms/primitives/CmsEditable";
 import CmsRichText from "@/components/cms/primitives/CmsRichText";
 import CmsSectionItemsBar from "@/components/sections/CmsSectionItemsBar";
 import EmptyItemsHint from "@/components/sections/EmptyItemsHint";
-import SectionButtonsFooter from "@/components/sections/SectionButtonsFooter";
+import { cmsSectionChrome } from "@/components/sections/shared/cms-section-chrome";
 import { DS_TEXT } from "@/lib/sections/section-design-system";
-import { isPlacementDarkBand } from "@/lib/sections/section-theme";
-import VendorLinksGridUi from "./VendorLinksGridUi";
+import { isPlacementDarkBand } from "@/lib/sections/section-theme";import VendorLinksGridUi from "./VendorLinksGridUi";
 import VendorLinksGridLinkCard from "./VendorLinksGridLinkCard";
 import { resolveVendorLinksGridLinks } from "./lib/map";
 import { isVendorLinkGridPlacementShowable } from "./lib/placement";
@@ -110,17 +109,18 @@ export default function VendorLinksGridSection({
         </CmsEditable>
       }
       footer={
-        <SectionButtonsFooter
-          buttons={buttons}
-          button_title={button_title}
-          target_url={target_url}
-          cmsMode={cmsMode}
-          onEditField={onEditField}
-          onFormOpen={onFormOpen}
-          inverted={onDarkBand}
-          surface={onDarkBand ? "dark" : "inherit"}
-          className="mt-4"
-        />
+        cmsSectionChrome({
+          section_key,
+          itemCount: links.length,
+          onEditField,
+          buttons,
+          button_title,
+          target_url,
+          onFormOpen,
+          onDarkBand,
+          footerClassName: "mt-4",
+          withItems: false,
+        }).footer
       }
       linksSlot={
         <>

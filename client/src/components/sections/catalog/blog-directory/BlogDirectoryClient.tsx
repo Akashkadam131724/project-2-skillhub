@@ -9,6 +9,11 @@ import CatalogPager from "../shared/CatalogPager";
 import CatalogScrollAnchor from "../shared/CatalogScrollAnchor";
 import CatalogSearch from "../shared/CatalogSearch";
 import { fetchBlogs } from "@/lib/api";
+import { SectionItemGrid, SectionStack } from "@/components/sections/layout";
+import {
+  DS_RADIUS,
+  sectionClassNames,
+} from "@/lib/layout/section-layout-system";
 import BlogDirectoryUi from "./BlogDirectoryUi";
 import {
   resolveBlogDirectoryLimit,
@@ -95,8 +100,8 @@ export default function BlogDirectoryClient({
   const subtitle = resolveBlogDirectorySubtitle(sub_title);
 
   const body = (
-    <>
-      <CatalogScrollAnchor className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <SectionStack gap="stackSm">
+      <CatalogScrollAnchor className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <p className="m-0 text-sm text-slate-500">
           {loading
             ? "Loading…"
@@ -114,22 +119,35 @@ export default function BlogDirectoryClient({
       </CatalogScrollAnchor>
 
       {error ? (
-        <p className="m-0 mb-4 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700 dark:border-rose-900 dark:bg-rose-950/40 dark:text-rose-200">
+        <p
+          className={sectionClassNames(
+            DS_RADIUS.nested,
+            "m-0 border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700 dark:border-rose-900 dark:bg-rose-950/40 dark:text-rose-200"
+          )}
+        >
           {error}
         </p>
       ) : null}
 
       {loading ? (
-        <div className="grid gap-6 md:grid-cols-3">
+        <SectionItemGrid cols={3} peekOnMobile={false}>
           {Array.from({ length: 3 }).map((_, index) => (
             <div
               key={index}
-              className="h-[25rem] animate-pulse rounded-[1.75rem] bg-slate-200 dark:bg-slate-800"
+              className={sectionClassNames(
+                DS_RADIUS.media,
+                "h-[25rem] animate-pulse bg-slate-200 dark:bg-slate-800"
+              )}
             />
           ))}
-        </div>
+        </SectionItemGrid>
       ) : !error && !lead ? (
-        <div className="rounded-3xl border border-dashed border-slate-300 px-6 py-16 text-center dark:border-slate-700">
+        <div
+          className={sectionClassNames(
+            DS_RADIUS.empty,
+            "border border-dashed border-slate-300 px-6 py-16 text-center dark:border-slate-700"
+          )}
+        >
           <p className="m-0 text-lg font-semibold section-theme-heading">
             No articles found
           </p>
@@ -142,32 +160,26 @@ export default function BlogDirectoryClient({
           </p>
         </div>
       ) : (
-        <>
-          {showFeatured ? (
-            <BlogCard blog={lead} featured />
-          ) : null}
-          <div
-            className={`grid gap-6 sm:grid-cols-2 lg:grid-cols-3 ${showFeatured ? "mt-6" : ""}`}
-          >
+        <SectionStack gap="stackSm">
+          {showFeatured ? <BlogCard blog={lead} featured /> : null}
+          <SectionItemGrid cols={3} peekOnMobile={false}>
             {(showFeatured ? remaining : blogs).map((blog) => (
               <BlogCard
                 key={blog._id || blog.id || blog.slug}
                 blog={blog}
               />
             ))}
-          </div>
-        </>
+          </SectionItemGrid>
+        </SectionStack>
       )}
 
-      <div className="mt-8">
-        <Suspense fallback={null}>
-          <CatalogPager
-            page={result.page || page}
-            totalPages={result.totalPages || 1}
-          />
-        </Suspense>
-      </div>
-    </>
+      <Suspense fallback={null}>
+        <CatalogPager
+          page={result.page || page}
+          totalPages={result.totalPages || 1}
+        />
+      </Suspense>
+    </SectionStack>
   );
 
   return (

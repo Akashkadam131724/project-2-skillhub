@@ -1,9 +1,5 @@
-import SectionButtons from "@/components/ui/SectionButtons";
+import { publicSectionButtonsFooter } from "@/components/sections/shared/public-section-footer";
 import { mediaUrl } from "@/lib/api/cms-api";
-import {
-  buttonsFromLegacy,
-  sortActiveButtons,
-} from "@/lib/utils/button-types";
 import SplitCtaUi from "./SplitCtaUi";
 import {
   normalizeSplitCtaImageSide,
@@ -46,11 +42,6 @@ export default function SplitCtaPublicSection({
     section_bg_color,
     data?.bg_color
   );
-  const list = sortActiveButtons(
-    Array.isArray(buttons) && buttons.length
-      ? buttons
-      : buttonsFromLegacy(button_title, target_url)
-  );
 
   return (
     <SplitCtaUi
@@ -61,16 +52,15 @@ export default function SplitCtaPublicSection({
       imageSide={normalizeSplitCtaImageSide(data)}
       bandStyle={bandStyle}
       useThemeBand={!bandStyle}
-      footer={
-        list.length ? (
-          <SectionButtons
-            buttons={list}
-            onFormOpen={onFormOpen}
-            inverted
-            className="flex flex-wrap items-center gap-3 [&_a]:rounded-lg [&_a]:px-4 [&_a]:py-2.5"
-          />
-        ) : null
-      }
+      footer={publicSectionButtonsFooter({
+        buttons,
+        button_title,
+        target_url,
+        onFormOpen,
+        inverted: true,
+        className:
+          "flex flex-wrap items-center gap-3 [&_a]:rounded-lg [&_a]:px-4 [&_a]:py-2.5",
+      })}
     />
   );
 }

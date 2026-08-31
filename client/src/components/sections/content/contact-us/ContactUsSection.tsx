@@ -1,9 +1,10 @@
 "use client";
 
+import { cmsSectionChrome } from "@/components/sections/shared/cms-section-chrome";
 import CmsEditable from "@/components/cms/primitives/CmsEditable";
 import CmsRichText from "@/components/cms/primitives/CmsRichText";
-import SectionButtonsFooter from "@/components/sections/SectionButtonsFooter";
-import { DS_TEXT } from "@/lib/sections/section-design-system";
+import { cmsSectionHeaderSlots } from "@/components/sections/shared/CmsSectionHeaderSlots";
+import { DS_TYPE } from "@/lib/sections/section-design-system";
 import { isRichTextEmpty } from "@/lib/utils/rich-text";
 import ContactChannelCard from "../shared/ContactChannelCard";
 import ContactUsUi from "./ContactUsUi";
@@ -50,38 +51,23 @@ export default function ContactUsSection({
   return (
     <ContactUsUi
       id={id}
-      titleSlot={
-        <CmsEditable
-          cmsMode={cmsMode}
-          field="section_title"
-          label="Title"
-          onEditField={onEditField}
-        >
-          {section_title || cmsMode ? (
-            <h2
-              className={`mt-3 mb-0 font-[family-name:var(--font-display)] text-3xl leading-tight font-semibold tracking-tight ${DS_TEXT.heading} sm:text-4xl`}
-            >
-              {section_title || (cmsMode ? "Contact us" : null)}
-            </h2>
-          ) : null}
-        </CmsEditable>
-      }
-      subtitleSlot={
-        <CmsEditable
-          cmsMode={cmsMode}
-          field="sub_title"
-          label="Subtitle"
-          onEditField={onEditField}
-        >
-          {sub_title || cmsMode ? (
-            <p
-              className={`${DS_TEXT.muted} mt-4 mb-0 max-w-xl text-base leading-relaxed sm:text-lg`}
-            >
-              {sub_title || (cmsMode ? "Supporting line…" : null)}
-            </p>
-          ) : null}
-        </CmsEditable>
-      }
+      {...cmsSectionHeaderSlots({
+        section_title,
+        sub_title,
+        onEditField,
+        cmsMode,
+      })}
+      {...cmsSectionChrome({
+        section_key,
+        itemCount: items.length,
+        onEditField,
+        buttons,
+        button_title,
+        target_url,
+        onFormOpen,
+        footerClassName: "mt-8",
+        withItems: false,
+      })}
       bodySlot={
         !isRichTextEmpty(body) || cmsMode ? (
           <CmsEditable
@@ -92,28 +78,15 @@ export default function ContactUsSection({
           >
             <CmsRichText
               html={body}
-              className={`${DS_TEXT.muted} mt-4 max-w-xl text-sm leading-relaxed`}
+              className={DS_TYPE.bodyBlock}
               empty={
                 cmsMode ? (
-                  <p className={`${DS_TEXT.placeholder} m-0 italic`}>
-                    Optional body…
-                  </p>
+                  <p className={DS_TYPE.placeholderSubtitle}>Optional body…</p>
                 ) : null
               }
             />
           </CmsEditable>
         ) : undefined
-      }
-      footer={
-        <SectionButtonsFooter
-          buttons={buttons}
-          button_title={button_title}
-          target_url={target_url}
-          cmsMode={cmsMode}
-          onEditField={onEditField}
-          onFormOpen={onFormOpen}
-          className="mt-8"
-        />
       }
       itemsSlot={
         <CmsEditable
@@ -133,7 +106,7 @@ export default function ContactUsSection({
                 ? [
                     <li
                       key="empty"
-                      className={`rounded-2xl border border-dashed border-[color:var(--band-border)] p-6 text-sm ${DS_TEXT.placeholder} italic`}
+                      className="section-theme-placeholder rounded-2xl border border-dashed border-[color:var(--band-border)] p-6 text-sm italic"
                     >
                       Add email, phone, and address items…
                     </li>,

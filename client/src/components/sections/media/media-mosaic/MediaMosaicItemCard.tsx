@@ -2,6 +2,7 @@
 
 import SectionButtons from "@/components/ui/SectionButtons";
 import CardPlaceholder from "@/components/sections/shared/CardPlaceholder";
+import { DS_RADIUS, sectionClassNames } from "@/lib/layout/section-layout-system";
 import type { MediaMosaicTileUiItem } from "./lib/types";
 
 export type MediaMosaicItemCardProps = {
@@ -26,7 +27,11 @@ export default function MediaMosaicItemCard({
 
   return (
     <article
-      className={`group relative overflow-hidden rounded-2xl border border-slate-200 bg-slate-100 ${span}`}
+      className={sectionClassNames(
+        "group relative overflow-hidden border border-slate-200 bg-slate-100",
+        DS_RADIUS.media,
+        span
+      )}
     >
       <div
         className={`relative w-full bg-slate-200 dark:bg-slate-800 ${

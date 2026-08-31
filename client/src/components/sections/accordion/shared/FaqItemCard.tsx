@@ -4,8 +4,13 @@ import type { CmsButtonData } from "@/components/ui/types";
 import CmsRichText from "@/components/cms/primitives/CmsRichText";
 import SectionButtons from "@/components/ui/SectionButtons";
 import CardPlaceholder from "@/components/sections/shared/CardPlaceholder";
-import { isRichTextEmpty } from "@/lib/utils/rich-text";
+import {
+  DS_RADIUS,
+  sectionClassNames,
+} from "@/lib/layout/section-layout-system";
+import { sectionGlassCardSurfaceProps, sectionLightCardSurfaceProps } from "@/lib/sections/section-design-system";
 import { itemAnswer, itemQuestion } from "@/lib/sections/item-types";
+import { isRichTextEmpty } from "@/lib/utils/rich-text";
 
 export type FaqItemCardProps = {
   item?: {
@@ -43,15 +48,22 @@ export default function FaqItemCard({
   const hasButtons = list.length > 0;
   const n = String((index ?? 0) + 1).padStart(2, "0");
 
+  const surfaceProps = onDarkBand
+    ? sectionGlassCardSurfaceProps(
+        sectionClassNames(
+          DS_RADIUS.accordion,
+          "section-ui-card overflow-hidden border shadow-[0_12px_40px_-32px_rgba(0,0,0,0.45)]"
+        )
+      )
+    : sectionLightCardSurfaceProps(
+        sectionClassNames(
+          DS_RADIUS.accordion,
+          "section-ui-card overflow-hidden border shadow-[0_12px_40px_-32px_rgba(0,0,0,0.45)]"
+        )
+      );
+
   return (
-    <div
-      {...(onDarkBand
-        ? { "data-section-surface": "glass-card" }
-        : { "data-section-surface": "light-card", "data-light-surface": "" })}
-      className={`section-ui-card overflow-hidden rounded-[1.25rem] border shadow-[0_12px_40px_-32px_rgba(0,0,0,0.45)] ${
-        onDarkBand ? "section-glass-card-shell" : "section-light-card"
-      }`}
-    >
+    <div {...surfaceProps}>
       <details open={preview || undefined} className="group/faq">
         <summary
           className={`flex list-none items-start justify-between gap-4 px-5 py-5 text-left outline-none marker:content-none sm:px-6 [&::-webkit-details-marker]:hidden ${
@@ -67,11 +79,13 @@ export default function FaqItemCard({
             </span>
           </span>
           <span
-            className={`mt-0.5 inline-flex size-8 shrink-0 items-center justify-center rounded-full border text-lg leading-none font-light transition group-open/faq:border-brand group-open/faq:bg-brand group-open/faq:text-white ${
+            className={sectionClassNames(
+              DS_RADIUS.pill,
+              "mt-0.5 inline-flex size-8 shrink-0 items-center justify-center border text-lg leading-none font-light transition group-open/faq:border-brand group-open/faq:bg-brand group-open/faq:text-white",
               onDarkBand
                 ? "border-[color:var(--card-border)] bg-[color:color-mix(in_srgb,var(--card-bg)_80%,transparent)] text-[color:var(--card-fg)]"
                 : "border-[color:var(--card-border)] bg-[color:var(--ds-light-field-bg)] text-[color:var(--ds-light-card-fg)]"
-            }`}
+            )}
             aria-hidden
           >
             <span className="group-open/faq:hidden">+</span>

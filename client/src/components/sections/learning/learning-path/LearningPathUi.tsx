@@ -1,4 +1,4 @@
-import SectionWrapper from "@/components/sections/SectionWrapper";
+import { SectionLayoutRoot } from "@/components/sections/layout";
 import LearningPathStepItemCard from "./LearningPathStepItemCard";
 import type { LearningPathUiProps } from "./lib/types";
 
@@ -18,51 +18,23 @@ export default function LearningPathUi({
   className = "",
 }: LearningPathUiProps) {
   const showEyebrow = eyebrowSlot != null || Boolean(eyebrow);
-  const showTitle = titleSlot != null || Boolean(title);
-  const showSubtitle = subtitleSlot != null || Boolean(subtitle);
-  const showHeader = Boolean(showEyebrow || showTitle || showSubtitle);
 
   return (
-    <section
-      id={id || undefined}
-      className={`relative w-full overflow-hidden bg-transparent py-14 sm:py-16 lg:py-20 ${className}`.trim()}
+        <SectionLayoutRoot
+      id={id}
+      className={className}
+      eyebrow={eyebrow}
+      eyebrowSlot={eyebrowSlot}
+      title={title}
+      subtitle={subtitle}
+      titleSlot={titleSlot}
+      subtitleSlot={subtitleSlot}
+      itemsBar={itemsBar}
+      emptyState={emptyState}
+      footer={footer}
+      items={items}
     >
-      <SectionWrapper>
-        {showHeader ? (
-          <header
-            className={`flex flex-col gap-2.5 sm:gap-3 ${
-              items.length || itemsBar || emptyState || footer
-                ? "mb-8 sm:mb-10"
-                : ""
-            }`}
-          >
-            {eyebrowSlot != null ? (
-              eyebrowSlot
-            ) : showEyebrow ? (
-              <p className="text-brand m-0 text-[11px] font-semibold tracking-[0.22em] uppercase">
-                {eyebrow}
-              </p>
-            ) : null}
-            {titleSlot != null ? (
-              titleSlot
-            ) : showTitle ? (
-              <h2 className="section-theme-heading m-0 max-w-3xl font-[family-name:var(--font-display)] text-3xl leading-[1.1] font-semibold tracking-tight sm:text-4xl">
-                {title}
-              </h2>
-            ) : null}
-            {subtitleSlot != null ? (
-              subtitleSlot
-            ) : showSubtitle ? (
-              <p className="section-theme-muted m-0 max-w-2xl text-base leading-relaxed">
-                {subtitle}
-              </p>
-            ) : null}
-          </header>
-        ) : null}
-
-        {itemsBar}
-
-        {items.length ? (
+{items.length ? (
           <div className="flex flex-col gap-4">
             {items.map((item, i) => (
               <LearningPathStepItemCard
@@ -76,9 +48,6 @@ export default function LearningPathUi({
         ) : (
           emptyState
         )}
-
-        {footer}
-      </SectionWrapper>
-    </section>
+    </SectionLayoutRoot>
   );
 }

@@ -1,8 +1,7 @@
 "use client";
 
-import CmsEditable from "@/components/cms/primitives/CmsEditable";
-import CmsSectionItemsBar from "@/components/sections/CmsSectionItemsBar";
-import EmptyItemsHint from "@/components/sections/EmptyItemsHint";
+import { cmsSectionChrome } from "@/components/sections/shared/cms-section-chrome";
+import { cmsSectionHeaderSlots } from "@/components/sections/shared/CmsSectionHeaderSlots";
 import { mediaUrl } from "@/lib/api/cms-api";
 import SplitNarrativeUi from "./SplitNarrativeUi";
 import { resolveSplitNarrativeChapterUiItems } from "./lib/map";
@@ -36,49 +35,18 @@ export default function SplitNarrativeSection({
       preview
       coverImageUrl={coverImageUrl}
       items={items}
-      titleSlot={
-        section_title || cmsMode ? (
-          <CmsEditable
-            cmsMode={cmsMode}
-            field="section_title"
-            label="Title"
-            onEditField={onEditField}
-          >
-            {section_title || cmsMode ? (
-              <h2 className="section-theme-heading m-0 font-[family-name:var(--font-display)] text-3xl font-semibold tracking-tight sm:text-4xl">
-                {section_title || "Story"}
-              </h2>
-            ) : null}
-          </CmsEditable>
-        ) : undefined
-      }
-      subtitleSlot={
-        sub_title || cmsMode ? (
-          <CmsEditable
-            cmsMode={cmsMode}
-            field="sub_title"
-            label="Subtitle"
-            onEditField={onEditField}
-          >
-            {sub_title || cmsMode ? (
-              <p className="section-theme-muted mt-3 mb-0 text-base">
-                {sub_title || "Subtitle"}
-              </p>
-            ) : null}
-          </CmsEditable>
-        ) : undefined
-      }
-      itemsBar={
-        <CmsSectionItemsBar
-          sectionKey={section_key}
-          cmsMode={cmsMode}
-          onEditField={onEditField}
-          itemCount={items.length}
-        />
-      }
-      emptyState={
-        <EmptyItemsHint sectionKey={section_key} onEditField={onEditField} />
-      }
+      {...cmsSectionChrome({
+        section_key,
+        itemCount: items.length,
+        onEditField,
+      })}
+      {...cmsSectionHeaderSlots({
+        section_title: section_title || (cmsMode ? "Story" : undefined),
+        sub_title: sub_title || (cmsMode ? "Subtitle" : undefined),
+        onEditField,
+        cmsMode,
+      })}
+
     />
   );
 }

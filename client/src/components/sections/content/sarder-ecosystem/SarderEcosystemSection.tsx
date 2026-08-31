@@ -1,8 +1,7 @@
 "use client";
 
 import CmsEditable from "@/components/cms/primitives/CmsEditable";
-import CmsSectionItemsBar from "@/components/sections/CmsSectionItemsBar";
-import EmptyItemsHint from "@/components/sections/EmptyItemsHint";
+import { cmsSectionChrome } from "@/components/sections/shared/cms-section-chrome";
 import { mediaAlt } from "@/lib/utils/media-alt";
 import Image from "next/image";
 import SarderEcosystemUi from "./SarderEcosystemUi";
@@ -44,11 +43,20 @@ export default function SarderEcosystemSection({
     cmsMode,
     fallbackStatic: true,
   });
+  const { itemsBar, emptyState } = cmsSectionChrome({
+    section_key,
+    itemCount: groups.length,
+    onEditField,
+    withItems: true,
+  });
 
   return (
     <SarderEcosystemUi
       id={id}
       groups={groups}
+      title={title}
+      subtitle={subtitle}
+      logoSrc={logoSrc}
       titleSlot={
         <CmsEditable
           cmsMode={cmsMode}
@@ -106,17 +114,10 @@ export default function SarderEcosystemSection({
           label="Ecosystem groups"
           onEditField={onEditField}
         >
-          <CmsSectionItemsBar
-            sectionKey={section_key}
-            cmsMode={cmsMode}
-            onEditField={onEditField}
-            itemCount={groups.length}
-          />
+          {itemsBar}
         </CmsEditable>
       }
-      emptyGroupsState={
-        <EmptyItemsHint sectionKey={section_key} onEditField={onEditField} />
-      }
+      emptyGroupsState={emptyState}
     />
   );
 }

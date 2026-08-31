@@ -1,12 +1,9 @@
 "use client";
 
 import CmsRichText from "@/components/cms/primitives/CmsRichText";
-import {
-  SectionBand,
-  SectionBrandGlow,
-  SectionLightCard,
-} from "@/components/sections/shared/design";
-import { DS_TEXT } from "@/lib/sections/section-design-system";
+import { SectionLayoutRoot } from "@/components/sections/layout";
+import { SectionBrandGlow, SectionLightCard } from "@/components/sections/shared/design";
+import { DS_RADIUS, DS_TEXT, sectionClassNames } from "@/lib/sections/section-design-system";
 import { isRichTextEmpty } from "@/lib/utils/rich-text";
 import ShortLeadForm from "./ShortLeadForm";
 import { normalizeFormContentSide } from "./lib/content-side";
@@ -82,11 +79,14 @@ export default function FormSplitUi({
           <ul className="m-0 mt-4 grid list-none gap-3 p-0">
             {highlights.map((item, i) => (
               <li key={item.id ?? i}>
-                <SectionLightCard className="rounded-2xl px-4 py-3 shadow-none">
+                <SectionLightCard
+                  className={sectionClassNames(
+                    DS_RADIUS.nested,
+                    "px-4 py-3 shadow-none"
+                  )}
+                >
                   {item.title ? (
-                    <span
-                      className={`text-sm font-semibold ${DS_TEXT.heading}`}
-                    >
+                    <span className={`text-sm font-semibold ${DS_TEXT.heading}`}>
                       {item.title}
                     </span>
                   ) : null}
@@ -120,12 +120,11 @@ export default function FormSplitUi({
   );
 
   return (
-    <SectionBand
-      id={id || undefined}
-      padding="sm"
-      decor={<SectionBrandGlow />}
-      wrapper
+    <SectionLayoutRoot
+      id={id}
       className={className}
+      decor={<SectionBrandGlow />}
+      hasBodyContent
     >
       <div className="relative grid items-start gap-10 lg:grid-cols-2 lg:gap-12 xl:gap-16">
         <div className={formOnLeft ? "lg:order-1" : "lg:order-2"}>
@@ -135,6 +134,6 @@ export default function FormSplitUi({
           {formOnLeft ? contentCol : formCol}
         </div>
       </div>
-    </SectionBand>
+    </SectionLayoutRoot>
   );
 }

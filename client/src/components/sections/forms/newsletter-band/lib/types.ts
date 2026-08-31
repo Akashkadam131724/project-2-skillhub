@@ -15,6 +15,13 @@ export type NewsletterBandSectionProps = {
 };
 
 export type NewsletterBandUiProps = {
+  id?: string;
+  className?: string;
+  title?: string;
+  subtitle?: string;
+  eyebrow?: string;
+  titleSlot?: ReactNode;
+  subtitleSlot?: ReactNode;
   placeholder?: string;
   readOnly?: boolean;
   formFooter?: ReactNode;

@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { createRef, useEffect, useMemo, useRef, useState } from "react";
+import { SectionLayoutRoot } from "@/components/sections/layout";
 import type { SarderEcosystemGroup, SarderEcosystemUiProps } from "./lib/types";
 import SarderEcosystemCard from "./SarderEcosystemCard";
 import {
@@ -76,12 +77,15 @@ export default function SarderEcosystemUi({
   const middleIndex = groups.length ? Math.min(1, groups.length - 1) : 0;
 
   return (
-    <section
-      id={id || undefined}
-      aria-labelledby={id ? `${id}-title` : "sarder-ecosystem-title"}
-      className={`flex justify-center bg-[#f5f5f5] px-4 pt-20 pb-20 md:px-4 xl:px-0 ${className}`.trim()}
+    <SectionLayoutRoot
+      id={id}
+      className={`bg-[#f5f5f5] px-4 pt-20 pb-20 md:px-4 xl:px-0 ${className}`.trim()}
+      padding="none"
+      layout="wrapper"
+      hasBodyContent
+      ariaLabelledBy={id ? `${id}-title` : "sarder-ecosystem-title"}
     >
-      <div className="grid w-full max-w-[1200px] grid-cols-1 gap-10 xl:grid-cols-[380px_1fr]">
+      <div className="grid w-full max-w-[1200px] grid-cols-1 gap-10 xl:mx-auto xl:grid-cols-[380px_1fr]">
         <div
           style={{ transform: `translateY(${leftOffset}px)` }}
           className="flex flex-col items-center gap-4 xl:items-start"
@@ -148,6 +152,6 @@ export default function SarderEcosystemUi({
           </section>
         ) : null}
       </div>
-    </section>
+    </SectionLayoutRoot>
   );
 }

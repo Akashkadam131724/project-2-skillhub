@@ -1,10 +1,7 @@
-import SectionButtons from "@/components/ui/SectionButtons";
+import { heroLayoutPublicFooter } from "@/components/sections/hero/shared/hero-layout-public";
 import { mediaAlt } from "@/lib/utils/media-alt";
 import SiteBuilderHeroUi from "./SiteBuilderHeroUi";
-import {
-  resolveHeroImageUrl,
-  resolveHeroSectionButtons,
-} from "@/components/sections/hero/shared/lib/public-map";
+import { resolveHeroImageUrl } from "@/components/sections/hero/shared/lib/public-map";
 import { isHeroPlacementShowable } from "@/components/sections/hero/shared/lib/placement";
 import type { SiteBuilderHeroSectionProps } from "./lib/types";
 
@@ -34,7 +31,6 @@ export default function SiteBuilderHeroPublicSection({
     return null;
   }
 
-  const list = resolveHeroSectionButtons(props);
   const imageUrl = resolveHeroImageUrl(section_img_url, data);
   const badge = data?.label || data?.eyebrow || "";
 
@@ -47,16 +43,12 @@ export default function SiteBuilderHeroPublicSection({
       title={section_title}
       subtitle={sub_title}
       body={data?.body}
-      footer={
-        list.length ? (
-          <SectionButtons
-            buttons={list}
-            onFormOpen={onFormOpen}
-            inverted
-            className="mt-9 flex flex-wrap items-center gap-3"
-          />
-        ) : null
-      }
+      footer={heroLayoutPublicFooter(props, {
+        onFormOpen,
+        inverted: true,
+        className: "mt-9",
+        buttonsClassName: "flex flex-wrap items-center gap-3",
+      })}
     />
   );
 }

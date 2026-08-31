@@ -74,7 +74,8 @@ export default function HeroStatsPublicSection({
       surfaceBand={surfaceBand}
       footer={heroLayoutPublicFooter(props, {
         onFormOpen,
-        className: "mt-2 flex flex-wrap items-center gap-3",
+        className: "mt-2",
+        buttonsClassName: "flex flex-wrap items-center gap-3",
       })}
     />
   );

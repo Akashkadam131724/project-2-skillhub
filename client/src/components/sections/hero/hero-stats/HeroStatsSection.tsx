@@ -1,13 +1,16 @@
 "use client";
 
-import CmsSectionItemsBar from "@/components/sections/CmsSectionItemsBar";
+import { cmsSectionChrome } from "@/components/sections/shared/cms-section-chrome";
 import HeroStatsUi from "./HeroStatsUi";
 import {
   buildHeroLayoutCmsSlots,
   heroLayoutCmsFooter,
 } from "@/components/sections/hero/shared/hero-layout-cms";
 import { isHeroPlacementShowable } from "@/components/sections/hero/shared/lib/placement";
-import { DS_TEXT } from "@/lib/sections/section-design-system";
+import {
+  DS_TYPE,
+  sectionClassNames,
+} from "@/lib/layout/section-layout-system";
 import { isPlacementDarkBand } from "@/lib/sections/section-theme";
 import { itemStatLabel, itemStatValue } from "@/lib/sections/item-types";
 import type { HeroStatsSectionProps, HeroStatsUiItem } from "./lib/types";
@@ -89,8 +92,11 @@ export default function HeroStatsSection({
     onEditField,
     inverted: onDarkBand,
     includeBody: false,
-    titleClassName: `m-0 text-3xl leading-tight font-bold tracking-tight sm:text-4xl ${DS_TEXT.heading}`,
-    subtitleClassName: `max-w-xl text-base leading-relaxed ${DS_TEXT.muted}`,
+    titleClassName: sectionClassNames(
+      DS_TYPE.displayTitle,
+      "text-3xl sm:text-4xl"
+    ),
+    subtitleClassName: sectionClassNames(DS_TYPE.subtitle, "max-w-xl"),
   });
 
   return (
@@ -102,14 +108,7 @@ export default function HeroStatsSection({
       sectionTheme={sectionTheme}
       surfaceTone={surfaceTone}
       surfaceBand={surfaceBand}
-      itemsBar={
-        <CmsSectionItemsBar
-          sectionKey={section_key}
-          cmsMode
-          onEditField={onEditField}
-          itemCount={stats.length}
-        />
-      }
+      
       statsAddSlot={
         !stats.length ? (
           <button
@@ -125,8 +124,16 @@ export default function HeroStatsSection({
           </button>
         ) : null
       }
-      footer={heroLayoutCmsFooter(props, "mt-2", {
-        inverted: onDarkBand,
+      
+          {...cmsSectionChrome({
+        section_key,
+        itemCount: stats.length,
+        onEditField,
+        buttons,
+        button_title,
+        target_url,
+        onFormOpen,
+        onDarkBand: onDarkBand,
       })}
     />
   );

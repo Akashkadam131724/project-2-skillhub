@@ -1,8 +1,4 @@
-import SectionButtonsFooter from "@/components/sections/SectionButtonsFooter";
-import {
-  buttonsFromLegacy,
-  sortActiveButtons,
-} from "@/lib/utils/button-types";
+import { publicSectionButtonsFooter } from "@/components/sections/shared/public-section-footer";
 import { isPlacementDarkBand } from "@/lib/sections/section-theme";
 import VendorLinksGridUi from "./VendorLinksGridUi";
 import {
@@ -56,11 +52,6 @@ export default function VendorLinksGridPublicSection({
   const links = resolveVendorLinksGridLinks(mappingItems, {
     fallbackStatic: true,
   });
-  const list = sortActiveButtons(
-    Array.isArray(buttons) && buttons.length
-      ? buttons
-      : buttonsFromLegacy(button_title, target_url)
-  );
 
   return (
     <VendorLinksGridUi
@@ -69,17 +60,15 @@ export default function VendorLinksGridPublicSection({
       body={body}
       links={links}
       onDarkBand={onDarkBand}
-      footer={
-        list.length ? (
-          <SectionButtonsFooter
-            buttons={list}
-            onFormOpen={onFormOpen}
-            inverted={onDarkBand}
-            surface={onDarkBand ? "dark" : "inherit"}
-            className="mt-4"
-          />
-        ) : null
-      }
+      footer={publicSectionButtonsFooter({
+        buttons,
+        button_title,
+        target_url,
+        onFormOpen,
+        inverted: onDarkBand,
+        surface: onDarkBand ? "dark" : "inherit",
+        className: "mt-4",
+      })}
     />
   );
 }

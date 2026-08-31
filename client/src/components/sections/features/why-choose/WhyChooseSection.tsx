@@ -1,9 +1,7 @@
 "use client";
 
+import { cmsSectionChrome } from "@/components/sections/shared/cms-section-chrome";
 import CmsEditable from "@/components/cms/primitives/CmsEditable";
-import CmsSectionItemsBar from "@/components/sections/CmsSectionItemsBar";
-import EmptyItemsHint from "@/components/sections/EmptyItemsHint";
-import SectionButtonsFooter from "@/components/sections/SectionButtonsFooter";
 import { isPlacementDarkBand } from "@/lib/sections/section-theme";
 import WhyChooseUi from "./WhyChooseUi";
 import { resolveWhyChooseUiItems } from "./lib/map";
@@ -153,34 +151,18 @@ export default function WhyChooseSection({
         </CmsEditable>
       }
       items={items}
-      itemsBar={
-        <CmsSectionItemsBar
-          sectionKey={section_key}
-          cmsMode
-          onEditField={onEditField}
-          itemCount={items.length}
-          className={
-            lightBand
-              ? undefined
-              : "[&_p]:text-white/60 [&_button]:border-white/30 [&_button]:bg-white/10 [&_button]:text-white [&_button:hover]:border-white [&_button:hover]:bg-white/20"
-          }
-        />
-      }
-      emptyState={
-        <EmptyItemsHint sectionKey={section_key} onEditField={onEditField} />
-      }
-      footer={
-        <SectionButtonsFooter
-          buttons={buttons}
-          button_title={button_title}
-          target_url={target_url}
-          cmsMode
-          onEditField={onEditField}
-          onFormOpen={onFormOpen}
-          inverted={onDarkBand}
-          className="mt-8 sm:mt-10"
-        />
-      }
+      {...cmsSectionChrome({
+        section_key,
+        itemCount: items.length,
+        onEditField,
+        buttons,
+        button_title,
+        target_url,
+        onFormOpen,
+        onDarkBand: onDarkBand,
+        footerClassName: "mt-8 sm:mt-10",
+      })}
+
     />
   );
 }

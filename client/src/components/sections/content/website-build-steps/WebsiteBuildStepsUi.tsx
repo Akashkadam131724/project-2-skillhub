@@ -1,5 +1,5 @@
+import { SectionLayoutRoot } from "@/components/sections/layout";
 import CmsRichText from "@/components/cms/primitives/CmsRichText";
-import SectionWrapper from "@/components/sections/SectionWrapper";
 import { isRichTextEmpty } from "@/lib/utils/rich-text";
 import type { WebsiteBuildStepsUiProps } from "./lib/types";
 
@@ -13,40 +13,18 @@ export default function WebsiteBuildStepsUi({
   itemsBar = null,
   emptyState = null,
 }: WebsiteBuildStepsUiProps) {
-  const showTitle = titleSlot != null || Boolean(title);
-  const showSubtitle = subtitleSlot != null || Boolean(subtitle);
-  const showHeader = showTitle || showSubtitle;
-
   return (
-    <section
-      id={id || undefined}
-      className="relative w-full overflow-hidden bg-transparent py-14 sm:py-16 lg:py-20"
+    <SectionLayoutRoot
+      id={id}
+      title={title}
+      subtitle={subtitle}
+      titleSlot={titleSlot}
+      subtitleSlot={subtitleSlot}
+      itemsBar={itemsBar}
+      emptyState={emptyState}
+      items={items}
     >
-      <SectionWrapper>
-        {showHeader ? (
-          <header
-            className={`flex flex-col gap-2.5 sm:gap-3 ${
-              items.length || itemsBar || emptyState ? "mb-8 sm:mb-10" : ""
-            }`}
-          >
-            {titleSlot ??
-              (title ? (
-                <h2 className="section-theme-heading m-0 max-w-3xl font-[family-name:var(--font-display)] text-3xl leading-[1.1] font-semibold tracking-tight sm:text-4xl">
-                  {title}
-                </h2>
-              ) : null)}
-            {subtitleSlot ??
-              (subtitle ? (
-                <p className="section-theme-muted m-0 max-w-2xl text-base leading-relaxed">
-                  {subtitle}
-                </p>
-              ) : null)}
-          </header>
-        ) : null}
-
-        {itemsBar}
-
-        {items.length ? (
+{items.length ? (
           <div className="grid gap-8 lg:grid-cols-12 lg:gap-12">
             <div className="lg:col-span-5">
               <div className="sticky top-28 rounded-[1.75rem] bg-[#111] p-6 text-white sm:p-8">
@@ -103,7 +81,6 @@ export default function WebsiteBuildStepsUi({
         ) : (
           emptyState
         )}
-      </SectionWrapper>
-    </section>
+    </SectionLayoutRoot>
   );
 }

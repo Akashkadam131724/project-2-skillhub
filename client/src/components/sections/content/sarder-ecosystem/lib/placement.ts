@@ -1,27 +1,28 @@
+import { createStaticFallbackItemsGuard } from "@/lib/sections/placement-guard";
 import {
   SARDER_ECOSYSTEM_STATIC_LOGO,
   SARDER_ECOSYSTEM_STATIC_SUBTITLE,
   SARDER_ECOSYSTEM_STATIC_TITLE,
 } from "./static-demo";
-import { resolveSarderEcosystemGroups, resolveSarderEcosystemLogo } from "./map";
+import {
+  resolveSarderEcosystemGroups,
+  resolveSarderEcosystemLogo,
+} from "./map";
 import type { SarderEcosystemSectionProps } from "./types";
 
-export function isSarderEcosystemPlacementShowable(
-  props: SarderEcosystemSectionProps,
-  cmsMode = false
-): boolean {
-  if (cmsMode) return true;
-
-  if (String(props.section_title || "").trim()) return true;
-  if (String(props.sub_title || "").trim()) return true;
-  if (resolveSarderEcosystemLogo(props.section_img_url, { fallbackStatic: false })) {
-    return true;
-  }
-
-  return (
-    resolveSarderEcosystemGroups(props.items, { fallbackStatic: true }).length > 0
+export const isSarderEcosystemPlacementShowable =
+  createStaticFallbackItemsGuard<SarderEcosystemSectionProps>(
+    (items, options) => resolveSarderEcosystemGroups(items, options),
+    {
+      probeBody: false,
+      hasMedia: (props) =>
+        Boolean(
+          resolveSarderEcosystemLogo(props.section_img_url, {
+            fallbackStatic: false,
+          })
+        ),
+    }
   );
-}
 
 export function resolveSarderEcosystemTitle(sectionTitle?: string, cmsMode = false) {
   const title = String(sectionTitle || "").trim();

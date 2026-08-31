@@ -1,5 +1,6 @@
 import CmsRichText from "@/components/cms/primitives/CmsRichText";
-import { SectionBand, SectionBrandGlow } from "@/components/sections/shared/design";
+import { SectionLayoutRoot } from "@/components/sections/layout";
+import { SectionBrandGlow } from "@/components/sections/shared/design";
 import { DS_TEXT } from "@/lib/sections/section-design-system";
 import { isRichTextEmpty } from "@/lib/utils/rich-text";
 import ContactChannelCard from "../shared/ContactChannelCard";
@@ -18,11 +19,12 @@ export default function ContactUsUi({
   footer = null,
 }: ContactUsUiProps) {
   return (
-    <SectionBand
+    <SectionLayoutRoot
       id={id || "contact"}
       className="section-band-divider-top"
+      padding="lg"
       decor={<SectionBrandGlow />}
-      wrapper
+      hasBodyContent
     >
       <div className="relative grid gap-10 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:items-start lg:gap-14">
         <div>
@@ -66,6 +68,6 @@ export default function ContactUsUi({
           </ul>
         )}
       </div>
-    </SectionBand>
+    </SectionLayoutRoot>
   );
 }

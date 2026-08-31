@@ -1,8 +1,10 @@
 "use client";
 
+import { cmsSectionChrome } from "@/components/sections/shared/cms-section-chrome";
 import CmsEditable from "@/components/cms/primitives/CmsEditable";
 import CmsRichText from "@/components/cms/primitives/CmsRichText";
-import SectionButtonsFooter from "@/components/sections/SectionButtonsFooter";
+import { cmsSectionHeaderSlots } from "@/components/sections/shared/CmsSectionHeaderSlots";
+import { DS_TYPE } from "@/lib/sections/section-design-system";
 import { isRichTextEmpty } from "@/lib/utils/rich-text";
 import CtaBandUi from "./CtaBandUi";
 import { isCtaBandPlacementShowable } from "./lib/placement";
@@ -34,34 +36,27 @@ export default function CtaBandSection({
   return (
     <CtaBandUi
       id={id}
-      titleSlot={
-        <CmsEditable
-          cmsMode={cmsMode}
-          field="section_title"
-          label="Title"
-          onEditField={onEditField}
-        >
-          {section_title || cmsMode ? (
-            <h2 className="m-0 font-[family-name:var(--font-display)] text-3xl leading-tight font-semibold tracking-tight text-white sm:text-4xl lg:text-5xl">
-              {section_title || (cmsMode ? "Call to action" : null)}
-            </h2>
-          ) : null}
-        </CmsEditable>
-      }
-      subtitleSlot={
-        <CmsEditable
-          cmsMode={cmsMode}
-          field="sub_title"
-          label="Subtitle"
-          onEditField={onEditField}
-        >
-          {sub_title || cmsMode ? (
-            <p className="mt-4 mb-0 max-w-2xl text-base leading-relaxed text-white/75 sm:text-lg">
-              {sub_title || (cmsMode ? "Supporting line" : null)}
-            </p>
-          ) : null}
-        </CmsEditable>
-      }
+      {...cmsSectionHeaderSlots({
+        section_title: section_title || (cmsMode ? "Call to action" : undefined),
+        sub_title: sub_title || (cmsMode ? "Supporting line" : undefined),
+        onEditField,
+        cmsMode,
+        inverted: true,
+        titleClassName: "text-center lg:text-5xl",
+        subtitleClassName: "text-center",
+      })}
+      {...cmsSectionChrome({
+        section_key: "cta_band",
+        itemCount: 0,
+        onEditField,
+        buttons,
+        button_title,
+        target_url,
+        onFormOpen,
+        inverted: true,
+        footerClassName: "mt-8 justify-center",
+        withItems: false,
+      })}
       bodySlot={
         !isRichTextEmpty(body) || cmsMode ? (
           <CmsEditable
@@ -72,26 +67,17 @@ export default function CtaBandSection({
           >
             <CmsRichText
               html={body}
-              className="mt-3 max-w-xl text-sm leading-relaxed text-white/65"
+              className={DS_TYPE.bodyBlock}
               empty={
                 cmsMode ? (
-                  <p className="m-0 text-white/35 italic">Optional body…</p>
+                  <p className="section-theme-placeholder m-0 text-sm italic">
+                    Optional body…
+                  </p>
                 ) : null
               }
             />
           </CmsEditable>
         ) : undefined
-      }
-      footer={
-        <SectionButtonsFooter
-          buttons={buttons}
-          button_title={button_title}
-          target_url={target_url}
-          cmsMode={cmsMode}
-          onEditField={onEditField}
-          onFormOpen={onFormOpen}
-          className="mt-8 justify-center"
-        />
       }
     />
   );

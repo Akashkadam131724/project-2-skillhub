@@ -7,6 +7,7 @@ import { mediaAlt } from "@/lib/utils/media-alt";
 import { isRichTextEmpty } from "@/lib/utils/rich-text";
 import { itemTitle } from "@/lib/sections/item-types";
 import CardPlaceholder from "@/components/sections/shared/CardPlaceholder";
+import { DS_RADIUS, sectionClassNames } from "@/lib/sections/section-design-system";
 
 export type BenefitItemCardProps = {
   item?: {
@@ -50,7 +51,10 @@ export default function BenefitItemCard({
     <article
       data-section-surface="light-card"
       data-light-surface=""
-      className="section-light-card section-ui-card flex h-full flex-col overflow-hidden rounded-xl border"
+      className={sectionClassNames(
+        "section-light-card section-ui-card flex h-full flex-col overflow-hidden border",
+        DS_RADIUS.panel
+      )}
     >
       {showImage ? (
         <div className="relative h-56 w-full shrink-0 overflow-hidden sm:aspect-[16/10] sm:h-auto">

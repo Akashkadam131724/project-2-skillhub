@@ -1,5 +1,5 @@
 import FaqItemCard from "../shared/FaqItemCard";
-import SectionWrapper from "@/components/sections/SectionWrapper";
+import { SectionLayoutRoot } from "@/components/sections/layout";
 import type { FaqTwoColumnUiProps } from "./lib/types";
 
 /**
@@ -72,28 +72,28 @@ export default function FaqTwoColumnUi({
   );
 
   return (
-    <section
-      id={id || undefined}
-      className={`relative w-full overflow-hidden bg-transparent py-14 sm:py-16 lg:py-20 ${className}`.trim()}
+    <SectionLayoutRoot
+      id={id}
+      className={className}
+      layout="wrapper"
+      hasBodyContent
     >
-      <SectionWrapper>
-        <div className="grid items-start gap-8 lg:grid-cols-2 lg:gap-12 xl:gap-16">
-          <div
-            className={`min-w-0 ${
-              headerSide === "left" ? "lg:order-1" : "lg:order-2"
-            }`}
-          >
-            {headerCol}
-          </div>
-          <div
-            className={`min-w-0 ${
-              headerSide === "left" ? "lg:order-2" : "lg:order-1"
-            }`}
-          >
-            {faqCol}
-          </div>
+      <div className="grid items-start gap-8 lg:grid-cols-2 lg:gap-12 xl:gap-16">
+        <div
+          className={`min-w-0 ${
+            headerSide === "left" ? "lg:order-1" : "lg:order-2"
+          }`}
+        >
+          {headerCol}
         </div>
-      </SectionWrapper>
-    </section>
+        <div
+          className={`min-w-0 ${
+            headerSide === "left" ? "lg:order-2" : "lg:order-1"
+          }`}
+        >
+          {faqCol}
+        </div>
+      </div>
+    </SectionLayoutRoot>
   );
 }

@@ -1,7 +1,6 @@
 "use client";
 
-import CmsSectionItemsBar from "@/components/sections/CmsSectionItemsBar";
-import SectionButtonsFooter from "@/components/sections/SectionButtonsFooter";
+import { cmsSectionChrome } from "@/components/sections/shared/cms-section-chrome";
 import VideoBannerUi from "./VideoBannerUi";
 import { resolveVideoBannerUiItem } from "./lib/map";
 import { isVideoBannerPlacementShowable } from "./lib/placement";
@@ -29,7 +28,7 @@ export default function VideoBannerSection({
   }
 
   const buttons = Array.isArray(item?.buttons) ? item.buttons : [];
-  const hasCopy = Boolean(item?.title || item?.subtitle || buttons.length);
+  const mappingList = Array.isArray(mappingItems) ? mappingItems : [];
 
   return (
     <VideoBannerUi
@@ -57,31 +56,14 @@ export default function VideoBannerSection({
           </div>
         )
       }
-      itemsBar={
-        <CmsSectionItemsBar
-          sectionKey={section_key}
-          cmsMode
-          onEditField={onEditField}
-          itemCount={item ? 1 : 0}
-          className="mt-4 [&_button]:border-white/40 [&_button]:bg-white/10 [&_button]:text-white [&_p]:text-white/60"
-        />
-      }
-      footer={
-        hasCopy || buttons.length ? (
-          <SectionButtonsFooter
-            buttons={buttons}
-            cmsMode
-            editField="items"
-            onEditField={(field) =>
-              onEditField?.(field, { expandItemButtons: true })
-            }
-            onFormOpen={onFormOpen}
-            inverted
-            className="shrink-0 sm:mt-0"
-            buttonsClassName="flex flex-wrap items-center justify-start gap-3 sm:justify-end"
-          />
-        ) : null
-      }
+      {...cmsSectionChrome({
+        section_key,
+        itemCount: mappingList.length,
+        onEditField,
+        buttons,
+        onFormOpen,
+        footerClassName: "shrink-0 sm:mt-0",
+      })}
     />
   );
 }

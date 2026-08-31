@@ -1,8 +1,7 @@
-import SectionButtons from "@/components/ui/SectionButtons";
 import {
-  buttonsFromLegacy,
-  sortActiveButtons,
-} from "@/lib/utils/button-types";
+  publicSectionButtonsFooter,
+  resolvePlacementButtons,
+} from "@/components/sections/shared/public-section-footer";
 import TextMediaUi from "./TextMediaUi";
 import { resolveTextMediaUiItems } from "./lib/map";
 import { isTextMediaPlacementShowable } from "./lib/placement";
@@ -39,29 +38,18 @@ export default function TextMediaPublicSection({
   const items = resolveTextMediaUiItems(section_key, mappingItems);
   if (!items.length) return null;
 
-  const list = sortActiveButtons(
-    Array.isArray(buttons) && buttons.length
-      ? buttons
-      : buttonsFromLegacy(button_title, target_url)
-  );
-
   return (
     <TextMediaUi
       id={id}
       title={section_title}
       subtitle={sub_title}
       items={items}
-      footer={
-        list.length ? (
-          <div className="mt-6 sm:mt-8">
-            <SectionButtons
-              buttons={list}
-              onFormOpen={onFormOpen}
-              className="flex flex-wrap items-center gap-3"
-            />
-          </div>
-        ) : null
-      }
+      footer={publicSectionButtonsFooter({
+        buttons,
+        button_title,
+        target_url,
+        onFormOpen,
+      })}
     />
   );
 }

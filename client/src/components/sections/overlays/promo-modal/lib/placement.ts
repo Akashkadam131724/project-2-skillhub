@@ -1,10 +1,10 @@
-import {
-  buttonsFromLegacy,
-  sortActiveButtons,
-} from "@/lib/utils/button-types";
+import { createContentOrButtonsPlacementGuard } from "@/lib/sections/placement-guard";
 import { isRichTextEmpty } from "@/lib/utils/rich-text";
 import { resolvePromoModalConfig } from "./map";
 import type { PromoModalSectionProps } from "./types";
+
+const isPromoModalContentOrButtonsShowable =
+  createContentOrButtonsPlacementGuard<PromoModalSectionProps>();
 
 export function isPromoModalPlacementShowable(
   props: PromoModalSectionProps,
@@ -15,10 +15,5 @@ export function isPromoModalPlacementShowable(
   if (String(props.sub_title || "").trim()) return true;
   const { body } = resolvePromoModalConfig(props.data);
   if (!isRichTextEmpty(body)) return true;
-  const list = sortActiveButtons(
-    Array.isArray(props.buttons) && props.buttons.length
-      ? props.buttons
-      : buttonsFromLegacy(props.button_title, props.target_url)
-  );
-  return list.length > 0;
+  return isPromoModalContentOrButtonsShowable(props, false);
 }

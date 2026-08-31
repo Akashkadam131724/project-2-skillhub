@@ -1,11 +1,9 @@
+import { createPlacementGuard } from "@/lib/sections/placement-guard";
 import { isHorizonGalleryPanelShowable } from "./map";
 import type { HorizonGallerySectionProps } from "./types";
 
-export function isHorizonGalleryPlacementShowable(
-  props: HorizonGallerySectionProps,
-  cmsMode = false
-): boolean {
-  if (cmsMode) return true;
-  const items = Array.isArray(props.items) ? props.items : [];
-  return items.some(isHorizonGalleryPanelShowable);
-}
+export const isHorizonGalleryPlacementShowable = createPlacementGuard<HorizonGallerySectionProps>(
+  "horizon_gallery",
+  isHorizonGalleryPanelShowable,
+  { placementProbe: false }
+);

@@ -1,6 +1,7 @@
 "use client";
 
-import SectionWrapper from "@/components/sections/SectionWrapper";
+import { SectionLayoutRoot } from "@/components/sections/layout";
+
 import type { PartnerLogoUiItem, PartnersMarqueeUiProps } from "./lib/types";
 
 function LogoCell({
@@ -58,45 +59,22 @@ export default function PartnersMarqueeUi({
 }: PartnersMarqueeUiProps) {
   const track = items.length ? [...items, ...items] : [];
   const showEyebrow = eyebrowSlot != null || Boolean(eyebrow);
-  const showTitle = titleSlot != null || Boolean(title);
-  const showSubtitle = subtitleSlot != null || Boolean(subtitle);
-  const showHeader = Boolean(showEyebrow || showTitle || showSubtitle);
 
   return (
-    <section
-      id={id || undefined}
-      className={`relative w-full overflow-hidden py-14 sm:py-16 ${className}`.trim()}
+        <SectionLayoutRoot
+      id={id}
+      className={className}
+      eyebrow={eyebrow}
+      eyebrowSlot={eyebrowSlot}
+      title={title}
+      subtitle={subtitle}
+      titleSlot={titleSlot}
+      subtitleSlot={subtitleSlot}
+      itemsBar={itemsBar}
+      emptyState={emptyState}
+      items={items}
     >
-      <SectionWrapper>
-        {itemsBar}
-
-        {showHeader ? (
-          <header className="mb-8 flex max-w-3xl flex-col gap-3 sm:mb-10">
-            {eyebrowSlot != null ? (
-              eyebrowSlot
-            ) : showEyebrow ? (
-              <p className="text-brand m-0 text-[11px] font-semibold tracking-[0.22em] uppercase">
-                {eyebrow}
-              </p>
-            ) : null}
-            {titleSlot != null ? (
-              titleSlot
-            ) : showTitle ? (
-              <h2 className="section-theme-heading m-0 font-[family-name:var(--font-display)] text-3xl leading-[1.1] font-semibold tracking-tight sm:text-4xl">
-                {title}
-              </h2>
-            ) : null}
-            {subtitleSlot != null ? (
-              subtitleSlot
-            ) : showSubtitle ? (
-              <p className="section-theme-muted m-0 max-w-2xl text-base leading-relaxed">
-                {subtitle}
-              </p>
-            ) : null}
-          </header>
-        ) : null}
-
-        {items.length ? (
+{items.length ? (
           <div className="relative overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)]">
             <div className="flex w-max animate-[partner-marquee_70s_linear_infinite] items-center gap-x-4 py-1 sm:gap-x-5">
               {track.map((logo: PartnerLogoUiItem, i) => (
@@ -112,7 +90,6 @@ export default function PartnersMarqueeUi({
         ) : (
           emptyState
         )}
-      </SectionWrapper>
-    </section>
+    </SectionLayoutRoot>
   );
 }

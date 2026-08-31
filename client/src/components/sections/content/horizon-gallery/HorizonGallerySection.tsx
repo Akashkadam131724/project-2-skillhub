@@ -1,8 +1,7 @@
 "use client";
 
-import CmsEditable from "@/components/cms/primitives/CmsEditable";
-import CmsSectionItemsBar from "@/components/sections/CmsSectionItemsBar";
-import EmptyItemsHint from "@/components/sections/EmptyItemsHint";
+import { cmsSectionChrome } from "@/components/sections/shared/cms-section-chrome";
+import { cmsSectionHeaderSlots } from "@/components/sections/shared/CmsSectionHeaderSlots";
 import HorizonGalleryUi from "./HorizonGalleryUi";
 import { resolveHorizonGalleryPanelUiItems } from "./lib/map";
 import { isHorizonGalleryPlacementShowable } from "./lib/placement";
@@ -32,50 +31,19 @@ export default function HorizonGallerySection({
       id={id}
       preview
       items={items}
-      titleSlot={
-        section_title || cmsMode ? (
-          <CmsEditable
-            cmsMode={cmsMode}
-            field="section_title"
-            label="Title"
-            onEditField={onEditField}
-          >
-            {section_title || cmsMode ? (
-              <h2 className="m-0 font-[family-name:var(--font-display)] text-3xl font-semibold tracking-tight text-white sm:text-4xl">
-                {section_title || "Gallery"}
-              </h2>
-            ) : null}
-          </CmsEditable>
-        ) : undefined
-      }
-      subtitleSlot={
-        sub_title || cmsMode ? (
-          <CmsEditable
-            cmsMode={cmsMode}
-            field="sub_title"
-            label="Subtitle"
-            onEditField={onEditField}
-          >
-            {sub_title || cmsMode ? (
-              <p className="mt-3 mb-0 text-base text-white/65">
-                {sub_title || "Subtitle"}
-              </p>
-            ) : null}
-          </CmsEditable>
-        ) : undefined
-      }
-      itemsBar={
-        <CmsSectionItemsBar
-          sectionKey={section_key}
-          cmsMode={cmsMode}
-          onEditField={onEditField}
-          itemCount={items.length}
-          className="mb-6 [&_button]:border-white/40 [&_button]:bg-white/10 [&_button]:text-white [&_p]:text-white/70"
-        />
-      }
-      emptyState={
-        <EmptyItemsHint sectionKey={section_key} onEditField={onEditField} />
-      }
+      {...cmsSectionChrome({
+        section_key,
+        itemCount: items.length,
+        onEditField,
+      })}
+      {...cmsSectionHeaderSlots({
+        section_title: section_title || (cmsMode ? "Gallery" : undefined),
+        sub_title: sub_title || (cmsMode ? "Subtitle" : undefined),
+        onEditField,
+        cmsMode,
+        inverted: true,
+      })}
+
     />
   );
 }

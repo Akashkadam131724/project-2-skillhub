@@ -1,9 +1,10 @@
 "use client";
 
+import { SectionLayoutRoot } from "@/components/sections/layout";
+
 import { useEffect, useRef, useState } from "react";
 import CmsRichText from "@/components/cms/primitives/CmsRichText";
 import FeatureCardPlaceholder from "@/components/sections/features/cards/FeatureCardPlaceholder";
-import SectionWrapper from "@/components/sections/SectionWrapper";
 import { isRichTextEmpty } from "@/lib/utils/rich-text";
 import type {
   FeatureSpotlightUiItem,
@@ -114,37 +115,18 @@ export default function FeatureSpotlightUi({
 
   return (
     <div ref={ref}>
-      <section
-        id={id || undefined}
-        className={`relative w-full overflow-hidden bg-transparent py-14 sm:py-16 lg:py-20 ${className}`.trim()}
-      >
-        <SectionWrapper>
-          {showHeader ? (
-            <header
-              className={`flex flex-col gap-2.5 sm:gap-3 ${
-                items.length || itemsBar || emptyState ? "mb-8 sm:mb-10" : ""
-              }`}
-            >
-              {titleSlot != null ? (
-                titleSlot
-              ) : showTitle ? (
-                <h2 className="section-theme-heading m-0 max-w-3xl font-[family-name:var(--font-display)] text-3xl leading-[1.1] font-semibold tracking-tight sm:text-4xl">
-                  {title}
-                </h2>
-              ) : null}
-              {subtitleSlot != null ? (
-                subtitleSlot
-              ) : showSubtitle ? (
-                <p className="section-theme-muted m-0 max-w-2xl text-base leading-relaxed">
-                  {subtitle}
-                </p>
-              ) : null}
-            </header>
-          ) : null}
-
-          {itemsBar}
-
-          {items.length ? (
+          <SectionLayoutRoot
+      id={id}
+      className={className}
+      title={title}
+      subtitle={subtitle}
+      titleSlot={titleSlot}
+      subtitleSlot={subtitleSlot}
+      itemsBar={itemsBar}
+      emptyState={emptyState}
+      items={items}
+    >
+{items.length ? (
             <ul className="m-0 grid list-none grid-cols-1 gap-4 p-0 sm:grid-cols-2 sm:auto-rows-[minmax(260px,1fr)] lg:grid-cols-3 lg:auto-rows-[minmax(240px,1fr)] lg:gap-5">
               {items.map((item, i) => (
                 <li
@@ -167,8 +149,7 @@ export default function FeatureSpotlightUi({
           ) : (
             emptyState
           )}
-        </SectionWrapper>
-      </section>
+    </SectionLayoutRoot>
     </div>
   );
 }

@@ -1,7 +1,11 @@
 "use client";
 
 import { Suspense } from "react";
-import CmsEditable from "@/components/cms/primitives/CmsEditable";
+import { catalogCmsSection } from "../shared/catalog-cms-section";
+import {
+  DS_RADIUS,
+  sectionClassNames,
+} from "@/lib/layout/section-layout-system";
 import EntityDirectoryClient from "./EntityDirectoryClient";
 import EntityDirectoryUi from "./EntityDirectoryUi";
 import { DIRECTORY_META } from "./lib/directory-meta";
@@ -30,7 +34,12 @@ function EntityDirectoryFallback({
       subtitle={sub_title || undefined}
       eyebrow={meta.label}
     >
-      <div className="h-40 animate-pulse rounded-[1.25rem] bg-slate-200/60 dark:bg-slate-800" />
+      <div
+        className={sectionClassNames(
+          DS_RADIUS.accordion,
+          "h-40 animate-pulse bg-slate-200/60 dark:bg-slate-800"
+        )}
+      />
     </EntityDirectoryUi>
   );
 }
@@ -66,42 +75,7 @@ export default function EntityDirectorySection({
         data={data}
         pageContext={pageContext}
         onEditField={onEditField}
-        titleSlot={
-          <CmsEditable
-            cmsMode
-            field="section_title"
-            label="Title"
-            onEditField={onEditField}
-          >
-            {section_title ? (
-              <h2 className="section-theme-heading m-0 max-w-3xl font-[family-name:var(--font-display)] text-3xl leading-[1.1] font-semibold tracking-tight sm:text-4xl">
-                {section_title}
-              </h2>
-            ) : (
-              <h2 className="section-theme-placeholder m-0 text-3xl leading-tight font-semibold italic sm:text-4xl">
-                Add title…
-              </h2>
-            )}
-          </CmsEditable>
-        }
-        subtitleSlot={
-          <CmsEditable
-            cmsMode
-            field="sub_title"
-            label="Subtitle"
-            onEditField={onEditField}
-          >
-            {sub_title ? (
-              <p className="section-theme-muted m-0 max-w-2xl text-base leading-relaxed">
-                {sub_title}
-              </p>
-            ) : (
-              <p className="section-theme-placeholder m-0 text-base leading-relaxed italic">
-                Add subtitle…
-              </p>
-            )}
-          </CmsEditable>
-        }
+        {...catalogCmsSection({ section_title, sub_title, onEditField })}
       />
     </Suspense>
   );

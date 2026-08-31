@@ -1,11 +1,8 @@
 "use client";
 
+import { publicSectionButtonsFooter } from "@/components/sections/shared/public-section-footer";
+
 import { useEffect, useState } from "react";
-import SectionButtons from "@/components/ui/SectionButtons";
-import {
-  buttonsFromLegacy,
-  sortActiveButtons,
-} from "@/lib/utils/button-types";
 import PromoModalUi from "./PromoModalUi";
 import { resolvePromoModalConfig } from "./lib/map";
 import { isPromoModalPlacementShowable } from "./lib/placement";
@@ -52,12 +49,6 @@ export default function PromoModalPublicSection({
 
   if (!showable) return null;
 
-  const list = sortActiveButtons(
-    Array.isArray(buttons) && buttons.length
-      ? buttons
-      : buttonsFromLegacy(button_title, target_url)
-  );
-
   function dismiss() {
     setOpen(false);
     if (storageKey && typeof window !== "undefined") {
@@ -77,13 +68,13 @@ export default function PromoModalPublicSection({
       title={section_title}
       subtitle={sub_title}
       body={body}
-      footer={
-        list.length ? (
-          <div className="mt-6 flex flex-wrap gap-3">
-            <SectionButtons buttons={list} onFormOpen={onFormOpen} />
-          </div>
-        ) : null
-      }
+      footer={publicSectionButtonsFooter({
+        buttons,
+        button_title,
+        target_url,
+        onFormOpen,
+        className: "mt-6 flex flex-wrap gap-3",
+      })}
     />
   );
 }

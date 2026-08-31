@@ -6,6 +6,11 @@ import DsButton from "@/components/ui/DsButton";
 import { EmptyState } from "@/components/detail/DetailShell";
 import { fetchCatalog } from "@/lib/api";
 import { catalogBaseParamsFromContext } from "../shared/lib/context";
+import { SectionItemGrid } from "@/components/sections/layout";
+import {
+  DS_RADIUS,
+  sectionClassNames,
+} from "@/lib/layout/section-layout-system";
 import RelatedCoursesUi from "./RelatedCoursesUi";
 import { RELATED_COURSES_FEATURED_LIMIT } from "./lib/constants";
 import {
@@ -97,14 +102,17 @@ export default function RelatedCoursesClient({
     );
   } else if (loading) {
     body = (
-      <div className="grid gap-4 sm:grid-cols-2">
+      <SectionItemGrid cols={2} peekOnMobile={false}>
         {Array.from({ length: 4 }).map((_, i) => (
           <div
             key={i}
-            className="h-44 animate-pulse rounded-[1.35rem] bg-slate-200/70 dark:bg-slate-800"
+            className={sectionClassNames(
+              DS_RADIUS.tile,
+              "h-44 animate-pulse bg-slate-200/70 dark:bg-slate-800"
+            )}
           />
         ))}
-      </div>
+      </SectionItemGrid>
     );
   } else if (error) {
     body = <p className="m-0 text-sm text-rose-600">{error}</p>;
@@ -112,13 +120,11 @@ export default function RelatedCoursesClient({
     body = <EmptyState message="No featured courses to show yet." />;
   } else {
     body = (
-      <ul className="m-0 grid list-none gap-4 p-0 sm:grid-cols-2 xl:grid-cols-3">
+      <SectionItemGrid cols={3} peekOnMobile={false}>
         {courses.map((course) => (
-          <li key={String(course._id || course.id)}>
-            <CourseCard course={course} />
-          </li>
+          <CourseCard key={String(course._id || course.id)} course={course} />
         ))}
-      </ul>
+      </SectionItemGrid>
     );
   }
 

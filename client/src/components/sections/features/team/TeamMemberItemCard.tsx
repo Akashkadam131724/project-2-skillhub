@@ -2,6 +2,7 @@
 
 import CmsRichText from "@/components/cms/primitives/CmsRichText";
 import FeatureCardPlaceholder from "@/components/sections/features/cards/FeatureCardPlaceholder";
+import { DS_RADIUS, sectionClassNames } from "@/lib/sections/section-design-system";
 import { isRichTextEmpty } from "@/lib/utils/rich-text";
 import type { TeamUiItem } from "./lib/types";
 
@@ -20,7 +21,10 @@ export default function TeamMemberItemCard({
     <article
       data-section-surface="light-card"
       data-light-surface=""
-      className="section-light-card section-ui-card flex h-full flex-col overflow-hidden rounded-2xl border"
+      className={sectionClassNames(
+        "section-light-card section-ui-card flex h-full flex-col overflow-hidden border",
+        DS_RADIUS.nested
+      )}
     >
       <div className="relative h-80 w-full shrink-0 overflow-hidden bg-slate-100 sm:aspect-[4/5] sm:h-auto dark:bg-slate-900">
         {imageUrl ? (

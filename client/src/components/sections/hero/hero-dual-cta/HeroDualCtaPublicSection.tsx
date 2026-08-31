@@ -39,7 +39,8 @@ export default function HeroDualCtaPublicSection({
       imageUrl={resolveHeroImageUrl(section_img_url, data)}
       footer={heroLayoutPublicFooter(props, {
         onFormOpen,
-        className: "mt-3 flex flex-wrap items-center gap-3",
+        className: "mt-3",
+        buttonsClassName: "flex flex-wrap items-center gap-3",
       })}
     />
   );

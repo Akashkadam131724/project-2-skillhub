@@ -5,6 +5,11 @@ import { useSearchParams } from "next/navigation";
 import CatalogPager from "../shared/CatalogPager";
 import CatalogScrollAnchor from "../shared/CatalogScrollAnchor";
 import CatalogSearch from "../shared/CatalogSearch";
+import { SectionItemGrid, SectionStack } from "@/components/sections/layout";
+import {
+  DS_RADIUS,
+  sectionClassNames,
+} from "@/lib/layout/section-layout-system";
 import EntityDirectoryUi from "./EntityDirectoryUi";
 import { DIRECTORY_META } from "./lib/directory-meta";
 import { DirectoryCards } from "./lib/directory-cards";
@@ -83,54 +88,74 @@ export default function EntityDirectoryClient({
   const title = resolveEntityDirectoryTitle(section_title, meta.label);
   const subtitle = (sub_title && String(sub_title).trim()) || "";
 
+  const gridCols = type === "vendor" ? 2 : 3;
+
   const panel = (
-    <div className="overflow-hidden rounded-[1.75rem] border border-slate-200/80 bg-white p-4 shadow-[0_24px_70px_-48px_color-mix(in_srgb,var(--ink)_35%,transparent)] sm:p-6">
-      <CatalogScrollAnchor className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <h3 className="m-0 font-[family-name:var(--font-display)] text-xl font-semibold section-theme-heading">
-          {loading
-            ? "…"
-            : error
-              ? "—"
-              : `${total.toLocaleString("en-US")} ${meta.label}`}
-        </h3>
-        <Suspense
-          fallback={
-            <div className="h-12 w-full max-w-md animate-pulse rounded-2xl bg-slate-100 dark:bg-slate-800" />
-          }
-        >
-          <CatalogSearch placeholder={meta.searchPlaceholder} />
-        </Suspense>
-      </CatalogScrollAnchor>
-
-      {error ? <p className="m-0 mb-4 text-sm text-rose-600">{error}</p> : null}
-
-      {loading ? (
-        <div className={`grid gap-3 ${meta.grid}`}>
-          {Array.from({ length: 4 }).map((_, i) => (
-            <div
-              key={i}
-              className="h-28 animate-pulse rounded-xl bg-slate-200/70 dark:bg-slate-800"
-            />
-          ))}
-        </div>
-      ) : !error && items.length === 0 ? (
-        <p className="m-0 rounded-xl border border-slate-200 bg-slate-50 p-6 text-sm text-slate-500">
-          {meta.empty}
-        </p>
-      ) : (
-        <ul className={`m-0 grid list-none gap-3 p-0 ${meta.grid}`}>
-          <DirectoryCards type={type} items={items} />
-        </ul>
+    <div
+      className={sectionClassNames(
+        DS_RADIUS.media,
+        "overflow-hidden border border-slate-200/80 bg-white p-4 shadow-[0_24px_70px_-48px_color-mix(in_srgb,var(--ink)_35%,transparent)] sm:p-6"
       )}
+    >
+      <SectionStack gap="stackSm">
+        <CatalogScrollAnchor className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <h3 className="m-0 font-[family-name:var(--font-display)] text-xl font-semibold section-theme-heading">
+            {loading
+              ? "…"
+              : error
+                ? "—"
+                : `${total.toLocaleString("en-US")} ${meta.label}`}
+          </h3>
+          <Suspense
+            fallback={
+              <div
+                className={sectionClassNames(
+                  DS_RADIUS.nested,
+                  "h-12 w-full max-w-md animate-pulse bg-slate-100 dark:bg-slate-800"
+                )}
+              />
+            }
+          >
+            <CatalogSearch placeholder={meta.searchPlaceholder} />
+          </Suspense>
+        </CatalogScrollAnchor>
 
-      <div className="mt-5">
+        {error ? <p className="m-0 text-sm text-rose-600">{error}</p> : null}
+
+        {loading ? (
+          <SectionItemGrid cols={gridCols} gap="tight" peekOnMobile={false}>
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div
+                key={i}
+                className={sectionClassNames(
+                  DS_RADIUS.panel,
+                  "h-28 animate-pulse bg-slate-200/70 dark:bg-slate-800"
+                )}
+              />
+            ))}
+          </SectionItemGrid>
+        ) : !error && items.length === 0 ? (
+          <p
+            className={sectionClassNames(
+              DS_RADIUS.panel,
+              "m-0 border border-slate-200 bg-slate-50 p-6 text-sm text-slate-500"
+            )}
+          >
+            {meta.empty}
+          </p>
+        ) : (
+          <SectionItemGrid cols={gridCols} gap="tight" peekOnMobile={false}>
+            <DirectoryCards type={type} items={items} />
+          </SectionItemGrid>
+        )}
+
         <Suspense fallback={null}>
           <CatalogPager
             page={result.page || page}
             totalPages={result.totalPages || 1}
           />
         </Suspense>
-      </div>
+      </SectionStack>
     </div>
   );
 
