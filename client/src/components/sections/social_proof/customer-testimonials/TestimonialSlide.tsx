@@ -8,10 +8,15 @@ import type { CustomerTestimonialUiItem } from "./lib/types";
 function StarRow({ rating = 5 }: { rating?: number | string }) {
   const n = Math.min(5, Math.max(0, Math.round(Number(rating) || 5)));
   return (
-    <div className="mb-5 flex gap-x-1" aria-label={`${n} out of 5 stars`}>
+    <div
+      className="mb-5 flex gap-x-1"
+      role="img"
+      aria-label={`${n} out of 5 stars`}
+    >
       {Array.from({ length: 5 }).map((_, i) => (
         <StarRatingIcon
           key={i}
+          aria-hidden
           className={`size-4 shrink-0 ${i < n ? "text-brand" : "text-slate-200"}`}
         />
       ))}

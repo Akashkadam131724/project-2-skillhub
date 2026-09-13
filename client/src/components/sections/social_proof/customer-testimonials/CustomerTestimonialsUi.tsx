@@ -90,13 +90,12 @@ export default function CustomerTestimonialsUi({
                   <ChevronLeftSmIcon />
                 </button>
 
-                <div className="flex gap-2" role="tablist">
+                <div className="flex gap-2" role="group" aria-label="Choose testimonial">
                   {items.map((item, i) => (
                     <button
                       key={item.id ?? i}
                       type="button"
-                      role="tab"
-                      aria-selected={i === index}
+                      aria-current={i === index ? "true" : undefined}
                       aria-label={`Go to testimonial ${i + 1}`}
                       onClick={() => setIndex(i)}
                       className={`h-2.5 rounded-full border-0 transition-all ${
