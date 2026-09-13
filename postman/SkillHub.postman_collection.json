@@ -1,0 +1,2950 @@
+{
+  "info": {
+    "_postman_id": "c4e8a2b1-9f3d-4c70-8e1a-6d5b7a0f2e91",
+    "name": "SkillHub API",
+    "description": "SkillHub backend — catalog (vendors, products, courses, taxonomies), CMS (pages, sections, placements, themes), navigation, blogs, search, uploads.\n\nAlso available as Swagger UI at `{{baseUrl}}/api-docs`.\n\nNo auth on local API. Use the Local environment or collection `baseUrl` (default http://127.0.0.1:3000).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://127.0.0.1:3000"
+    },
+    {
+      "key": "vendorSlug",
+      "value": "microsoft"
+    },
+    {
+      "key": "vendorId",
+      "value": ""
+    },
+    {
+      "key": "productSlug",
+      "value": ""
+    },
+    {
+      "key": "productId",
+      "value": ""
+    },
+    {
+      "key": "courseSlug",
+      "value": ""
+    },
+    {
+      "key": "courseId",
+      "value": ""
+    },
+    {
+      "key": "skillingAreaSlug",
+      "value": ""
+    },
+    {
+      "key": "skillLevelSlug",
+      "value": ""
+    },
+    {
+      "key": "industrySlug",
+      "value": ""
+    },
+    {
+      "key": "contentSlug",
+      "value": ""
+    },
+    {
+      "key": "blogSlug",
+      "value": ""
+    },
+    {
+      "key": "sectionKey",
+      "value": "overview"
+    },
+    {
+      "key": "pageKey",
+      "value": "vendor"
+    },
+    {
+      "key": "pageSectionId",
+      "value": ""
+    },
+    {
+      "key": "entityPageSectionId",
+      "value": ""
+    },
+    {
+      "key": "entityId",
+      "value": ""
+    },
+    {
+      "key": "tagId",
+      "value": ""
+    },
+    {
+      "key": "navigationId",
+      "value": ""
+    },
+    {
+      "key": "navigationColumnId",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "description": "Root + Swagger",
+      "item": [
+        {
+          "name": "Hello",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": []
+            },
+            "description": "Root liveness — returns hello world."
+          }
+        },
+        {
+          "name": "OpenAPI JSON",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api-docs.json",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api-docs.json"
+              ]
+            },
+            "description": "Raw OpenAPI 3 document (same source as Swagger UI)."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Vendors",
+      "description": "Catalog vendors — soft-delete via DELETE, restore via POST …/restore.",
+      "item": [
+        {
+          "name": "List vendors",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/vendors?page=1&limit=20&q=",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "vendors"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "q",
+                  "value": ""
+                }
+              ]
+            },
+            "description": "Paginated list. Query: page, limit, status, isVerified, q."
+          }
+        },
+        {
+          "name": "Search vendors",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/vendors/search/filters?page=1&limit=20&q=&category=",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "vendors",
+                "search",
+                "filters"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "q",
+                  "value": ""
+                },
+                {
+                  "key": "category",
+                  "value": ""
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create vendor",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/vendors",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "vendors"
+              ]
+            },
+            "description": "Required: name, email. Saves slug + id to collection variables.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Postman Vendor\",\n  \"email\": \"postman-vendor@example.com\",\n  \"shortDescription\": \"Created from Postman collection\",\n  \"overviewTitle\": \"Build skills with Postman Vendor\",\n  \"overview\": \"<p>Sample overview body for Postman.</p>\",\n  \"status\": \"active\",\n  \"isVerified\": false,\n  \"categories\": [\n    \"cloud\"\n  ]\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "const row = json.data || json;",
+                  "if (row && row.slug) {",
+                  "  pm.collectionVariables.set('vendorSlug', row.slug);",
+                  "}",
+                  "if (row && row._id) {",
+                  "  pm.collectionVariables.set('vendorSlugId', String(row._id));",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get vendor by slug",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/vendors/{{vendorSlug}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "vendors",
+                "{{vendorSlug}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update vendor",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/vendors/{{vendorSlug}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "vendors",
+                "{{vendorSlug}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"shortDescription\": \"Updated from Postman\",\n  \"overviewTitle\": \"Updated overview title\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Soft-delete vendor",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/vendors/{{vendorSlug}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "vendors",
+                "{{vendorSlug}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Restore vendor",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/vendors/{{vendorSlug}}/restore",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "vendors",
+                "{{vendorSlug}}",
+                "restore"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Products",
+      "description": "Products under vendors",
+      "item": [
+        {
+          "name": "List products",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/products?page=1&limit=20&q=",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "products"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "q",
+                  "value": ""
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "List by vendor id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/products/vendor/{{vendorId}}?page=1&limit=20",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "products",
+                "vendor",
+                "{{vendorId}}"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create product",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/products",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "products"
+              ]
+            },
+            "description": "Set vendorId from Create vendor (or a seeded vendor).",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Postman Product\",\n  \"vendor\": \"{{vendorId}}\",\n  \"shortDescription\": \"Sample product\",\n  \"status\": \"active\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "const row = json.data || json;",
+                  "if (row && row.slug) {",
+                  "  pm.collectionVariables.set('productSlug', row.slug);",
+                  "}",
+                  "if (row && row._id) {",
+                  "  pm.collectionVariables.set('productSlugId', String(row._id));",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get product by slug",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/products/{{productSlug}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "products",
+                "{{productSlug}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update product",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/products/{{productSlug}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "products",
+                "{{productSlug}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"shortDescription\": \"Updated product\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Soft-delete product",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/products/{{productSlug}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "products",
+                "{{productSlug}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Restore product",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/products/{{productSlug}}/restore",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "products",
+                "{{productSlug}}",
+                "restore"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Courses",
+      "description": "Courses + faceted catalog",
+      "item": [
+        {
+          "name": "List courses",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/courses?page=1&limit=20&q=",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "courses"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "q",
+                  "value": ""
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Catalog courses",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/courses/catalog?page=1&limit=20&vendor=&product=&skillingArea=&skillLevel=&industry=&q=",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "courses",
+                "catalog"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "vendor",
+                  "value": ""
+                },
+                {
+                  "key": "product",
+                  "value": ""
+                },
+                {
+                  "key": "skillingArea",
+                  "value": ""
+                },
+                {
+                  "key": "skillLevel",
+                  "value": ""
+                },
+                {
+                  "key": "industry",
+                  "value": ""
+                },
+                {
+                  "key": "q",
+                  "value": ""
+                }
+              ]
+            },
+            "description": "Faceted catalog. Multi-ids are comma-separated ObjectIds."
+          }
+        },
+        {
+          "name": "Catalog filters",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/courses/catalog/filters?vendor=&product=&skillingArea=&skillLevel=&industry=&q=",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "courses",
+                "catalog",
+                "filters"
+              ],
+              "query": [
+                {
+                  "key": "vendor",
+                  "value": ""
+                },
+                {
+                  "key": "product",
+                  "value": ""
+                },
+                {
+                  "key": "skillingArea",
+                  "value": ""
+                },
+                {
+                  "key": "skillLevel",
+                  "value": ""
+                },
+                {
+                  "key": "industry",
+                  "value": ""
+                },
+                {
+                  "key": "q",
+                  "value": ""
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "List by product id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/courses/product/{{productId}}?page=1&limit=20",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "courses",
+                "product",
+                "{{productId}}"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create course",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/courses",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "courses"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Postman Course\",\n  \"product\": \"{{productId}}\",\n  \"shortDescription\": \"Sample course\",\n  \"status\": \"active\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "const row = json.data || json;",
+                  "if (row && row.slug) {",
+                  "  pm.collectionVariables.set('courseSlug', row.slug);",
+                  "}",
+                  "if (row && row._id) {",
+                  "  pm.collectionVariables.set('courseSlugId', String(row._id));",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get course by slug",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/courses/{{courseSlug}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "courses",
+                "{{courseSlug}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update course",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/courses/{{courseSlug}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "courses",
+                "{{courseSlug}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"shortDescription\": \"Updated course\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Soft-delete course",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/courses/{{courseSlug}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "courses",
+                "{{courseSlug}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Restore course",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/courses/{{courseSlug}}/restore",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "courses",
+                "{{courseSlug}}",
+                "restore"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Skilling Areas",
+      "item": [
+        {
+          "name": "List skilling areas",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/skilling-areas?page=1&limit=20&q=",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "skilling-areas"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "q",
+                  "value": ""
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create skilling area",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/skilling-areas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "skilling-areas"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Postman Skilling Area\",\n  \"shortDescription\": \"Sample skilling area\",\n  \"status\": \"active\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "const row = json.data || json;",
+                  "if (row && row.slug) {",
+                  "  pm.collectionVariables.set('skillingAreaSlug', row.slug);",
+                  "}",
+                  "if (row && row._id) {",
+                  "  pm.collectionVariables.set('skillingAreaSlugId', String(row._id));",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Map course skilling areas",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/skilling-areas/map/course/{{courseId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "skilling-areas",
+                "map",
+                "course",
+                "{{courseId}}"
+              ]
+            },
+            "description": "Body shape may accept ids or slugs — check controller.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"skillingAreas\": [\n    \"{{skillingAreaSlug}}\"\n  ]\n}"
+            }
+          }
+        },
+        {
+          "name": "Courses by skilling area",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/skilling-areas/{{skillingAreaSlug}}/courses?page=1&limit=20",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "skilling-areas",
+                "{{skillingAreaSlug}}",
+                "courses"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get by slug",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/skilling-areas/{{skillingAreaSlug}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "skilling-areas",
+                "{{skillingAreaSlug}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/skilling-areas/{{skillingAreaSlug}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "skilling-areas",
+                "{{skillingAreaSlug}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"shortDescription\": \"Updated\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Soft-delete",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/skilling-areas/{{skillingAreaSlug}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "skilling-areas",
+                "{{skillingAreaSlug}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Restore",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/skilling-areas/{{skillingAreaSlug}}/restore",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "skilling-areas",
+                "{{skillingAreaSlug}}",
+                "restore"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Skill Levels",
+      "item": [
+        {
+          "name": "List skill levels",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/skill-levels?page=1&limit=20&q=",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "skill-levels"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "q",
+                  "value": ""
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create skill level",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/skill-levels",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "skill-levels"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Postman Skill Level\",\n  \"shortDescription\": \"Sample level\",\n  \"status\": \"active\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "const row = json.data || json;",
+                  "if (row && row.slug) {",
+                  "  pm.collectionVariables.set('skillLevelSlug', row.slug);",
+                  "}",
+                  "if (row && row._id) {",
+                  "  pm.collectionVariables.set('skillLevelSlugId', String(row._id));",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Courses by skill level",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/skill-levels/{{skillLevelSlug}}/courses?page=1&limit=20",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "skill-levels",
+                "{{skillLevelSlug}}",
+                "courses"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get by slug",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/skill-levels/{{skillLevelSlug}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "skill-levels",
+                "{{skillLevelSlug}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/skill-levels/{{skillLevelSlug}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "skill-levels",
+                "{{skillLevelSlug}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"shortDescription\": \"Updated\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Soft-delete",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/skill-levels/{{skillLevelSlug}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "skill-levels",
+                "{{skillLevelSlug}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Restore",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/skill-levels/{{skillLevelSlug}}/restore",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "skill-levels",
+                "{{skillLevelSlug}}",
+                "restore"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Industries",
+      "item": [
+        {
+          "name": "List industries",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/industries?page=1&limit=20&q=",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "industries"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "q",
+                  "value": ""
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create industry",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/industries",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "industries"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Postman Industry\",\n  \"shortDescription\": \"Sample industry\",\n  \"status\": \"active\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "const row = json.data || json;",
+                  "if (row && row.slug) {",
+                  "  pm.collectionVariables.set('industrySlug', row.slug);",
+                  "}",
+                  "if (row && row._id) {",
+                  "  pm.collectionVariables.set('industrySlugId', String(row._id));",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Map course industries",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/industries/map/course/{{courseId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "industries",
+                "map",
+                "course",
+                "{{courseId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"industries\": [\n    \"{{industrySlug}}\"\n  ]\n}"
+            }
+          }
+        },
+        {
+          "name": "Courses by industry",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/industries/{{industrySlug}}/courses?page=1&limit=20",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "industries",
+                "{{industrySlug}}",
+                "courses"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get by slug",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/industries/{{industrySlug}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "industries",
+                "{{industrySlug}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/industries/{{industrySlug}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "industries",
+                "{{industrySlug}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"shortDescription\": \"Updated\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Soft-delete",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/industries/{{industrySlug}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "industries",
+                "{{industrySlug}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Restore",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/industries/{{industrySlug}}/restore",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "industries",
+                "{{industrySlug}}",
+                "restore"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Contents",
+      "description": "Generic CMS content entities",
+      "item": [
+        {
+          "name": "List contents",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/contents?page=1&limit=20&q=",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "contents"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "q",
+                  "value": ""
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create content",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/contents",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "contents"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Postman Content\",\n  \"title\": \"Postman Content Title\",\n  \"body\": \"<p>Sample content</p>\",\n  \"status\": \"active\"\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "const row = json.data || json;",
+                  "if (row && row.slug) {",
+                  "  pm.collectionVariables.set('contentSlug', row.slug);",
+                  "}",
+                  "if (row && row._id) {",
+                  "  pm.collectionVariables.set('contentSlugId', String(row._id));",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get by slug",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/contents/{{contentSlug}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "contents",
+                "{{contentSlug}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/contents/{{contentSlug}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "contents",
+                "{{contentSlug}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Updated content title\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Soft-delete",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/contents/{{contentSlug}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "contents",
+                "{{contentSlug}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Restore",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/contents/{{contentSlug}}/restore",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "contents",
+                "{{contentSlug}}",
+                "restore"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Blogs",
+      "description": "Not yet in OpenAPI YAML — included here from routes.",
+      "item": [
+        {
+          "name": "List blogs",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/blogs?page=1&limit=12&q=&category=&tag=&featured=",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "blogs"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "12"
+                },
+                {
+                  "key": "q",
+                  "value": ""
+                },
+                {
+                  "key": "category",
+                  "value": ""
+                },
+                {
+                  "key": "tag",
+                  "value": ""
+                },
+                {
+                  "key": "featured",
+                  "value": ""
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create blog",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/blogs",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "blogs"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Postman Blog Post\",\n  \"excerpt\": \"Short excerpt\",\n  \"content\": \"<p>Hello from Postman.</p>\",\n  \"category\": \"engineering\",\n  \"tags\": [\n    \"cms\",\n    \"demo\"\n  ],\n  \"status\": \"active\",\n  \"featured\": false\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "const row = json.data || json;",
+                  "if (row && row.slug) {",
+                  "  pm.collectionVariables.set('blogSlug', row.slug);",
+                  "}",
+                  "if (row && row._id) {",
+                  "  pm.collectionVariables.set('blogSlugId', String(row._id));",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get by slug",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/blogs/{{blogSlug}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "blogs",
+                "{{blogSlug}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/blogs/{{blogSlug}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "blogs",
+                "{{blogSlug}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"excerpt\": \"Updated excerpt\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Soft-delete",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/blogs/{{blogSlug}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "blogs",
+                "{{blogSlug}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Restore",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/blogs/{{blogSlug}}/restore",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "blogs",
+                "{{blogSlug}}",
+                "restore"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Search",
+      "item": [
+        {
+          "name": "Global search",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/search?q=microsoft&limit=20",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "microsoft"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Sections",
+      "description": "CMS section catalog + page tags",
+      "item": [
+        {
+          "name": "List sections",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/sections?status=&content_scope=&q=",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "sections"
+              ],
+              "query": [
+                {
+                  "key": "status",
+                  "value": ""
+                },
+                {
+                  "key": "content_scope",
+                  "value": ""
+                },
+                {
+                  "key": "q",
+                  "value": ""
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create section",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/sections",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "sections"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"key\": \"postman_demo_section\",\n  \"name\": \"Postman Demo Section\",\n  \"status\": true,\n  \"content_scope\": \"page\",\n  \"section_title\": \"Demo title\",\n  \"sub_title\": \"Demo subtitle\",\n  \"data\": {\n    \"body\": \"<p>Demo body</p>\"\n  }\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "const row = json.data || json;",
+                  "if (row && row.key) {",
+                  "  pm.collectionVariables.set('sectionKey', row.key);",
+                  "}",
+                  "if (row && row._id) {",
+                  "  pm.collectionVariables.set('sectionKeyId', String(row._id));",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get by key",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/sections/{{sectionKey}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "sections",
+                "{{sectionKey}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update section",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/sections/{{sectionKey}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "sections",
+                "{{sectionKey}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"section_title\": \"Updated demo title\",\n  \"data\": {\n    \"body\": \"<p>Updated body</p>\"\n  }\n}"
+            }
+          }
+        },
+        {
+          "name": "Set status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/sections/{{sectionKey}}/status",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "sections",
+                "{{sectionKey}}",
+                "status"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": true\n}"
+            }
+          }
+        },
+        {
+          "name": "Set section pages (replace tags)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/sections/{{sectionKey}}/pages",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "sections",
+                "{{sectionKey}}",
+                "pages"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pages\": [\n    {\n      \"page_key\": \"{{pageKey}}\",\n      \"sort_order\": 0,\n      \"status\": true\n    }\n  ]\n}"
+            }
+          }
+        },
+        {
+          "name": "Tag section onto page",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/sections/{{sectionKey}}/pages/{{pageKey}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "sections",
+                "{{sectionKey}}",
+                "pages",
+                "{{pageKey}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sort_order\": 10,\n  \"status\": true\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "const tag = json.data || json;",
+                  "if (tag && tag._id) pm.collectionVariables.set('tagId', String(tag._id));",
+                  "if (tag && tag.pages) {",
+                  "  const last = Array.isArray(tag.pages) ? tag.pages[tag.pages.length - 1] : null;",
+                  "  if (last && last._id) pm.collectionVariables.set('tagId', String(last._id));",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update page tag",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/sections/{{sectionKey}}/pages/tag/{{tagId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "sections",
+                "{{sectionKey}}",
+                "pages",
+                "tag",
+                "{{tagId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"section_title\": \"Tag override title\",\n  \"sort_order\": 5\n}"
+            }
+          }
+        },
+        {
+          "name": "Untag by tag id",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/sections/{{sectionKey}}/pages/tag/{{tagId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "sections",
+                "{{sectionKey}}",
+                "pages",
+                "tag",
+                "{{tagId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Untag by page key",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/sections/{{sectionKey}}/pages/by-page/{{pageKey}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "sections",
+                "{{sectionKey}}",
+                "pages",
+                "by-page",
+                "{{pageKey}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete section",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/sections/{{sectionKey}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "sections",
+                "{{sectionKey}}"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Section Categories",
+      "item": [
+        {
+          "name": "List categories",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/section-categories",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "section-categories"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get category by key",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/section-categories/content",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "section-categories",
+                "content"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Section Library",
+      "description": "Showcase / gallery for section catalog",
+      "item": [
+        {
+          "name": "List library categories",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/section-library/categories",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "section-library",
+                "categories"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Library showcase (default)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/section-library/showcase",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "section-library",
+                "showcase"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Library showcase by key",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/section-library/showcase/{{sectionKey}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "section-library",
+                "showcase",
+                "{{sectionKey}}"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Pages",
+      "description": "CMS page templates",
+      "item": [
+        {
+          "name": "List pages",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/pages?status=",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "pages"
+              ],
+              "query": [
+                {
+                  "key": "status",
+                  "value": ""
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create page",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/pages",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "pages"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"key\": \"postman_demo_page\",\n  \"name\": \"Postman Demo Page\",\n  \"status\": true\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "const row = json.data || json;",
+                  "if (row && row.key) {",
+                  "  pm.collectionVariables.set('pageKey', row.key);",
+                  "}",
+                  "if (row && row._id) {",
+                  "  pm.collectionVariables.set('pageKeyId', String(row._id));",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Resolve sections",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/pages/{{pageKey}}/sections?entity_id={{entityId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "pages",
+                "{{pageKey}}",
+                "sections"
+              ],
+              "query": [
+                {
+                  "key": "entity_id",
+                  "value": "{{entityId}}"
+                }
+              ]
+            },
+            "description": "Resolved placements for the template. Pass entity_id for vendor/product overrides."
+          }
+        },
+        {
+          "name": "Get page by key",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/pages/{{pageKey}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "pages",
+                "{{pageKey}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update page",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/pages/{{pageKey}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "pages",
+                "{{pageKey}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Postman Demo Page\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Set page status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/pages/{{pageKey}}/status",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "pages",
+                "{{pageKey}}",
+                "status"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": true\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete page",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/pages/{{pageKey}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "pages",
+                "{{pageKey}}"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Page Sections",
+      "description": "Template tags + EntityPageSection overrides/extras",
+      "item": [
+        {
+          "name": "List page sections",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/page-sections?page_key={{pageKey}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "page-sections"
+              ],
+              "query": [
+                {
+                  "key": "page_key",
+                  "value": "{{pageKey}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Tag section to page",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/page-sections",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "page-sections"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"page_key\": \"{{pageKey}}\",\n  \"section_key\": \"{{sectionKey}}\",\n  \"sort_order\": 0\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "const row = json.data;",
+                  "if (row && row._id) {",
+                  "  pm.collectionVariables.set('pageSectionId', String(row._id));",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Reorder",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/page-sections/reorder",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "page-sections",
+                "reorder"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"page_key\": \"{{pageKey}}\",\n  \"order\": [\n    \"{{pageSectionId}}\"\n  ]\n}"
+            }
+          }
+        },
+        {
+          "name": "List entity page sections",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/page-sections/entity?page_key={{pageKey}}&entity_id={{entityId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "page-sections",
+                "entity"
+              ],
+              "query": [
+                {
+                  "key": "page_key",
+                  "value": "{{pageKey}}"
+                },
+                {
+                  "key": "entity_id",
+                  "value": "{{entityId}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Upsert entity page section",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/page-sections/entity",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "page-sections",
+                "entity"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"page_key\": \"{{pageKey}}\",\n  \"entity_id\": \"{{entityId}}\",\n  \"section_key\": \"{{sectionKey}}\",\n  \"status\": true,\n  \"section_title\": \"Entity override title\",\n  \"data\": {\n    \"body\": \"<p>Entity-specific body</p>\"\n  }\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "const row = json.data;",
+                  "if (row && row._id) {",
+                  "  pm.collectionVariables.set('entityPageSectionId', String(row._id));",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Delete entity page section",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/page-sections/entity/{{entityPageSectionId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "page-sections",
+                "entity",
+                "{{entityPageSectionId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update page section",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/page-sections/{{pageSectionId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "page-sections",
+                "{{pageSectionId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"section_title\": \"Updated placement title\",\n  \"sort_order\": 2\n}"
+            }
+          }
+        },
+        {
+          "name": "Set page section status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/page-sections/{{pageSectionId}}/status",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "page-sections",
+                "{{pageSectionId}}",
+                "status"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": true\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete page section",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/page-sections/{{pageSectionId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "page-sections",
+                "{{pageSectionId}}"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Site Theme",
+      "description": "Global theme document (key=default)",
+      "item": [
+        {
+          "name": "Get site theme",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/site-theme",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "site-theme"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update site theme",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/site-theme",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "site-theme"
+              ]
+            },
+            "description": "Sends a patch of theme fields; empty body returns 400.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"brand\": \"#1d4ed8\",\n  \"ink\": \"#0b1f4d\",\n  \"surface_mode\": \"alternating\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Entity Page Theme",
+      "description": "Per-entity theme override for a page_key",
+      "item": [
+        {
+          "name": "Get entity page theme",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/entity-page-theme?page_key={{pageKey}}&entity_id={{entityId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "entity-page-theme"
+              ],
+              "query": [
+                {
+                  "key": "page_key",
+                  "value": "{{pageKey}}"
+                },
+                {
+                  "key": "entity_id",
+                  "value": "{{entityId}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Upsert entity page theme",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/entity-page-theme",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "entity-page-theme"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"page_key\": \"{{pageKey}}\",\n  \"entity_id\": \"{{entityId}}\",\n  \"brand\": \"#0ea5e9\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Delete entity page theme",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/entity-page-theme?page_key={{pageKey}}&entity_id={{entityId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "entity-page-theme"
+              ],
+              "query": [
+                {
+                  "key": "page_key",
+                  "value": "{{pageKey}}"
+                },
+                {
+                  "key": "entity_id",
+                  "value": "{{entityId}}"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Navigation",
+      "description": "Header nav tree, columns, links",
+      "item": [
+        {
+          "name": "Get navigation tree",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/navigation",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "navigation"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Filter navigation",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/navigation/filter?q=",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "navigation",
+                "filter"
+              ],
+              "query": [
+                {
+                  "key": "q",
+                  "value": ""
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create navigation",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/navigation",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "navigation"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Postman Nav\",\n  \"language\": \"en\",\n  \"country\": \"US\",\n  \"status\": true\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "const nav = json.navigation || json.data;",
+                  "if (nav && nav._id) pm.collectionVariables.set('navigationId', String(nav._id));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "List columns",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/navigation/columns",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "navigation",
+                "columns"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create column",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/navigation/columns",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "navigation",
+                "columns"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"navigation\": \"{{navigationId}}\",\n  \"name\": \"Postman Column\",\n  \"sort_order\": 0,\n  \"status\": true\n}"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "const col = json.column || json.data || json;",
+                  "if (col && col._id) pm.collectionVariables.set('navigationColumnId', String(col._id));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create column link",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/navigation/column/links",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "navigation",
+                "column",
+                "links"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"navigationColumn\": \"{{navigationColumnId}}\",\n  \"label\": \"Postman Link\",\n  \"url\": \"/vendors\",\n  \"sort_order\": 0,\n  \"status\": true\n}"
+            }
+          }
+        },
+        {
+          "name": "Update navigation",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/navigation/{{navigationId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "navigation",
+                "{{navigationId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Postman Nav Updated\",\n  \"status\": true\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Uploads",
+      "description": "Base64 image upload → /uploads/{folder}/…",
+      "item": [
+        {
+          "name": "Upload image (data URL)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/uploads",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "uploads"
+              ]
+            },
+            "description": "1×1 PNG. Max 4MB. Allowed: jpeg, png, webp, gif. Returns `{ url, path }`.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"folder\": \"sections\",\n  \"data_url\": \"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==\"\n}"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
