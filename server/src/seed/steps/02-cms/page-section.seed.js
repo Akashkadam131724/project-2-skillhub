@@ -620,6 +620,17 @@ const SECTIONS = [
     status: true,
   },
   {
+    key: "hero_gradient_slider",
+    name: "Hero — Gradient Slider",
+    description: "Theme-aware gradient slider with optional stats",
+    section_title: "",
+    sub_title: "",
+    in_page_nav_title: "",
+    data: {},
+    content_scope: "page",
+    status: true,
+  },
+  {
     key: "promo_modal",
     name: "Promo Modal",
     description: "Timed overlay modal with section CTAs",
@@ -802,6 +813,7 @@ const SECTION_PAGE_TAGS = {
   hero_stats: [{ page_key: "home", sort_order: 6, status: false }],
   hero_asymmetric: [{ page_key: "home", sort_order: 7, status: false }],
   hero_dual_cta: [{ page_key: "home", sort_order: 8, status: false }],
+  hero_gradient_slider: [{ page_key: "home", sort_order: 1, status: false }],
 };
 
 seed().catch(async (err) => {

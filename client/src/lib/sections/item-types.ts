@@ -103,6 +103,7 @@ export const NESTED_TABS_SECTION_KEYS = new Set([
   "tabs_horizontal",
   "tabs_underline",
   "sarder_ecosystem",
+  "hero_gradient_slider",
 ]);
 
 /** Resolve items for a placement — nested children hidden unless section wants them */
@@ -202,7 +203,7 @@ const CONTEXT_BACKED_SECTION_KEYS = new Set([
 ]);
 
 /** Renders baked-in static UI — empty CMS fields still show on public pages. */
-const STATIC_RENDER_SECTION_KEYS = new Set(["hero_gradient_slider"]);
+const STATIC_RENDER_SECTION_KEYS = new Set<string>();
 
 /**
  * True when this placement has something real to show on a public page.

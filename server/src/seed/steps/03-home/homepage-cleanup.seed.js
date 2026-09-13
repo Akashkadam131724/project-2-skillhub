@@ -3,6 +3,7 @@ import connectDB from "../../../config/db.js";
 import Content from "../../../modules/content/content.model.js";
 import Page from "../../../modules/cms/page.model.js";
 import Section from "../../../modules/cms/section.model.js";
+import { buildHeroGradientSliderItems } from "../../lib/hero-gradient-slider-items.js";
 
 /**
  * Rewrites homepage CMS copy/images with original SkillHub content.
@@ -81,6 +82,15 @@ function badgeSvg(title, accent = "#1b4de4") {
 }
 
 const copy = {
+  hero_gradient_slider: {
+    section_title: "",
+    sub_title: "",
+    in_page_nav_title: "",
+    data: {},
+    buttons: [],
+    items: buildHeroGradientSliderItems(),
+  },
+
   hero_classic: {
     section_title: "Build workforce capability that moves with your business",
     sub_title:

@@ -1,24 +1,23 @@
+import type { HeroContentSectionProps } from "@/components/sections/hero/shared/lib/types";
+
 export type HeroGradientSliderStat = {
   id: string;
   value: string;
   label: string;
+  icon?: string;
 };
 
 export type HeroGradientSliderSlide = {
   id: string;
   title: string;
-  /** HTML body copy (legacy: short_description) */
+  /** HTML body copy */
   body?: string;
-  /** Right-panel image URL (legacy: image_url) */
+  /** Right-panel image URL */
   sideImageUrl?: string;
-  /** Optional YouTube / video URL — shows play control when set */
-  videoUrl?: string;
-  /** Section background (gradient or color) — falls back to default band */
-  bgColor?: string;
-  /** Show trust stats on this slide (default: first slide only in Ui) */
-  showStats?: boolean;
-  /** CMS-shaped buttons — primary + secondary CTA row */
+  /** CMS-shaped buttons — including optional Watch video */
   buttons?: unknown[];
+  /** Optional trust stats for this slide */
+  stats?: HeroGradientSliderStat[];
 };
 
 export type HeroGradientSliderUiProps = {
@@ -26,4 +25,9 @@ export type HeroGradientSliderUiProps = {
   slides: HeroGradientSliderSlide[];
   /** Autoplay interval in ms; 0 disables */
   autoplayMs?: number;
+  cmsMode?: boolean;
+  section_key?: string;
+  onEditField?: (field: string, extra?: unknown) => void;
 };
+
+export type HeroGradientSliderSectionProps = HeroContentSectionProps;

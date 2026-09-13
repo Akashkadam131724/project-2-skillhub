@@ -108,6 +108,8 @@ import { HERO_STATS_ITEMS_CONFIG } from "@/components/sections/hero/hero-stats/l
 
 import { HERO_MEDIA_ITEMS_CONFIG } from "@/components/sections/hero/hero-media/lib/cms-config";
 
+import { HERO_GRADIENT_SLIDER_ITEMS_CONFIG } from "@/components/sections/hero/hero-gradient-slider/lib/cms-config";
+
 import { VIDEO_BANNER_ITEMS_CONFIG } from "@/components/sections/hero/video-banner/lib/cms-config";
 
 /** Section-owned CMS item configs (merged into SECTION_ITEMS_CONFIG). */
@@ -197,6 +199,8 @@ export const SECTION_COMPONENT_ITEM_CONFIGS = {
   hero_stats: HERO_STATS_ITEMS_CONFIG,
 
   hero_media: HERO_MEDIA_ITEMS_CONFIG,
+
+  hero_gradient_slider: HERO_GRADIENT_SLIDER_ITEMS_CONFIG,
 
   video_banner: VIDEO_BANNER_ITEMS_CONFIG,
 

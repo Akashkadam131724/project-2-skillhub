@@ -1,15 +1,13 @@
-import HeroGradientSliderStatic from "./HeroGradientSliderStatic";
+import HeroGradientSliderUi from "./HeroGradientSliderUi";
+import { resolveHeroGradientSliderSlides } from "./lib/map";
+import type { HeroGradientSliderSectionProps } from "./lib/types";
 
-type HeroGradientSliderPublicSectionProps = {
-  id?: string;
-};
-
-/**
- * Public hero_gradient_slider — static demo content until CMS map is wired.
- * DB placement only needs section_key (and optional render_key) set.
- */
 export default function HeroGradientSliderPublicSection({
   id,
-}: HeroGradientSliderPublicSectionProps) {
-  return <HeroGradientSliderStatic id={id} />;
+  items,
+}: HeroGradientSliderSectionProps) {
+  const slides = resolveHeroGradientSliderSlides(items, { cmsMode: false });
+  if (!slides.length) return null;
+
+  return <HeroGradientSliderUi id={id} slides={slides} />;
 }

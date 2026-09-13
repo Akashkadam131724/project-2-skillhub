@@ -1,14 +1,23 @@
 "use client";
 
-import HeroGradientSliderStatic from "./HeroGradientSliderStatic";
+import HeroGradientSliderUi from "./HeroGradientSliderUi";
+import { resolveHeroGradientSliderSlides } from "./lib/map";
+import type { HeroGradientSliderSectionProps } from "./lib/types";
 
-type HeroGradientSliderSectionProps = {
-  id?: string;
-};
-
-/** CMS live-edit adapter — static preview until items/fields are configured. */
+/** CMS live-edit adapter → {@link HeroGradientSliderUi}. */
 export default function HeroGradientSliderSection({
   id,
+  items,
+  onEditField,
 }: HeroGradientSliderSectionProps) {
-  return <HeroGradientSliderStatic id={id} />;
+  const slides = resolveHeroGradientSliderSlides(items, { cmsMode: true });
+
+  return (
+    <HeroGradientSliderUi
+      id={id}
+      slides={slides}
+      cmsMode
+      onEditField={onEditField}
+    />
+  );
 }

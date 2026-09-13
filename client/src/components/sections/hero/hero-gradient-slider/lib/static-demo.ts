@@ -26,8 +26,26 @@ export const HERO_GRADIENT_SLIDER_STATIC_SLIDES: HeroGradientSliderSlide[] = [
     body:
       "<p>Authorized training paths, live CMS editing, and learner analytics in one platform your teams will actually use.</p>",
     sideImageUrl: HERO_GRADIENT_SLIDER_DEMO_IMAGES.program,
-    videoUrl: DEFAULT_FIRST_VIDEO,
-    showStats: true,
+    stats: [
+      {
+        id: "hp-stat-1",
+        value: "28+",
+        label: "Years of Business Experience",
+        icon: "calendar",
+      },
+      {
+        id: "hp-stat-2",
+        value: "80%",
+        label: "Of Fortune 1000 companies served",
+        icon: "building",
+      },
+      {
+        id: "hp-stat-3",
+        value: "96%",
+        label: "Of Customers Recommended Us",
+        icon: "chat",
+      },
+    ],
     buttons: [
       {
         label: "Get Started",
@@ -35,6 +53,15 @@ export const HERO_GRADIENT_SLIDER_STATIC_SLIDES: HeroGradientSliderSlide[] = [
         action_type: "url",
         target_url: "/get-started",
         sort_order: 0,
+        status: true,
+      },
+      {
+        label: "Watch video",
+        variant: "outline",
+        icon: "youtube",
+        action_type: "youtube",
+        target_url: DEFAULT_FIRST_VIDEO,
+        sort_order: 1,
         status: true,
       },
     ],
@@ -69,7 +96,6 @@ export const HERO_GRADIENT_SLIDER_STATIC_SLIDES: HeroGradientSliderSlide[] = [
     body:
       "<p>Watch how SkillHub connects marketing, L&D, and learners in a single experience.</p>",
     sideImageUrl: HERO_GRADIENT_SLIDER_DEMO_IMAGES.aiFace,
-    videoUrl: DEFAULT_FOURTH_VIDEO,
     buttons: [
       {
         label: "View case studies",
@@ -77,6 +103,15 @@ export const HERO_GRADIENT_SLIDER_STATIC_SLIDES: HeroGradientSliderSlide[] = [
         action_type: "url",
         target_url: "/case-studies",
         sort_order: 0,
+        status: true,
+      },
+      {
+        label: "Watch video",
+        variant: "outline",
+        icon: "youtube",
+        action_type: "youtube",
+        target_url: DEFAULT_FOURTH_VIDEO,
+        sort_order: 1,
         status: true,
       },
     ],

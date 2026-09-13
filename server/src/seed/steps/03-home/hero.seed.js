@@ -2,7 +2,9 @@ import mongoose from "mongoose";
 import connectDB from "../../../config/db.js";
 import Page from "../../../modules/cms/page.model.js";
 import Section from "../../../modules/cms/section.model.js";
+import EntityPageSection from "../../../modules/cms/entity-page-section.model.js";
 import { getSectionCatalogMeta } from "../../../modules/cms/section.catalog.js";
+import { buildHeroGradientSliderItems } from "../../lib/hero-gradient-slider-items.js";
 
 /**
  * Upserts homepage hero section catalog entries (content_scope: page)
@@ -252,7 +254,65 @@ const HEROES = [
     status: true,
     home_tag: { sort_order: 8, status: false },
   },
+  {
+    key: "hero_gradient_slider",
+    name: "Hero — Gradient Slider",
+    description: "Theme-aware gradient slider with optional stats",
+    section_title: "",
+    sub_title: "",
+    in_page_nav_title: "",
+    data: {},
+    buttons: [],
+    items: buildHeroGradientSliderItems(),
+    content_scope: "page",
+    status: true,
+    // Keep the template tag off when an entity extra already exists
+    // (avoids stacking two sliders). Enabled later if no extras are found.
+    home_tag: { sort_order: 1, status: false },
+  },
 ];
+
+async function syncHeroGradientSliderPlacements(items) {
+  const section = await Section.findOne({ key: "hero_gradient_slider" });
+  if (!section) return;
+
+  const extras = await EntityPageSection.find({ section: section._id });
+  for (const extra of extras) {
+    extra.items = items;
+    extra.items_override = true;
+    extra.markModified("items");
+    await extra.save();
+  }
+
+  const homeIdx = (section.pages || []).findIndex((p) => p.page_key === "home");
+  if (homeIdx >= 0) {
+    section.pages[homeIdx].items = items;
+    if (!extras.length) {
+      section.pages[homeIdx].status = true;
+    }
+    await section.save();
+  }
+
+  if (!extras.length && homeIdx >= 0) {
+    const classic = await Section.findOne({ key: "hero_classic" });
+    if (classic) {
+      const classicIdx = (classic.pages || []).findIndex(
+        (p) => p.page_key === "home"
+      );
+      if (classicIdx >= 0) {
+        classic.pages[classicIdx].status = false;
+        await classic.save();
+        console.log("  hero_classic home tag off (gradient slider is the hero)");
+      }
+    }
+  }
+
+  console.log(
+    `  hero_gradient_slider items → ${extras.length} extra(s)${
+      homeIdx >= 0 ? " + home tag" : ""
+    }`
+  );
+}
 
 async function seed() {
   await connectDB();
@@ -330,6 +390,8 @@ async function seed() {
       `  ${hero.key} → home#${home_tag.sort_order} (${home_tag.status ? "on" : "off"})`
     );
   }
+
+  await syncHeroGradientSliderPlacements(buildHeroGradientSliderItems());
 
   console.log(`Seeded ${HEROES.length} hero sections on home`);
   await mongoose.disconnect();

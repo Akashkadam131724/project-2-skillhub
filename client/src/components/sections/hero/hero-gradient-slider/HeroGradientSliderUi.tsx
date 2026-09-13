@@ -10,16 +10,19 @@ import HeroGradientSliderImage from "./HeroGradientSliderImage";
 import HeroGradientSliderStatsRow from "./HeroGradientSliderStatsRow";
 import { SECTION_CONTENT_INSET_CLASS } from "@/components/sections/SectionWrapper";
 import { DS_TYPE, sectionClassNames } from "@/lib/layout/section-layout-system";
+import CmsSectionItemsBar from "@/components/sections/CmsSectionItemsBar";
+import EmptyItemsHint from "@/components/sections/EmptyItemsHint";
 import { HERO_GRADIENT_SLIDER_DEFAULT_BG } from "./lib/static-demo";
 import type { HeroGradientSliderUiProps } from "./lib/types";
 import "./hero-gradient-slider.css";
-
-const FIRST_SLIDE_INDEX = 0;
 
 export default function HeroGradientSliderUi({
   id,
   slides,
   autoplayMs = 12000,
+  cmsMode = false,
+  section_key = "hero_gradient_slider",
+  onEditField,
 }: HeroGradientSliderUiProps) {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
@@ -27,11 +30,8 @@ export default function HeroGradientSliderUi({
 
   const count = slides.length;
   const slide = count ? slides[Math.min(currentSlide, count - 1)] : null;
-  const bgStyle = slide?.bgColor || HERO_GRADIENT_SLIDER_DEFAULT_BG;
-  const videoUrl = slide?.videoUrl?.trim() || "";
   const hasSideImage = Boolean(slide?.sideImageUrl?.trim());
-  const showStats =
-    currentSlide === FIRST_SLIDE_INDEX && slide?.showStats !== false;
+  const stats = slide?.stats || [];
 
   useEffect(() => {
     setCurrentSlide(0);
@@ -43,7 +43,7 @@ export default function HeroGradientSliderUi({
       autoPlayRef.current = null;
     }
 
-    if (count <= 1 || isFormModalOpen || !autoplayMs) return;
+    if (cmsMode || count <= 1 || isFormModalOpen || !autoplayMs) return;
 
     autoPlayRef.current = setTimeout(() => {
       setCurrentSlide((prev) => (prev + 1) % count);
@@ -55,17 +55,45 @@ export default function HeroGradientSliderUi({
         autoPlayRef.current = null;
       }
     };
-  }, [currentSlide, count, isFormModalOpen, autoplayMs]);
+  }, [currentSlide, count, isFormModalOpen, autoplayMs, cmsMode]);
 
-  if (!count || !slide) return null;
+  if (!count || !slide) {
+    if (!cmsMode) return null;
+    return (
+      <section
+        id={id}
+        data-section-theme="dark"
+        data-always-light-text=""
+        className="relative overflow-hidden py-0 text-white"
+        style={{ background: HERO_GRADIENT_SLIDER_DEFAULT_BG }}
+      >
+        <HeroGradientSliderAnimatedBg />
+        <div
+          className={`relative z-[1] flex min-h-[22rem] flex-col justify-center py-12 ${SECTION_CONTENT_INSET_CLASS}`}
+        >
+          <CmsSectionItemsBar
+            sectionKey={section_key}
+            cmsMode
+            onEditField={onEditField}
+            itemCount={0}
+            className="mb-6 [&_p]:text-white/70 [&_button]:border-white/40 [&_button]:bg-white/10 [&_button]:text-white [&_button:hover]:border-white [&_button:hover]:text-white"
+          />
+          <div className="rounded-xl border border-dashed border-white/30 bg-white/5 p-6">
+            <EmptyItemsHint
+              sectionKey={section_key}
+              onEditField={onEditField}
+            />
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % count);
   const prevSlide = () =>
     setCurrentSlide((prev) => (prev - 1 + count) % count);
 
-  const description =
-    slide.body ||
-    "<p>Accelerate workforce transformation with AI-driven learning solutions.</p>";
+  const description = slide.body?.trim() || "";
 
   return (
     <section
@@ -73,7 +101,7 @@ export default function HeroGradientSliderUi({
       data-section-theme="dark"
       data-always-light-text=""
       className="relative overflow-hidden py-0 text-white"
-      style={{ background: bgStyle }}
+      style={{ background: HERO_GRADIENT_SLIDER_DEFAULT_BG }}
     >
       <HeroGradientSliderAnimatedBg />
 
@@ -84,21 +112,36 @@ export default function HeroGradientSliderUi({
             key={slide.id}
             className={`hp-content-enter flex w-full flex-col justify-center space-y-6 py-8 sm:py-12 lg:space-y-8 lg:py-[60px] lg:py-0 ${SECTION_CONTENT_INSET_CLASS}`}
           >
+            <CmsSectionItemsBar
+              sectionKey={section_key}
+              cmsMode={cmsMode}
+              onEditField={onEditField}
+              itemCount={count}
+              className="[&_p]:text-white/70 [&_button]:border-white/40 [&_button]:bg-white/10 [&_button]:text-white [&_button:hover]:border-white [&_button:hover]:text-white"
+            />
+
             <div className="flex flex-col">
-              <h1 className={DS_TYPE.heroTitle}>{slide.title}</h1>
-              <div
-                className={sectionClassNames(DS_TYPE.heroBody, "mt-5 sm:mt-6")}
-                dangerouslySetInnerHTML={{ __html: description }}
-              />
+              {slide.title ? (
+                <h1 className={DS_TYPE.heroTitle}>{slide.title}</h1>
+              ) : cmsMode ? (
+                <h1 className={`${DS_TYPE.heroTitle} italic text-white/40`}>
+                  Add slide title…
+                </h1>
+              ) : null}
+              {description ? (
+                <div
+                  className={sectionClassNames(DS_TYPE.heroBody, "mt-5 sm:mt-6")}
+                  dangerouslySetInnerHTML={{ __html: description }}
+                />
+              ) : null}
             </div>
 
             <HeroGradientSliderCtaButtons
               buttons={slide.buttons}
-              videoUrl={videoUrl}
               onFormOpenChange={setIsFormModalOpen}
             />
 
-            {showStats ? <HeroGradientSliderStatsRow /> : null}
+            <HeroGradientSliderStatsRow stats={stats} />
           </div>
         </div>
 

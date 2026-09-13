@@ -1,9 +1,9 @@
 import { defineSectionBlueprint } from "@/lib/sections/blueprint";
 
-/** Scaffold reference — static phase before full CMS fields. */
+/** Homepage gradient slider — CMS slides with optional nested stats. */
 export const HERO_GRADIENT_SLIDER_BLUEPRINT = defineSectionBlueprint({
   key: "hero_gradient_slider",
-  archetype: "static",
+  archetype: "items",
   band: "fixed-dark",
   catalog: {
     name: "Hero — Gradient Slider",
