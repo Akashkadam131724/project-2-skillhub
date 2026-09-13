@@ -1,25 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import {
   CmsHeading,
   CmsPanel,
   ErrorBanner,
   btnPrimary,
-  btnSecondary,
 } from "@/components/cms/admin/CmsUi";
-
-const QUICK_LINKS = [
-  { href: "/cms/site-theme", label: "Themes", hint: "Site + all page template themes" },
-  { href: "/cms/contents", label: "Content pages", hint: "About us, our team, … free-form" },
-  { href: "/cms/pages", label: "Page templates", hint: "Section placements by page type" },
-  { href: "/cms/pages-content-sections", label: "Content sections", hint: "Global section defaults" },
-  { href: "/cms/section", label: "Section library", hint: "Live previews by category (/cms/section/*)" },
-  { href: "/cms/vendors", label: "Vendors", hint: "Open a vendor → live CMS" },
-  { href: "/cms/products", label: "Products", hint: "Open a product → live CMS" },
-  { href: "/cms/courses", label: "Courses", hint: "Open a course → live CMS" },
-];
 
 export default function CmsOverviewPage() {
   const [navBusy, setNavBusy] = useState(false);
@@ -70,26 +57,6 @@ export default function CmsOverviewPage() {
         >
           {navBusy ? "Refreshing…" : "Refresh navigation cache"}
         </button>
-      </CmsPanel>
-
-      <CmsPanel title="Quick links">
-        <ul className="m-0 grid list-none gap-2 p-0 sm:grid-cols-2">
-          {QUICK_LINKS.map((item) => (
-            <li key={item.href}>
-              <Link
-                href={item.href}
-                className={`${btnSecondary} inline-flex w-full flex-col items-start gap-0.5 !no-underline`}
-              >
-                <span className="font-semibold text-slate-900 dark:text-white">
-                  {item.label}
-                </span>
-                <span className="text-xs font-normal text-slate-500">
-                  {item.hint}
-                </span>
-              </Link>
-            </li>
-          ))}
-        </ul>
       </CmsPanel>
     </div>
   );

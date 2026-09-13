@@ -71,7 +71,9 @@ export default function HorizonGalleryUi({
   return (
     <SectionLayoutRoot
       id={id}
+      sectionTheme="dark"
       className="bg-ink text-white"
+      sectionStyle={{ backgroundColor: "var(--ink)" }}
       title={title}
       subtitle={subtitle}
       titleSlot={titleSlot}

@@ -51,7 +51,7 @@ export default function CmsSectionLibraryIndexPage() {
     <div>
       <CmsHeading
         title="Section library"
-        subtitle="Live previews by category."
+        subtitle="Browse categories, then open one section at a time."
         actions={
           <Link href="/cms/pages-content-sections" className={btnSecondary}>
             All sections

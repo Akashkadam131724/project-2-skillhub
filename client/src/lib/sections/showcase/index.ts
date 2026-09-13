@@ -3,8 +3,13 @@ import {
   SECTION_CATEGORIES,
   SECTION_NAMES,
   buildCategoryPagePlacements,
+  buildShowcasePlacement,
   sectionsInCategory,
 } from "./static-samples";
+import {
+  sectionKeyFromSlug,
+  sectionSlugFromKey,
+} from "@/lib/sections/section-library";
 
 const SLUG_TO_CATEGORY = Object.fromEntries(
   Object.entries(CATEGORY_SLUG).map(([key, slug]) => [slug, key])
@@ -19,12 +24,64 @@ export function categoryKeyFromSlug(slug?: string) {
 
 export function categorySlugFromKey(categoryKey?: string) {
   if (!categoryKey) return "";
-  return (CATEGORY_SLUG as Record<string, string>)[categoryKey] || String(categoryKey).replace(/_/g, "-");
+  return (
+    (CATEGORY_SLUG as Record<string, string>)[categoryKey] ||
+    String(categoryKey).replace(/_/g, "-")
+  );
 }
 
 export function getCategoryShowcaseTitle(categoryKey: string) {
   const cat = SECTION_CATEGORIES.find((c) => c.key === categoryKey);
   return cat?.name || categoryKey;
+}
+
+function sectionDisplayName(sectionKey: string) {
+  return (SECTION_NAMES as Record<string, string>)[sectionKey] || sectionKey;
+}
+
+/** Category page — cards only (no stacked previews). */
+export function listCategoryLibrarySections(categorySlug: string) {
+  const categoryKey = categoryKeyFromSlug(categorySlug);
+  if (!categoryKey) return null;
+
+  const keys = sectionsInCategory(categoryKey);
+  if (!keys.length) return null;
+
+  return {
+    categoryKey,
+    categorySlug: categorySlugFromKey(categoryKey),
+    title: getCategoryShowcaseTitle(categoryKey),
+    sections: keys.map((key) => ({
+      key,
+      slug: sectionSlugFromKey(key),
+      name: sectionDisplayName(key),
+    })),
+  };
+}
+
+/** Single-section preview page. */
+export function getStaticSectionShowcase(
+  categorySlug: string,
+  sectionSlug: string
+) {
+  const categoryKey = categoryKeyFromSlug(categorySlug);
+  const sectionKey = sectionKeyFromSlug(sectionSlug);
+  if (!categoryKey || !sectionKey) return null;
+
+  const keys = sectionsInCategory(categoryKey);
+  if (!keys.includes(sectionKey)) return null;
+
+  return {
+    categoryKey,
+    categorySlug: categorySlugFromKey(categoryKey),
+    categoryTitle: getCategoryShowcaseTitle(categoryKey),
+    sectionKey,
+    sectionSlug: sectionSlugFromKey(sectionKey),
+    name: sectionDisplayName(sectionKey),
+    sections: normalizeShowcasePlacements([
+      buildShowcasePlacement(sectionKey, 0),
+    ]),
+  };
 }
 
 /** Shape static placements for PublicPageSections */
@@ -43,6 +100,7 @@ export function normalizeShowcasePlacements(
   });
 }
 
+/** @deprecated Prefer listCategoryLibrarySections + per-section pages. */
 export function getStaticCategoryShowcase(categorySlug: string) {
   const categoryKey = categoryKeyFromSlug(categorySlug);
   if (!categoryKey || !sectionsInCategory(categoryKey).length) {
@@ -63,5 +121,6 @@ export {
   SECTION_CATEGORIES,
   SECTION_NAMES,
   buildCategoryPagePlacements,
+  buildShowcasePlacement,
   sectionsInCategory,
 } from "./static-samples";

@@ -30,26 +30,6 @@ export default function WhyChooseUi({
   const darkSubtitleClass =
     "m-0 max-w-2xl text-base leading-relaxed text-white/72";
 
-  const decor = lightBand ? (
-    <div
-      aria-hidden
-      className="pointer-events-none absolute inset-0 opacity-60"
-      style={{
-        backgroundImage:
-          "radial-gradient(circle at 15% 0%, color-mix(in srgb, var(--brand-soft) 80%, transparent), transparent 45%)",
-      }}
-    />
-  ) : (
-    <div
-      aria-hidden
-      className="pointer-events-none absolute inset-0 opacity-30"
-      style={{
-        backgroundImage:
-          "radial-gradient(circle at 20% 20%, color-mix(in srgb, var(--brand) 45%, transparent), transparent 42%), radial-gradient(circle at 85% 70%, color-mix(in srgb, white 18%, transparent), transparent 40%)",
-      }}
-    />
-  );
-
   return (
     <SectionLayoutRoot
       id={id}
@@ -58,7 +38,6 @@ export default function WhyChooseUi({
         className
       )}
       wrapperClassName="relative z-[1]"
-      decor={decor}
       eyebrow={eyebrow}
       eyebrowSlot={eyebrowSlot}
       title={title}

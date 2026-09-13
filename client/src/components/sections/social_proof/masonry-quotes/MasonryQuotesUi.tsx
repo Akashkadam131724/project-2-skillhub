@@ -19,7 +19,7 @@ export default function MasonryQuotesUi({
   id,
   className = "",
 }: MasonryQuotesUiProps) {
-  const ref = useRef<HTMLElement>(null);
+  const ref = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(preview);
 
   useEffect(() => {
@@ -37,19 +37,20 @@ export default function MasonryQuotesUi({
   }, [preview]);
 
   return (
-        <SectionLayoutRoot
-      id={id}
-      className={className}
-      title={title}
-      subtitle={subtitle}
-      titleSlot={titleSlot}
-      subtitleSlot={subtitleSlot}
-      itemsBar={itemsBar}
-      emptyState={emptyState}
-      footer={footer}
-      items={items}
-    >
-{items.length ? (
+    <div ref={ref}>
+      <SectionLayoutRoot
+        id={id}
+        className={className}
+        title={title}
+        subtitle={subtitle}
+        titleSlot={titleSlot}
+        subtitleSlot={subtitleSlot}
+        itemsBar={itemsBar}
+        emptyState={emptyState}
+        footer={footer}
+        items={items}
+      >
+        {items.length ? (
           <ul className="m-0 columns-1 gap-4 p-0 sm:columns-2 lg:columns-3">
             {items.map((item, i) => (
               <MasonryQuoteItemCard
@@ -64,6 +65,7 @@ export default function MasonryQuotesUi({
         ) : (
           emptyState
         )}
-    </SectionLayoutRoot>
+      </SectionLayoutRoot>
+    </div>
   );
 }

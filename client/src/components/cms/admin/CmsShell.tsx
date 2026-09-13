@@ -13,6 +13,7 @@ const NAV: CmsNavItem[] = [
   { href: "/cms/site-theme", label: "Site theme" },
   { href: "/cms/pages", label: "All pages" },
   { href: "/cms/pages-content-sections", label: "All sections" },
+  { href: "/cms/section", label: "Section library Preview" },
   { href: "/cms/vendors", label: "Vendors" },
   { href: "/cms/products", label: "Products" },
   { href: "/cms/courses", label: "Courses" },
@@ -20,7 +21,6 @@ const NAV: CmsNavItem[] = [
   { href: "/cms/industries", label: "Industries" },
   { href: "/cms/skilling-areas", label: "Skilling areas" },
   { href: "/cms/contents", label: "Content pages" },
-  { href: "/cms/section", label: "Section library Preview" },
 ];
 
 const STORAGE_KEY = "cms-sidebar-open";
@@ -87,9 +87,8 @@ export default function CmsShell({ children }: CmsShellProps) {
         ) : null}
 
         <aside
-          className={`w-full shrink-0 transition-[width,opacity] lg:w-56 ${
-            ready && !open ? "hidden lg:hidden" : ""
-          }`}
+          className={`w-full shrink-0 transition-[width,opacity] lg:w-56 ${ready && !open ? "hidden lg:hidden" : ""
+            }`}
         >
           <div className="sticky top-6 rounded-xl border border-slate-200 bg-white p-3 dark:border-slate-800 dark:bg-slate-950">
             <div className="mb-3 flex items-start justify-between gap-2 border-b border-slate-100 pb-3 dark:border-slate-800">
@@ -128,11 +127,10 @@ export default function CmsShell({ children }: CmsShellProps) {
                   <Link
                     key={item.href}
                     href={item.href}
-                    className={`rounded-lg px-3 py-2 text-sm font-medium no-underline whitespace-nowrap transition ${
-                      active
+                    className={`rounded-lg px-3 py-2 text-sm font-medium no-underline whitespace-nowrap transition ${active
                         ? "bg-brand text-white"
                         : "text-slate-700 hover:bg-slate-200/70 dark:text-slate-200 dark:hover:bg-slate-800"
-                    }`}
+                      }`}
                   >
                     {item.label}
                   </Link>
