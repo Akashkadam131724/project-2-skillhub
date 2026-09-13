@@ -62,8 +62,7 @@ export type FieldMetaKey =
   | "items"
   | "faq_header_side"
   | "cta_image_side"
-  | "form_content_side"
-  | "section_band";
+  | "form_content_side";
 
 export type FieldMetaOption = {
   value: string;

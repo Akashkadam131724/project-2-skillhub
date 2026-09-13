@@ -64,11 +64,6 @@ export const FIELD_META: Record<FieldMetaKey, FieldMeta> = {
       { value: "right", label: "Content right · Form left" },
     ],
   },
-  section_band: {
-    label: "Section band",
-    input: "section_band",
-    hint: "Background image or color for this section — band light/dark comes from page theme",
-  },
 };
 
 export function previewSrc(

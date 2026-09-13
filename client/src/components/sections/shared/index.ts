@@ -1,12 +1,10 @@
 /**
  * Shared section building blocks (not CMS registry sections).
  *
- * - `design/` — layout surfaces (SectionBand, SectionLightCard, …)
+ * - `design/` — layout surfaces (SectionLightCard, SectionMediaOverlay, …)
  * - Card placeholders for CMS item previews
  */
 export {
-  SectionBand,
-  SectionBrandGlow,
   SectionLightCard,
   SectionMediaOverlay,
 } from "./design";

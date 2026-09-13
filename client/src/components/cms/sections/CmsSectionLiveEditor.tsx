@@ -16,8 +16,6 @@ import CmsItemsEditor, {
 import type { ButtonDraft, SectionItemDraft } from "@/components/cms/editors/types";
 import {
   sectionUsesImage,
-  sectionUsesBg,
-  sectionUsesBgColor,
   sectionUsesItems,
   getSectionItemsConfig,
 } from "@/lib/sections/section-registry";
@@ -29,18 +27,13 @@ import { mediaUrl, uploadCmsImage } from "@/lib/api/cms-api";
 import { mediaAlt } from "@/lib/utils/media-alt";
 import { normalizeContentScope } from "@/lib/cms/content-scope";
 import { mergePlacementData } from "@/lib/sections/placement-data";
-import { computePlacementSurface, SECTION_THEME_BAND_SKIP_KEYS, sectionSupportsBandTheme } from "@/lib/sections/section-theme";
-import { saveSectionBandForPlacement } from "@/lib/sections/placement-save";
-import { bandDraftFromSection } from "@/lib/sections/section-band-cms";
-import type { PlacementLike } from "@/lib/sections/section-types";
-import CmsSectionBandEditor from "@/components/cms/sections/CmsSectionBandEditor";
+import { computePlacementSurface, SECTION_THEME_BAND_SKIP_KEYS } from "@/lib/sections/section-theme";
 import SectionThemeWrap from "@/components/sections/SectionThemeWrap";
 import CmsSectionToolbar from "@/components/cms/sections/CmsSectionToolbar";
 import SectionSurface from "@/components/sections/SectionSurface";
-import CmsBgColorPicker from "@/components/cms/editors/CmsBgColorPicker";
 import CmsRichTextEditor from "@/components/cms/editors/CmsRichTextEditor";
 import { sanitizeRichHtml } from "@/lib/utils/rich-text";
-import type { BandDraft, CmsFieldMeta, CmsSectionLiveEditorProps } from "./types";
+import type { CmsFieldMeta, CmsSectionLiveEditorProps } from "./types";
 import type { PagePlacement } from "@/components/cms/pages/types";
 
 export const CMS_FIELD_META: Record<string, CmsFieldMeta> = {
@@ -59,11 +52,6 @@ export const CMS_FIELD_META: Record<string, CmsFieldMeta> = {
     input: "text",
     hint: "Label in the sticky on-page nav",
   },
-  section_bg_img: {
-    label: "Background image",
-    input: "image",
-    hint: "Upload an image or paste a URL",
-  },
   section_img_url: {
     label: "Section image",
     input: "image",
@@ -73,11 +61,6 @@ export const CMS_FIELD_META: Record<string, CmsFieldMeta> = {
     label: "Body",
     input: "richtext",
     hint: "Rich text — lists, links, images, color, alignment (stored in section data)",
-  },
-  section_bg_color: {
-    label: "Background color",
-    input: "bg_color",
-    hint: "Solid color or gradient for this section band",
   },
   buttons: {
     label: "Buttons",
@@ -98,11 +81,6 @@ export const CMS_FIELD_META: Record<string, CmsFieldMeta> = {
       { value: "right", label: "Title right · FAQs left" },
     ],
   },
-  section_band: {
-    label: "Section band",
-    input: "section_band",
-    hint: "Background image or color — band light/dark comes from page theme",
-  },
 };
 
 const inputClass =
@@ -117,10 +95,6 @@ function fieldValue(section: LiveSection | null | undefined, field: string): str
   if (field === "faq_header_side") {
     const side = (section?.data as { header_side?: string } | undefined)?.header_side;
     return side === "right" ? "right" : "left";
-  }
-  if (field === "section_bg_color") {
-    const data = section?.data as { bg_color?: string } | undefined;
-    return String(section?.section_bg_color || data?.bg_color || "");
   }
   const raw = section?.[field as keyof LiveSection];
   return raw == null ? "" : String(raw);
@@ -140,9 +114,6 @@ function fieldValue(section: LiveSection | null | undefined, field: string): str
  * @param {boolean} [props.showVisibilityToggle]
  * @param {(next: boolean) => Promise<void>} [props.onToggleStatus]
  * @param {object} [props.pageContext]
- * @param {string} [props.pageKey] - For routing theme to page tag / entity
- * @param {string} [props.entityId] - Set on entity page CMS only
- * @param {() => Promise<void>} [props.onAfterFieldSave] - Reload after save (e.g. theme)
  */
 export default function CmsSectionLiveEditor({
   section,
@@ -155,9 +126,6 @@ export default function CmsSectionLiveEditor({
   showVisibilityToggle = false,
   onToggleStatus,
   pageContext = null,
-  pageKey = "",
-  entityId = null,
-  onAfterFieldSave,
   saveLabel = "Save",
 }: CmsSectionLiveEditorProps) {
   const [editingField, setEditingField] = useState<string | null>(null);
@@ -168,7 +136,6 @@ export default function CmsSectionLiveEditor({
   const itemsDraftRef = useRef(itemsDraft);
   buttonsDraftRef.current = buttonsDraft;
   itemsDraftRef.current = itemsDraft;
-  const [bandDraft, setBandDraft] = useState<BandDraft>(() => bandDraftFromSection(null));
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [itemFieldErrors, setItemFieldErrors] = useState<
@@ -212,29 +179,24 @@ export default function CmsSectionLiveEditor({
   const drawerTitle =
     editingField === "items"
       ? `Edit ${itemsConfig?.label || "cards"} · ${key}`
-      : editingField === "section_band"
-        ? `Section band · ${key}`
-        : `Edit ${meta?.label || "field"} · ${key}`;
+      : `Edit ${meta?.label || "field"} · ${key}`;
 
   function openFieldEdit(field: string) {
+    // Per-section band / bg editors retired — Theme → Colors/Surface.
     if (
       field === "section_bg_img" ||
-      field === "section_bg_color"
+      field === "section_bg_color" ||
+      field === "section_theme" ||
+      field === "section_band"
     ) {
-      field = "section_band";
+      return;
     }
     if (!CMS_FIELD_META[field]) return;
     if (field === "items" && !sectionUsesItems(key, itemsRenderKey)) return;
     if (field === "section_img_url" && !sectionUsesImage(key, renderKey)) return;
-    if (field === "section_bg_img" && !sectionUsesBg(key)) return;
 
     setEditingField(field);
-    if (field === "section_band") {
-      setBandDraft(bandDraftFromSection(liveSection));
-      setButtonsDraft([]);
-      setItemsDraft([]);
-      setFieldValueState("");
-    } else if (field === "buttons") {
+    if (field === "buttons") {
       setButtonsDraft(normalizeButtonsDraft(liveSection.buttons));
       setItemsDraft([]);
       setFieldValueState("");
@@ -258,7 +220,6 @@ export default function CmsSectionLiveEditor({
     setFieldValueState("");
     setButtonsDraft([]);
     setItemsDraft([]);
-    setBandDraft(bandDraftFromSection(null));
     setItemFieldErrors(null);
   }
 
@@ -275,18 +236,6 @@ export default function CmsSectionLiveEditor({
     setSaving(true);
     setError(null);
     try {
-      if (editingField === "section_band") {
-        await saveSectionBandForPlacement(liveSection as PlacementLike, {
-          draft: bandDraft,
-          savePlacement: onSavePatch,
-          contentLocked,
-          pageKey,
-          entityId: entityId ?? undefined,
-        });
-        if (onAfterFieldSave) await onAfterFieldSave();
-        closeDrawer();
-        return;
-      }
       let patch = {};
       if (editingField === "buttons") {
         patch = { buttons: serializeButtonsDraft(buttonsDraftRef.current) };
@@ -313,9 +262,6 @@ export default function CmsSectionLiveEditor({
             body: value || null,
           },
         };
-      } else if (editingField === "section_bg_color") {
-        const value = fieldValueState.trim();
-        patch = { section_bg_color: value || null };
       } else if (editingField === "faq_header_side") {
         const side = fieldValueState === "right" ? "right" : "left";
         patch = {
@@ -471,35 +417,6 @@ export default function CmsSectionLiveEditor({
                   </Link>
                 ) : null}
               </div>
-            ) : meta.input === "section_band" ? (
-              <CmsSectionBandEditor
-                draft={bandDraft}
-                onChange={setBandDraft}
-                showBgImage={sectionUsesBg(key)}
-                showBgColor={sectionUsesBgColor(key)}
-                showTheme={sectionSupportsBandTheme(key, itemsRenderKey)}
-                sectionKey={key}
-                renderKey={itemsRenderKey}
-                inheritedSurfaceTone={surfaceTone ?? undefined}
-                inheritedSurfaceBand={
-                  typeof surfaceBand === "string"
-                    ? surfaceBand
-                    : surfaceBand
-                      ? String((surfaceBand as { id?: string }).id || "")
-                      : undefined
-                }
-                pageTheme={
-                  (pageContext?.pageTheme as Record<string, unknown> | undefined) ||
-                  pageContext ||
-                  undefined
-                }
-                pageSurfaceMode={String(pageContext?.surface_mode || "")}
-                pageInk={String(pageContext?.ink || "")}
-                saving={saving}
-                onSubmit={saveField}
-                onCancel={closeDrawer}
-                saveLabel={saveLabel}
-              />
             ) : (
               <>
                 <p className="m-0 text-xs text-slate-500">{meta.hint}</p>
@@ -516,36 +433,6 @@ export default function CmsSectionLiveEditor({
                     renderKey={itemsRenderKey}
                     errorsByKey={itemFieldErrors}
                   />
-                ) : meta.input === "bg_color" ? (
-                  <form onSubmit={saveField} className="space-y-3">
-                    <div>
-                      <span className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-200">
-                        {meta.label}
-                      </span>
-                      <CmsBgColorPicker
-                        value={fieldValueState}
-                        onChange={setFieldValueState}
-                        variant="theme"
-                        defaultLabel="Default"
-                      />
-                    </div>
-                    <div className="flex gap-2">
-                      <button
-                        type="submit"
-                        disabled={saving}
-                        className="inline-flex items-center rounded-lg border-0 bg-brand px-3 py-2 text-sm font-semibold text-white hover:bg-brand-hover disabled:opacity-60"
-                      >
-                        {saving ? "Saving…" : saveLabel}
-                      </button>
-                      <button
-                        type="button"
-                        onClick={closeDrawer}
-                        className="inline-flex items-center rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  </form>
                 ) : (
                   <form onSubmit={saveField} className="space-y-3">
                     <div className="block text-sm">

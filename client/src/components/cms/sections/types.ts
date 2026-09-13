@@ -1,4 +1,4 @@
-import type { FormEvent, MouseEvent, ReactNode } from "react";
+import type { MouseEvent, ReactNode } from "react";
 import type { ButtonDraft, SectionItemDraft } from "@/components/cms/editors/types";
 import type { PagePlacement, SectionCatalogEntry } from "@/components/cms/pages/types";
 
@@ -89,34 +89,6 @@ export type CmsSectionToolbarProps = {
   ) => void;
   onToggleVisibility?: (section: PagePlacement | Record<string, unknown>) => void;
   onRemoveExtra?: (section: PagePlacement | Record<string, unknown>) => void;
-};
-
-export type BandDraft = {
-  bgImg?: string;
-  bgColor?: string;
-  theme?: string;
-  [key: string]: unknown;
-};
-
-export type CmsSectionBandEditorProps = {
-  draft: BandDraft;
-  onChange: (next: BandDraft) => void;
-  showBgImage?: boolean;
-  showBgColor?: boolean;
-  showTheme?: boolean;
-  sectionKey?: string;
-  renderKey?: string;
-  bgFieldsLocked?: boolean;
-  bgLockedMessage?: string;
-  inheritedSurfaceTone?: string;
-  inheritedSurfaceBand?: string;
-  pageTheme?: Record<string, unknown>;
-  pageSurfaceMode?: string;
-  pageInk?: string;
-  saving?: boolean;
-  onSubmit: (e: FormEvent) => void;
-  onCancel: () => void;
-  saveLabel?: string;
 };
 
 export type FilterOptionProps = {

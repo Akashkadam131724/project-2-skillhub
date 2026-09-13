@@ -49,7 +49,7 @@ export default function VendorLinksGridUi({
       sectionTheme={dark ? "dark" : undefined}
       className={sectionClassNames(dark ? "bg-ink text-white" : "", className)}
       sectionStyle={dark ? { backgroundColor: "var(--ink)" } : undefined}
-      decor={<VendorLinksGridBandDecor darkBand={dark} />}
+      decor={<VendorLinksGridBandDecor />}
       hasBodyContent
     >
       <div className="flex flex-col gap-8 lg:flex-row lg:gap-12">

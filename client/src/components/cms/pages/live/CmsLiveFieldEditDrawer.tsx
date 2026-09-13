@@ -1,10 +1,9 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Drawer from "@/components/ui/Drawer";
 import { SectionPreviewThumb, inputClass } from "@/components/cms/admin/CmsUi";
-import CmsSectionBandEditor from "@/components/cms/sections/CmsSectionBandEditor";
 import CmsButtonsEditor, {
   normalizeButtonsDraft,
   serializeButtonsDraft,
@@ -22,16 +21,8 @@ import {
   lockedContentMessage,
   normalizeContentScope,
 } from "@/lib/cms/content-scope";
-import {
-  getSectionItemsConfig,
-  sectionUsesBg,
-  sectionUsesBgColor,
-} from "@/lib/sections/section-registry";
+import { getSectionItemsConfig } from "@/lib/sections/section-registry";
 import { itemsConfigRenderKey } from "@/lib/sections/section-render-key";
-import { sectionSupportsBandTheme } from "@/lib/sections/section-theme";
-import { bandDraftFromSection } from "@/lib/sections/section-band-cms";
-import { saveSectionBandForPlacement, type SavePlacementFn } from "@/lib/sections/placement-save";
-import { placementKey } from "@/lib/sections/page-sections-stack";
 import { mediaUrl, uploadCmsImage } from "@/lib/api/cms-api";
 import { sanitizeRichHtml } from "@/lib/utils/rich-text";
 import {
@@ -42,17 +33,15 @@ import {
 import { useCmsLiveEdit } from "@/context/CmsLiveEditContext";
 import { useCmsLivePagePlacements } from "@/context/CmsLivePlacementsContext";
 import type { ButtonDraft, SectionItemDraft } from "@/components/cms/editors/types";
-import type { BandDraft } from "@/components/cms/sections/types";
 import type { FieldMetaKey } from "../types";
 
 /**
- * Field / band edit drawer — owns drafts and save UI for one placement field.
+ * Field edit drawer — owns drafts and save UI for one placement field.
  */
 export default function CmsLiveFieldEditDrawer() {
-  const { pageKey, entityId, pageTheme } = useCmsLiveEdit();
+  const { pageKey } = useCmsLiveEdit();
   const {
     catalog,
-    visibleWithSurface = [],
     editing,
     fieldDrawerOpen: open,
     closeFieldEdit: onClose,
@@ -66,7 +55,6 @@ export default function CmsLiveFieldEditDrawer() {
   const itemsDraftRef = useRef(itemsDraft);
   buttonsDraftRef.current = buttonsDraft;
   itemsDraftRef.current = itemsDraft;
-  const [bandDraft, setBandDraft] = useState(() => bandDraftFromSection(null));
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [itemFieldErrors, setItemFieldErrors] = useState<Record<
@@ -90,25 +78,8 @@ export default function CmsLiveFieldEditDrawer() {
       : meta?.label || "Edit"
     : "Edit";
 
-  const bandEditorPlacement = useMemo(() => {
-    if (!editing?.section) {
-      return {
-        inheritedSurfaceTone: undefined,
-        inheritedSurfaceBand: undefined,
-      };
-    }
-    const row = visibleWithSurface.find(
-      ({ section }) => placementKey(section) === placementKey(editing.section)
-    );
-    return {
-      inheritedSurfaceTone: row?.surfaceTone,
-      inheritedSurfaceBand: row?.surfaceBand,
-    };
-  }, [editing, visibleWithSurface]);
-
   useEffect(() => {
     if (!editing?.section || !editing?.field) {
-      setBandDraft(bandDraftFromSection(null));
       setButtonsDraft([]);
       setItemsDraft([]);
       setFieldValueState("");
@@ -117,12 +88,7 @@ export default function CmsLiveFieldEditDrawer() {
       return;
     }
     const { section, field } = editing;
-    if (field === "section_band") {
-      setBandDraft(bandDraftFromSection(section));
-      setButtonsDraft([]);
-      setItemsDraft([]);
-      setFieldValueState("");
-    } else if (field === "buttons") {
+    if (field === "buttons") {
       setButtonsDraft(normalizeButtonsDraft(section.buttons));
       setItemsDraft([]);
       setFieldValueState("");
@@ -199,17 +165,6 @@ export default function CmsLiveFieldEditDrawer() {
         await savePlacement(section, {
           data: { ...(section.data || {}), content_side: side },
         });
-      } else if (field === "section_band") {
-        const result = await saveSectionBandForPlacement(section, {
-          draft: bandDraft,
-          savePlacement: savePlacement as SavePlacementFn,
-          contentLocked: pageContentLocked,
-          pageKey,
-          entityId,
-        });
-        await onSaved?.(result);
-        onClose();
-        return;
       } else {
         const value = fieldValueState.trim();
         await savePlacement(section, {
@@ -296,41 +251,6 @@ export default function CmsLiveFieldEditDrawer() {
                 level →
               </Link>
             </div>
-          ) : meta.input === "section_band" ? (
-            <CmsSectionBandEditor
-              draft={bandDraft}
-              onChange={(next: BandDraft) =>
-                setBandDraft({
-                  bgImg: String(next.bgImg ?? bandDraft.bgImg ?? ""),
-                  bgColor: String(next.bgColor ?? bandDraft.bgColor ?? ""),
-                  theme: String(next.theme ?? bandDraft.theme ?? ""),
-                })
-              }
-              showBgImage={sectionUsesBg(String(editing.section.section_key || ""))}
-              showBgColor={sectionUsesBgColor(String(editing.section.section_key || ""))}
-              showTheme={sectionSupportsBandTheme(
-                String(editing.section.section_key || ""),
-                itemsConfigRenderKey(editing.section)
-              )}
-              sectionKey={String(editing.section.section_key || "")}
-              renderKey={itemsConfigRenderKey(editing.section)}
-              inheritedSurfaceTone={
-                bandEditorPlacement.inheritedSurfaceTone != null
-                  ? String(bandEditorPlacement.inheritedSurfaceTone)
-                  : undefined
-              }
-              inheritedSurfaceBand={
-                bandEditorPlacement.inheritedSurfaceBand != null
-                  ? String(bandEditorPlacement.inheritedSurfaceBand)
-                  : undefined
-              }
-              pageTheme={pageTheme}
-              pageSurfaceMode={String(pageTheme?.surface_mode || "")}
-              pageInk={String(pageTheme?.ink || "")}
-              saving={saving}
-              onSubmit={saveField}
-              onCancel={onClose}
-            />
           ) : (
             <>
               <p className="m-0 text-xs text-slate-500">{meta.hint}</p>

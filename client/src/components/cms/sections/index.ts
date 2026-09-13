@@ -6,7 +6,6 @@ export {
   sectionDocToLiveProps,
   templatePlacementToLiveProps,
 } from "./CmsSectionLiveEditor";
-export { default as CmsSectionBandEditor } from "./CmsSectionBandEditor";
 export { default as CmsSectionToolbar } from "./CmsSectionToolbar";
 export { default as ContentPageSectionBuilder } from "./ContentPageSectionBuilder";
 export { default as LazySectionBody } from "./LazySectionBody";
@@ -33,13 +32,11 @@ export {
   sectionScope,
 } from "./CmsSectionFilters";
 export type {
-  BandDraft,
   BuildSectionCompPropsArgs,
   CmsButtonsManageBarProps,
   CmsFieldMeta,
   CmsPagePreviewItem,
   CmsPagePreviewStackProps,
-  CmsSectionBandEditorProps,
   CmsSectionLiveEditorProps,
   CmsSectionToolbarProps,
   ContentPageSectionBuilderProps,

@@ -3,7 +3,7 @@
  *
  * ## Layers (outside → in)
  * 1. **Page stack** — `SectionSurface` (CMS) sets band background + `data-section-theme="light"|"dark"`.
- * 2. **Band content** — transparent `SectionBand` / `section-band-shell`; copy uses `DS.text.*`.
+ * 2. **Band content** — section layout shell; copy uses `DS.text.*`.
  * 3. **Light island** — `SectionLightCard` / `data-section-surface="light-card"` resets all
  *    `--card-*`, `--field-*`, and `--ds-btn-*` tokens so white cards/forms look identical on any band.
  *

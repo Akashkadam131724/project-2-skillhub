@@ -1,18 +1,7 @@
-import { SectionBrandGlow } from "@/components/sections/shared/design";
 import { VENDOR_LINKS_GRID_DARK_GRADIENT_STYLE } from "./lib/band";
 
-type VendorLinksGridBandDecorProps = {
-  darkBand?: boolean;
-};
-
-/** Theme-aware atmosphere — full ink→brand gradient on dark bands, brand glow on light. */
-export default function VendorLinksGridBandDecor({
-  darkBand = true,
-}: VendorLinksGridBandDecorProps) {
-  if (!darkBand) {
-    return <SectionBrandGlow />;
-  }
-
+/** Full-bleed ink→brand atmosphere for the dark vendor grid. */
+export default function VendorLinksGridBandDecor() {
   return (
     <div
       className="pointer-events-none absolute inset-0 overflow-hidden"
