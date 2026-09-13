@@ -31,10 +31,8 @@ const IMG_SRC_IN_HTML = /<img\b[^>]*\bsrc=["']([^"']+)["']/gi;
 const IMAGE_FIELD_KEYS = new Set([
   "image_url",
   "icon",
-  "section_bg_img",
   "section_img_url",
   "section_preview_img",
-  "page_bg_img",
   "logo_url",
   "avatar_url",
   "thumbnail",

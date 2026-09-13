@@ -22,8 +22,6 @@ export default function FaqTwoColumnSection({
   button_title,
   target_url,
   onFormOpen,
-  sectionTheme,
-  section_theme,
   surfaceTone,
   surfaceBand,
   id,
@@ -31,8 +29,6 @@ export default function FaqTwoColumnSection({
   const items = resolveFaqUiItems(section_key, mappingItems, { cmsMode: true });
   const headerSide = normalizeFaqHeaderSide(data);
   const darkBand = faqDarkBand({
-    section_theme,
-    sectionTheme,
     surfaceTone,
     surfaceBand,
   });

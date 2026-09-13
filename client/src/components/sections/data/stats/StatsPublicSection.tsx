@@ -13,8 +13,6 @@ export default function StatsPublicSection({
   sub_title,
   items: mappingItems,
   section_key = "stats",
-  section_theme,
-  sectionTheme,
   surfaceTone,
   surfaceBand,
   buttons,
@@ -45,7 +43,6 @@ export default function StatsPublicSection({
 
   const onDarkBand = isPlacementDarkBand({
     section_key,
-    section_theme: section_theme ?? sectionTheme,
     surfaceTone,
     surfaceBand,
   });

@@ -12,8 +12,6 @@ export default function PricingTiersSection({
   sub_title,
   items: mappingItems,
   section_key = "pricing_tiers",
-  section_theme,
-  sectionTheme,
   surfaceTone,
   surfaceBand,
   onEditField,
@@ -28,7 +26,6 @@ export default function PricingTiersSection({
   });
   const onDarkBand = isPlacementDarkBand({
     section_key,
-    section_theme: section_theme ?? sectionTheme,
     surfaceTone,
     surfaceBand,
   });

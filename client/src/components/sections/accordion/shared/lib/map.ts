@@ -43,8 +43,6 @@ export function faqDarkBand(props: {
   sectionKey?: unknown;
   render_key?: unknown;
   renderKey?: unknown;
-  section_theme?: unknown;
-  sectionTheme?: unknown;
   surfaceTone?: unknown;
   surfaceBand?: unknown;
 }): boolean {

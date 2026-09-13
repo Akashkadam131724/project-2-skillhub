@@ -101,7 +101,7 @@ const collection = {
     _postman_id: "c4e8a2b1-9f3d-4c70-8e1a-6d5b7a0f2e91",
     name: "SkillHub API",
     description:
-      "SkillHub backend — catalog (vendors, products, courses, taxonomies), CMS (pages, sections, placements, themes), navigation, blogs, search, uploads.\n\nAlso available as Swagger UI at `{{baseUrl}}/api-docs`.\n\nNo auth on local API. Use the Local environment or collection `baseUrl` (default http://127.0.0.1:3000).",
+      "SkillHub backend — catalog (vendors, products, courses, taxonomies), CMS (pages, sections, placements, themes), navigation, blogs, search, uploads.\n\nThemes accept **Colors** (`brand_primary`, `brand_hover`, `ink`) + **Surface** (`surface_mode` / `surface_pattern`) only.\n\nAlso available as Swagger UI at `{{baseUrl}}/api-docs`.\n\nNo auth on local API. Use the Local environment or collection `baseUrl` (default http://127.0.0.1:3000).",
     schema: "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
   },
   variable: [
@@ -362,7 +362,10 @@ const collection = {
       }),
     ]),
 
-    folder("Sections", "CMS section catalog + page tags", [
+    folder(
+      "Sections",
+      "CMS section catalog + page tags. Content fields only (title, subtitle, image, buttons, items, data).",
+      [
       req("List sections", "GET", "/sections", {
         query: "status=&content_scope=&q=",
       }),
@@ -376,6 +379,8 @@ const collection = {
           sub_title: "Demo subtitle",
           data: { body: "<p>Demo body</p>" },
         },
+        description:
+          "Create catalog section (key, name, content fields).",
         test: saveKey("sectionKey"),
       }),
       req("Get by key", "GET", "/sections/{{sectionKey}}"),
@@ -384,6 +389,8 @@ const collection = {
           section_title: "Updated demo title",
           data: { body: "<p>Updated body</p>" },
         },
+        description:
+          "Editable content fields only. Retired band fields are cleared server-side.",
       }),
       req("Set status", "PATCH", "/sections/{{sectionKey}}/status", {
         body: { status: true },
@@ -444,7 +451,15 @@ const collection = {
       }),
       req("Get page by key", "GET", "/pages/{{pageKey}}"),
       req("Update page", "PUT", "/pages/{{pageKey}}", {
-        body: { name: "Updated Postman Demo Page" },
+        body: {
+          name: "Updated Postman Demo Page",
+          theme: {
+            brand_primary: "#1d4ed8",
+            surface_mode: "alternating",
+          },
+        },
+        description:
+          "Optional `theme` patch uses Colors + Surface keys only.",
       }),
       req("Set page status", "PATCH", "/pages/{{pageKey}}/status", {
         body: { status: true },
@@ -454,7 +469,7 @@ const collection = {
 
     folder(
       "Page Sections",
-      "Template tags + EntityPageSection overrides/extras",
+      "Template tags + EntityPageSection overrides/extras. Band bg/theme fields are not writable.",
       [
         req("List page sections", "GET", "/page-sections", {
           query: "page_key={{pageKey}}",
@@ -502,19 +517,27 @@ const collection = {
       ]
     ),
 
-    folder("Site Theme", "Global theme document (key=default)", [
+    folder(
+      "Site Theme",
+      "Global theme (key=default). Accepts Colors + Surface only.",
+      [
       req("Get site theme", "GET", "/site-theme"),
       req("Update site theme", "PUT", "/site-theme", {
         body: {
-          brand: "#1d4ed8",
+          brand_primary: "#1d4ed8",
+          brand_hover: "#1e40af",
           ink: "#0b1f4d",
           surface_mode: "alternating",
         },
-        description: "Sends a patch of theme fields; empty body returns 400.",
+        description:
+          "Patch theme fields: preset, brand_primary, brand_hover, ink, surface_mode, surface_pattern. Empty body → 400.",
       }),
     ]),
 
-    folder("Entity Page Theme", "Per-entity theme override for a page_key", [
+    folder(
+      "Entity Page Theme",
+      "Per-entity theme override for a page_key (Colors + Surface; no page background).",
+      [
       req("Get entity page theme", "GET", "/entity-page-theme", {
         query: "page_key={{pageKey}}&entity_id={{entityId}}",
       }),
@@ -522,8 +545,13 @@ const collection = {
         body: {
           page_key: "{{pageKey}}",
           entity_id: "{{entityId}}",
-          brand: "#0ea5e9",
+          theme: {
+            brand_primary: "#0ea5e9",
+            ink: "#0c4a6e",
+          },
         },
+        description:
+          "Upsert entity theme override. Nested `theme` uses the same field keys as site theme.",
       }),
       req("Delete entity page theme", "DELETE", "/entity-page-theme", {
         query: "page_key={{pageKey}}&entity_id={{entityId}}",

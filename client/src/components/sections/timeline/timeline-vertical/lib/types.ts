@@ -30,8 +30,6 @@ export type TimelineVerticalSectionProps = {
   in_page_nav_title?: string;
   items?: unknown[];
   section_key?: string;
-  section_theme?: unknown;
-  sectionTheme?: unknown;
   surfaceTone?: unknown;
   surfaceBand?: unknown;
   cmsMode?: boolean;

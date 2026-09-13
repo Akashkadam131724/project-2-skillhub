@@ -11,7 +11,6 @@ export function mergePlacementData(...layers: unknown[]) {
       }
     }
   }
-  delete out.section_theme;
   return out;
 }
 

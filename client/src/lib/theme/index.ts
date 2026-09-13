@@ -208,7 +208,7 @@ export function themeCssVars(theme: unknown) {
   return vars;
 }
 
-/** Inline page background — page_bg_* retired; solid surface pattern only. */
+/** Inline page background from solid surface pattern. */
 export function pageBgStyle(theme: unknown) {
   const t = applyPresetFill({
     ...defaultSiteTheme(),

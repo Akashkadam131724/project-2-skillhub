@@ -608,7 +608,6 @@ const PLACEMENTS = [
     section_title: "See it on the biggest screen you can find",
     sub_title:
       "The Odyssey opens everywhere July 17, 2026 — including IMAX theaters worldwide.",
-    section_bg_img: STILL.epic,
     section_img_url: STILL.poster,
     buttons: [
       btn("Get tickets", {
@@ -695,8 +694,6 @@ async function replaceExtras(pageKey, entityId, placements, sectionByKey) {
       section_title: p.section_title ?? null,
       sub_title: p.sub_title ?? null,
       in_page_nav_title: p.in_page_nav_title ?? null,
-      section_bg_img: p.section_bg_img ?? null,
-      section_bg_color: p.section_bg_color ?? null,
       section_img_url: p.section_img_url ?? null,
       data: p.data ?? null,
       buttons: Array.isArray(p.buttons) ? p.buttons : undefined,

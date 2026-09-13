@@ -15,8 +15,6 @@ export default function FaqSection({
   sub_title,
   items: mappingItems,
   section_key = "faq",
-  sectionTheme,
-  section_theme,
   surfaceTone,
   surfaceBand,
   onEditField,
@@ -28,8 +26,6 @@ export default function FaqSection({
 }: FaqSectionProps) {
   const items = resolveFaqUiItems(section_key, mappingItems, { cmsMode: true });
   const darkBand = faqDarkBand({
-    section_theme,
-    sectionTheme,
     surfaceTone,
     surfaceBand,
   });

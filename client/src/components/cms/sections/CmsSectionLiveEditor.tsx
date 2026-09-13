@@ -182,15 +182,6 @@ export default function CmsSectionLiveEditor({
       : `Edit ${meta?.label || "field"} · ${key}`;
 
   function openFieldEdit(field: string) {
-    // Per-section band / bg editors retired — Theme → Colors/Surface.
-    if (
-      field === "section_bg_img" ||
-      field === "section_bg_color" ||
-      field === "section_theme" ||
-      field === "section_band"
-    ) {
-      return;
-    }
     if (!CMS_FIELD_META[field]) return;
     if (field === "items" && !sectionUsesItems(key, itemsRenderKey)) return;
     if (field === "section_img_url" && !sectionUsesImage(key, renderKey)) return;
@@ -328,11 +319,6 @@ export default function CmsSectionLiveEditor({
         ) : (
           <SectionSurface
             sectionKey={key || String(_catalogKey || "")}
-            section_bg_color={String(liveSection.section_bg_color || "")}
-            section_bg_img={String(liveSection.section_bg_img || "")}
-            legacy_bg_color={String(
-              (liveSection.data as { bg_color?: string } | undefined)?.bg_color || ""
-            )}
             surfaceTone={surfaceTone}
             surfaceBand={
               surfaceBand as {
@@ -340,7 +326,6 @@ export default function CmsSectionLiveEditor({
                 theme?: "light" | "dark";
               } | null
             }
-            sectionTheme={sectionTheme}
             pageTheme={
               (pageContext?.pageTheme as Record<string, unknown> | undefined) ||
               pageContext ||
@@ -575,7 +560,6 @@ export function sectionDocToLiveProps(doc: Record<string, unknown> | null) {
     buttons: Array.isArray(doc.buttons) ? doc.buttons : [],
     items: Array.isArray(doc.items) ? doc.items : [],
     data: doc.data || {},
-    section_theme: doc.section_theme ?? "",
     status: doc.status !== false,
     content_scope: normalizeContentScope(doc.content_scope),
   };
@@ -630,10 +614,7 @@ export function templatePlacementToLiveProps(
     section_title: pick("section_title"),
     sub_title: pick("sub_title"),
     in_page_nav_title: pick("in_page_nav_title"),
-    section_bg_img: pick("section_bg_img"),
-    section_bg_color: pick("section_bg_color"),
     section_img_url: pick("section_img_url"),
-    section_theme: pick("section_theme"),
     section_preview_img: String(base.section_preview_img || ""),
     buttons: pickArr("buttons"),
     items: pickArr("items"),

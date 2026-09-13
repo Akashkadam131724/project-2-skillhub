@@ -4,9 +4,8 @@ import { defineSectionBlueprint } from "@/lib/sections/blueprint";
 export const VENDOR_LINK_GRID_BLUEPRINT = defineSectionBlueprint({
   key: "vendor_link_grid",
   archetype: "hybrid",
-  band: "page-alt",
+  band: "fixed-dark",
   staticFallback: true,
-  inheritDarkBand: true,
   catalog: {
     name: "Vendor Link Grid",
     category: "content",

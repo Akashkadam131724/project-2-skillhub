@@ -1,42 +1,31 @@
 /**
  * Section theme — barrel re-export for backward-compatible imports.
  *
- * Static key lists: `./theme/section-theme.data.js`
- * Runtime helpers:  `./theme/section-theme.runtime.js`
+ * Static key lists: `./theme/section-theme.data.ts`
+ * Runtime helpers:  `./theme/section-theme.runtime.ts`
  */
 
 export {
-  SECTION_THEME_VALUES,
-  SECTION_THEME_OPTIONS,
   SECTION_DARK_BG_KEYS,
   SECTION_THEME_BAND_SKIP_KEYS,
   SECTION_FIXED_BAND_THEME_KEYS,
   SECTION_FIXED_DARK_BAND_KEYS,
   SECTION_FIXED_LIGHT_BAND_KEYS,
   SECTION_OWN_BAND_KEYS,
-  SECTION_INHERIT_DARK_BAND_KEYS,
   SECTION_ALTERNATION_SKIP_KEYS,
 } from "./theme/section-theme.data";
 
+export type { SectionThemeToken } from "./theme/section-theme.runtime";
+
 export {
   isPageSurfaceTransparent,
-  parseSectionThemeRaw,
-  sectionThemeUiValue,
-  normalizeSectionTheme,
-  getRegistryDefaultBandTheme,
-  resolveEffectiveSectionTheme,
+  parseSectionThemeToken,
   surfaceToneForSectionTheme,
-  isSectionThemeLightBand,
-  isSectionThemeDarkBand,
   isSurfaceToneDark,
   isSectionDarkBgKey,
   isPlacementDarkBand,
-  sectionSoftLightGradientClass,
-  sectionThemeFromProps,
   sectionThemeDataAttribute,
   sectionThemeBandClass,
-  sectionSupportsBandTheme,
-  sectionFixedBandThemeHint,
   sectionSkipsInheritedBandPaint,
   placementAdvancesAlternationIndex,
   computePlacementSurface,

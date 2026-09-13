@@ -17,6 +17,11 @@ Postman collection for the SkillHub backend (same style as `project-1-storage-ap
 3. Pick environment **SkillHub — Local**
 4. Start the API: `cd server && npm run dev` (default port **3000**)
 
+## Theme & section notes
+
+- **Site / page theme** accepts **Colors** (`brand_primary`, `brand_hover`, `ink`) and **Surface** (`surface_mode` / `surface_pattern`) only.
+- Dark / full-bleed sections are owned by section code, not CMS fields.
+
 ## Also available
 
 Swagger UI (authored OpenAPI YAML under `server/src/docs/`):

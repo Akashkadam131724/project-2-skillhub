@@ -57,7 +57,6 @@ function buildSectionDoc(s, pageByKey, catMap) {
         section_title: t.section_title ?? null,
         sub_title: t.sub_title ?? null,
         in_page_nav_title: t.in_page_nav_title ?? null,
-        section_bg_img: t.section_bg_img ?? null,
         section_img_url: t.section_img_url ?? null,
         data: t.data ?? null,
         status: t.status !== false,

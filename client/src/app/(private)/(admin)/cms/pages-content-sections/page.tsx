@@ -391,14 +391,9 @@ export default function CmsSectionsPage() {
 
       if (variantCopyContent) {
         if (repairedBase.sub_title) body.sub_title = repairedBase.sub_title;
-        if (repairedBase.section_bg_img) body.section_bg_img = repairedBase.section_bg_img;
-        if (repairedBase.section_bg_color) {
-          body.section_bg_color = repairedBase.section_bg_color;
-        }
         if (repairedBase.section_img_url) {
           body.section_img_url = repairedBase.section_img_url;
         }
-        if (repairedBase.section_theme) body.section_theme = repairedBase.section_theme;
         if (repairedBase.section_preview_img) {
           body.section_preview_img = repairedBase.section_preview_img;
         }

@@ -4,7 +4,6 @@ export type SectionCmsToolbarCapabilities = {
   navTitle: boolean;
   /** `auto` resolves via sectionUsesImage at runtime */
   sectionImage: boolean | "auto";
-  sectionBand: boolean;
   visibility: boolean;
   removeExtra: boolean;
 };

@@ -14,8 +14,6 @@ export default function VendorLinksGridPublicSection({
   data,
   items: mappingItems,
   section_key = "vendor_link_grid",
-  section_theme,
-  sectionTheme,
   surfaceTone,
   surfaceBand,
   buttons,
@@ -40,7 +38,6 @@ export default function VendorLinksGridPublicSection({
 
   const onDarkBand = isPlacementDarkBand({
     section_key,
-    section_theme: section_theme ?? sectionTheme,
     surfaceTone,
     surfaceBand,
   });

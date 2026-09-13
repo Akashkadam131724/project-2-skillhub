@@ -335,9 +335,6 @@ SectionPageTag:
     in_page_nav_title:
       type: string
       nullable: true
-    section_bg_img:
-      type: string
-      nullable: true
     section_img_url:
       type: string
       nullable: true
@@ -376,8 +373,6 @@ Section:
     button_title:
       type: string
     target_url:
-      type: string
-    section_bg_img:
       type: string
     section_img_url:
       type: string
@@ -428,9 +423,6 @@ EntityPageSection:
       type: string
       nullable: true
     in_page_nav_title:
-      type: string
-      nullable: true
-    section_bg_img:
       type: string
       nullable: true
     section_img_url:

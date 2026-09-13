@@ -872,7 +872,6 @@ export const CONTENT_KEYS = [
   "section_title",
   "sub_title",
   "in_page_nav_title",
-  "section_bg_img",
   "section_img_url",
   "data",
   "buttons",

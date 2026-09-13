@@ -40,8 +40,6 @@ export default function HeroStatsPublicSection({
   buttons,
   button_title,
   target_url,
-  section_theme,
-  sectionTheme,
   surfaceTone,
   surfaceBand,
   onFormOpen,
@@ -68,8 +66,6 @@ export default function HeroStatsPublicSection({
       title={section_title}
       subtitle={sub_title}
       stats={stats}
-      section_theme={section_theme}
-      sectionTheme={sectionTheme}
       surfaceTone={surfaceTone}
       surfaceBand={surfaceBand}
       footer={heroLayoutPublicFooter(props, {

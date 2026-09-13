@@ -6,7 +6,6 @@ export const VENDOR_LINKS_GRID_CMS_CAPABILITIES = {
   toolbar: {
     navTitle: false,
     sectionImage: false,
-    sectionBand: false,
     visibility: true,
     removeExtra: true,
   },

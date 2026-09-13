@@ -645,8 +645,6 @@ function applyHomeTag(section, homePage, placement) {
     sub_title: placement.sub_title ?? "",
     in_page_nav_title: placement.in_page_nav_title ?? "",
     section_img_url: placement.section_img_url ?? "",
-    section_bg_img: placement.section_bg_img ?? "",
-    section_bg_color: placement.section_bg_color ?? null,
     data: placement.data ?? {},
     buttons: placement.buttons ?? [],
     items: placement.items ?? [],

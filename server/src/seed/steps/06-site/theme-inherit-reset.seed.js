@@ -4,57 +4,80 @@ import Page from "../../../modules/cms/page.model.js";
 import Section from "../../../modules/cms/section.model.js";
 import EntityPageSection from "../../../modules/cms/entity-page-section.model.js";
 import EntityPageTheme from "../../../modules/cms/entity-page-theme.model.js";
-import { emptyPageTheme } from "../../../modules/cms/theme.utils.js";
+import SiteTheme from "../../../modules/cms/site-theme.model.js";
 
 /**
- * Clear per-page / per-entity theme overrides so live pages inherit SiteTheme only.
- * Clears section band theme overrides (catalog, tag, entity) → inherit site surface_mode.
+ * One-shot purge of retired page backgrounds and section band fields.
  *
  * Usage: npm run seed:theme-inherit-reset
  */
 async function seed() {
   await connectDB();
 
-  const themeDelete = await EntityPageTheme.deleteMany({});
-  console.log(`Removed ${themeDelete.deletedCount} entity page theme row(s)`);
+  const sectionKeys = [
+    "section_bg_img",
+    "section_bg_color",
+    "section_theme",
+  ];
+  const pageThemeKeys = ["page_bg_color", "page_bg_img"];
 
-  const emptyTheme = emptyPageTheme();
-  const pageReset = await Page.updateMany({}, { $set: { theme: emptyTheme } });
-  console.log(`Reset template theme on ${pageReset.modifiedCount} page(s)`);
+  const pageUnset = Object.fromEntries(
+    pageThemeKeys.map((key) => [`theme.${key}`, ""])
+  );
+  const pageReset = await Page.collection.updateMany({}, { $unset: pageUnset });
+  console.log(
+    `Purged retired page theme fields from ${pageReset.modifiedCount} page(s)`
+  );
 
-  const catalogReset = await Section.updateMany(
-    { section_theme: { $nin: ["", null] } },
-    { $set: { section_theme: "" } }
+  const siteThemeUnset = Object.fromEntries(
+    pageThemeKeys.map((key) => [key, ""])
+  );
+  const siteThemeReset = await SiteTheme.collection.updateMany(
+    {},
+    { $unset: siteThemeUnset }
   );
   console.log(
-    `Cleared catalog section_theme on ${catalogReset.modifiedCount} section(s)`
+    `Purged retired page theme fields from ${siteThemeReset.modifiedCount} site theme(s)`
   );
 
-  let tagsCleared = 0;
-  const tagCursor = Section.find({
-    pages: { $elemMatch: { section_theme: { $nin: ["", null] } } },
-  });
-  for await (const doc of tagCursor) {
-    let dirty = false;
-    for (const tag of doc.pages || []) {
-      if (String(tag.section_theme || "").trim()) {
-        tag.section_theme = "";
-        dirty = true;
-        tagsCleared += 1;
-      }
-    }
-    if (dirty) await doc.save();
-  }
-  if (tagsCleared) {
-    console.log(`Cleared section_theme on ${tagsCleared} page tag(s)`);
-  }
-
-  const epsReset = await EntityPageSection.updateMany(
-    { section_theme: { $nin: ["", null] } },
-    { $set: { section_theme: null } }
+  const entityThemeUnset = Object.fromEntries(
+    pageThemeKeys.map((key) => [`theme.${key}`, ""])
+  );
+  const entityThemeReset = await EntityPageTheme.collection.updateMany(
+    {},
+    { $unset: entityThemeUnset }
   );
   console.log(
-    `Cleared entity section_theme on ${epsReset.modifiedCount} placement(s)`
+    `Purged retired page theme fields from ${entityThemeReset.modifiedCount} entity theme(s)`
+  );
+
+  const catalogUnset = Object.fromEntries(sectionKeys.map((key) => [key, ""]));
+  const catalogReset = await Section.collection.updateMany(
+    {},
+    { $unset: catalogUnset }
+  );
+  console.log(
+    `Purged retired band fields from ${catalogReset.modifiedCount} catalog section(s)`
+  );
+
+  const tagUnset = Object.fromEntries(
+    sectionKeys.map((key) => [`pages.$[].${key}`, ""])
+  );
+  const tagReset = await Section.collection.updateMany(
+    { "pages.0": { $exists: true } },
+    { $unset: tagUnset }
+  );
+  console.log(
+    `Purged retired band fields from ${tagReset.modifiedCount} tagged section document(s)`
+  );
+
+  const entityUnset = Object.fromEntries(sectionKeys.map((key) => [key, ""]));
+  const epsReset = await EntityPageSection.collection.updateMany(
+    {},
+    { $unset: entityUnset }
+  );
+  console.log(
+    `Purged retired band fields from ${epsReset.modifiedCount} entity placement(s)`
   );
 
   await mongoose.disconnect();

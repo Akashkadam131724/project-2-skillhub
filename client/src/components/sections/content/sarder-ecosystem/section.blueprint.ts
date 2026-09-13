@@ -1,6 +1,6 @@
 import { defineSectionBlueprint } from "@/lib/sections/blueprint";
 
-/** Full CMS — nested groups + logo rows; section band hidden. */
+/** Full CMS — nested groups + logo rows. */
 export const SARDER_ECOSYSTEM_BLUEPRINT = defineSectionBlueprint({
   key: "sarder_ecosystem",
   archetype: "hybrid",
@@ -14,7 +14,6 @@ export const SARDER_ECOSYSTEM_BLUEPRINT = defineSectionBlueprint({
   },
   cms: {
     toolbar: {
-      sectionBand: false,
       sectionImage: true,
     },
     fields: {

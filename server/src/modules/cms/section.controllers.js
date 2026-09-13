@@ -9,6 +9,20 @@ import {
 } from "./section-category.utils.js";
 import { formatMongooseError } from "../../utils/formatMongooseError.js";
 
+const RETIRED_INPUT_FIELDS = [
+  "section_bg_img",
+  "section_bg_color",
+  "section_theme",
+];
+
+function dropRetiredInputFields(body) {
+  if (!body || typeof body !== "object") return;
+  for (const key of RETIRED_INPUT_FIELDS) {
+    delete body[key];
+    if (body.data && typeof body.data === "object") delete body.data[key];
+  }
+}
+
 async function applyCategoryFromBody(rest) {
   const categoryKey =
     rest.category_key ||
@@ -25,6 +39,7 @@ async function applyCategoryFromBody(rest) {
 
 export const createSection = async (req, res) => {
   try {
+    dropRetiredInputFields(req.body);
     const { pages: pageTags, ...rest } = req.body;
 
     await applyCategoryFromBody(rest);
@@ -33,6 +48,7 @@ export const createSection = async (req, res) => {
 
     if (Array.isArray(pageTags) && pageTags.length) {
       for (const tag of pageTags) {
+        dropRetiredInputFields(tag);
         const page = await Page.findByKey(tag.page_key);
         if (!page) {
           return res.status(404).json({
@@ -46,11 +62,8 @@ export const createSection = async (req, res) => {
           sort_order: tag.sort_order ?? 0,
           section_title: tag.section_title ?? null,
           sub_title: tag.sub_title ?? null,
-          section_bg_img: tag.section_bg_img ?? null,
-          section_bg_color: tag.section_bg_color ?? null,
           in_page_nav_title: tag.in_page_nav_title ?? null,
           section_img_url: tag.section_img_url ?? null,
-          section_theme: tag.section_theme ?? null,
           data: tag.data ?? null,
           status: tag.status !== false,
         };
@@ -148,6 +161,7 @@ export const getSectionByKey = async (req, res) => {
 
 export const updateSection = async (req, res) => {
   try {
+    dropRetiredInputFields(req.body);
     // key / pages are code-bound — only content + display fields may change
     const allowed = [
       "name",
@@ -172,10 +186,6 @@ export const updateSection = async (req, res) => {
     for (const field of allowed) {
       if (req.body[field] !== undefined) patch[field] = req.body[field];
     }
-    // Retired band fields — clear on save
-    patch.section_bg_img = "";
-    patch.section_bg_color = "";
-    patch.section_theme = "";
     if (patch.render_key !== undefined) {
       patch.render_key = String(patch.render_key || "")
         .toLowerCase()
@@ -243,6 +253,7 @@ export const setSectionStatus = async (req, res) => {
 /** Replace / set page tags on a section: body.pages = [{ page_key, sort_order, ... }] */
 export const setSectionPages = async (req, res) => {
   try {
+    dropRetiredInputFields(req.body);
     const section = await Section.findByKey(req.params.key);
     if (!section) {
       return res.status(404).json({ success: false, message: "Section not found" });
@@ -259,6 +270,7 @@ export const setSectionPages = async (req, res) => {
 
     const next = [];
     for (const tag of pageTags) {
+      dropRetiredInputFields(tag);
       if (!tag.page_key) {
         return res.status(400).json({
           success: false,
@@ -279,10 +291,7 @@ export const setSectionPages = async (req, res) => {
         section_title: tag.section_title ?? null,
         sub_title: tag.sub_title ?? null,
         in_page_nav_title: tag.in_page_nav_title ?? null,
-        section_bg_img: tag.section_bg_img ?? null,
-        section_bg_color: tag.section_bg_color ?? null,
         section_img_url: tag.section_img_url ?? null,
-        section_theme: tag.section_theme ?? null,
         data: tag.data ?? null,
         status: tag.status !== false,
       };
@@ -305,6 +314,7 @@ export const setSectionPages = async (req, res) => {
 /** Add a new page placement (same page_key allowed multiple times) */
 export const tagSectionPage = async (req, res) => {
   try {
+    dropRetiredInputFields(req.body);
     const section = await Section.findByKey(req.params.key);
     if (!section) {
       return res.status(404).json({ success: false, message: "Section not found" });
@@ -329,11 +339,8 @@ export const tagSectionPage = async (req, res) => {
       sort_order: req.body.sort_order ?? 0,
       section_title: req.body.section_title ?? null,
       sub_title: req.body.sub_title ?? null,
-      section_bg_img: req.body.section_bg_img ?? null,
-      section_bg_color: req.body.section_bg_color ?? null,
       in_page_nav_title: req.body.in_page_nav_title ?? null,
       section_img_url: req.body.section_img_url ?? null,
-      section_theme: req.body.section_theme ?? null,
       data: req.body.data ?? null,
       status: req.body.status !== false,
     };
@@ -362,6 +369,7 @@ export const tagSectionPage = async (req, res) => {
 /** Update one placement by tag id */
 export const updateSectionPageTag = async (req, res) => {
   try {
+    dropRetiredInputFields(req.body);
     const section = await Section.findByKey(req.params.key);
     if (!section) {
       return res.status(404).json({ success: false, message: "Section not found" });
@@ -371,11 +379,8 @@ export const updateSectionPageTag = async (req, res) => {
       "sort_order",
       "section_title",
       "sub_title",
-      "section_bg_img",
-      "section_bg_color",
       "in_page_nav_title",
       "section_img_url",
-      "section_theme",
       "buttons",
       "items",
       "data",

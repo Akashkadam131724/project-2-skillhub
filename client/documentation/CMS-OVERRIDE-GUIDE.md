@@ -16,7 +16,7 @@ This guide explains **what wins when** you edit themes and section content in Sk
 
 For **section text, cards, buttons, and images**, priority depends on **content scope** (see Part 3).
 
-**Retired:** per-section band editors (`section_band`, `section_theme`, `section_bg_*`) and the theme **Background** tab. Do not look for those in CMS.
+Theme CMS is **Colors** + **Surface** only. Dark / full-bleed sections are owned in code (`SECTION_DARK_BG_KEYS`), not per-section theme fields.
 
 ---
 
@@ -204,8 +204,8 @@ flowchart TB
 | Mistake | Why it fails | Fix |
 |---------|--------------|-----|
 | Changed site theme but template has overrides | Template non-empty fields **win** | Clear template field or use Inherit |
-| Looking for “Section band” / bg image / bg color in CMS | Those editors are **retired** | Use **Surface** for stripes; dark sections are code-owned |
-| Looking for a theme **Background** tab | Page background tab was **removed** | Colors + Surface only |
+| Looking for per-section band / bg image / bg color | Not in CMS | Use **Surface** for stripes; dark sections are code-owned (`SECTION_DARK_BG_KEYS`) |
+| Looking for a theme Background tab | Not in CMS | Colors + Surface only |
 | Edited FAQ on entity page, scope = template | Entity editor is **locked** | Edit on page template placement |
 | Expected entity-only theme tab | Live CMS theme tab saves **template** theme | Use template theme for all pages of that type |
 
@@ -242,4 +242,4 @@ flowchart TB
 
 ---
 
-*Last updated for Colors + Surface theme tabs; per-section band CMS and page Background tab removed.*
+*Last updated for Colors + Surface theme tabs.*

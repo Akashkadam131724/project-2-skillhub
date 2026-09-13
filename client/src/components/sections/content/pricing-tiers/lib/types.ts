@@ -35,8 +35,6 @@ export type PricingTiersSectionProps = {
   sub_title?: string;
   items?: unknown[];
   section_key?: string;
-  section_theme?: unknown;
-  sectionTheme?: unknown;
   surfaceTone?: unknown;
   surfaceBand?: unknown;
   cmsMode?: boolean;

@@ -20,7 +20,6 @@ export default function SplitCtaSection({
   section_title,
   sub_title,
   section_img_url,
-  section_bg_color,
   data,
   buttons,
   button_title,
@@ -32,7 +31,7 @@ export default function SplitCtaSection({
 }: SplitCtaSectionProps) {
   const imageUrl = mediaUrl(section_img_url || data?.image_url);
   const imageSide = normalizeSplitCtaImageSide(data);
-  const bandStyle = resolveSplitCtaBandStyle(section_bg_color, data?.bg_color);
+  const bandStyle = resolveSplitCtaBandStyle(data?.bg_color);
 
   if (
     !isSplitCtaPlacementShowable(

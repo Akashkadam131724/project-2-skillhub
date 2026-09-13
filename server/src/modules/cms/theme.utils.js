@@ -80,9 +80,6 @@ export const THEME_FIELD_KEYS = [
   "surface_pattern",
 ];
 
-/** Legacy fields no longer accepted on theme patches. */
-export const RETIRED_THEME_FIELD_KEYS = ["page_bg_color", "page_bg_img"];
-
 function newBandId() {
   return `band_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 7)}`;
 }
@@ -237,15 +234,6 @@ export function themeSchemaFields({ nullable = false } = {}) {
     brand_primary: { type: String, trim: true, default: strDefault },
     brand_hover: { type: String, trim: true, default: strDefault },
     ink: { type: String, trim: true, default: strDefault },
-    /** @deprecated Kept for backcompat; ignored by theme merge / CMS. */
-    page_bg_color: {
-      type: String,
-      trim: true,
-      default: strDefault,
-      maxlength: 400,
-    },
-    /** @deprecated Kept for backcompat; ignored by theme merge / CMS. */
-    page_bg_img: { type: String, trim: true, default: strDefault },
     surface_mode: {
       type: String,
       enum: nullable

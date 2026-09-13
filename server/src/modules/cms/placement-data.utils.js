@@ -14,6 +14,8 @@ export function mergePlacementData(...layers) {
       }
     }
   }
+  delete out.section_bg_img;
+  delete out.section_bg_color;
   delete out.section_theme;
   return out;
 }

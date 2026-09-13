@@ -11,7 +11,10 @@ export const createPage = async (req, res) => {
   try {
     const body = { ...req.body };
     if (body.theme) {
-      body.theme = { ...emptyPageTheme(), ...pickThemePatch(body.theme) };
+      body.theme = {
+        ...emptyPageTheme(),
+        ...pickThemePatch(body.theme),
+      };
     }
     const page = await Page.create(body);
     res.status(201).json({ success: true, data: page });

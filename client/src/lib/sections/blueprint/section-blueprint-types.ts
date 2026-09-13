@@ -1,6 +1,6 @@
 import type { SectionCmsCapabilities } from "@/lib/sections/section-cms-capabilities-types";
 
-/** How the section participates in page bands / CMS band editor. */
+/** How the section participates in page surface striping (code-owned). */
 export type SectionBandProfile =
   | "page-alt"
   | "own-band"
@@ -38,6 +38,4 @@ export type SectionBlueprint = {
   cms?: Partial<SectionCmsCapabilities>;
   /** Public pages show static demo when CMS fields empty */
   staticFallback?: boolean;
-  /** Registry seed hint — default dark when section_theme is inherit */
-  inheritDarkBand?: boolean;
 };

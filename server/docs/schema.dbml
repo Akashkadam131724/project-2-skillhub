@@ -171,7 +171,6 @@ Table sections {
   in_page_nav_title varchar
   button_title varchar [note: 'deprecated → buttons[]']
   target_url varchar [note: 'deprecated → buttons[]']
-  section_bg_img varchar
   section_img_url varchar
   section_preview_img varchar
   data jsonb [note: 'Mixed / freeform section data']
@@ -193,7 +192,6 @@ Table section_page_tags {
   section_title varchar
   sub_title varchar
   in_page_nav_title varchar
-  section_bg_img varchar
   section_img_url varchar
   data jsonb
   status boolean [default: true]
@@ -211,7 +209,6 @@ Table entity_page_sections {
   section_title varchar
   sub_title varchar
   in_page_nav_title varchar
-  section_bg_img varchar
   section_img_url varchar
   data jsonb
   status boolean [note: 'null = inherit template; true/false = override']

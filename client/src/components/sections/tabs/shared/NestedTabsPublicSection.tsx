@@ -15,8 +15,6 @@ export default function NestedTabsPublicSection({
   in_page_nav_title,
   items: mappingItems,
   section_key = "feature_tabs",
-  section_theme,
-  sectionTheme,
   surfaceTone,
   surfaceBand,
   buttons,
@@ -48,7 +46,6 @@ export default function NestedTabsPublicSection({
 
   const onDarkBand = isPlacementDarkBand({
     section_key,
-    section_theme: section_theme ?? sectionTheme,
     surfaceTone,
     surfaceBand,
   });

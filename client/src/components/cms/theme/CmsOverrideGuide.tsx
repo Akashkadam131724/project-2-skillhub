@@ -96,7 +96,7 @@ function GuideBody({ showBandOnly = false }: { showBandOnly?: boolean }) {
     return (
       <div className="space-y-3">
         <p className="m-0 text-xs text-slate-500">
-          Per-section band editors are retired. What paints a section:
+          What paints a section:
         </p>
         <PriorityList
           items={[
@@ -106,8 +106,8 @@ function GuideBody({ showBandOnly = false }: { showBandOnly?: boolean }) {
           ]}
         />
         <p className="m-0 text-[11px] text-slate-500">
-          Edit stripes under <strong>Surface</strong>. There is no page
-          background or section band tab.
+          Edit stripes under <strong>Surface</strong>. Theme CMS is Colors +
+          Surface only.
         </p>
       </div>
     );

@@ -16,8 +16,6 @@ export default function NestedTabsCmsSection({
   in_page_nav_title,
   items: mappingItems,
   section_key = "feature_tabs",
-  section_theme,
-  sectionTheme,
   surfaceTone,
   surfaceBand,
   onEditField,
@@ -30,7 +28,6 @@ export default function NestedTabsCmsSection({
   const tabs = resolveTabUiItems(mappingItems, { cmsMode: true });
   const onDarkBand = isPlacementDarkBand({
     section_key,
-    section_theme: section_theme ?? sectionTheme,
     surfaceTone,
     surfaceBand,
   });

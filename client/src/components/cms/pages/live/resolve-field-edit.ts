@@ -30,15 +30,6 @@ export function resolveFieldEditRequest(
   { savePlacement, reload, setError, setSaving }: ResolveFieldEditDeps
 ): ResolveFieldEditResult {
   let nextField = field;
-  // Per-section band / bg editors retired — do not open a drawer.
-  if (
-    nextField === "section_bg_img" ||
-    nextField === "section_bg_color" ||
-    nextField === "section_theme" ||
-    nextField === "section_band"
-  ) {
-    return { handled: true };
-  }
   if (!FIELD_META[nextField as keyof typeof FIELD_META]) {
     return { handled: true };
   }

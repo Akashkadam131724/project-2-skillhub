@@ -19,8 +19,6 @@ export default function TimelineVerticalSection({
   in_page_nav_title,
   items: mappingItems,
   section_key = "timeline_vertical",
-  section_theme,
-  sectionTheme,
   surfaceTone,
   surfaceBand,
   onEditField,
@@ -35,7 +33,6 @@ export default function TimelineVerticalSection({
   });
   const onDarkBand = isPlacementDarkBand({
     section_key,
-    section_theme: section_theme ?? sectionTheme,
     surfaceTone,
     surfaceBand,
   });

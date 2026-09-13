@@ -13,8 +13,6 @@ export default function PricingTiersPublicSection({
   sub_title,
   items: mappingItems,
   section_key = "pricing_tiers",
-  section_theme,
-  sectionTheme,
   surfaceTone,
   surfaceBand,
   buttons,
@@ -45,7 +43,6 @@ export default function PricingTiersPublicSection({
 
   const onDarkBand = isPlacementDarkBand({
     section_key,
-    section_theme: section_theme ?? sectionTheme,
     surfaceTone,
     surfaceBand,
   });

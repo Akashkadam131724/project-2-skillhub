@@ -2,7 +2,7 @@ import type { SectionCmsCapabilities } from "@/lib/sections/section-cms-capabili
 
 /**
  * CMS edit surface for hero_gradient_slider.
- * Static phase — placement visibility only; no band/image/nav fields yet.
+ * Static phase — placement visibility only; no image/nav fields yet.
  */
 export const HERO_GRADIENT_SLIDER_CMS_CAPABILITIES = {
   mode: "static",
@@ -10,7 +10,6 @@ export const HERO_GRADIENT_SLIDER_CMS_CAPABILITIES = {
   toolbar: {
     navTitle: false,
     sectionImage: false,
-    sectionBand: false,
     visibility: true,
     removeExtra: true,
   },

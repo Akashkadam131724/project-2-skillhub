@@ -14,8 +14,6 @@ export default function WhyChoosePublicSection({
   in_page_nav_title,
   items: mappingItems,
   section_key = "why_choose",
-  section_theme,
-  sectionTheme,
   surfaceTone,
   surfaceBand,
   buttons,
@@ -47,7 +45,6 @@ export default function WhyChoosePublicSection({
 
   const onDarkBand = isPlacementDarkBand({
     section_key,
-    section_theme: section_theme ?? sectionTheme,
     surfaceTone,
     surfaceBand,
   });

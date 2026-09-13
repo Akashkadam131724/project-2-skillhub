@@ -18,7 +18,6 @@ export {
   HeroSubtitleCms,
   HeroBodyCms,
   HeroImageCms,
-  HeroBgAddChip,
   heroBodyCmsSlot,
 } from "./hero-cms-fields";
 export type { HeroLayoutUiProps, HeroLayoutSectionProps } from "./lib/hero-layout-types";

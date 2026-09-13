@@ -1,12 +1,11 @@
 import type { SectionCmsCapabilities } from "@/lib/sections/section-cms-capabilities-types";
 
-/** Full CMS — section band hidden; groups + logo rows via nested items. */
+/** Full CMS — nested groups + logo rows. */
 export const SARDER_ECOSYSTEM_CMS_CAPABILITIES = {
   mode: "content",
   toolbar: {
     navTitle: false,
     sectionImage: true,
-    sectionBand: false,
     visibility: true,
     removeExtra: true,
   },

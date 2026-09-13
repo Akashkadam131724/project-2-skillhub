@@ -57,8 +57,6 @@ export default function HeroStatsSection({
   buttons,
   button_title,
   target_url,
-  section_theme,
-  sectionTheme,
   surfaceTone,
   surfaceBand,
   onEditField,
@@ -81,8 +79,6 @@ export default function HeroStatsSection({
   const stats = resolveHeroStatsUiItems(items, true);
   const onDarkBand = isPlacementDarkBand({
     section_key,
-    section_theme,
-    sectionTheme,
     surfaceTone,
     surfaceBand,
   });
@@ -105,11 +101,8 @@ export default function HeroStatsSection({
       id={id}
       {...slots}
       stats={stats}
-      section_theme={section_theme}
-      sectionTheme={sectionTheme}
       surfaceTone={surfaceTone}
       surfaceBand={surfaceBand}
-      
       statsAddSlot={
         !stats.length ? (
           <button
@@ -125,8 +118,7 @@ export default function HeroStatsSection({
           </button>
         ) : null
       }
-      
-          {...cmsSectionChrome({
+      {...cmsSectionChrome({
         section_key,
         itemCount: stats.length,
         onEditField,

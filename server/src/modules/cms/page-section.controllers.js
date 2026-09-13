@@ -9,15 +9,24 @@ import {
   pickPlacementArrayField,
 } from "./placement-data.utils.js";
 
+const RETIRED_INPUT_FIELDS = [
+  "section_bg_img",
+  "section_bg_color",
+  "section_theme",
+];
+
+function dropRetiredInputFields(body) {
+  if (!body || typeof body !== "object") return;
+  for (const key of RETIRED_INPUT_FIELDS) {
+    delete body[key];
+    if (body.data && typeof body.data === "object") delete body.data[key];
+  }
+}
+
 const SECTION_CONTENT_SELECT =
-  "key name status content_scope section_title sub_title in_page_nav_title section_bg_img section_bg_color section_img_url section_theme section_preview_img buttons items data";
+  "key name status content_scope section_title sub_title in_page_nav_title section_img_url section_preview_img buttons items data";
 
 function pickMappedField(primary, fallback, key) {
-  if (key === "section_theme") {
-    const v = primary?.[key];
-    if (v !== null && v !== undefined && String(v).trim() !== "") return v;
-    return fallback?.[key] ?? null;
-  }
   const v = primary?.[key];
   if (v !== null && v !== undefined && v !== "") return v;
   const f = fallback?.[key];
@@ -35,34 +44,14 @@ async function resolvePageAndSection(pageKey, sectionKey) {
   return { page, section };
 }
 
-/** Merge `data` patches; strip legacy `data.section_theme` when using top-level field. */
-function finalizeEntityPageSectionUpdate($set, existing, body) {
-  const $unset = {};
-
+/** Merge `data` patches while preserving inherited placement data. */
+function finalizeEntityPageSectionUpdate($set, existing) {
   if ($set.data !== undefined) {
     const merged = mergePlacementData(existing?.data, $set.data);
-    if (
-      body.section_theme !== undefined &&
-      merged &&
-      typeof merged === "object" &&
-      !Array.isArray(merged)
-    ) {
-      delete merged.section_theme;
-    }
     $set.data = normalizePlacementDataPatch(merged);
-  } else if (
-    body.section_theme !== undefined &&
-    existing?.data &&
-    typeof existing.data === "object" &&
-    !Array.isArray(existing.data) &&
-    Object.prototype.hasOwnProperty.call(existing.data, "section_theme")
-  ) {
-    $unset["data.section_theme"] = "";
   }
 
-  const update = { $set };
-  if (Object.keys($unset).length) update.$unset = $unset;
-  return update;
+  return { $set };
 }
 
 /**
@@ -94,11 +83,8 @@ function serializeEntityDoc(doc, section) {
       ...base,
       section_title: section.section_title ?? "",
       sub_title: section.sub_title ?? "",
-      section_bg_img: section.section_bg_img ?? "",
-      section_bg_color: section.section_bg_color ?? "",
       in_page_nav_title: section.in_page_nav_title ?? "",
       section_img_url: section.section_img_url ?? "",
-      section_theme: section.section_theme ?? null,
       buttons: Array.isArray(section.buttons) ? section.buttons : [],
       items: Array.isArray(section.items) ? section.items : [],
       data: mergePlacementData(section.data),
@@ -109,11 +95,8 @@ function serializeEntityDoc(doc, section) {
     ...base,
     section_title: pickMappedField(plain, section, "section_title"),
     sub_title: pickMappedField(plain, section, "sub_title"),
-    section_bg_img: pickMappedField(plain, section, "section_bg_img"),
-    section_bg_color: pickMappedField(plain, section, "section_bg_color"),
     in_page_nav_title: pickMappedField(plain, section, "in_page_nav_title"),
     section_img_url: pickMappedField(plain, section, "section_img_url"),
-    section_theme: pickMappedField(plain, section, "section_theme"),
     buttons: pickPlacementArrayField("buttons", plain, section),
     items: pickPlacementArrayField("items", plain, section),
     data: mergePlacementData(section.data, plain.data),
@@ -180,11 +163,8 @@ function serializeTag(section, tag) {
       ...base,
       section_title: section.section_title ?? "",
       sub_title: section.sub_title ?? "",
-      section_bg_img: section.section_bg_img ?? "",
-      section_bg_color: section.section_bg_color ?? "",
       in_page_nav_title: section.in_page_nav_title ?? "",
       section_img_url: section.section_img_url ?? "",
-      section_theme: section.section_theme ?? null,
       buttons: Array.isArray(section.buttons) ? section.buttons : [],
       items: Array.isArray(section.items) ? section.items : [],
       data: mergePlacementData(section.data),
@@ -195,11 +175,8 @@ function serializeTag(section, tag) {
     ...base,
     section_title: pickMappedField(tag, section, "section_title"),
     sub_title: pickMappedField(tag, section, "sub_title"),
-    section_bg_img: pickMappedField(tag, section, "section_bg_img"),
-    section_bg_color: pickMappedField(tag, section, "section_bg_color"),
     in_page_nav_title: pickMappedField(tag, section, "in_page_nav_title"),
     section_img_url: pickMappedField(tag, section, "section_img_url"),
-    section_theme: pickMappedField(tag, section, "section_theme"),
     buttons: pickPlacementArrayField("buttons", tag, section),
     items: pickPlacementArrayField("items", tag, section),
     data: mergePlacementData(section.data, tag.data),
@@ -209,17 +186,15 @@ function serializeTag(section, tag) {
 /** Tag a section onto a page — always adds a new placement (duplicates allowed) */
 export const tagSectionToPage = async (req, res) => {
   try {
+    dropRetiredInputFields(req.body);
     const {
       page_key,
       section_key,
       sort_order = 0,
       section_title = null,
       sub_title = null,
-      section_bg_img = null,
-      section_bg_color = null,
       in_page_nav_title = null,
       section_img_url = null,
-      section_theme = null,
       buttons,
       items,
       data = null,
@@ -252,11 +227,8 @@ export const tagSectionToPage = async (req, res) => {
       sort_order,
       section_title,
       sub_title,
-      section_bg_img,
-      section_bg_color,
       in_page_nav_title,
       section_img_url,
-      section_theme,
       data,
       status,
     };
@@ -329,15 +301,13 @@ export const getPageSections = async (req, res) => {
 /** Update a page tag by subdocument id */
 export const updatePageSection = async (req, res) => {
   try {
+    dropRetiredInputFields(req.body);
     const allowed = [
       "sort_order",
       "section_title",
       "sub_title",
-      "section_bg_img",
-      "section_bg_color",
       "in_page_nav_title",
       "section_img_url",
-      "section_theme",
       "buttons",
       "items",
       "data",
@@ -478,6 +448,7 @@ export const deletePageSection = async (req, res) => {
 /** Upsert template override OR update by id OR create entity-only extra */
 export const upsertEntityPageSection = async (req, res) => {
   try {
+    dropRetiredInputFields(req.body);
     const {
       id,
       page_key,
@@ -531,10 +502,6 @@ export const upsertEntityPageSection = async (req, res) => {
         if (key === "sort_order" && !allowSort) continue;
         $set[key] = source[key];
       }
-      // Retired band fields — clear if client still sends them
-      $set.section_bg_img = null;
-      $set.section_bg_color = null;
-      $set.section_theme = null;
       if (source.items !== undefined && source.items !== null) {
         $set.items = source.items;
         $set.items_override = true;
@@ -611,7 +578,7 @@ export const upsertEntityPageSection = async (req, res) => {
       const $set = pickEntityFields(req.body, {
         allowSort: !sortDisabled || isExtra,
       });
-      const update = finalizeEntityPageSectionUpdate($set, existing, req.body);
+      const update = finalizeEntityPageSectionUpdate($set, existing);
       const doc = await EntityPageSection.findOneAndUpdate(
         { _id: id, page_key: page.key, entity_id },
         update,
@@ -662,7 +629,7 @@ export const upsertEntityPageSection = async (req, res) => {
         section: section._id,
         ...pickEntityFields(req.body, { allowSort: !sortDisabled }),
       };
-      const update = finalizeEntityPageSectionUpdate($set, existing, req.body);
+      const update = finalizeEntityPageSectionUpdate($set, existing);
 
       const doc = await EntityPageSection.findOneAndUpdate(
         {
@@ -717,11 +684,8 @@ export const upsertEntityPageSection = async (req, res) => {
       sort_order: extraSort,
       section_title: req.body.section_title ?? null,
       sub_title: req.body.sub_title ?? null,
-      section_bg_img: req.body.section_bg_img ?? null,
-      section_bg_color: req.body.section_bg_color ?? null,
       in_page_nav_title: req.body.in_page_nav_title ?? null,
       section_img_url: req.body.section_img_url ?? null,
-      section_theme: req.body.section_theme ?? null,
       data: req.body.data ?? null,
       status: req.body.status !== false,
     };

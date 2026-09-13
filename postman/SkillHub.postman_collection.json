@@ -2,7 +2,7 @@
   "info": {
     "_postman_id": "c4e8a2b1-9f3d-4c70-8e1a-6d5b7a0f2e91",
     "name": "SkillHub API",
-    "description": "SkillHub backend — catalog (vendors, products, courses, taxonomies), CMS (pages, sections, placements, themes), navigation, blogs, search, uploads.\n\nAlso available as Swagger UI at `{{baseUrl}}/api-docs`.\n\nNo auth on local API. Use the Local environment or collection `baseUrl` (default http://127.0.0.1:3000).",
+    "description": "SkillHub backend — catalog (vendors, products, courses, taxonomies), CMS (pages, sections, placements, themes), navigation, blogs, search, uploads.\n\nThemes accept **Colors** (`brand_primary`, `brand_hover`, `ink`) + **Surface** (`surface_mode` / `surface_pattern`) only.\n\nAlso available as Swagger UI at `{{baseUrl}}/api-docs`.\n\nNo auth on local API. Use the Local environment or collection `baseUrl` (default http://127.0.0.1:3000).",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
@@ -1756,7 +1756,7 @@
     },
     {
       "name": "Sections",
-      "description": "CMS section catalog + page tags",
+      "description": "CMS section catalog + page tags. Content fields only (title, subtitle, image, buttons, items, data).",
       "item": [
         {
           "name": "List sections",
@@ -1807,6 +1807,7 @@
                 "sections"
               ]
             },
+            "description": "Create catalog section (key, name, content fields).",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"key\": \"postman_demo_section\",\n  \"name\": \"Postman Demo Section\",\n  \"status\": true,\n  \"content_scope\": \"page\",\n  \"section_title\": \"Demo title\",\n  \"sub_title\": \"Demo subtitle\",\n  \"data\": {\n    \"body\": \"<p>Demo body</p>\"\n  }\n}"
@@ -1868,6 +1869,7 @@
                 "{{sectionKey}}"
               ]
             },
+            "description": "Editable content fields only. Retired band fields are cleared server-side.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"section_title\": \"Updated demo title\",\n  \"data\": {\n    \"body\": \"<p>Updated body</p>\"\n  }\n}"
@@ -2288,9 +2290,10 @@
                 "{{pageKey}}"
               ]
             },
+            "description": "Optional `theme` patch uses Colors + Surface keys only.",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"Updated Postman Demo Page\"\n}"
+              "raw": "{\n  \"name\": \"Updated Postman Demo Page\",\n  \"theme\": {\n    \"brand_primary\": \"#1d4ed8\",\n    \"surface_mode\": \"alternating\"\n  }\n}"
             }
           }
         },
@@ -2342,7 +2345,7 @@
     },
     {
       "name": "Page Sections",
-      "description": "Template tags + EntityPageSection overrides/extras",
+      "description": "Template tags + EntityPageSection overrides/extras. Band bg/theme fields are not writable.",
       "item": [
         {
           "name": "List page sections",
@@ -2592,7 +2595,7 @@
     },
     {
       "name": "Site Theme",
-      "description": "Global theme document (key=default)",
+      "description": "Global theme (key=default). Accepts Colors + Surface only.",
       "item": [
         {
           "name": "Get site theme",
@@ -2629,10 +2632,10 @@
                 "site-theme"
               ]
             },
-            "description": "Sends a patch of theme fields; empty body returns 400.",
+            "description": "Patch theme fields: preset, brand_primary, brand_hover, ink, surface_mode, surface_pattern. Empty body → 400.",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"brand\": \"#1d4ed8\",\n  \"ink\": \"#0b1f4d\",\n  \"surface_mode\": \"alternating\"\n}"
+              "raw": "{\n  \"brand_primary\": \"#1d4ed8\",\n  \"brand_hover\": \"#1e40af\",\n  \"ink\": \"#0b1f4d\",\n  \"surface_mode\": \"alternating\"\n}"
             }
           }
         }
@@ -2640,7 +2643,7 @@
     },
     {
       "name": "Entity Page Theme",
-      "description": "Per-entity theme override for a page_key",
+      "description": "Per-entity theme override for a page_key (Colors + Surface; no page background).",
       "item": [
         {
           "name": "Get entity page theme",
@@ -2687,9 +2690,10 @@
                 "entity-page-theme"
               ]
             },
+            "description": "Upsert entity theme override. Nested `theme` uses the same field keys as site theme.",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"page_key\": \"{{pageKey}}\",\n  \"entity_id\": \"{{entityId}}\",\n  \"brand\": \"#0ea5e9\"\n}"
+              "raw": "{\n  \"page_key\": \"{{pageKey}}\",\n  \"entity_id\": \"{{entityId}}\",\n  \"theme\": {\n    \"brand_primary\": \"#0ea5e9\",\n    \"ink\": \"#0c4a6e\"\n  }\n}"
             }
           }
         },

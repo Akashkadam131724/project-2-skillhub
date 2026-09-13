@@ -12,7 +12,6 @@ export default function SplitCtaPublicSection({
   section_title,
   sub_title,
   section_img_url,
-  section_bg_color,
   data,
   buttons,
   button_title,
@@ -38,10 +37,7 @@ export default function SplitCtaPublicSection({
   }
 
   const imageUrl = mediaUrl(section_img_url || data?.image_url);
-  const bandStyle = resolveSplitCtaBandStyle(
-    section_bg_color,
-    data?.bg_color
-  );
+  const bandStyle = resolveSplitCtaBandStyle(data?.bg_color);
 
   return (
     <SplitCtaUi

@@ -14,8 +14,6 @@ export default function FaqTwoColumnPublicSection({
   data = {},
   items: mappingItems,
   section_key = "faq_two_column",
-  sectionTheme,
-  section_theme,
   surfaceTone,
   surfaceBand,
   buttons,
@@ -45,8 +43,6 @@ export default function FaqTwoColumnPublicSection({
   const items = resolveFaqUiItems(section_key, mappingItems);
   const headerSide = normalizeFaqHeaderSide(data);
   const darkBand = faqDarkBand({
-    section_theme,
-    sectionTheme,
     surfaceTone,
     surfaceBand,
   });

@@ -57,7 +57,6 @@ async function seed() {
     in_page_nav_title: "By the Numbers",
     button_title: "",
     target_url: "",
-    section_bg_color: null,
     data: {},
     buttons: [],
     items: STATS,
@@ -77,7 +76,6 @@ async function seed() {
     section.data = { ...(section.data || {}) };
     delete section.data.bg_color;
     section.markModified("data");
-    section.section_bg_color = null;
     section.buttons = [];
     section.items = fields.items;
     section.content_scope = fields.content_scope;
@@ -101,7 +99,6 @@ async function seed() {
       in_page_nav_title: fields.in_page_nav_title,
       buttons: [],
       items: fields.items,
-      section_bg_color: null,
       data: {},
     };
 

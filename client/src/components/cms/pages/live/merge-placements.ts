@@ -108,16 +108,7 @@ export function mergePlacements(
       section_title: pick("section_title"),
       sub_title: pick("sub_title"),
       in_page_nav_title: pick("in_page_nav_title"),
-      section_bg_img: pick("section_bg_img"),
-      section_bg_color: pick("section_bg_color"),
       section_img_url: pick("section_img_url"),
-      section_theme: pick("section_theme"),
-      section_theme_local:
-        override != null
-          ? override.section_theme ?? null
-          : entityId
-            ? null
-            : tag.section_theme ?? null,
       section_preview_img:
         catalogSection?.section_preview_img || tag.section_preview_img || "",
       buttons: pickButtons(),
@@ -182,26 +173,6 @@ export function mergePlacements(
           : extra.in_page_nav_title ||
             catalogSection?.in_page_nav_title ||
             "",
-      section_bg_img:
-        content_scope === "global"
-          ? extra.section_bg_img || catalogSection?.section_bg_img || ""
-          : extra.section_bg_img || catalogSection?.section_bg_img || "",
-      section_bg_color:
-        content_scope === "global"
-          ? extra.section_bg_color ||
-            catalogSection?.section_bg_color ||
-            String(
-              (catalogSection?.data as Record<string, unknown> | undefined)
-                ?.bg_color || ""
-            ) ||
-            ""
-          : extra.section_bg_color ||
-            catalogSection?.section_bg_color ||
-            String(
-              (catalogSection?.data as Record<string, unknown> | undefined)
-                ?.bg_color || ""
-            ) ||
-            "",
       section_img_url:
         content_scope === "global"
           ? extra.section_img_url || catalogSection?.section_img_url || ""
@@ -210,19 +181,6 @@ export function mergePlacements(
         catalogSection?.section_preview_img ||
         extra.section_preview_img ||
         "",
-      section_theme:
-        content_scope === "global"
-          ? extra.section_theme || catalogSection?.section_theme || ""
-          : (() => {
-              const v = extra.section_theme;
-              if (v !== null && v !== undefined && String(v).trim() !== "")
-                return v;
-              return catalogSection?.section_theme || "";
-            })(),
-      section_theme_local:
-        content_scope === "global"
-          ? extra.section_theme || catalogSection?.section_theme || ""
-          : extra.section_theme ?? null,
       buttons:
         content_scope === "global"
           ? Array.isArray(extra.buttons)

@@ -3,7 +3,7 @@
 import type { ReactNode } from "react";
 import {
   isPageSurfaceTransparent,
-  normalizeSectionTheme,
+  parseSectionThemeToken,
   sectionThemeBandClass,
   sectionThemeDataAttribute,
   SECTION_THEME_BAND_SKIP_KEYS,
@@ -34,8 +34,10 @@ export default function SectionThemeWrap({
   const key = String(sectionKey || "").toLowerCase();
   const themePref =
     typeof theme === "string"
-      ? normalizeSectionTheme({ section_theme: theme })
-      : normalizeSectionTheme(theme);
+      ? parseSectionThemeToken(theme)
+      : parseSectionThemeToken(
+          (theme as { theme?: unknown } | undefined)?.theme
+        );
   const bandAttr = sectionThemeDataAttribute(themePref);
   const skipBand = SECTION_THEME_BAND_SKIP_KEYS.has(key);
   const bandClass =

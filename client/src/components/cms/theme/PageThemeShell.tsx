@@ -5,8 +5,7 @@ import type { CSSProperties } from "react";
 import type { PageThemeShellProps } from "./types";
 
 /**
- * Applies resolved page theme (CSS vars). Optional solid surface fill only —
- * page_bg_* and section bands are retired.
+ * Applies resolved page theme (CSS vars). Optional solid surface fill only.
  */
 export default function PageThemeShell({
   theme,

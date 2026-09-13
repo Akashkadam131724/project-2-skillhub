@@ -1,23 +1,10 @@
 /**
- * Section theme — static key lists and CMS option metadata.
+ * Section theme — static key lists for page surface striping.
  *
- * Runtime helpers: `../section-theme.js` (re-exports this file).
- *
- * Theme model (simplified):
+ * Theme model:
  *  - Site / page: colors + surface pattern (white/grey stripes for normal sections)
- *  - Section bands / section_theme / section_bg_*: removed from the product
- *  - Dark sections: baked into the component — listed in SECTION_DARK_BG_KEYS
+ *  - Dark / own-band sections: baked into the component — listed below
  */
-
-/** @deprecated Placement section_theme is ignored at runtime. Kept for stale CMS labels. */
-export const SECTION_THEME_VALUES = ["inherit", "light", "dark"];
-
-/** @deprecated */
-export const SECTION_THEME_OPTIONS = [
-  { value: "inherit", label: "Inherit (site page theme)" },
-  { value: "light", label: "Light band" },
-  { value: "dark", label: "Dark band" },
-];
 
 /**
  * Canonical list — sections that always paint their own dark (or ink) background.
@@ -50,9 +37,7 @@ export const SECTION_THEME_BAND_SKIP_KEYS = new Set([
   ...SECTION_DARK_BG_KEYS,
 ]);
 
-/**
- * @deprecated Prefer SECTION_DARK_BG_KEYS. Alias for older imports.
- */
+/** Alias covering dark keys plus a few older fixed-band heroes. */
 export const SECTION_FIXED_BAND_THEME_KEYS = new Set([
   ...SECTION_DARK_BG_KEYS,
   "orbit_hero",
@@ -62,7 +47,7 @@ export const SECTION_FIXED_BAND_THEME_KEYS = new Set([
   "promo_modal",
 ]);
 
-/** @deprecated Use SECTION_DARK_BG_KEYS */
+/** @deprecated Prefer SECTION_DARK_BG_KEYS */
 export const SECTION_FIXED_DARK_BAND_KEYS = SECTION_DARK_BG_KEYS;
 
 /** Fixed light full-bleed sections — skip stripe; component owns palette. */
@@ -80,11 +65,6 @@ export const SECTION_OWN_BAND_KEYS = new Set([
   ...SECTION_DARK_BG_KEYS,
   ...SECTION_FIXED_LIGHT_BAND_KEYS,
 ]);
-
-/**
- * @deprecated Registry seed hint only — runtime no longer forces dark via section_theme.
- */
-export const SECTION_INHERIT_DARK_BAND_KEYS = SECTION_DARK_BG_KEYS;
 
 /** Placements that never advance the page white/grey alternation counter. */
 export const SECTION_ALTERNATION_SKIP_KEYS = new Set([

@@ -18,8 +18,6 @@ export default function WhyChooseSection({
   in_page_nav_title,
   items: mappingItems,
   section_key = "why_choose",
-  section_theme,
-  sectionTheme,
   surfaceTone,
   surfaceBand,
   onEditField,
@@ -34,7 +32,6 @@ export default function WhyChooseSection({
   });
   const onDarkBand = isPlacementDarkBand({
     section_key,
-    section_theme: section_theme ?? sectionTheme,
     surfaceTone,
     surfaceBand,
   });

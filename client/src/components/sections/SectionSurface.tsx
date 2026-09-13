@@ -22,16 +22,8 @@ type ResolvedSurfaceBand = {
 
 export type SectionSurfaceProps = {
   sectionKey?: string;
-  /** @deprecated Ignored — section bands removed. */
-  section_bg_color?: string;
-  /** @deprecated Ignored — section bands removed. */
-  section_bg_img?: string;
-  /** @deprecated Ignored. */
-  legacy_bg_color?: string;
   surfaceTone?: string | null;
   surfaceBand?: ResolvedSurfaceBand | null;
-  /** @deprecated Ignored — section_theme removed. */
-  sectionTheme?: string | Record<string, unknown>;
   pageTheme?: { surface_mode?: string } | string;
   pageSurfaceMode?: string;
   pageBandFill?: string;

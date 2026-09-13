@@ -6,7 +6,6 @@ import SiteTheme from "./site-theme.model.js";
 import { mergeTheme } from "./theme.utils.js";
 import {
   mergePlacementData,
-  normalizePlacementDataPatch,
   pickPlacementArrayField,
 } from "./placement-data.utils.js";
 
@@ -22,13 +21,6 @@ const MAPPING_CONTENT_KEYS = [
 /** Legacy single-CTA — still exposed from Section defaults for fallback UI */
 const SECTION_ONLY_KEYS = ["button_title", "target_url"];
 
-/** Band / theme fields retired — always empty on resolved placements. */
-const RETIRED_BAND_KEYS = [
-  "section_bg_img",
-  "section_bg_color",
-  "section_theme",
-];
-
 function pickMappingField(source, fallback, key) {
   const value = source?.[key];
   if (value !== null && value !== undefined) {
@@ -41,9 +33,6 @@ function pickMappingContent(source, fallback) {
   const out = {};
   for (const key of MAPPING_CONTENT_KEYS) {
     out[key] = pickMappingField(source, fallback, key);
-  }
-  for (const key of RETIRED_BAND_KEYS) {
-    out[key] = "";
   }
   return out;
 }

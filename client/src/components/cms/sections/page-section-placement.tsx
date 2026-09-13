@@ -95,16 +95,8 @@ export function wrapSectionBody({
   return (
     <SectionSurface
       sectionKey={key || catalogKey}
-      section_bg_color={String(section.section_bg_color || "")}
-      section_bg_img={String(section.section_bg_img || "")}
-      legacy_bg_color={
-        (section.data as Record<string, unknown> | undefined)?.bg_color as
-          | string
-          | undefined
-      }
       surfaceTone={surfaceTone as string | undefined}
       surfaceBand={surfaceBand as never}
-      sectionTheme={sectionTheme}
       pageTheme={pageTheme}
       pageSurfaceMode={String(pageSurfaceMode || "")}
       pageBandFill={pageBandFill}

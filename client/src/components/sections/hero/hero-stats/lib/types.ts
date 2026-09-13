@@ -18,8 +18,6 @@ export type HeroStatsUiProps = {
   stats?: HeroStatsUiItem[];
   statsAddSlot?: ReactNode;
   itemsBar?: ReactNode;
-  section_theme?: string;
-  sectionTheme?: string;
   surfaceTone?: unknown;
   surfaceBand?: unknown;
 };

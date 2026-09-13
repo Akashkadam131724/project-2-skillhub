@@ -69,7 +69,6 @@ export {
   HeroSubtitleCms,
   HeroBodyCms,
   HeroImageCms,
-  HeroBgAddChip,
 } from "./shared/hero-cms-fields";
 
 export type { HeroContentSectionProps } from "./shared/lib/types";

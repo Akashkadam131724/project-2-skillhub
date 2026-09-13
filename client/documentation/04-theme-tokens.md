@@ -11,7 +11,7 @@ Override priority (site → template → built-in section paint) is documented i
 | Theme → **Colors** | Brand, brand hover, ink |
 | Theme → **Surface** | Repeating band colors for normal section rows |
 
-There is **no** theme Background tab and **no** per-section band / `section_theme` / `section_bg_*` CMS UI.
+There is **no** per-section background CMS — only Theme → **Colors** and **Surface**.
 
 ## Band themes (runtime)
 

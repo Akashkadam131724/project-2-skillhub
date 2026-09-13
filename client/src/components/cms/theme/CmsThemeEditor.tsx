@@ -84,7 +84,7 @@ function CmsThemeEditorShell({
 
 /**
  * Shared theme editor for Site Theme (global) and Page template overrides.
- * Background tab removed — colors + surface pattern only.
+ * Tabs: Colors + Surface.
  */
 export default function CmsThemeEditor({
   mode = "site",

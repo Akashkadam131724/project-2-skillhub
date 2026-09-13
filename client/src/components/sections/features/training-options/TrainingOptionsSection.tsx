@@ -17,8 +17,6 @@ export default function TrainingOptionsSection({
   sub_title,
   items: mappingItems,
   section_key = "training_options",
-  section_theme,
-  sectionTheme,
   surfaceTone,
   surfaceBand,
   onEditField,
@@ -33,7 +31,6 @@ export default function TrainingOptionsSection({
   });
   const onDarkBand = isPlacementDarkBand({
     section_key,
-    section_theme: section_theme ?? sectionTheme,
     surfaceTone,
     surfaceBand,
   });

@@ -6,7 +6,6 @@ export type SplitCtaSectionProps = {
   section_title?: string;
   sub_title?: string;
   section_img_url?: string;
-  section_bg_color?: string;
   data?: {
     image_url?: string;
     image_side?: string;

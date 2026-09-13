@@ -55,14 +55,8 @@ const pageTagSchema = new Schema(
     sub_title: { type: String, trim: true, default: null },
     /** Label in sticky in-page nav (null → inherit section default / hide if empty) */
     in_page_nav_title: { type: String, trim: true, default: null },
-    /** Optional background image URL for this placement */
-    section_bg_img: { type: String, trim: true, default: null },
-    /** Solid color or CSS gradient for the section band */
-    section_bg_color: { type: String, trim: true, default: null, maxlength: 400 },
     /** Optional image — each section UI decides if/where to render it */
     section_img_url: { type: String, trim: true, default: null },
-    /** light | dark — null/empty = inherit page alternation */
-    section_theme: { type: String, trim: true, lowercase: true, default: null },
     data: { type: Schema.Types.Mixed, default: null },
 
     /**
@@ -156,13 +150,8 @@ const sectionSchema = new Schema(
     button_title: { type: String, trim: true, default: "" },
     /** @deprecated Prefer `buttons[]` */
     target_url: { type: String, trim: true, default: "" },
-    section_bg_img: { type: String, trim: true, default: "" },
-    /** Solid color or CSS gradient for the section band */
-    section_bg_color: { type: String, trim: true, default: "", maxlength: 400 },
     /** Optional image — section components opt in to render it */
     section_img_url: { type: String, trim: true, default: "" },
-    /** light | dark — empty = inherit page alternation */
-    section_theme: { type: String, trim: true, lowercase: true, default: "" },
     /** CMS catalog preview thumbnail (section picker / page previews) */
     section_preview_img: { type: String, trim: true, default: "" },
     data: { type: Schema.Types.Mixed, default: {} },

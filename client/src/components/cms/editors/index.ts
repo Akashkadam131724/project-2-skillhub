@@ -5,7 +5,6 @@ export {
   serializeButtonsDraft,
 } from "./CmsButtonsEditor";
 export { default as CmsBgColorPicker } from "./CmsBgColorPicker";
-export { default as CmsBandSurfacePicker } from "./CmsBandSurfacePicker";
 export { default as CmsItemPreview } from "./CmsItemPreview";
 export {
   default as CmsItemsEditor,
@@ -23,7 +22,6 @@ export {
 export type {
   ButtonDraft,
   ButtonAppearanceFieldsProps,
-  CmsBandSurfacePickerProps,
   CmsBgColorPickerProps,
   CmsButtonsEditorProps,
   CmsItemPreviewProps,

@@ -16,8 +16,6 @@ export default function FaqPublicSection({
   sub_title,
   items: mappingItems,
   section_key = "faq",
-  sectionTheme,
-  section_theme,
   surfaceTone,
   surfaceBand,
   buttons,
@@ -45,8 +43,6 @@ export default function FaqPublicSection({
 
   const items = resolveFaqUiItems(section_key, mappingItems);
   const darkBand = faqDarkBand({
-    section_theme,
-    sectionTheme,
     surfaceTone,
     surfaceBand,
   });

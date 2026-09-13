@@ -163,32 +163,6 @@ export type ToneSectionProps = {
   onChange?: (value: string) => void;
 };
 
-export type BandSurfacePreset = {
-  id: string;
-  label: string;
-  hint?: string;
-  bg?: string;
-};
-
-export type BandSurfaceGroup = {
-  id?: string;
-  title?: string;
-  description?: string;
-  tone?: string;
-  presets: BandSurfacePreset[];
-};
-
-export type CmsBandSurfacePickerProps = {
-  bgColor?: string;
-  onSelect?: (preset: BandSurfacePreset) => void;
-  disabled?: boolean;
-  tone?: string | null;
-  role?: "all" | "alternate" | "best";
-  compact?: boolean;
-  /** @deprecated use tone + role */
-  variant?: "primary" | "alternate" | null;
-};
-
 export type VideoEmbedAttrs = {
   src: string;
   provider: "youtube" | "vimeo" | "file" | string;

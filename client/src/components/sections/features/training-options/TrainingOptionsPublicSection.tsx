@@ -16,8 +16,6 @@ export default function TrainingOptionsPublicSection({
   sub_title,
   items: mappingItems,
   section_key = "training_options",
-  section_theme,
-  sectionTheme,
   surfaceTone,
   surfaceBand,
   buttons,
@@ -48,7 +46,6 @@ export default function TrainingOptionsPublicSection({
 
   const onDarkBand = isPlacementDarkBand({
     section_key,
-    section_theme: section_theme ?? sectionTheme,
     surfaceTone,
     surfaceBand,
   });

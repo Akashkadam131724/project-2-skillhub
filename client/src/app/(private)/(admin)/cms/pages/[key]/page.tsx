@@ -105,7 +105,6 @@ const emptyPlacement: PlacementForm = {
   section_title: "",
   sub_title: "",
   in_page_nav_title: "",
-  section_bg_img: "",
   section_img_url: "",
   status: true,
 };
@@ -367,7 +366,6 @@ export default function CmsPageDetailPage() {
         section_title: addForm.section_title || null,
         sub_title: addForm.sub_title || null,
         in_page_nav_title: addForm.in_page_nav_title || null,
-        section_bg_img: addForm.section_bg_img || null,
         section_img_url: addForm.section_img_url || null,
         status: addForm.status,
       });
@@ -404,7 +402,6 @@ export default function CmsPageDetailPage() {
       section_title: String(tag.section_title || ""),
       sub_title: String(tag.sub_title || ""),
       in_page_nav_title: String(tag.in_page_nav_title || ""),
-      section_bg_img: String(tag.section_bg_img || ""),
       section_img_url: String(tag.section_img_url || ""),
       sort_order: tag.sort_order ?? 0,
       status: tag.status !== false,
@@ -421,7 +418,6 @@ export default function CmsPageDetailPage() {
         section_title: editForm.section_title || null,
         sub_title: editForm.sub_title || null,
         in_page_nav_title: editForm.in_page_nav_title || null,
-        section_bg_img: editForm.section_bg_img || null,
         section_img_url: editForm.section_img_url || null,
         sort_order: Number(editForm.sort_order) || 0,
         status: editForm.status,
@@ -881,66 +877,6 @@ export default function CmsPageDetailPage() {
                               />
                             </div>
                           </Field>
-                          <Field label="Background image" hint="URL or upload">
-                            <div className="space-y-2">
-                              {editForm.section_bg_img ? (
-                                // eslint-disable-next-line @next/next/no-img-element
-                                <img
-                                  src={mediaUrl(editForm.section_bg_img)}
-                                  alt=""
-                                  className="h-20 w-full rounded-lg object-cover"
-                                />
-                              ) : null}
-                              <input
-                                className={inputClass}
-                                value={editForm.section_bg_img}
-                                onChange={(e) =>
-                                  setEditForm((f) =>
-                                    f
-                                      ? {
-                                          ...f,
-                                          section_bg_img: e.target.value,
-                                        }
-                                      : f
-                                  )
-                                }
-                                placeholder="/uploads/… or https://…"
-                              />
-                              <input
-                                type="file"
-                                accept="image/jpeg,image/png,image/webp,image/gif"
-                                className="block w-full text-xs"
-                                onChange={async (e) => {
-                                  const file = e.target.files?.[0];
-                                  e.target.value = "";
-                                  if (!file) return;
-                                  setSaving(true);
-                                  try {
-                                    const dataUrl = await new Promise((resolve, reject) => {
-                                      const reader = new FileReader();
-                                      reader.onload = () => resolve(reader.result);
-                                      reader.onerror = () =>
-                                        reject(new Error("Could not read file"));
-                                      reader.readAsDataURL(file);
-                                    });
-                                    const res = await uploadCmsImage(String(dataUrl), "sections");
-                                    setEditForm((f) =>
-                                      f
-                                        ? {
-                                            ...f,
-                                            section_bg_img: String(res.data?.url || ""),
-                                          }
-                                        : f
-                                    );
-                                  } catch (err) {
-                                    setError(err);
-                                  } finally {
-                                    setSaving(false);
-                                  }
-                                }}
-                              />
-                            </div>
-                          </Field>
                           <Field label="Sort order">
                             <input
                               type="number"
@@ -1177,55 +1113,6 @@ export default function CmsPageDetailPage() {
                         setAddForm((f) => ({
                           ...f,
                           section_img_url: res.data?.url || "",
-                        }));
-                      } catch (err) {
-                        setError(err);
-                      } finally {
-                        setSaving(false);
-                      }
-                    }}
-                  />
-                </div>
-              </Field>
-              <Field label="Background image" hint="Optional URL or upload">
-                <div className="space-y-2 sm:col-span-2">
-                  {addForm.section_bg_img ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={mediaUrl(addForm.section_bg_img)}
-                      alt=""
-                      className="h-20 w-full rounded-lg object-cover"
-                    />
-                  ) : null}
-                  <input
-                    className={inputClass}
-                    value={addForm.section_bg_img}
-                    onChange={(e) =>
-                      setAddForm((f) => ({ ...f, section_bg_img: e.target.value }))
-                    }
-                    placeholder="/uploads/… or https://…"
-                  />
-                  <input
-                    type="file"
-                    accept="image/jpeg,image/png,image/webp,image/gif"
-                    className="block w-full text-xs"
-                    onChange={async (e) => {
-                      const file = e.target.files?.[0];
-                      e.target.value = "";
-                      if (!file) return;
-                      setSaving(true);
-                      try {
-                        const dataUrl = await new Promise((resolve, reject) => {
-                          const reader = new FileReader();
-                          reader.onload = () => resolve(reader.result);
-                          reader.onerror = () =>
-                            reject(new Error("Could not read file"));
-                          reader.readAsDataURL(file);
-                        });
-                        const res = await uploadCmsImage(String(dataUrl), "sections");
-                        setAddForm((f) => ({
-                          ...f,
-                          section_bg_img: res.data?.url || "",
                         }));
                       } catch (err) {
                         setError(err);

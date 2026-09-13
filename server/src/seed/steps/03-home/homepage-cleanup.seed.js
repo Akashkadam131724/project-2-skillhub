@@ -88,8 +88,6 @@ const copy = {
     in_page_nav_title: "",
     section_img_url:
       "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&w=1400&q=80",
-    section_bg_img: "",
-    section_bg_color: "",
     data: {},
     buttons: [
       button("Explore courses", "/courses", "primary", 0),
@@ -246,7 +244,6 @@ const copy = {
     sub_title:
       "Keep the numbers focused on operating value: speed, coverage, clarity, and repeatability.",
     in_page_nav_title: "By the Numbers",
-    section_bg_color: null,
     buttons: [],
     data: {},
     items: [
@@ -348,8 +345,6 @@ function applyToHomeTag(section, page, fields) {
     sub_title: fields.sub_title ?? "",
     in_page_nav_title: fields.in_page_nav_title ?? "",
     section_img_url: fields.section_img_url ?? "",
-    section_bg_img: fields.section_bg_img ?? "",
-    section_bg_color: fields.section_bg_color ?? null,
     data: fields.data ?? {},
     buttons: fields.buttons ?? [],
     items: fields.items ?? [],
@@ -372,8 +367,6 @@ async function updateSection(page, key, fields) {
     section.sub_title = fields.sub_title ?? "";
     section.in_page_nav_title = fields.in_page_nav_title ?? "";
     section.section_img_url = fields.section_img_url ?? "";
-    section.section_bg_img = fields.section_bg_img ?? "";
-    section.section_bg_color = fields.section_bg_color ?? "";
     section.data = fields.data ?? {};
     section.buttons = fields.buttons ?? [];
     section.items = fields.items ?? [];

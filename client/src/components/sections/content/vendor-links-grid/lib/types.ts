@@ -35,8 +35,6 @@ export type VendorLinksGridSectionProps = {
   cmsMode?: boolean;
   onEditField?: (field: string, extra?: unknown) => void;
   onFormOpen?: (formKey: string, button?: unknown) => void;
-  section_theme?: string;
-  sectionTheme?: string;
   surfaceTone?: string;
   surfaceBand?: { bg?: string; theme?: string } | string | null;
 };

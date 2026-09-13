@@ -52,11 +52,7 @@ const entityPageSectionSchema = new Schema(
     section_title: { type: String, trim: true, default: null },
     sub_title: { type: String, trim: true, default: null },
     in_page_nav_title: { type: String, trim: true, default: null },
-    section_bg_img: { type: String, trim: true, default: null },
-    section_bg_color: { type: String, trim: true, default: null, maxlength: 400 },
     section_img_url: { type: String, trim: true, default: null },
-    /** light | dark — null/empty = inherit template / catalog */
-    section_theme: { type: String, trim: true, lowercase: true, default: null },
     data: { type: Schema.Types.Mixed, default: null },
 
     /**

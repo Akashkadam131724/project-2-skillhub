@@ -10,7 +10,6 @@ const ARCHETYPE_CMS: Record<SectionArchetype, Partial<SectionCmsCapabilities>> =
     toolbar: {
       navTitle: false,
       sectionImage: false,
-      sectionBand: false,
       visibility: true,
       removeExtra: true,
     },
@@ -21,7 +20,6 @@ const ARCHETYPE_CMS: Record<SectionArchetype, Partial<SectionCmsCapabilities>> =
     toolbar: {
       navTitle: true,
       sectionImage: "auto",
-      sectionBand: false,
       visibility: true,
       removeExtra: true,
     },
@@ -37,7 +35,6 @@ const ARCHETYPE_CMS: Record<SectionArchetype, Partial<SectionCmsCapabilities>> =
     toolbar: {
       navTitle: true,
       sectionImage: false,
-      sectionBand: false,
       visibility: true,
       removeExtra: true,
     },
@@ -53,7 +50,6 @@ const ARCHETYPE_CMS: Record<SectionArchetype, Partial<SectionCmsCapabilities>> =
     toolbar: {
       navTitle: false,
       sectionImage: false,
-      sectionBand: false,
       visibility: true,
       removeExtra: true,
     },
@@ -69,7 +65,6 @@ const ARCHETYPE_CMS: Record<SectionArchetype, Partial<SectionCmsCapabilities>> =
     toolbar: {
       navTitle: false,
       sectionImage: false,
-      sectionBand: false,
       visibility: true,
       removeExtra: true,
     },
@@ -88,7 +83,7 @@ const BAND_CATALOG_SURFACE: Record<SectionBandProfile, "alt" | "fixed"> = {
 /** Theme data file hints — apply keys manually when registering (documented on blueprint). */
 export const BAND_THEME_HINTS: Record<
   SectionBandProfile,
-  { ownBand?: boolean; bandSkip?: boolean; fixedTheme?: boolean; inheritDark?: boolean }
+  { ownBand?: boolean; bandSkip?: boolean; fixedTheme?: boolean }
 > = {
   "page-alt": {},
   "own-band": { ownBand: true },
@@ -109,8 +104,6 @@ export function resolveBlueprintCmsCapabilities(
       ...DEFAULT_SECTION_CMS_CAPABILITIES.toolbar,
       ...base.toolbar,
       ...cms.toolbar,
-      // Section band editors retired site-wide
-      sectionBand: false,
     },
     fields: { ...base.fields, ...cms.fields },
   };

@@ -17,11 +17,7 @@ export type PagePlacement = {
   section_title?: string;
   sub_title?: string;
   in_page_nav_title?: string;
-  section_bg_img?: string;
-  section_bg_color?: string;
   section_img_url?: string;
-  section_theme?: string;
-  section_theme_local?: string | null;
   section_preview_img?: string;
   buttons?: ButtonDraft[];
   items?: SectionItemDraft[];

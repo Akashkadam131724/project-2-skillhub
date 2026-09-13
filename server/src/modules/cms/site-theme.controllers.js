@@ -37,8 +37,6 @@ export const updateSiteTheme = async (req, res) => {
         $set: {
           ...filled,
           key: "default",
-          page_bg_color: "",
-          page_bg_img: "",
         },
       },
       { new: true, upsert: true, runValidators: true, setDefaultsOnInsert: true }

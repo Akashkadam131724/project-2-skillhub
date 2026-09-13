@@ -78,8 +78,6 @@ async function restoreHomePage() {
       section_title: extra.section_title ?? null,
       sub_title: extra.sub_title ?? null,
       in_page_nav_title: extra.in_page_nav_title ?? null,
-      section_bg_img: extra.section_bg_img ?? null,
-      section_bg_color: extra.section_bg_color ?? null,
       section_img_url: extra.section_img_url ?? null,
       data: extra.data ?? null,
       ...(extra.buttons !== undefined ? { buttons: extra.buttons } : {}),

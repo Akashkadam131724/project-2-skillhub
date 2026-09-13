@@ -62,7 +62,6 @@ function resolveToolbarFlag(
 export type SectionToolbarVisibility = {
   navTitle: boolean;
   sectionImage: boolean;
-  sectionBand: boolean;
   visibility: boolean;
   removeExtra: boolean;
   mode: SectionCmsCapabilities["mode"];
@@ -87,7 +86,6 @@ export function resolveSectionToolbarVisibility(
     sectionImage: resolveToolbarFlag(toolbar.sectionImage, () =>
       sectionUsesImage(sectionKey, renderKey)
     ),
-    sectionBand: Boolean(toolbar.sectionBand),
     visibility: Boolean(toolbar.visibility),
     removeExtra: Boolean(toolbar.removeExtra),
     mode: cap.mode,
@@ -108,14 +106,6 @@ export function sectionCmsFieldAllowed(
   }
   if (field === "section_img_url") {
     return cap.toolbar.sectionImage !== false;
-  }
-  if (
-    field === "section_band" ||
-    field === "section_bg_img" ||
-    field === "section_bg_color" ||
-    field === "section_theme"
-  ) {
-    return false;
   }
   if (cap.fields && field && field in cap.fields) {
     return Boolean(cap.fields[field]);

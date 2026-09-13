@@ -14,8 +14,6 @@ export type FaqSectionProps = {
   sub_title?: string;
   items?: unknown[];
   section_key?: string;
-  sectionTheme?: unknown;
-  section_theme?: unknown;
   surfaceTone?: unknown;
   surfaceBand?: unknown;
   cmsMode?: boolean;

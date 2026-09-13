@@ -174,42 +174,6 @@ export function HeroImageCms({
   );
 }
 
-/** Compact CMS-only control for optional background images. */
-export function HeroBgAddChip({
-  section_bg_img,
-  onEditField,
-  inverted = true,
-  className = "",
-}: {
-  section_bg_img?: string;
-  onEditField?: EditHandler;
-  inverted?: boolean;
-  className?: string;
-}) {
-  const bgUrl = mediaUrl(section_bg_img);
-
-  return (
-    <CmsEditable
-      cmsMode
-      field="section_bg_img"
-      label="Background image"
-      onEditField={onEditField}
-      inverted={inverted}
-      className={className}
-    >
-      <span
-        className={`inline-flex rounded-md border border-dashed px-3 py-1.5 text-xs ${
-          inverted
-            ? "border-white/40 text-white/70"
-            : "border-slate-300 text-slate-500"
-        }`}
-      >
-        {bgUrl ? "Edit background image" : "Add background image…"}
-      </span>
-    </CmsEditable>
-  );
-}
-
 /** CMS placeholder when body field is empty but should still show an editor shell. */
 export function heroBodyCmsSlot(
   body: string | undefined,

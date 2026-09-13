@@ -16,8 +16,6 @@ export default function ProcessStepsPublicSection({
   sub_title,
   items: mappingItems,
   section_key = "process_steps",
-  section_theme,
-  sectionTheme,
   surfaceTone,
   surfaceBand,
   buttons,
@@ -48,7 +46,6 @@ export default function ProcessStepsPublicSection({
 
   const onDarkBand = isPlacementDarkBand({
     section_key,
-    section_theme: section_theme ?? sectionTheme,
     surfaceTone,
     surfaceBand,
   });

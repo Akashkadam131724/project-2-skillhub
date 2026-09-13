@@ -717,7 +717,7 @@ function sampleForKey(key) {
         section_title: "Editorial banner hero",
         sub_title: "Full-bleed display type over imagery.",
         in_page_nav_title: "Editorial",
-        section_bg_img: IMG.hero,
+        section_img_url: IMG.hero,
       };
 
     case "statement_band":
@@ -748,7 +748,7 @@ function sampleForKey(key) {
         section_title: "See SkillHub in action",
         sub_title: "Full-bleed video banner.",
         in_page_nav_title: "Video",
-        section_bg_img: IMG.hero,
+        section_img_url: IMG.hero,
         buttons: [
           btn("Watch demo", {
             action_type: "youtube",

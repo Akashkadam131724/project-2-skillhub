@@ -183,9 +183,7 @@ export function placementHasFieldContent(
   if (!cmsMode) return false;
 
   return Boolean(
-    String(section.section_bg_img || "").trim() ||
-      String(section.section_bg_color || "").trim() ||
-      String((section?.data as { bg_color?: string } | undefined)?.bg_color || "").trim()
+    String((section?.data as { bg_color?: string } | undefined)?.bg_color || "").trim()
   );
 }
 
@@ -273,8 +271,6 @@ export function sectionProbeFromProps(
     sub_title: props.sub_title,
     data: props.data,
     section_img_url: props.section_img_url,
-    section_bg_img: props.section_bg_img,
-    section_bg_color: props.section_bg_color,
     buttons: props.buttons,
     button_title: props.button_title,
     target_url: props.target_url,

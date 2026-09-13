@@ -239,7 +239,6 @@ export type PlacementForm = {
   section_title: string;
   sub_title: string;
   in_page_nav_title: string;
-  section_bg_img: string;
   section_img_url: string;
   status: boolean;
 };
