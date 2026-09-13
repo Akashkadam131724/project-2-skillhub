@@ -5,6 +5,10 @@ import {
   buildTextSearchFilter,
   paginatedCmsList,
 } from "../../utils/cmsList.js";
+import {
+  withCountQueryOptions,
+  withListQueryOptions,
+} from "../../utils/softDeleteQuery.js";
 
 const softDelete = createSoftDeleteController({
   Model: Vendor,
