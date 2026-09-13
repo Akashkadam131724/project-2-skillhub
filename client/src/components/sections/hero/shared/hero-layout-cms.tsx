@@ -65,7 +65,7 @@ export function heroLayoutCmsFooter(
     "buttons" | "button_title" | "target_url" | "onFormOpen" | "onEditField"
   >,
   className = "",
-  options: { inverted?: boolean; buttonsClassName?: string } = {}
+  options: { inverted?: boolean; buttonsClassName?: string; spaced?: boolean } = {}
 ): ReactNode {
   return cmsSectionChrome({
     section_key: "hero",
@@ -76,6 +76,7 @@ export function heroLayoutCmsFooter(
     target_url: props.target_url,
     onFormOpen: props.onFormOpen,
     inverted: options.inverted,
+    footerSpaced: options.spaced ?? false,
     footerClassName: className,
     buttonsClassName: options.buttonsClassName,
     withItems: false,

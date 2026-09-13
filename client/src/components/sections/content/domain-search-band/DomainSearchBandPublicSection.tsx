@@ -48,7 +48,7 @@ export default function DomainSearchBandPublicSection({
         onFormOpen,
         inverted: true,
         surface: "dark",
-        className: "mt-8 flex flex-wrap items-center gap-3",
+        className: "flex flex-wrap items-center gap-3",
       })}
     />
   );

@@ -50,7 +50,8 @@ export default function PromoModalSection({
           button_title,
           target_url,
           onFormOpen,
-          footerClassName: "mt-4",
+          footerSpaced: false,
+        footerClassName: "mt-4",
           withItems: false,
         }).footer
       }

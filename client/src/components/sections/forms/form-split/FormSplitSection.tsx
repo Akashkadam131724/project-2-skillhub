@@ -81,7 +81,6 @@ export default function FormSplitSection({
         button_title,
         target_url,
         onFormOpen,
-        footerClassName: "mt-6",
       })}
       contentSideSlot={
         cmsMode ? (

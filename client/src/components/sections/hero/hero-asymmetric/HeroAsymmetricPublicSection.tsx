@@ -37,6 +37,7 @@ export default function HeroAsymmetricPublicSection({
         onFormOpen,
         inverted: true,
         surface: "dark",
+        spaced: false,
         className: "mt-0",
         buttonsClassName: "flex flex-col items-stretch gap-3",
       })}

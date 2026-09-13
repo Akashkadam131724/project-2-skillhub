@@ -23,13 +23,19 @@ export type SectionButtonsFooterProps = {
   inverted?: boolean;
   /** inherit | light | dark */
   surface?: string;
+  /**
+   * When true (default), applies {@link DS_SPACE.footerOffset}.
+   * Set false for flush heroes / tight footers and pass custom `mt-*` in className.
+   */
+  spaced?: boolean;
+  /** Extra classes only — offset comes from `spaced`, not from replacing className. */
   className?: string;
   buttonsClassName?: string;
 };
 
 /**
  * Bottom-of-section CTAs — shared across all section layouts.
- * Owns body→footer spacing via `mt-*` (default {@link DS_SPACE.footerOffset}).
+ * Owns body→footer spacing via `spaced` + {@link DS_SPACE.footerOffset}.
  * Must sit outside SectionShell’s body stack so gap does not double that margin.
  */
 export default function SectionButtonsFooter({
@@ -42,7 +48,8 @@ export default function SectionButtonsFooter({
   onFormOpen,
   inverted = false,
   surface = "inherit",
-  className = DS_SPACE.footerOffset,
+  spaced = true,
+  className = "",
   buttonsClassName = "flex flex-wrap items-center gap-3",
 }: SectionButtonsFooterProps) {
   const list = sortActiveButtons(
@@ -54,7 +61,13 @@ export default function SectionButtonsFooter({
   if (!cmsMode && !list.length) return null;
 
   return (
-    <div className={sectionClassNames(className)} data-cms-buttons-footer>
+    <div
+      className={sectionClassNames(
+        spaced ? DS_SPACE.footerOffset : null,
+        className
+      )}
+      data-cms-buttons-footer
+    >
       {list.length ? (
         <SectionButtons
           buttons={list}

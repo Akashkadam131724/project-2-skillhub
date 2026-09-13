@@ -49,6 +49,7 @@ export default function OverviewPublicSection({
         button_title,
         target_url,
         onFormOpen,
+        spaced: false,
         className: "mt-2 flex flex-wrap items-center gap-3 sm:mt-3",
       })}
     />

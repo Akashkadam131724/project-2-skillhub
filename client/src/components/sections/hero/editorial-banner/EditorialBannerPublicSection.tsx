@@ -45,6 +45,7 @@ export default function EditorialBannerPublicSection({
         onFormOpen,
         inverted: true,
         surface: "dark",
+        spaced: false,
         className: "mt-8",
         buttonsClassName: "flex flex-wrap items-center gap-3",
       })}

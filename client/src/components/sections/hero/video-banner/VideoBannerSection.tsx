@@ -62,6 +62,7 @@ export default function VideoBannerSection({
         onEditField,
         buttons,
         onFormOpen,
+        footerSpaced: false,
         footerClassName: "shrink-0 sm:mt-0",
       })}
     />

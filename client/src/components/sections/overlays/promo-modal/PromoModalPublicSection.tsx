@@ -73,7 +73,7 @@ export default function PromoModalPublicSection({
         button_title,
         target_url,
         onFormOpen,
-        className: "mt-6 flex flex-wrap gap-3",
+        className: "flex flex-wrap gap-3",
       })}
     />
   );

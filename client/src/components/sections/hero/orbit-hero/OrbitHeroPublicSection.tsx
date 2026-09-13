@@ -45,6 +45,7 @@ export default function OrbitHeroPublicSection({
       body={data?.body}
       footer={heroLayoutPublicFooter(props, {
         onFormOpen,
+        spaced: false,
         className: "mt-8",
         buttonsClassName: "flex flex-wrap items-center justify-center gap-3",
       })}

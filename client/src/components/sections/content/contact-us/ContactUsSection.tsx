@@ -65,7 +65,6 @@ export default function ContactUsSection({
         button_title,
         target_url,
         onFormOpen,
-        footerClassName: "mt-8",
         withItems: false,
       })}
       bodySlot={

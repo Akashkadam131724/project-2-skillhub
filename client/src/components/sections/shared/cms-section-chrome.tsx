@@ -17,7 +17,10 @@ export type CmsSectionChromeOptions = {
   /** Shorthand — applies dark-band items bar chrome */
   onDarkBand?: boolean;
   itemsBarClassName?: string;
+  /** Extra footer classes (layout only). Offset comes from `footerSpaced`. */
   footerClassName?: string;
+  /** When false, no default footerOffset — pass custom mt in footerClassName. */
+  footerSpaced?: boolean;
   buttonsClassName?: string;
   editField?: string;
   /** When false, only returns `footer` (no items bar / empty hint). Default true. */
@@ -39,7 +42,8 @@ export function cmsSectionChrome({
   inverted = false,
   onDarkBand = false,
   itemsBarClassName,
-  footerClassName,
+  footerClassName = "",
+  footerSpaced = true,
   buttonsClassName,
   editField,
   withItems = true,
@@ -58,7 +62,8 @@ export function cmsSectionChrome({
       inverted={inverted || onDarkBand}
       surface={inverted || onDarkBand ? "dark" : "inherit"}
       editField={editField}
-      {...(footerClassName ? { className: footerClassName } : {})}
+      spaced={footerSpaced}
+      className={footerClassName}
       buttonsClassName={buttonsClassName}
     />
   );

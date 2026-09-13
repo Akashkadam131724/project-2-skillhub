@@ -74,6 +74,7 @@ export default function HeroStatsPublicSection({
       surfaceBand={surfaceBand}
       footer={heroLayoutPublicFooter(props, {
         onFormOpen,
+        spaced: false,
         className: "mt-2",
         buttonsClassName: "flex flex-wrap items-center gap-3",
       })}

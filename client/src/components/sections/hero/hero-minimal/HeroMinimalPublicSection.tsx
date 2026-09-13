@@ -32,6 +32,7 @@ export default function HeroMinimalPublicSection({
       subtitle={sub_title}
       footer={heroLayoutPublicFooter(props, {
         onFormOpen,
+        spaced: false,
         className: "mt-6",
         buttonsClassName: "flex flex-wrap items-center gap-3",
       })}

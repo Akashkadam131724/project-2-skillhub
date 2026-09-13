@@ -8,14 +8,19 @@
 export const DS_SPACE = {
   /** Eyebrow → title → subtitle */
   headerStack: "gap-2.5 sm:gap-3",
-  /** Space below section header before body */
+  /**
+   * Shared vertical rhythm between major section chrome:
+   * header → body, and body → footer (same distance).
+   */
   headerBody: "mb-8 sm:mb-10",
+  /** Alias of headerBody as margin-top for SectionButtonsFooter */
+  footerOffset: "mt-8 sm:mt-10",
+  /** CMS items manage bar → body (tight; bar sits outside body stack) */
+  chromeOffset: "mb-3",
   /** Vertical stack — tight (FAQ rows, card groups) */
   stackSm: "gap-6",
   /** Vertical stack — default block spacing */
   stackMd: "gap-8",
-  /** Section CTA footer offset from body (apply on SectionButtonsFooter, not stack gap) */
-  footerOffset: "mt-6 sm:mt-8",
   /** Vertical stack — split columns, large sections */
   stackLg: "gap-10 lg:gap-12",
   /** Stacked text/media rows */

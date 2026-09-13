@@ -47,6 +47,7 @@ export default function SiteBuilderHeroPublicSection({
         onFormOpen,
         inverted: true,
         surface: "dark",
+        spaced: false,
         className: "mt-9",
         buttonsClassName: "flex flex-wrap items-center gap-3",
       })}

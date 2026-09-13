@@ -55,7 +55,7 @@ export default function CtaBandSection({
         onFormOpen,
         inverted: true,
         onDarkBand: true,
-        footerClassName: "mt-8 justify-center",
+        footerClassName: "justify-center",
         withItems: false,
       })}
       bodySlot={

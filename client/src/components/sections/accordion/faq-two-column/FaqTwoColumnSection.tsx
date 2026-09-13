@@ -54,6 +54,7 @@ export default function FaqTwoColumnSection({
         target_url,
         onFormOpen,
         onDarkBand: darkBand,
+        footerSpaced: false,
         footerClassName: "mt-2 sm:mt-4",
       })}
       headerControls={

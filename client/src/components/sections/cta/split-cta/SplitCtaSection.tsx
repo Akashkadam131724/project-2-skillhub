@@ -91,6 +91,7 @@ export default function SplitCtaSection({
         onFormOpen,
         inverted: true,
         onDarkBand: true,
+        footerSpaced: false,
         footerClassName: "mt-0",
         buttonsClassName:
           "flex flex-wrap items-center gap-3 [&_a]:rounded-lg [&_a]:px-4 [&_a]:py-2.5",

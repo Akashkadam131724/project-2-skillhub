@@ -1,5 +1,4 @@
 import SectionButtonsFooter from "@/components/sections/SectionButtonsFooter";
-import { DS_SPACE } from "@/lib/layout/section-layout-system";
 import {
   buttonsFromLegacy,
   sortActiveButtons,
@@ -28,6 +27,7 @@ export type PublicSectionButtonsFooterProps = PlacementButtonsInput & {
   onFormOpen?: (formKey: string, button?: unknown) => void;
   inverted?: boolean;
   surface?: string;
+  spaced?: boolean;
   className?: string;
   buttonsClassName?: string;
 };
@@ -40,7 +40,8 @@ export function publicSectionButtonsFooter({
   onFormOpen,
   inverted = false,
   surface = "inherit",
-  className = DS_SPACE.footerOffset,
+  spaced = true,
+  className = "",
   buttonsClassName = "flex flex-wrap items-center gap-3",
 }: PublicSectionButtonsFooterProps) {
   return (
@@ -51,6 +52,7 @@ export function publicSectionButtonsFooter({
       onFormOpen={onFormOpen}
       inverted={inverted}
       surface={surface}
+      spaced={spaced}
       cmsMode={false}
       className={className}
       buttonsClassName={buttonsClassName}

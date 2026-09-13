@@ -2,6 +2,7 @@
 
 import { getSectionItemsConfig } from "@/lib/sections/section-items-config";
 import { useSectionCmsKeys } from "@/context/SectionCmsContext";
+import { DS_SPACE, sectionClassNames } from "@/lib/layout/section-layout-system";
 
 export type CmsSectionItemsBarProps = {
   sectionKey?: string;
@@ -15,6 +16,7 @@ export type CmsSectionItemsBarProps = {
 /**
  * CMS control placed next to the cards — label comes from section config
  * (FAQ items, Benefit cards, Stats, …) not a generic "Items".
+ * Uses {@link DS_SPACE.chromeOffset}; sits outside the body stack as `lead`.
  */
 export default function CmsSectionItemsBar({
   sectionKey: sectionKeyProp,
@@ -39,7 +41,11 @@ export default function CmsSectionItemsBar({
 
   return (
     <div
-      className={`mb-3 flex flex-wrap items-center justify-between gap-2 ${className}`.trim()}
+      className={sectionClassNames(
+        DS_SPACE.chromeOffset,
+        "flex flex-wrap items-center justify-between gap-2",
+        className
+      )}
     >
       <p className="section-theme-muted m-0 text-[11px] font-semibold tracking-wide uppercase">
         {config.label}

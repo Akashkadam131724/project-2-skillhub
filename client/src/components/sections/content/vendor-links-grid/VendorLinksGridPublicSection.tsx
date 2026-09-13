@@ -68,6 +68,7 @@ export default function VendorLinksGridPublicSection({
         onFormOpen,
         inverted: onDarkBand,
         surface: onDarkBand ? "dark" : "inherit",
+        spaced: false,
         className: "mt-4",
       })}
     />

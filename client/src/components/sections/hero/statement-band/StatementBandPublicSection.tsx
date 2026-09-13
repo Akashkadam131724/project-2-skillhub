@@ -47,6 +47,7 @@ export default function StatementBandPublicSection({
         onFormOpen,
         inverted: true,
         surface: "dark",
+        spaced: false,
         className: "mt-10",
         buttonsClassName: "flex flex-wrap items-center gap-3",
       })}

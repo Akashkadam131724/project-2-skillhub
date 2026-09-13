@@ -120,7 +120,8 @@ export default function VendorLinksGridSection({
           target_url,
           onFormOpen,
           onDarkBand,
-          footerClassName: "mt-4",
+          footerSpaced: false,
+        footerClassName: "mt-4",
           withItems: false,
         }).footer
       }

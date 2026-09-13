@@ -13,9 +13,9 @@ export type SectionStackProps = {
 };
 
 /**
- * Vertical rhythm inside a section body (items bar → grid, etc.).
- * Do not wrap `SectionHeader` or section footer here — use `SectionShell`
- * so header `mb-*` / footer `mt-*` are not stacked with flex gap.
+ * Vertical rhythm inside a section body only.
+ * Header, CMS lead bar, and footer live on `SectionShell` so their
+ * `mb-*` / `mt-*` tokens are not stacked with flex gap.
  */
 export default function SectionStack({
   children,

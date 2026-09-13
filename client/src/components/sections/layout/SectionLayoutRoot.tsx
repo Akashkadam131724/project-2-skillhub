@@ -129,10 +129,10 @@ export default function SectionLayoutRoot({
         ) : (
           <SectionShell
             header={showHeader ? <SectionHeader {...headerProps} /> : null}
+            lead={itemsBar}
             footer={footer}
             bodyGap={bodyGap}
           >
-            {itemsBar}
             {children}
           </SectionShell>
         )}

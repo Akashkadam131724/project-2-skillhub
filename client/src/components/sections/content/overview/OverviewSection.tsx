@@ -68,6 +68,7 @@ export default function OverviewSection({
         button_title,
         target_url,
         onFormOpen,
+        footerSpaced: false,
         footerClassName: "mt-2 sm:mt-3",
         withItems: false,
       })}

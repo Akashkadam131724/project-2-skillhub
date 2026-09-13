@@ -39,6 +39,7 @@ export default function HeroSplitPublicSection({
       imageUrl={resolveHeroImageUrl(section_img_url, data)}
       footer={heroLayoutPublicFooter(props, {
         onFormOpen,
+        spaced: false,
         className: "mt-2",
         buttonsClassName: "flex flex-wrap items-center gap-3",
       })}

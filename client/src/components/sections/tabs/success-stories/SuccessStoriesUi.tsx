@@ -6,7 +6,7 @@ import SectionButtons from "@/components/ui/SectionButtons";
 import YoutubeModal from "@/components/ui/YoutubeModal";
 import PlayIcon from "@/components/icons/PlayIcon";
 import SuccessStoryTabIcon from "@/components/icons/SuccessStoryTabIcon";
-import { DS_RADIUS, sectionClassNames } from "@/lib/layout/section-layout-system";
+import { DS_RADIUS, DS_SPACE, sectionClassNames } from "@/lib/layout/section-layout-system";
 import { mediaAlt } from "@/lib/utils/media-alt";
 import {
   sortActiveButtons,
@@ -202,7 +202,12 @@ export default function SuccessStoriesUi({
       hasBodyContent
     >
       {showHeader ? (
-        <header className="mx-auto mb-8 max-w-4xl text-center sm:mb-10">
+        <header
+          className={sectionClassNames(
+            "mx-auto max-w-4xl text-center",
+            DS_SPACE.headerBody
+          )}
+        >
           {titleSlot != null ? (
             titleSlot
           ) : title ? (

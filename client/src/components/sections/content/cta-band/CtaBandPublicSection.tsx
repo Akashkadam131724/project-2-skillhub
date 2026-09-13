@@ -35,7 +35,7 @@ export default function CtaBandPublicSection({
         onFormOpen,
         inverted: true,
         surface: "dark",
-        className: "mt-8 flex flex-wrap items-center justify-center gap-3",
+        className: "flex flex-wrap items-center justify-center gap-3",
       })}
     />
   );

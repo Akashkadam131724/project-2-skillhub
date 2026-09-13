@@ -12,23 +12,28 @@ export type SectionShellProps = {
    */
   header?: ReactNode;
   /**
-   * Bottom CTAs / chrome. Rendered outside the body stack so spacing comes from
-   * the footer’s own `mt-*` (e.g. SectionButtonsFooter), not stack `gap-*`.
+   * CMS items bar / leading chrome. Outside the body stack so its own
+   * `chromeOffset` margin is not doubled by `bodyGap`.
+   */
+  lead?: ReactNode;
+  /**
+   * Bottom CTAs / chrome. Outside the body stack — spacing from footer `mt-*`
+   * (`DS_SPACE.footerOffset`), not stack gap.
    */
   footer?: ReactNode;
   children?: ReactNode;
-  /** Vertical gap between body blocks only — not header↔body or body↔footer. */
+  /** Vertical gap between body blocks only — not header/lead/footer. */
   bodyGap?: DsSpaceKey;
   className?: string;
 };
 
 /**
- * Section vertical layout — top header + body + optional footer.
- * Avoid wrapping `SectionHeader`/`footer` and body in one `SectionStack` with gap;
- * that doubles spacing (header `mb-*` / footer `mt-*` + flex `gap-*`).
+ * Section vertical layout — header + optional lead + body + optional footer.
+ * Header / lead / footer own their margins; body stack only gaps its children.
  */
 export default function SectionShell({
   header,
+  lead = null,
   footer = null,
   children,
   bodyGap = "stackMd",
@@ -39,6 +44,7 @@ export default function SectionShell({
   return (
     <div className={sectionClassNames("flex flex-col", className)}>
       {header}
+      {lead}
       {hasBody ? <SectionStack gap={bodyGap}>{children}</SectionStack> : null}
       {footer}
     </div>

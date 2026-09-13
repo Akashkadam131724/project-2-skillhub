@@ -161,7 +161,6 @@ export default function WhyChooseSection({
         target_url,
         onFormOpen,
         onDarkBand: onDarkBand,
-        footerClassName: "mt-8 sm:mt-10",
       })}
 
     />
