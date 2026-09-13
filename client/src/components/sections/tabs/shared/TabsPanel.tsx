@@ -64,6 +64,7 @@ export default function TabsPanel({
                 buttons={panelButtons}
                 onFormOpen={onFormOpen}
                 inverted
+                surface="dark"
                 className="mt-5 flex flex-wrap items-center gap-3"
               />
             ) : null}
@@ -99,6 +100,7 @@ export default function TabsPanel({
                   buttons={panelButtons}
                   onFormOpen={onFormOpen}
                   inverted
+                  surface="dark"
                   className="mt-5 flex flex-wrap items-center gap-3"
                 />
               ) : null}

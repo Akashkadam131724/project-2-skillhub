@@ -125,12 +125,14 @@ export default function PillarDestinationsUi({
   className = "",
 }: PillarDestinationsUiProps) {
   const ref = useRef<HTMLDivElement | null>(null);
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useState(preview);
+
   const showTitle = titleSlot != null || Boolean(title);
   const showSubtitle = subtitleSlot != null || Boolean(subtitle);
   const showHeader = showTitle || showSubtitle;
 
   useEffect(() => {
+    if (preview) return;
     const el = ref.current;
     if (!el) return;
     const io = new IntersectionObserver(
@@ -141,7 +143,7 @@ export default function PillarDestinationsUi({
     );
     io.observe(el);
     return () => io.disconnect();
-  }, []);
+  }, [preview]);
 
   return (
     <div ref={ref}>

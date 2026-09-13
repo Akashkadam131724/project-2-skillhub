@@ -27,6 +27,7 @@ export default function SiteBuilderHeroUi({
   return (
     <section
       id={id || undefined}
+      data-section-theme="dark"
       className="relative isolate overflow-hidden bg-[#0b0b0a] text-white"
     >
       <div className="absolute inset-x-0 top-0 z-[1] border-b border-white/10 bg-[#0b0b0a]/85 backdrop-blur">

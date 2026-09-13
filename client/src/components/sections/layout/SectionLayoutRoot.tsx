@@ -88,6 +88,7 @@ export default function SectionLayoutRoot({
       emptyState,
       footer,
       items,
+      children,
       hasBodyContent,
     });
 
@@ -128,11 +129,11 @@ export default function SectionLayoutRoot({
         ) : (
           <SectionShell
             header={showHeader ? <SectionHeader {...headerProps} /> : null}
+            footer={footer}
             bodyGap={bodyGap}
           >
             {itemsBar}
             {children}
-            {footer}
           </SectionShell>
         )}
       </SectionWrapper>

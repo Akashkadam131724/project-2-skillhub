@@ -54,6 +54,7 @@ export default function SplitCtaUi({
   return (
     <SectionLayoutRoot
       id={id}
+      sectionTheme="dark"
       className={`py-0 ${
         useThemeBand && !bandStyle ? SPLIT_CTA_THEME_BAND_CLASS : ""
       }`}

@@ -14,6 +14,8 @@ export const DS_SPACE = {
   stackSm: "gap-6",
   /** Vertical stack — default block spacing */
   stackMd: "gap-8",
+  /** Section CTA footer offset from body (apply on SectionButtonsFooter, not stack gap) */
+  footerOffset: "mt-6 sm:mt-8",
   /** Vertical stack — split columns, large sections */
   stackLg: "gap-10 lg:gap-12",
   /** Stacked text/media rows */

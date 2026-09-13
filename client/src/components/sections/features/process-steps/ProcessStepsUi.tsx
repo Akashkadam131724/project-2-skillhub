@@ -27,9 +27,10 @@ export default function ProcessStepsUi({
   className = "",
 }: ProcessStepsUiProps) {
   const ref = useRef<HTMLDivElement | null>(null);
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useState(preview);
 
   useEffect(() => {
+    if (preview) return;
     const el = ref.current;
     if (!el) return;
     const io = new IntersectionObserver(
@@ -40,7 +41,7 @@ export default function ProcessStepsUi({
     );
     io.observe(el);
     return () => io.disconnect();
-  }, []);
+  }, [preview]);
 
   return (
     <div ref={ref}>

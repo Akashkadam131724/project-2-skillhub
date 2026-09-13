@@ -66,6 +66,7 @@ export default function TrainingOptionsPublicSection({
         target_url,
         onFormOpen,
         inverted: onDarkBand,
+        surface: onDarkBand ? "dark" : "inherit",
       })}
     />
   );

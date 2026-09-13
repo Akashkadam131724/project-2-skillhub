@@ -89,6 +89,8 @@ function StoryPanel({
       >
         <div className="grid lg:grid-cols-2">
           <div
+            data-section-theme="dark"
+            data-always-light-text=""
             className="flex min-h-[280px] flex-col justify-center px-8 py-10 sm:px-10 sm:py-12 lg:min-h-[360px]"
             style={{ background: gradient }}
           >
@@ -116,6 +118,7 @@ function StoryPanel({
                 buttons={buttons}
                 onFormOpen={onFormOpen}
                 inverted
+                surface="dark"
                 className="mt-8 flex flex-wrap items-center gap-3"
               />
             ) : null}

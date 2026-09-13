@@ -25,13 +25,15 @@ export default function BentoGridUi({
   itemsBar,
   emptyState = null,
   items = [],
+  preview = false,
   id,
   className = "",
 }: BentoGridUiProps) {
   const ref = useRef<HTMLDivElement | null>(null);
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useState(preview);
 
   useEffect(() => {
+    if (preview) return;
     const el = ref.current;
     if (!el) return;
     const io = new IntersectionObserver(
@@ -42,7 +44,7 @@ export default function BentoGridUi({
     );
     io.observe(el);
     return () => io.disconnect();
-  }, []);
+  }, [preview]);
 
   return (
     <div ref={ref}>

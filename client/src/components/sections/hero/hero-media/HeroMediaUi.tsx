@@ -108,6 +108,7 @@ export default function HeroMediaUi({
 
   return (
     <section
+      data-section-theme="dark"
       data-always-light-text=""
       className="relative min-h-[22rem] overflow-hidden text-white sm:min-h-[28rem]"
       style={bannerBgStyle(bgValue)}

@@ -67,6 +67,7 @@ export default function TabsChildCard({
             buttons={buttons}
             onFormOpen={onFormOpen}
             inverted={dark}
+            surface={dark ? "dark" : "inherit"}
             className="mt-auto flex flex-wrap items-center gap-2 pt-4"
           />
         ) : null}

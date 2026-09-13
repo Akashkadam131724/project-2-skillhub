@@ -66,6 +66,8 @@ export default function DomainSearchBandSection({
         button_title,
         target_url,
         onFormOpen,
+        inverted: true,
+        onDarkBand: true,
         footerClassName: "mt-8",
       })}
 

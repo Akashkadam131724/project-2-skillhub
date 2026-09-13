@@ -37,6 +37,7 @@ export default function EditorialBannerUi({
   return (
     <section
       id={id || undefined}
+      data-section-theme="dark"
       data-always-light-text=""
       className="relative isolate min-h-[70vh] w-full overflow-hidden bg-ink text-white sm:min-h-[78vh]"
     >

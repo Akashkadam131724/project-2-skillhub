@@ -4,7 +4,7 @@ import { useState, type ReactNode } from "react";
 import CmsRichText from "@/components/cms/primitives/CmsRichText";
 import ContactChannelCard from "../shared/ContactChannelCard";
 import { SectionLayoutRoot } from "@/components/sections/layout";
-import { SectionBrandGlow, SectionLightCard } from "@/components/sections/shared/design";
+import { SectionLightCard } from "@/components/sections/shared/design";
 import { DS_FIELD, DS_TEXT, sectionClassNames } from "@/lib/sections/section-design-system";
 import { DS_RADIUS } from "@/lib/layout/section-layout-system";
 import { isRichTextEmpty } from "@/lib/utils/rich-text";
@@ -130,7 +130,6 @@ export default function ContactFormUi({
       id={id}
       className={className}
       padding="lg"
-      decor={<SectionBrandGlow />}
       hasBodyContent
     >
       <div className="relative grid gap-10 lg:grid-cols-12 lg:gap-12 xl:gap-16">

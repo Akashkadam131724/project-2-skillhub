@@ -63,6 +63,8 @@ export default function SplitNarrativeUi({
         <div className="grid gap-10 lg:grid-cols-12 lg:gap-12">
           <div className="relative hidden lg:col-span-5 lg:block">
             <div
+              data-section-theme="dark"
+              data-always-light-text=""
               className={sectionClassNames(
                 DS_RADIUS.panel,
                 "sticky top-28 overflow-hidden bg-ink"

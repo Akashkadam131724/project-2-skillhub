@@ -4,7 +4,7 @@ export { default as SectionShell } from "./SectionShell";
 export { default as SectionSplit } from "./SectionSplit";
 export { default as SectionItemGrid } from "./SectionItemGrid";
 export { default as SectionStack } from "./SectionStack";
-export { sectionHeaderState } from "./section-header-state";
+export { sectionHeaderState, hasRenderableSectionChildren } from "./section-header-state";
 
 export type { SectionHeaderProps } from "./SectionHeader";
 export type { SectionLayoutRootProps } from "./SectionLayoutRoot";

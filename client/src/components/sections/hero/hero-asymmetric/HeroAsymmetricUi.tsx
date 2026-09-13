@@ -42,7 +42,11 @@ export default function HeroAsymmetricUi({
             )}
           </div>
 
-          <aside className="flex flex-col justify-between gap-6 rounded-2xl bg-ink p-6 text-white sm:p-7">
+          <aside
+            data-section-theme="dark"
+            data-always-light-text=""
+            className="flex flex-col justify-between gap-6 rounded-2xl bg-ink p-6 text-white sm:p-7"
+          >
             <p className="text-brand/80 m-0 text-xs font-semibold tracking-[0.16em] uppercase">
               Get started
             </p>

@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { Children, type ReactNode } from "react";
 
 export type SectionHeaderStateInput = {
   eyebrow?: ReactNode;
@@ -12,9 +12,17 @@ export type SectionHeaderStateInput = {
   emptyState?: ReactNode;
   footer?: ReactNode;
   items?: unknown[];
+  /** Body slot from SectionLayoutRoot children (grids, clients, etc.) */
+  children?: ReactNode;
   /** Extra body nodes counted toward `hasBody` (e.g. custom grids) */
   hasBodyContent?: boolean;
 };
+
+/** True when layout children should space the header like items/footer. */
+export function hasRenderableSectionChildren(children?: ReactNode): boolean {
+  if (children == null || typeof children === "boolean") return false;
+  return Children.count(children) > 0;
+}
 
 /** Shared visibility flags for standard band sections. */
 export function sectionHeaderState({
@@ -29,6 +37,7 @@ export function sectionHeaderState({
   emptyState,
   footer,
   items,
+  children,
   hasBodyContent = false,
 }: SectionHeaderStateInput) {
   const showEyebrow = eyebrowSlot != null || Boolean(eyebrow);
@@ -38,7 +47,14 @@ export function sectionHeaderState({
     showEyebrow || showTitle || showSubtitle || headerAction
   );
   const hasItems = Array.isArray(items) && items.length > 0;
-  const hasBody = Boolean(hasItems || itemsBar || emptyState || footer || hasBodyContent);
+  const hasBody = Boolean(
+    hasItems ||
+      itemsBar ||
+      emptyState ||
+      footer ||
+      hasBodyContent ||
+      hasRenderableSectionChildren(children)
+  );
 
   return {
     showEyebrow,

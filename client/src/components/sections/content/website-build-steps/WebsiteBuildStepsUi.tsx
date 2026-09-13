@@ -27,7 +27,11 @@ export default function WebsiteBuildStepsUi({
 {items.length ? (
           <div className="grid gap-8 lg:grid-cols-12 lg:gap-12">
             <div className="lg:col-span-5">
-              <div className="sticky top-28 rounded-[1.75rem] bg-[#111] p-6 text-white sm:p-8">
+              <div
+                data-section-theme="dark"
+                data-always-light-text=""
+                className="sticky top-28 rounded-[1.75rem] bg-[#111] p-6 text-white sm:p-8"
+              >
                 <p className="m-0 text-xs font-semibold tracking-[0.24em] text-white/45 uppercase">
                   Build flow
                 </p>

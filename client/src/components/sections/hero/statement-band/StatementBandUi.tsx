@@ -26,6 +26,7 @@ export default function StatementBandUi({
   return (
     <section
       id={id || undefined}
+      data-section-theme="dark"
       data-always-light-text=""
       className="relative isolate min-h-[85vh] w-full overflow-hidden bg-ink text-white"
     >

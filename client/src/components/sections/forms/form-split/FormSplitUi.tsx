@@ -2,7 +2,7 @@
 
 import CmsRichText from "@/components/cms/primitives/CmsRichText";
 import { SectionLayoutRoot } from "@/components/sections/layout";
-import { SectionBrandGlow, SectionLightCard } from "@/components/sections/shared/design";
+import { SectionLightCard } from "@/components/sections/shared/design";
 import { DS_RADIUS, DS_TEXT, sectionClassNames } from "@/lib/sections/section-design-system";
 import { isRichTextEmpty } from "@/lib/utils/rich-text";
 import ShortLeadForm from "./ShortLeadForm";
@@ -123,7 +123,6 @@ export default function FormSplitUi({
     <SectionLayoutRoot
       id={id}
       className={className}
-      decor={<SectionBrandGlow />}
       hasBodyContent
     >
       <div className="relative grid items-start gap-10 lg:grid-cols-2 lg:gap-12 xl:gap-16">

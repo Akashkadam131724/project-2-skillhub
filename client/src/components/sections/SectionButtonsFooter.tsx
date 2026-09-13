@@ -1,6 +1,10 @@
 "use client";
 
 import {
+  DS_SPACE,
+  sectionClassNames,
+} from "@/lib/layout/section-layout-system";
+import {
   buttonsFromLegacy,
   sortActiveButtons,
 } from "@/lib/utils/button-types";
@@ -25,8 +29,8 @@ export type SectionButtonsFooterProps = {
 
 /**
  * Bottom-of-section CTAs — shared across all section layouts.
- * Manage strip is CMS-only (conditional render). Avoid next/dynamic here —
- * it forces App Router to bail out of SSR on public pages.
+ * Owns body→footer spacing via `mt-*` (default {@link DS_SPACE.footerOffset}).
+ * Must sit outside SectionShell’s body stack so gap does not double that margin.
  */
 export default function SectionButtonsFooter({
   buttons,
@@ -38,7 +42,7 @@ export default function SectionButtonsFooter({
   onFormOpen,
   inverted = false,
   surface = "inherit",
-  className = "mt-6 sm:mt-8",
+  className = DS_SPACE.footerOffset,
   buttonsClassName = "flex flex-wrap items-center gap-3",
 }: SectionButtonsFooterProps) {
   const list = sortActiveButtons(
@@ -50,7 +54,7 @@ export default function SectionButtonsFooter({
   if (!cmsMode && !list.length) return null;
 
   return (
-    <div className={className.trim()} data-cms-buttons-footer>
+    <div className={sectionClassNames(className)} data-cms-buttons-footer>
       {list.length ? (
         <SectionButtons
           buttons={list}

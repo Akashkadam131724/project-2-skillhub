@@ -67,6 +67,7 @@ export default function TrainingOptionCard({
         )
       )
     : {
+        "data-section-theme": "dark",
         "data-always-light-text": "",
         className: sectionClassNames(
           DS_RADIUS.card,
@@ -142,6 +143,7 @@ export default function TrainingOptionCard({
           <SectionButtons
             buttons={list}
             inverted={!onDarkBand}
+            surface={!onDarkBand ? "dark" : "inherit"}
             className="mt-auto flex flex-wrap items-center gap-2 pt-3"
           />
         ) : null}

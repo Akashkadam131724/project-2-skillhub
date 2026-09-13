@@ -63,6 +63,7 @@ export default function StatsPublicSection({
         target_url,
         onFormOpen,
         inverted: onDarkBand,
+        surface: onDarkBand ? "dark" : "inherit",
       })}
     />
   );

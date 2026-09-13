@@ -17,7 +17,9 @@ export default function DomainSearchBandUi({
   return (
     <SectionLayoutRoot
       id={id}
+      sectionTheme="dark"
       className="bg-[#10100e] text-white"
+      sectionStyle={{ backgroundColor: "#10100e" }}
       footer={footer}
       items={items}
       hasBodyContent

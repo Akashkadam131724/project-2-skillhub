@@ -67,6 +67,7 @@ export default function FaqPublicSection({
         target_url,
         onFormOpen,
         inverted: darkBand,
+        surface: darkBand ? "dark" : "inherit",
       })}
     />
   );

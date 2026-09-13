@@ -68,6 +68,7 @@ export default function FaqTwoColumnPublicSection({
         target_url,
         onFormOpen,
         inverted: darkBand,
+        surface: darkBand ? "dark" : "inherit",
         className: "mt-2 sm:mt-4",
       })}
     />

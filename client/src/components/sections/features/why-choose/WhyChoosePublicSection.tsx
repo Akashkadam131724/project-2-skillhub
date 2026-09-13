@@ -66,6 +66,7 @@ export default function WhyChoosePublicSection({
         target_url,
         onFormOpen,
         inverted: onDarkBand,
+        surface: onDarkBand ? "dark" : "inherit",
         className: "mt-8 sm:mt-10",
       })}
     />

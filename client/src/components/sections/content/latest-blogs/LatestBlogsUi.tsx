@@ -21,7 +21,7 @@ export default function LatestBlogsUi({
       subtitleSlot={subtitleSlot}
       headerAction={action}
     >
-{children}
+      {children}
     </SectionLayoutRoot>
   );
 }

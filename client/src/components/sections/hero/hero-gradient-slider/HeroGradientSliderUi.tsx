@@ -69,6 +69,7 @@ export default function HeroGradientSliderUi({
   return (
     <section
       id={id}
+      data-section-theme="dark"
       data-always-light-text=""
       className="relative overflow-hidden py-0 text-white"
       style={{ background: bgStyle }}

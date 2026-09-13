@@ -31,6 +31,7 @@ export default function PromoModalCmsPreview({
               </p>
             )
           }
+          footer={footer}
         >
           <p className="text-xs text-slate-500">
             Opens after <strong>{delayMs}ms</strong> on the live page. Dismiss uses
@@ -40,7 +41,6 @@ export default function PromoModalCmsPreview({
             </code>
             .
           </p>
-          {footer}
         </SectionShell>
       </SectionWrapper>
     </section>

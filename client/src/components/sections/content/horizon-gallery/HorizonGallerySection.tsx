@@ -35,6 +35,7 @@ export default function HorizonGallerySection({
         section_key,
         itemCount: items.length,
         onEditField,
+        onDarkBand: true,
       })}
       {...cmsSectionHeaderSlots({
         section_title: section_title || (cmsMode ? "Gallery" : undefined),

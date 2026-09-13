@@ -14,7 +14,7 @@ export default function RelatedCoursesUi({
 }: RelatedCoursesUiProps) {
 
   return (
-        <SectionLayoutRoot
+    <SectionLayoutRoot
       id={id}
       className={className}
       eyebrow={eyebrow}
@@ -22,8 +22,9 @@ export default function RelatedCoursesUi({
       subtitle={subtitle}
       titleSlot={titleSlot}
       subtitleSlot={subtitleSlot}
+      headerAction={action}
     >
-{children}
+      {children}
     </SectionLayoutRoot>
   );
 }

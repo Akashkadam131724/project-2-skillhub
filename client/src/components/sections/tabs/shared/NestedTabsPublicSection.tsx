@@ -68,6 +68,7 @@ export default function NestedTabsPublicSection({
         target_url,
         onFormOpen,
         inverted: onDarkBand,
+        surface: onDarkBand ? "dark" : "inherit",
       })}
     />
   );

@@ -28,7 +28,11 @@ function PricingTierCard({
       : "flex h-full flex-col rounded-[1.5rem] border border-ink bg-ink p-6 shadow-xl sm:p-7";
 
     return (
-      <article data-always-light-text="" className={featuredShell}>
+      <article
+        data-section-theme="dark"
+        data-always-light-text=""
+        className={featuredShell}
+      >
         <span className="mb-3 inline-flex w-fit rounded-full bg-white/15 px-2.5 py-1 text-[11px] font-semibold tracking-wide text-white uppercase">
           Most popular
         </span>
@@ -98,6 +102,7 @@ function PricingTierCard({
             <SectionButtons
               buttons={item.buttons}
               inverted
+              surface="dark"
               className="flex flex-wrap gap-2"
             />
           </div>

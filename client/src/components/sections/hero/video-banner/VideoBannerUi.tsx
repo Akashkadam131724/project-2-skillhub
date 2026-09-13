@@ -17,7 +17,7 @@ export default function VideoBannerUi({
   const showCopy = showTitle || showSubtitle || itemsBar || footer;
 
   return (
-    <section id={id || undefined} className="overflow-hidden bg-black text-white">
+    <section id={id || undefined} data-section-theme="dark" className="overflow-hidden bg-black text-white">
       <div className="relative w-full bg-black">
         {mediaSlot ??
           (item?.videoSrc ? (
@@ -44,7 +44,7 @@ export default function VideoBannerUi({
             <div className="min-w-0 flex-1">
               {titleSlot ??
                 (showTitle ? (
-                  <h1 className="m-0 font-[family-name:var(--font-display)] text-2xl leading-tight font-semibold tracking-tight sm:text-4xl lg:text-5xl">
+                  <h1 className="m-0 font-[family-name:var(--font-display)] text-2xl leading-tight font-semibold tracking-tight text-white sm:text-4xl lg:text-5xl">
                     {title}
                   </h1>
                 ) : null)}

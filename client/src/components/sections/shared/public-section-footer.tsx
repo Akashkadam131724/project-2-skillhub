@@ -1,4 +1,5 @@
 import SectionButtonsFooter from "@/components/sections/SectionButtonsFooter";
+import { DS_SPACE } from "@/lib/layout/section-layout-system";
 import {
   buttonsFromLegacy,
   sortActiveButtons,
@@ -39,7 +40,7 @@ export function publicSectionButtonsFooter({
   onFormOpen,
   inverted = false,
   surface = "inherit",
-  className = "mt-6 sm:mt-8",
+  className = DS_SPACE.footerOffset,
   buttonsClassName = "flex flex-wrap items-center gap-3",
 }: PublicSectionButtonsFooterProps) {
   return (
