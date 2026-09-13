@@ -8,11 +8,13 @@ import {
   useCmsThemeEditor,
 } from "@/context/CmsThemeEditorContext";
 import ColorsTab from "@/components/cms/theme/editor-tabs/ColorsTab";
+import TypographyTab from "@/components/cms/theme/editor-tabs/TypographyTab";
 import SurfaceTab from "@/components/cms/theme/editor-tabs/SurfaceTab";
 import type { CmsThemeEditorProps, CmsThemeEditorShellProps } from "./types";
 
 const THEME_TABS = [
   { key: "colors", label: "Colors" },
+  { key: "typography", label: "Typography" },
   { key: "surface", label: "Surface" },
 ];
 
@@ -40,9 +42,8 @@ function CmsThemeEditorShell({
         </div>
       ) : (
         <p className="m-0 text-xs text-slate-500">
-          Global brand colors and section stripe pattern. Page templates can
-          override colors or surface. There is no page background tab — use
-          Surface for white/grey stripes.
+          Global brand colors, fonts, and section stripe pattern. Page templates
+          can override colors, typography, or surface.
         </p>
       )}
 
@@ -66,6 +67,7 @@ function CmsThemeEditorShell({
       </div>
 
       {activeTab === "colors" ? <ColorsTab /> : null}
+      {activeTab === "typography" ? <TypographyTab /> : null}
       {activeTab === "surface" ? <SurfaceTab /> : null}
 
       {onSave ? (
@@ -84,7 +86,7 @@ function CmsThemeEditorShell({
 
 /**
  * Shared theme editor for Site Theme (global) and Page template overrides.
- * Tabs: Colors + Surface.
+ * Tabs: Colors + Typography + Surface.
  */
 export default function CmsThemeEditor({
   mode = "site",

@@ -1,5 +1,6 @@
 import { navFetchOptions, NAVIGATION_CACHE_TAG } from "@/lib/cache/isr";
 import { logFetchResult } from "@/lib/cache/cache-log";
+import { API } from "@/lib/api/routes";
 
 export { getHeaderNavMode, isApiHeaderNav } from "./header-nav-mode";
 
@@ -13,8 +14,8 @@ const navCache = navFetchOptions();
 
 export async function getNavigationTree() {
   try {
-    const res = await fetch(`${NAV_API_URL}/navigation`, navCache);
-    logFetchResult("nav /navigation", res, navCache);
+    const res = await fetch(`${NAV_API_URL}${API.site.navigation.root}`, navCache);
+    logFetchResult(`nav ${API.site.navigation.root}`, res, navCache);
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
       return {

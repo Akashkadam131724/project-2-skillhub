@@ -1869,7 +1869,7 @@
                 "{{sectionKey}}"
               ]
             },
-            "description": "Editable content fields only. Retired band fields are cleared server-side.",
+            "description": "Editable content fields only.",
             "body": {
               "mode": "raw",
               "raw": "{\n  \"section_title\": \"Updated demo title\",\n  \"data\": {\n    \"body\": \"<p>Updated body</p>\"\n  }\n}"

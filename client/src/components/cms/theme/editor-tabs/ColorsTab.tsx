@@ -8,9 +8,12 @@ const COLOR_FIELDS = [
   { key: "brand_primary", label: "Brand", fallback: "#1b4de4" },
   { key: "brand_hover", label: "Brand hover", fallback: "#153fc0" },
   { key: "ink", label: "Ink", fallback: "#0b1f4d" },
+  { key: "accent_blue", label: "Accent blue", fallback: "#3b82f6" },
+  { key: "accent_purple", label: "Accent purple", fallback: "#a855f7" },
+  { key: "accent_cyan", label: "Accent cyan", fallback: "#06b6d4" },
 ];
 
-/** Color preset + brand/hover/ink fields. */
+/** Color preset + brand / hover / ink / banner accents. */
 export default function ColorsTab() {
   const { isPage, theme, parent, inheritShort, setField, patchTheme } =
     useCmsThemeEditor();
@@ -26,14 +29,28 @@ export default function ColorsTab() {
         brand_primary: null,
         brand_hover: null,
         ink: null,
+        accent_blue: null,
+        accent_purple: null,
+        accent_cyan: null,
       });
       return;
     }
+    const colors = preset as {
+      brand_primary: string;
+      brand_hover: string;
+      ink: string;
+      accent_blue?: string;
+      accent_purple?: string;
+      accent_cyan?: string;
+    };
     patchTheme({
       preset: presetKey,
-      brand_primary: preset.brand_primary,
-      brand_hover: preset.brand_hover,
-      ink: preset.ink,
+      brand_primary: colors.brand_primary,
+      brand_hover: colors.brand_hover,
+      ink: colors.ink,
+      accent_blue: colors.accent_blue || colors.brand_primary,
+      accent_purple: colors.accent_purple || colors.brand_hover,
+      accent_cyan: colors.accent_cyan || colors.ink,
     });
   }
 

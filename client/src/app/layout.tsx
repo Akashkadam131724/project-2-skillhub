@@ -4,6 +4,7 @@ import DevLayoutRuler from "@/components/dev/DevLayoutRuler";
 import "@/styles/globals.css";
 import { fetchSiteThemeForLayout } from "@/lib/theme/site-theme-server";
 import { themeCssVars } from "@/lib/theme";
+import ThemeFontLinks from "@/components/cms/theme/ThemeFontLinks";
 import type { AppLayoutProps } from "./types";
 
 const display = Fraunces({
@@ -43,6 +44,7 @@ export default async function RootLayout({ children }: AppLayoutProps) {
       suppressHydrationWarning
     >
       <body className="flex min-h-full flex-col bg-white antialiased" suppressHydrationWarning>
+        <ThemeFontLinks theme={siteTheme} />
         {children}
         <DevLayoutRuler />
       </body>

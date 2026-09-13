@@ -22,6 +22,25 @@ Postman collection for the SkillHub backend (same style as `project-1-storage-ap
 - **Site / page theme** accepts **Colors** (`brand_primary`, `brand_hover`, `ink`) and **Surface** (`surface_mode` / `surface_pattern`) only.
 - Dark / full-bleed sections are owned by section code, not CMS fields.
 
+## Route catalog (single source of truth)
+
+Path strings come from [`client/src/lib/api/api-routes.mjs`](../client/src/lib/api/api-routes.mjs), grouped by feature:
+
+| Group | Resources |
+|-------|-----------|
+| `API.catalog` | vendors, products, courses |
+| `API.skilling` | areas, levels, industries |
+| `API.content` | marketing / static pages |
+| `API.blog` | blog posts |
+| `API.cms` | pages, sections, placements, theme |
+| `API.site` | navigation, search, uploads |
+
+Client helpers and `build-collection.mjs` both import that file — regenerate the collection after route changes:
+
+```bash
+node postman/build-collection.mjs
+```
+
 ## Also available
 
 Swagger UI (authored OpenAPI YAML under `server/src/docs/`):

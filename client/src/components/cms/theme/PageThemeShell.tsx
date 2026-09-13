@@ -1,6 +1,7 @@
 "use client";
 
 import { pageBgStyle, themeCssVars } from "@/lib/theme";
+import ThemeFontLinks from "@/components/cms/theme/ThemeFontLinks";
 import type { CSSProperties } from "react";
 import type { PageThemeShellProps } from "./types";
 
@@ -22,6 +23,7 @@ export default function PageThemeShell({
       data-theme-preset={(theme?.preset as string | undefined) || undefined}
       data-surface-mode={(theme?.surface_mode as string | undefined) || undefined}
     >
+      <ThemeFontLinks theme={theme} />
       {children}
     </div>
   );

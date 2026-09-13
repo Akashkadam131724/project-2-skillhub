@@ -6,6 +6,16 @@
 import { Schema } from "mongoose";
 
 export const THEME_PRESETS = {
+  // Old homepage banner palette
+  skillhub: {
+    brand_primary: "#00236d",
+    brand_hover: "#001a52",
+    ink: "#0f172a",
+    accent_blue: "#3b82f6",
+    accent_purple: "#a855f7",
+    accent_cyan: "#06b6d4",
+  },
+
   // Existing
   blue: { brand_primary: "#1b4de4", brand_hover: "#153fc0", ink: "#0b1f4d" },
   navy: { brand_primary: "#1e3a8a", brand_hover: "#1e40af", ink: "#0f172a" },
@@ -71,11 +81,21 @@ export const SURFACE_MODES = [
   "transparent",
 ];
 
-export const THEME_FIELD_KEYS = [
-  "preset",
+export const THEME_COLOR_KEYS = [
   "brand_primary",
   "brand_hover",
   "ink",
+  "accent_blue",
+  "accent_purple",
+  "accent_cyan",
+];
+
+export const THEME_FONT_KEYS = ["font_family", "font_sans", "font_display"];
+
+export const THEME_FIELD_KEYS = [
+  "preset",
+  ...THEME_COLOR_KEYS,
+  ...THEME_FONT_KEYS,
   "surface_mode",
   "surface_pattern",
 ];
@@ -144,6 +164,9 @@ export function defaultSiteTheme() {
   return {
     preset: "blue",
     ...THEME_PRESETS.blue,
+    font_family: "manrope",
+    font_sans: "manrope",
+    font_display: "manrope",
     surface_mode: "custom",
     surface_pattern: defaultSurfacePattern(),
   };
@@ -156,6 +179,12 @@ export function emptyPageTheme() {
     brand_primary: null,
     brand_hover: null,
     ink: null,
+    accent_blue: null,
+    accent_purple: null,
+    accent_cyan: null,
+    font_family: null,
+    font_sans: null,
+    font_display: null,
     surface_mode: null,
     surface_pattern: null,
   };
@@ -168,14 +197,29 @@ function hasValue(v) {
 /**
  * Apply named preset colors when preset is set and individual colors are empty.
  */
+function presetColor(preset, key) {
+  if (hasValue(preset[key])) return String(preset[key]);
+  if (key === "accent_blue") return String(preset.brand_primary || "");
+  if (key === "accent_purple") return String(preset.brand_hover || "");
+  if (key === "accent_cyan") return String(preset.ink || "");
+  return "";
+}
+
+function fillMissingPresetColors(out, preset, override) {
+  const source = override || out;
+  for (const key of THEME_COLOR_KEYS) {
+    if (hasValue(source[key])) continue;
+    const next = presetColor(preset, key);
+    if (next) out[key] = next;
+  }
+}
+
 export function applyPresetFill(theme) {
   const out = { ...(theme || {}) };
   const presetKey = String(out.preset || "").toLowerCase();
   const preset = THEME_PRESETS[presetKey];
   if (!preset) return out;
-  if (!hasValue(out.brand_primary)) out.brand_primary = preset.brand_primary;
-  if (!hasValue(out.brand_hover)) out.brand_hover = preset.brand_hover;
-  if (!hasValue(out.ink)) out.ink = preset.ink;
+  fillMissingPresetColors(out, preset);
   return out;
 }
 
@@ -205,13 +249,7 @@ export function mergeTheme(...layers) {
 
     if (hasValue(override.preset)) {
       const preset = THEME_PRESETS[String(override.preset).toLowerCase()];
-      if (preset) {
-        if (!hasValue(override.brand_primary))
-          out.brand_primary = preset.brand_primary;
-        if (!hasValue(override.brand_hover))
-          out.brand_hover = preset.brand_hover;
-        if (!hasValue(override.ink)) out.ink = preset.ink;
-      }
+      if (preset) fillMissingPresetColors(out, preset, override);
     }
   }
 
@@ -234,6 +272,27 @@ export function themeSchemaFields({ nullable = false } = {}) {
     brand_primary: { type: String, trim: true, default: strDefault },
     brand_hover: { type: String, trim: true, default: strDefault },
     ink: { type: String, trim: true, default: strDefault },
+    accent_blue: { type: String, trim: true, default: strDefault },
+    accent_purple: { type: String, trim: true, default: strDefault },
+    accent_cyan: { type: String, trim: true, default: strDefault },
+    font_family: {
+      type: String,
+      trim: true,
+      lowercase: true,
+      default: nullable ? null : "manrope",
+    },
+    font_sans: {
+      type: String,
+      trim: true,
+      lowercase: true,
+      default: nullable ? null : "manrope",
+    },
+    font_display: {
+      type: String,
+      trim: true,
+      lowercase: true,
+      default: nullable ? null : "manrope",
+    },
     surface_mode: {
       type: String,
       enum: nullable

@@ -11,6 +11,9 @@
   --brand: #1b4de4;
   --brand-hover: #153fc0;
   --ink: #0b1f4d;
+  --accent-blue: var(--brand);
+  --accent-purple: var(--brand-hover);
+  --accent-cyan: var(--ink);
   --brand-soft: color-mix(in srgb, var(--brand) 14%, white);
   --brand-muted: color-mix(in srgb, var(--brand) 22%, transparent);
 }

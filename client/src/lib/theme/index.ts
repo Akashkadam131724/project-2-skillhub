@@ -8,6 +8,11 @@ import {
   resolveSurfacePattern,
   isPageSurfaceTransparent,
 } from "./surface-patterns";
+import {
+  DEFAULT_FONT_FAMILY,
+  fontFamilyStack,
+  resolveThemeFontKey,
+} from "./fonts";
 
 export {
   SURFACE_MODES,
@@ -36,7 +41,29 @@ export {
   bandThemeFromBg,
 } from "./surface-patterns";
 
+export {
+  DEFAULT_FONT_DISPLAY,
+  DEFAULT_FONT_FAMILY,
+  DEFAULT_FONT_SANS,
+  FONT_PRESETS,
+  fontFamilyStack,
+  googleFontsStylesheetHref,
+  resolveFontPreset,
+  resolveThemeFontKey,
+} from "./fonts";
+
 export const THEME_PRESETS = {
+  // Old homepage banner palette
+  skillhub: {
+    brand_primary: "#00236d",
+    brand_hover: "#001a52",
+    ink: "#0f172a",
+    accent_blue: "#3b82f6",
+    accent_purple: "#a855f7",
+    accent_cyan: "#06b6d4",
+    label: "SkillHub",
+  },
+
   // Existing
   blue: { brand_primary: "#1b4de4", brand_hover: "#153fc0", ink: "#0b1f4d", label: "Blue" },
   navy: { brand_primary: "#1e3a8a", brand_hover: "#1e40af", ink: "#0f172a", label: "Navy" },
@@ -87,11 +114,21 @@ export const THEME_PRESETS = {
 export const SURFACE_DARK_BG = "#0f172a";
 export const SURFACE_DARK_BG_SOFT = "#1e293b";
 
-export const THEME_FIELD_KEYS = [
-  "preset",
+export const THEME_COLOR_KEYS = [
   "brand_primary",
   "brand_hover",
   "ink",
+  "accent_blue",
+  "accent_purple",
+  "accent_cyan",
+] as const;
+
+export const THEME_FIELD_KEYS = [
+  "preset",
+  ...THEME_COLOR_KEYS,
+  "font_family",
+  "font_sans",
+  "font_display",
   "surface_mode",
   "surface_pattern",
 ];
@@ -100,6 +137,9 @@ export function defaultSiteTheme() {
   return {
     preset: "blue",
     ...THEME_PRESETS.blue,
+    font_family: DEFAULT_FONT_FAMILY,
+    font_sans: DEFAULT_FONT_FAMILY,
+    font_display: DEFAULT_FONT_FAMILY,
     surface_mode: "custom",
     surface_pattern: defaultSurfacePattern(),
   };
@@ -111,6 +151,12 @@ export function emptyPageTheme() {
     brand_primary: null,
     brand_hover: null,
     ink: null,
+    accent_blue: null,
+    accent_purple: null,
+    accent_cyan: null,
+    font_family: null,
+    font_sans: null,
+    font_display: null,
     surface_mode: null,
     surface_pattern: null,
   };
@@ -144,17 +190,36 @@ export function themeForApiSave(theme: unknown) {
   return normalizePageTheme(theme);
 }
 
+function presetColor(
+  preset: Record<string, unknown>,
+  key: (typeof THEME_COLOR_KEYS)[number]
+) {
+  if (hasValue(preset[key])) return String(preset[key]);
+  if (key === "accent_blue") return String(preset.brand_primary || "");
+  if (key === "accent_purple") return String(preset.brand_hover || "");
+  if (key === "accent_cyan") return String(preset.ink || "");
+  return "";
+}
+
+function fillMissingPresetColors(
+  out: Record<string, unknown>,
+  preset: Record<string, unknown>,
+  override?: Record<string, unknown>
+) {
+  const source = override || out;
+  for (const key of THEME_COLOR_KEYS) {
+    if (hasValue(source[key])) continue;
+    const next = presetColor(preset, key);
+    if (next) out[key] = next;
+  }
+}
+
 export function applyPresetFill(theme: Record<string, unknown> | null | undefined) {
   const out: Record<string, unknown> = { ...(theme || {}) };
-  const presets = THEME_PRESETS as Record<
-    string,
-    { brand_primary: string; brand_hover: string; ink: string; label: string }
-  >;
+  const presets = THEME_PRESETS as Record<string, Record<string, unknown>>;
   const preset = presets[String(out.preset || "").toLowerCase()];
   if (!preset) return out;
-  if (!hasValue(out.brand_primary)) out.brand_primary = preset.brand_primary;
-  if (!hasValue(out.brand_hover)) out.brand_hover = preset.brand_hover;
-  if (!hasValue(out.ink)) out.ink = preset.ink;
+  fillMissingPresetColors(out, preset);
   return out;
 }
 
@@ -164,10 +229,7 @@ export function mergeTheme(...layers: unknown[]) {
   for (const layer of layers) {
     if (!layer || typeof layer !== "object") continue;
     const override = layer as Record<string, unknown>;
-    const presets = THEME_PRESETS as Record<
-      string,
-      { brand_primary: string; brand_hover: string; ink: string; label: string }
-    >;
+    const presets = THEME_PRESETS as Record<string, Record<string, unknown>>;
 
     for (const key of THEME_FIELD_KEYS) {
       if (key === "surface_pattern") {
@@ -182,13 +244,7 @@ export function mergeTheme(...layers: unknown[]) {
 
     if (hasValue(override.preset)) {
       const preset = presets[String(override.preset).toLowerCase()];
-      if (preset) {
-        if (!hasValue(override.brand_primary))
-          out.brand_primary = preset.brand_primary;
-        if (!hasValue(override.brand_hover))
-          out.brand_hover = preset.brand_hover;
-        if (!hasValue(override.ink)) out.ink = preset.ink;
-      }
+      if (preset) fillMissingPresetColors(out, preset, override);
     }
   }
 
@@ -205,6 +261,12 @@ export function themeCssVars(theme: unknown) {
   if (hasValue(t.brand_primary)) vars["--brand"] = String(t.brand_primary);
   if (hasValue(t.brand_hover)) vars["--brand-hover"] = String(t.brand_hover);
   if (hasValue(t.ink)) vars["--ink"] = String(t.ink);
+  if (hasValue(t.accent_blue)) vars["--accent-blue"] = String(t.accent_blue);
+  if (hasValue(t.accent_purple)) vars["--accent-purple"] = String(t.accent_purple);
+  if (hasValue(t.accent_cyan)) vars["--accent-cyan"] = String(t.accent_cyan);
+  const fontKey = resolveThemeFontKey(t);
+  vars["--font-sans"] = fontFamilyStack(fontKey);
+  vars["--font-display"] = fontFamilyStack(fontKey);
   return vars;
 }
 

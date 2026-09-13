@@ -6,6 +6,8 @@ import { writeFileSync } from "fs";
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
 
+import { API } from "../client/src/lib/api/api-routes.mjs";
+
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const saveSlug = (varName) => [
@@ -140,17 +142,17 @@ const collection = {
       "Vendors",
       "Catalog vendors — soft-delete via DELETE, restore via POST …/restore.",
       [
-        req("List vendors", "GET", "/vendors", {
+        req("List vendors", "GET", API.catalog.vendors.root, {
           query: "page=1&limit=20&q=",
           description: "Paginated list. Query: page, limit, status, isVerified, q.",
         }),
-        req("Search vendors", "GET", "/vendors/search/filters", {
+        req("Search vendors", "GET", API.catalog.vendors.searchFilters, {
           query: "page=1&limit=20&q=&category=",
         }),
         req(
           "Create vendor",
           "POST",
-          "/vendors",
+          API.catalog.vendors.root,
           {
             body: {
               name: "Postman Vendor",
@@ -166,26 +168,26 @@ const collection = {
             test: saveSlug("vendorSlug"),
           }
         ),
-        req("Get vendor by slug", "GET", "/vendors/{{vendorSlug}}"),
-        req("Update vendor", "PUT", "/vendors/{{vendorSlug}}", {
+        req("Get vendor by slug", "GET", API.catalog.vendors.one("{{vendorSlug}}")),
+        req("Update vendor", "PUT", API.catalog.vendors.one("{{vendorSlug}}"), {
           body: {
             shortDescription: "Updated from Postman",
             overviewTitle: "Updated overview title",
           },
         }),
-        req("Soft-delete vendor", "DELETE", "/vendors/{{vendorSlug}}"),
-        req("Restore vendor", "POST", "/vendors/{{vendorSlug}}/restore"),
+        req("Soft-delete vendor", "DELETE", API.catalog.vendors.one("{{vendorSlug}}")),
+        req("Restore vendor", "POST", API.catalog.vendors.restore("{{vendorSlug}}")),
       ]
     ),
 
     folder("Products", "Products under vendors", [
-      req("List products", "GET", "/products", {
+      req("List products", "GET", API.catalog.products.root, {
         query: "page=1&limit=20&q=",
       }),
-      req("List by vendor id", "GET", "/products/vendor/{{vendorId}}", {
+      req("List by vendor id", "GET", API.catalog.products.byVendor("{{vendorId}}"), {
         query: "page=1&limit=20",
       }),
-      req("Create product", "POST", "/products", {
+      req("Create product", "POST", API.catalog.products.root, {
         body: {
           name: "Postman Product",
           vendor: "{{vendorId}}",
@@ -195,30 +197,30 @@ const collection = {
         description: "Set vendorId from Create vendor (or a seeded vendor).",
         test: saveSlug("productSlug"),
       }),
-      req("Get product by slug", "GET", "/products/{{productSlug}}"),
-      req("Update product", "PUT", "/products/{{productSlug}}", {
+      req("Get product by slug", "GET", API.catalog.products.one("{{productSlug}}")),
+      req("Update product", "PUT", API.catalog.products.one("{{productSlug}}"), {
         body: { shortDescription: "Updated product" },
       }),
-      req("Soft-delete product", "DELETE", "/products/{{productSlug}}"),
-      req("Restore product", "POST", "/products/{{productSlug}}/restore"),
+      req("Soft-delete product", "DELETE", API.catalog.products.one("{{productSlug}}")),
+      req("Restore product", "POST", API.catalog.products.restore("{{productSlug}}")),
     ]),
 
     folder("Courses", "Courses + faceted catalog", [
-      req("List courses", "GET", "/courses", {
+      req("List courses", "GET", API.catalog.courses.root, {
         query: "page=1&limit=20&q=",
       }),
-      req("Catalog courses", "GET", "/courses/catalog", {
+      req("Catalog courses", "GET", API.catalog.courses.catalog, {
         query:
           "page=1&limit=20&vendor=&product=&skillingArea=&skillLevel=&industry=&q=",
         description: "Faceted catalog. Multi-ids are comma-separated ObjectIds.",
       }),
-      req("Catalog filters", "GET", "/courses/catalog/filters", {
+      req("Catalog filters", "GET", API.catalog.courses.catalogFilters, {
         query: "vendor=&product=&skillingArea=&skillLevel=&industry=&q=",
       }),
-      req("List by product id", "GET", "/courses/product/{{productId}}", {
+      req("List by product id", "GET", API.catalog.courses.byProduct("{{productId}}"), {
         query: "page=1&limit=20",
       }),
-      req("Create course", "POST", "/courses", {
+      req("Create course", "POST", API.catalog.courses.root, {
         body: {
           name: "Postman Course",
           product: "{{productId}}",
@@ -227,19 +229,19 @@ const collection = {
         },
         test: saveSlug("courseSlug"),
       }),
-      req("Get course by slug", "GET", "/courses/{{courseSlug}}"),
-      req("Update course", "PUT", "/courses/{{courseSlug}}", {
+      req("Get course by slug", "GET", API.catalog.courses.one("{{courseSlug}}")),
+      req("Update course", "PUT", API.catalog.courses.one("{{courseSlug}}"), {
         body: { shortDescription: "Updated course" },
       }),
-      req("Soft-delete course", "DELETE", "/courses/{{courseSlug}}"),
-      req("Restore course", "POST", "/courses/{{courseSlug}}/restore"),
+      req("Soft-delete course", "DELETE", API.catalog.courses.one("{{courseSlug}}")),
+      req("Restore course", "POST", API.catalog.courses.restore("{{courseSlug}}")),
     ]),
 
     folder("Skilling Areas", "", [
-      req("List skilling areas", "GET", "/skilling-areas", {
+      req("List skilling areas", "GET", API.skilling.areas.root, {
         query: "page=1&limit=20&q=",
       }),
-      req("Create skilling area", "POST", "/skilling-areas", {
+      req("Create skilling area", "POST", API.skilling.areas.root, {
         body: {
           name: "Postman Skilling Area",
           shortDescription: "Sample skilling area",
@@ -247,26 +249,26 @@ const collection = {
         },
         test: saveSlug("skillingAreaSlug"),
       }),
-      req("Map course skilling areas", "PUT", "/skilling-areas/map/course/{{courseId}}", {
+      req("Map course skilling areas", "PUT", API.skilling.areas.mapCourse("{{courseId}}"), {
         body: { skillingAreas: ["{{skillingAreaSlug}}"] },
         description: "Body shape may accept ids or slugs — check controller.",
       }),
-      req("Courses by skilling area", "GET", "/skilling-areas/{{skillingAreaSlug}}/courses", {
+      req("Courses by skilling area", "GET", API.skilling.areas.courses("{{skillingAreaSlug}}"), {
         query: "page=1&limit=20",
       }),
-      req("Get by slug", "GET", "/skilling-areas/{{skillingAreaSlug}}"),
-      req("Update", "PUT", "/skilling-areas/{{skillingAreaSlug}}", {
+      req("Get by slug", "GET", API.skilling.areas.one("{{skillingAreaSlug}}")),
+      req("Update", "PUT", API.skilling.areas.one("{{skillingAreaSlug}}"), {
         body: { shortDescription: "Updated" },
       }),
-      req("Soft-delete", "DELETE", "/skilling-areas/{{skillingAreaSlug}}"),
-      req("Restore", "POST", "/skilling-areas/{{skillingAreaSlug}}/restore"),
+      req("Soft-delete", "DELETE", API.skilling.areas.one("{{skillingAreaSlug}}")),
+      req("Restore", "POST", API.skilling.areas.restore("{{skillingAreaSlug}}")),
     ]),
 
     folder("Skill Levels", "", [
-      req("List skill levels", "GET", "/skill-levels", {
+      req("List skill levels", "GET", API.skilling.levels.root, {
         query: "page=1&limit=20&q=",
       }),
-      req("Create skill level", "POST", "/skill-levels", {
+      req("Create skill level", "POST", API.skilling.levels.root, {
         body: {
           name: "Postman Skill Level",
           shortDescription: "Sample level",
@@ -274,22 +276,22 @@ const collection = {
         },
         test: saveSlug("skillLevelSlug"),
       }),
-      req("Courses by skill level", "GET", "/skill-levels/{{skillLevelSlug}}/courses", {
+      req("Courses by skill level", "GET", API.skilling.levels.courses("{{skillLevelSlug}}"), {
         query: "page=1&limit=20",
       }),
-      req("Get by slug", "GET", "/skill-levels/{{skillLevelSlug}}"),
-      req("Update", "PUT", "/skill-levels/{{skillLevelSlug}}", {
+      req("Get by slug", "GET", API.skilling.levels.one("{{skillLevelSlug}}")),
+      req("Update", "PUT", API.skilling.levels.one("{{skillLevelSlug}}"), {
         body: { shortDescription: "Updated" },
       }),
-      req("Soft-delete", "DELETE", "/skill-levels/{{skillLevelSlug}}"),
-      req("Restore", "POST", "/skill-levels/{{skillLevelSlug}}/restore"),
+      req("Soft-delete", "DELETE", API.skilling.levels.one("{{skillLevelSlug}}")),
+      req("Restore", "POST", API.skilling.levels.restore("{{skillLevelSlug}}")),
     ]),
 
     folder("Industries", "", [
-      req("List industries", "GET", "/industries", {
+      req("List industries", "GET", API.skilling.industries.root, {
         query: "page=1&limit=20&q=",
       }),
-      req("Create industry", "POST", "/industries", {
+      req("Create industry", "POST", API.skilling.industries.root, {
         body: {
           name: "Postman Industry",
           shortDescription: "Sample industry",
@@ -297,25 +299,25 @@ const collection = {
         },
         test: saveSlug("industrySlug"),
       }),
-      req("Map course industries", "PUT", "/industries/map/course/{{courseId}}", {
+      req("Map course industries", "PUT", API.skilling.industries.mapCourse("{{courseId}}"), {
         body: { industries: ["{{industrySlug}}"] },
       }),
-      req("Courses by industry", "GET", "/industries/{{industrySlug}}/courses", {
+      req("Courses by industry", "GET", API.skilling.industries.courses("{{industrySlug}}"), {
         query: "page=1&limit=20",
       }),
-      req("Get by slug", "GET", "/industries/{{industrySlug}}"),
-      req("Update", "PUT", "/industries/{{industrySlug}}", {
+      req("Get by slug", "GET", API.skilling.industries.one("{{industrySlug}}")),
+      req("Update", "PUT", API.skilling.industries.one("{{industrySlug}}"), {
         body: { shortDescription: "Updated" },
       }),
-      req("Soft-delete", "DELETE", "/industries/{{industrySlug}}"),
-      req("Restore", "POST", "/industries/{{industrySlug}}/restore"),
+      req("Soft-delete", "DELETE", API.skilling.industries.one("{{industrySlug}}")),
+      req("Restore", "POST", API.skilling.industries.restore("{{industrySlug}}")),
     ]),
 
     folder("Contents", "Generic CMS content entities", [
-      req("List contents", "GET", "/contents", {
+      req("List contents", "GET", API.content.root, {
         query: "page=1&limit=20&q=",
       }),
-      req("Create content", "POST", "/contents", {
+      req("Create content", "POST", API.content.root, {
         body: {
           name: "Postman Content",
           title: "Postman Content Title",
@@ -324,19 +326,19 @@ const collection = {
         },
         test: saveSlug("contentSlug"),
       }),
-      req("Get by slug", "GET", "/contents/{{contentSlug}}"),
-      req("Update", "PUT", "/contents/{{contentSlug}}", {
+      req("Get by slug", "GET", API.content.one("{{contentSlug}}")),
+      req("Update", "PUT", API.content.one("{{contentSlug}}"), {
         body: { title: "Updated content title" },
       }),
-      req("Soft-delete", "DELETE", "/contents/{{contentSlug}}"),
-      req("Restore", "POST", "/contents/{{contentSlug}}/restore"),
+      req("Soft-delete", "DELETE", API.content.one("{{contentSlug}}")),
+      req("Restore", "POST", API.content.restore("{{contentSlug}}")),
     ]),
 
     folder("Blogs", "Not yet in OpenAPI YAML — included here from routes.", [
-      req("List blogs", "GET", "/blogs", {
+      req("List blogs", "GET", API.blog.root, {
         query: "page=1&limit=12&q=&category=&tag=&featured=",
       }),
-      req("Create blog", "POST", "/blogs", {
+      req("Create blog", "POST", API.blog.root, {
         body: {
           title: "Postman Blog Post",
           excerpt: "Short excerpt",
@@ -348,16 +350,16 @@ const collection = {
         },
         test: saveSlug("blogSlug"),
       }),
-      req("Get by slug", "GET", "/blogs/{{blogSlug}}"),
-      req("Update", "PUT", "/blogs/{{blogSlug}}", {
+      req("Get by slug", "GET", API.blog.one("{{blogSlug}}")),
+      req("Update", "PUT", API.blog.one("{{blogSlug}}"), {
         body: { excerpt: "Updated excerpt" },
       }),
-      req("Soft-delete", "DELETE", "/blogs/{{blogSlug}}"),
-      req("Restore", "POST", "/blogs/{{blogSlug}}/restore"),
+      req("Soft-delete", "DELETE", API.blog.one("{{blogSlug}}")),
+      req("Restore", "POST", API.blog.restore("{{blogSlug}}")),
     ]),
 
     folder("Search", "", [
-      req("Global search", "GET", "/search", {
+      req("Global search", "GET", API.site.search.root, {
         query: "q=microsoft&limit=20",
       }),
     ]),
@@ -366,10 +368,10 @@ const collection = {
       "Sections",
       "CMS section catalog + page tags. Content fields only (title, subtitle, image, buttons, items, data).",
       [
-      req("List sections", "GET", "/sections", {
+      req("List sections", "GET", API.cms.sections.root, {
         query: "status=&content_scope=&q=",
       }),
-      req("Create section", "POST", "/sections", {
+      req("Create section", "POST", API.cms.sections.root, {
         body: {
           key: "postman_demo_section",
           name: "Postman Demo Section",
@@ -383,24 +385,24 @@ const collection = {
           "Create catalog section (key, name, content fields).",
         test: saveKey("sectionKey"),
       }),
-      req("Get by key", "GET", "/sections/{{sectionKey}}"),
-      req("Update section", "PUT", "/sections/{{sectionKey}}", {
+      req("Get by key", "GET", API.cms.sections.one("{{sectionKey}}")),
+      req("Update section", "PUT", API.cms.sections.one("{{sectionKey}}"), {
         body: {
           section_title: "Updated demo title",
           data: { body: "<p>Updated body</p>" },
         },
         description:
-          "Editable content fields only. Retired band fields are cleared server-side.",
+          "Editable content fields only.",
       }),
-      req("Set status", "PATCH", "/sections/{{sectionKey}}/status", {
+      req("Set status", "PATCH", API.cms.sections.status("{{sectionKey}}"), {
         body: { status: true },
       }),
-      req("Set section pages (replace tags)", "PUT", "/sections/{{sectionKey}}/pages", {
+      req("Set section pages (replace tags)", "PUT", API.cms.sections.pages("{{sectionKey}}"), {
         body: {
           pages: [{ page_key: "{{pageKey}}", sort_order: 0, status: true }],
         },
       }),
-      req("Tag section onto page", "POST", "/sections/{{sectionKey}}/pages/{{pageKey}}", {
+      req("Tag section onto page", "POST", API.cms.sections.pageTag("{{sectionKey}}", "{{pageKey}}"), {
         body: { sort_order: 10, status: true },
         test: [
           "const json = pm.response.json();",
@@ -412,31 +414,31 @@ const collection = {
           "}",
         ],
       }),
-      req("Update page tag", "PUT", "/sections/{{sectionKey}}/pages/tag/{{tagId}}", {
+      req("Update page tag", "PUT", API.cms.sections.tag("{{sectionKey}}", "{{tagId}}"), {
         body: {
           section_title: "Tag override title",
           sort_order: 5,
         },
       }),
-      req("Untag by tag id", "DELETE", "/sections/{{sectionKey}}/pages/tag/{{tagId}}"),
-      req("Untag by page key", "DELETE", "/sections/{{sectionKey}}/pages/by-page/{{pageKey}}"),
-      req("Delete section", "DELETE", "/sections/{{sectionKey}}"),
+      req("Untag by tag id", "DELETE", API.cms.sections.tag("{{sectionKey}}", "{{tagId}}")),
+      req("Untag by page key", "DELETE", API.cms.sections.byPage("{{sectionKey}}", "{{pageKey}}")),
+      req("Delete section", "DELETE", API.cms.sections.one("{{sectionKey}}")),
     ]),
 
     folder("Section Categories", "", [
-      req("List categories", "GET", "/section-categories"),
-      req("Get category by key", "GET", "/section-categories/content"),
+      req("List categories", "GET", API.cms.sectionCategories.root),
+      req("Get category by key", "GET", API.cms.sectionCategories.one("content")),
     ]),
 
     folder("Section Library", "Showcase / gallery for section catalog", [
-      req("List library categories", "GET", "/section-library/categories"),
-      req("Library showcase (default)", "GET", "/section-library/showcase"),
-      req("Library showcase by key", "GET", "/section-library/showcase/{{sectionKey}}"),
+      req("List library categories", "GET", API.cms.sectionLibrary.categories),
+      req("Library showcase (default)", "GET", API.cms.sectionLibrary.showcase),
+      req("Library showcase by key", "GET", API.cms.sectionLibrary.showcaseOne("{{sectionKey}}")),
     ]),
 
     folder("Pages", "CMS page templates", [
-      req("List pages", "GET", "/pages", { query: "status=" }),
-      req("Create page", "POST", "/pages", {
+      req("List pages", "GET", API.cms.pages.root, { query: "status=" }),
+      req("Create page", "POST", API.cms.pages.root, {
         body: {
           key: "postman_demo_page",
           name: "Postman Demo Page",
@@ -444,13 +446,13 @@ const collection = {
         },
         test: saveKey("pageKey"),
       }),
-      req("Resolve sections", "GET", "/pages/{{pageKey}}/sections", {
+      req("Resolve sections", "GET", API.cms.pages.sections("{{pageKey}}"), {
         query: "entity_id={{entityId}}",
         description:
           "Resolved placements for the template. Pass entity_id for vendor/product overrides.",
       }),
-      req("Get page by key", "GET", "/pages/{{pageKey}}"),
-      req("Update page", "PUT", "/pages/{{pageKey}}", {
+      req("Get page by key", "GET", API.cms.pages.one("{{pageKey}}")),
+      req("Update page", "PUT", API.cms.pages.one("{{pageKey}}"), {
         body: {
           name: "Updated Postman Demo Page",
           theme: {
@@ -461,20 +463,20 @@ const collection = {
         description:
           "Optional `theme` patch uses Colors + Surface keys only.",
       }),
-      req("Set page status", "PATCH", "/pages/{{pageKey}}/status", {
+      req("Set page status", "PATCH", API.cms.pages.status("{{pageKey}}"), {
         body: { status: true },
       }),
-      req("Delete page", "DELETE", "/pages/{{pageKey}}"),
+      req("Delete page", "DELETE", API.cms.pages.one("{{pageKey}}")),
     ]),
 
     folder(
       "Page Sections",
       "Template tags + EntityPageSection overrides/extras. Band bg/theme fields are not writable.",
       [
-        req("List page sections", "GET", "/page-sections", {
+        req("List page sections", "GET", API.cms.pageSections.root, {
           query: "page_key={{pageKey}}",
         }),
-        req("Tag section to page", "POST", "/page-sections", {
+        req("Tag section to page", "POST", API.cms.pageSections.root, {
           body: {
             page_key: "{{pageKey}}",
             section_key: "{{sectionKey}}",
@@ -482,16 +484,16 @@ const collection = {
           },
           test: saveId("pageSectionId"),
         }),
-        req("Reorder", "PUT", "/page-sections/reorder", {
+        req("Reorder", "PUT", API.cms.pageSections.reorder, {
           body: {
             page_key: "{{pageKey}}",
             order: ["{{pageSectionId}}"],
           },
         }),
-        req("List entity page sections", "GET", "/page-sections/entity", {
+        req("List entity page sections", "GET", API.cms.pageSections.entity, {
           query: "page_key={{pageKey}}&entity_id={{entityId}}",
         }),
-        req("Upsert entity page section", "PUT", "/page-sections/entity", {
+        req("Upsert entity page section", "PUT", API.cms.pageSections.entity, {
           body: {
             page_key: "{{pageKey}}",
             entity_id: "{{entityId}}",
@@ -505,15 +507,15 @@ const collection = {
         req(
           "Delete entity page section",
           "DELETE",
-          "/page-sections/entity/{{entityPageSectionId}}"
+          API.cms.pageSections.entityOne("{{entityPageSectionId}}")
         ),
-        req("Update page section", "PUT", "/page-sections/{{pageSectionId}}", {
+        req("Update page section", "PUT", API.cms.pageSections.one("{{pageSectionId}}"), {
           body: { section_title: "Updated placement title", sort_order: 2 },
         }),
-        req("Set page section status", "PATCH", "/page-sections/{{pageSectionId}}/status", {
+        req("Set page section status", "PATCH", API.cms.pageSections.status("{{pageSectionId}}"), {
           body: { status: true },
         }),
-        req("Delete page section", "DELETE", "/page-sections/{{pageSectionId}}"),
+        req("Delete page section", "DELETE", API.cms.pageSections.one("{{pageSectionId}}")),
       ]
     ),
 
@@ -521,8 +523,8 @@ const collection = {
       "Site Theme",
       "Global theme (key=default). Accepts Colors + Surface only.",
       [
-      req("Get site theme", "GET", "/site-theme"),
-      req("Update site theme", "PUT", "/site-theme", {
+      req("Get site theme", "GET", API.cms.siteTheme.root),
+      req("Update site theme", "PUT", API.cms.siteTheme.root, {
         body: {
           brand_primary: "#1d4ed8",
           brand_hover: "#1e40af",
@@ -538,10 +540,10 @@ const collection = {
       "Entity Page Theme",
       "Per-entity theme override for a page_key (Colors + Surface; no page background).",
       [
-      req("Get entity page theme", "GET", "/entity-page-theme", {
+      req("Get entity page theme", "GET", API.cms.entityPageTheme.root, {
         query: "page_key={{pageKey}}&entity_id={{entityId}}",
       }),
-      req("Upsert entity page theme", "PUT", "/entity-page-theme", {
+      req("Upsert entity page theme", "PUT", API.cms.entityPageTheme.root, {
         body: {
           page_key: "{{pageKey}}",
           entity_id: "{{entityId}}",
@@ -553,17 +555,17 @@ const collection = {
         description:
           "Upsert entity theme override. Nested `theme` uses the same field keys as site theme.",
       }),
-      req("Delete entity page theme", "DELETE", "/entity-page-theme", {
+      req("Delete entity page theme", "DELETE", API.cms.entityPageTheme.root, {
         query: "page_key={{pageKey}}&entity_id={{entityId}}",
       }),
     ]),
 
     folder("Navigation", "Header nav tree, columns, links", [
-      req("Get navigation tree", "GET", "/navigation"),
-      req("Filter navigation", "GET", "/navigation/filter", {
+      req("Get navigation tree", "GET", API.site.navigation.root),
+      req("Filter navigation", "GET", API.site.navigation.filter, {
         query: "q=",
       }),
-      req("Create navigation", "POST", "/navigation", {
+      req("Create navigation", "POST", API.site.navigation.root, {
         body: {
           name: "Postman Nav",
           language: "en",
@@ -576,8 +578,8 @@ const collection = {
           "if (nav && nav._id) pm.collectionVariables.set('navigationId', String(nav._id));",
         ],
       }),
-      req("List columns", "GET", "/navigation/columns"),
-      req("Create column", "POST", "/navigation/columns", {
+      req("List columns", "GET", API.site.navigation.columns),
+      req("Create column", "POST", API.site.navigation.columns, {
         body: {
           navigation: "{{navigationId}}",
           name: "Postman Column",
@@ -590,22 +592,22 @@ const collection = {
           "if (col && col._id) pm.collectionVariables.set('navigationColumnId', String(col._id));",
         ],
       }),
-      req("Create column link", "POST", "/navigation/column/links", {
+      req("Create column link", "POST", API.site.navigation.columnLinks, {
         body: {
           navigationColumn: "{{navigationColumnId}}",
           label: "Postman Link",
-          url: "/vendors",
+          url: API.catalog.vendors.root,
           sort_order: 0,
           status: true,
         },
       }),
-      req("Update navigation", "PUT", "/navigation/{{navigationId}}", {
+      req("Update navigation", "PUT", API.site.navigation.one("{{navigationId}}"), {
         body: { name: "Postman Nav Updated", status: true },
       }),
     ]),
 
     folder("Uploads", "Base64 image upload → /uploads/{folder}/…", [
-      req("Upload image (data URL)", "POST", "/api/uploads", {
+      req("Upload image (data URL)", "POST", API.site.uploads.api, {
         body: {
           folder: "sections",
           data_url:

@@ -141,8 +141,9 @@ export const DS_TYPE = {
     "section-theme-placeholder m-0 text-base leading-relaxed italic",
   /** Full-bleed dark hero headline */
   heroTitle:
-    "m-0 text-[40px] font-semibold leading-tight tracking-tight text-white sm:text-[36px] lg:text-[40px]",
-  heroBody: "leading-relaxed text-slate-200 [&>*]:m-0",
+    "m-0 font-[family-name:var(--font-sans)] text-[40px] font-semibold leading-tight tracking-tight text-white sm:text-[36px] lg:text-[40px]",
+  heroBody:
+    "font-[family-name:var(--font-sans)] leading-relaxed text-slate-200 [&>*]:m-0",
 } as const;
 
 export function sectionClassNames(

@@ -113,7 +113,7 @@ export default function CmsSiteThemePage() {
                 <p className="m-0 text-xs font-semibold tracking-wide text-slate-400 uppercase">
                   Light surface
                 </p>
-                <p className="mt-2 mb-0 text-lg font-bold text-ink">
+                <p className="mt-2 mb-0 font-[family-name:var(--font-display)] text-lg font-bold text-ink">
                   Brand & ink sample
                 </p>
                 <button

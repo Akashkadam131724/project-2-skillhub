@@ -15,8 +15,9 @@ const DEFAULT_FIRST_VIDEO =
 const DEFAULT_FOURTH_VIDEO =
   "https://www.youtube.com/watch?v=RPAITnl5lCA";
 
+/** Ink → Brand → Ink — follows site / page theme Colors. */
 export const HERO_GRADIENT_SLIDER_DEFAULT_BG =
-  "linear-gradient(157.967deg, rgb(15, 23, 42) 0%, rgb(0, 35, 109) 50%, rgb(15, 23, 42) 100%)";
+  "linear-gradient(157.967deg, var(--ink) 0%, var(--brand) 50%, var(--ink) 100%)";
 
 export const HERO_GRADIENT_SLIDER_STATIC_SLIDES: HeroGradientSliderSlide[] = [
   {

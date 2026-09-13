@@ -70,6 +70,7 @@ function ScopeTable() {
 function CheatSheet() {
   const rows = [
     ["Brand color site-wide", "Site theme → Colors"],
+    ["Site fonts", "Site theme → Typography"],
     ["White / grey section stripes", "Site or template theme → Surface"],
     ["One template’s stripe pattern", "Template theme → Surface"],
     ["Dark CTA / hero blocks", "Built into the section — not editable"],
@@ -106,8 +107,8 @@ function GuideBody({ showBandOnly = false }: { showBandOnly?: boolean }) {
           ]}
         />
         <p className="m-0 text-[11px] text-slate-500">
-          Edit stripes under <strong>Surface</strong>. Theme CMS is Colors +
-          Surface only.
+          Edit stripes under <strong>Surface</strong>. Theme CMS is Colors,
+          Typography, and Surface.
         </p>
       </div>
     );
@@ -144,6 +145,9 @@ function GuideBody({ showBandOnly = false }: { showBandOnly?: boolean }) {
           <ul className="m-0 space-y-1 p-0 text-[11px] text-slate-600 dark:text-slate-300">
             <li>
               <strong>Colors</strong> — brand, hover, ink
+            </li>
+            <li>
+              <strong>Typography</strong> — font family
             </li>
             <li>
               <strong>Surface</strong> — repeating band colors on section rows

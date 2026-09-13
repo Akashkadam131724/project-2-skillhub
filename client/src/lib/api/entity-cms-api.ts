@@ -1,184 +1,82 @@
 /**
- * Entity CMS API — create / update / delete for catalog entities.
- * Reads can use @/lib/api fetch* helpers.
+ * CMS writes for catalog / skilling / content / blog entities.
+ * Public reads live in `public.ts`. Page/section CMS lives in `cms-api.ts`.
+ *
+ * Prefer `entityCms.vendor.update(slug, body)` — flat `updateVendor` aliases remain.
  */
-import type { ApiItemResponse, ApiListResponse, CmsApiError, QueryParams } from "./types";
+import { API } from "./routes";
+import { apiRequest, toQuery } from "./client";
+import type { ApiItemResponse, ApiListResponse, QueryParams } from "./types";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+type Item = ApiItemResponse<Record<string, unknown>>;
 
-async function request<T = unknown>(
-  path: string,
-  { method = "GET", body }: { method?: string; body?: unknown } = {}
-): Promise<T> {
-  const res = await fetch(`${API_URL}${path}`, {
-    method,
-    headers: body ? { "Content-Type": "application/json" } : undefined,
-    body: body ? JSON.stringify(body) : undefined,
-    cache: "no-store",
-  });
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok) {
-    const err = new Error(
-      (data as { message?: string }).message || "Request failed"
-    ) as CmsApiError;
-    err.status = res.status;
-    err.fields = (data as { fields?: unknown }).fields;
-    err.payload = data;
-    throw err;
-  }
-  return data as T;
+type SlugRoutes = {
+  root: string;
+  one: (slug: string) => string;
+  restore: (slug: string) => string;
+};
+
+function slugCms(routes: SlugRoutes) {
+  return {
+    create: (body: unknown) =>
+      apiRequest<Item>(routes.root, { method: "POST", body }),
+    update: (slug: string, body: unknown) =>
+      apiRequest<Item>(routes.one(slug), { method: "PUT", body }),
+    delete: (slug: string) => apiRequest(routes.one(slug), { method: "DELETE" }),
+    restore: (slug: string) =>
+      apiRequest(routes.restore(slug), { method: "POST" }),
+  };
 }
 
-function enc(slug: string) {
-  return encodeURIComponent(slug);
-}
+export const entityCms = {
+  vendor: slugCms(API.catalog.vendors),
+  product: slugCms(API.catalog.products),
+  course: slugCms(API.catalog.courses),
+  skillingArea: slugCms(API.skilling.areas),
+  industry: slugCms(API.skilling.industries),
+  content: slugCms(API.content),
+  blog: slugCms(API.blog),
+  skillLevel: {
+    list: (params: QueryParams = {}) =>
+      apiRequest<ApiListResponse>(
+        `${API.skilling.levels.root}${toQuery(params)}`
+      ),
+  },
+};
 
-/* Vendors */
-export function createVendor(body: unknown) {
-  return request<ApiItemResponse<Record<string, unknown>>>("/vendors", {
-    method: "POST",
-    body,
-  });
-}
-export function updateVendor(slug: string, body: unknown) {
-  return request<ApiItemResponse<Record<string, unknown>>>(
-    `/vendors/${enc(slug)}`,
-    { method: "PUT", body }
-  );
-}
-export function deleteVendor(slug: string) {
-  return request(`/vendors/${enc(slug)}`, { method: "DELETE" });
-}
-export function restoreVendor(slug: string) {
-  return request(`/vendors/${enc(slug)}/restore`, { method: "POST" });
-}
+export const createVendor = entityCms.vendor.create;
+export const updateVendor = entityCms.vendor.update;
+export const deleteVendor = entityCms.vendor.delete;
+export const restoreVendor = entityCms.vendor.restore;
 
-/* Products */
-export function createProduct(body: unknown) {
-  return request<ApiItemResponse<Record<string, unknown>>>("/products", {
-    method: "POST",
-    body,
-  });
-}
-export function updateProduct(slug: string, body: unknown) {
-  return request<ApiItemResponse<Record<string, unknown>>>(
-    `/products/${enc(slug)}`,
-    { method: "PUT", body }
-  );
-}
-export function deleteProduct(slug: string) {
-  return request(`/products/${enc(slug)}`, { method: "DELETE" });
-}
-export function restoreProduct(slug: string) {
-  return request(`/products/${enc(slug)}/restore`, { method: "POST" });
-}
+export const createProduct = entityCms.product.create;
+export const updateProduct = entityCms.product.update;
+export const deleteProduct = entityCms.product.delete;
+export const restoreProduct = entityCms.product.restore;
 
-/* Courses */
-export function createCourse(body: unknown) {
-  return request<ApiItemResponse<Record<string, unknown>>>("/courses", {
-    method: "POST",
-    body,
-  });
-}
-export function updateCourse(slug: string, body: unknown) {
-  return request<ApiItemResponse<Record<string, unknown>>>(
-    `/courses/${enc(slug)}`,
-    { method: "PUT", body }
-  );
-}
-export function deleteCourse(slug: string) {
-  return request(`/courses/${enc(slug)}`, { method: "DELETE" });
-}
-export function restoreCourse(slug: string) {
-  return request(`/courses/${enc(slug)}/restore`, { method: "POST" });
-}
+export const createCourse = entityCms.course.create;
+export const updateCourse = entityCms.course.update;
+export const deleteCourse = entityCms.course.delete;
+export const restoreCourse = entityCms.course.restore;
 
-/* Industries */
-export function createIndustry(body: unknown) {
-  return request<ApiItemResponse<Record<string, unknown>>>("/industries", {
-    method: "POST",
-    body,
-  });
-}
-export function updateIndustry(slug: string, body: unknown) {
-  return request<ApiItemResponse<Record<string, unknown>>>(
-    `/industries/${enc(slug)}`,
-    { method: "PUT", body }
-  );
-}
-export function deleteIndustry(slug: string) {
-  return request(`/industries/${enc(slug)}`, { method: "DELETE" });
-}
-export function restoreIndustry(slug: string) {
-  return request(`/industries/${enc(slug)}/restore`, { method: "POST" });
-}
+export const createSkillingArea = entityCms.skillingArea.create;
+export const updateSkillingArea = entityCms.skillingArea.update;
+export const deleteSkillingArea = entityCms.skillingArea.delete;
+export const restoreSkillingArea = entityCms.skillingArea.restore;
 
-/* Skilling areas */
-export function createSkillingArea(body: unknown) {
-  return request<ApiItemResponse<Record<string, unknown>>>("/skilling-areas", {
-    method: "POST",
-    body,
-  });
-}
-export function updateSkillingArea(slug: string, body: unknown) {
-  return request<ApiItemResponse<Record<string, unknown>>>(
-    `/skilling-areas/${enc(slug)}`,
-    { method: "PUT", body }
-  );
-}
-export function deleteSkillingArea(slug: string) {
-  return request(`/skilling-areas/${enc(slug)}`, { method: "DELETE" });
-}
-export function restoreSkillingArea(slug: string) {
-  return request(`/skilling-areas/${enc(slug)}/restore`, { method: "POST" });
-}
+export const createIndustry = entityCms.industry.create;
+export const updateIndustry = entityCms.industry.update;
+export const deleteIndustry = entityCms.industry.delete;
+export const restoreIndustry = entityCms.industry.restore;
 
-/* Content pages (about-us, our-team, …) */
-export function createContent(body: unknown) {
-  return request<ApiItemResponse<Record<string, unknown>>>("/contents", {
-    method: "POST",
-    body,
-  });
-}
-export function updateContent(slug: string, body: unknown) {
-  return request<ApiItemResponse<Record<string, unknown>>>(
-    `/contents/${enc(slug)}`,
-    { method: "PUT", body }
-  );
-}
-export function deleteContent(slug: string) {
-  return request(`/contents/${enc(slug)}`, { method: "DELETE" });
-}
-export function restoreContent(slug: string) {
-  return request(`/contents/${enc(slug)}/restore`, { method: "POST" });
-}
+export const createContent = entityCms.content.create;
+export const updateContent = entityCms.content.update;
+export const deleteContent = entityCms.content.delete;
+export const restoreContent = entityCms.content.restore;
 
-/* Blogs */
-export function createBlog(body: unknown) {
-  return request<ApiItemResponse<Record<string, unknown>>>("/blogs", {
-    method: "POST",
-    body,
-  });
-}
-export function updateBlog(slug: string, body: unknown) {
-  return request<ApiItemResponse<Record<string, unknown>>>(
-    `/blogs/${enc(slug)}`,
-    { method: "PUT", body }
-  );
-}
-export function deleteBlog(slug: string) {
-  return request(`/blogs/${enc(slug)}`, { method: "DELETE" });
-}
-export function restoreBlog(slug: string) {
-  return request(`/blogs/${enc(slug)}/restore`, { method: "POST" });
-}
+export const createBlog = entityCms.blog.create;
+export const updateBlog = entityCms.blog.update;
+export const deleteBlog = entityCms.blog.delete;
+export const restoreBlog = entityCms.blog.restore;
 
-/* Skill levels (for course form) */
-export function listSkillLevels(params: QueryParams = {}) {
-  const qs = new URLSearchParams();
-  Object.entries(params).forEach(([k, v]) => {
-    if (v !== undefined && v !== null && v !== "") qs.set(k, String(v));
-  });
-  const q = qs.toString();
-  return request<ApiListResponse>(`/skill-levels${q ? `?${q}` : ""}`);
-}
+export const listSkillLevels = entityCms.skillLevel.list;

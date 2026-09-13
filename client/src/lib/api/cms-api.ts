@@ -1,5 +1,8 @@
 import { logFetchResult } from "@/lib/cache/cache-log";
+import { apiGet } from "./client";
+import { API } from "./routes";
 import type {
+  ApiGetOptions,
   ApiItemResponse,
   ApiListResponse,
   CmsApiError,
@@ -56,13 +59,11 @@ async function request<T = unknown>(
 
 /* ─── Pages ─── */
 export function listPages(params?: QueryParams) {
-  return request<ApiListResponse>(`/pages${toQuery(params)}`);
+  return request<ApiListResponse>(`${API.cms.pages.root}${toQuery(params)}`);
 }
 
 export function getPage(key: string) {
-  return request<ApiItemResponse<Record<string, unknown>>>(
-    `/pages/${encodeURIComponent(key)}`
-  );
+  return request<ApiItemResponse<Record<string, unknown>>>(API.cms.pages.one(key));
 }
 
 export function getPageSectionsResolved(
@@ -78,46 +79,46 @@ export function getPageSectionsResolved(
   }
 
   return request<ResolvedPageSectionsResponse>(
-    `/pages/${encodeURIComponent(key)}/sections${toQuery(query)}`,
+    `${API.cms.pages.sections(key)}${toQuery(query)}`,
     requestOptions
   );
 }
 
 export function createPage(body: unknown) {
-  return request<ApiItemResponse<Record<string, unknown>>>("/pages", {
+  return request<ApiItemResponse<Record<string, unknown>>>(API.cms.pages.root, {
     method: "POST",
     body,
   });
 }
 
 export function updatePage(key: string, body: unknown) {
-  return request<ApiItemResponse<Record<string, unknown>>>(
-    `/pages/${encodeURIComponent(key)}`,
-    {
-      method: "PUT",
-      body,
-    }
-  );
+  return request<ApiItemResponse<Record<string, unknown>>>(API.cms.pages.one(key), {
+    method: "PUT",
+    body,
+  });
 }
 
 export function setPageStatus(key: string, status: unknown) {
-  return request(`/pages/${encodeURIComponent(key)}/status`, {
+  return request(API.cms.pages.status(key), {
     method: "PATCH",
     body: { status },
   });
 }
 
 export function deletePage(key: string) {
-  return request(`/pages/${encodeURIComponent(key)}`, { method: "DELETE" });
+  return request(API.cms.pages.one(key), { method: "DELETE" });
 }
 
 /* ─── Site theme ─── */
 export function getSiteTheme(options: CmsRequestOptions = {}) {
-  return request<ApiItemResponse<Record<string, unknown>>>("/site-theme", options);
+  return request<ApiItemResponse<Record<string, unknown>>>(
+    API.cms.siteTheme.root,
+    options
+  );
 }
 
 export function updateSiteTheme(body: unknown) {
-  return request<ApiItemResponse<Record<string, unknown>>>("/site-theme", {
+  return request<ApiItemResponse<Record<string, unknown>>>(API.cms.siteTheme.root, {
     method: "PUT",
     body,
   });
@@ -132,12 +133,12 @@ export function getEntityPageTheme({
   entity_id: string | number;
 }) {
   return request<ApiItemResponse<Record<string, unknown>>>(
-    `/entity-page-theme${toQuery({ page_key, entity_id })}`
+    `${API.cms.entityPageTheme.root}${toQuery({ page_key, entity_id })}`
   );
 }
 
 export function upsertEntityPageTheme(body: unknown) {
-  return request("/entity-page-theme", { method: "PUT", body });
+  return request(API.cms.entityPageTheme.root, { method: "PUT", body });
 }
 
 export function deleteEntityPageTheme({
@@ -148,7 +149,7 @@ export function deleteEntityPageTheme({
   entity_id: string | number;
 }) {
   return request(
-    `/entity-page-theme${toQuery({ page_key, entity_id })}`,
+    `${API.cms.entityPageTheme.root}${toQuery({ page_key, entity_id })}`,
     { method: "DELETE" }
   );
 }
@@ -156,56 +157,56 @@ export function deleteEntityPageTheme({
 /* ─── Section categories ─── */
 export function listSectionCategories(params?: QueryParams) {
   return request<SectionCategoriesResponse>(
-    `/section-categories${toQuery(params)}`
+    `${API.cms.sectionCategories.root}${toQuery(params)}`
   );
 }
 
 export function getSectionCategory(key: string) {
   return request<ApiItemResponse<Record<string, unknown>>>(
-    `/section-categories/${encodeURIComponent(key)}`
+    API.cms.sectionCategories.one(key)
   );
 }
 
 /* ─── Sections ─── */
 export function listSections(params?: QueryParams) {
   return request<ApiListResponse<Record<string, unknown>>>(
-    `/sections${toQuery(params)}`
+    `${API.cms.sections.root}${toQuery(params)}`
   );
 }
 
 export function getSection(key: string) {
   return request<ApiItemResponse<Record<string, unknown>>>(
-    `/sections/${encodeURIComponent(key)}`
+    API.cms.sections.one(key)
   );
 }
 
 export function createSection(body: unknown) {
-  return request<ApiItemResponse<Record<string, unknown>>>("/sections", {
+  return request<ApiItemResponse<Record<string, unknown>>>(API.cms.sections.root, {
     method: "POST",
     body,
   });
 }
 
 export function updateSection(key: string, body: unknown) {
-  return request(`/sections/${encodeURIComponent(key)}`, {
+  return request(API.cms.sections.one(key), {
     method: "PUT",
     body,
   });
 }
 
 export function setSectionStatus(key: string, status: unknown) {
-  return request(`/sections/${encodeURIComponent(key)}/status`, {
+  return request(API.cms.sections.status(key), {
     method: "PATCH",
     body: { status },
   });
 }
 
 export function deleteSection(key: string) {
-  return request(`/sections/${encodeURIComponent(key)}`, { method: "DELETE" });
+  return request(API.cms.sections.one(key), { method: "DELETE" });
 }
 
 export function setSectionPages(key: string, pages: unknown) {
-  return request(`/sections/${encodeURIComponent(key)}/pages`, {
+  return request(API.cms.sections.pages(key), {
     method: "PUT",
     body: { pages },
   });
@@ -216,10 +217,10 @@ export function addSectionPageTag(
   pageKey: string,
   body: Record<string, unknown> = {}
 ) {
-  return request(
-    `/sections/${encodeURIComponent(sectionKey)}/pages/${encodeURIComponent(pageKey)}`,
-    { method: "POST", body }
-  );
+  return request(API.cms.sections.pageTag(sectionKey, pageKey), {
+    method: "POST",
+    body,
+  });
 }
 
 export function updateSectionPageTag(
@@ -227,55 +228,51 @@ export function updateSectionPageTag(
   tagId: string,
   body: unknown
 ) {
-  return request(
-    `/sections/${encodeURIComponent(sectionKey)}/pages/tag/${encodeURIComponent(tagId)}`,
-    { method: "PUT", body }
-  );
+  return request(API.cms.sections.tag(sectionKey, tagId), {
+    method: "PUT",
+    body,
+  });
 }
 
 export function deleteSectionPageTag(sectionKey: string, tagId: string) {
-  return request(
-    `/sections/${encodeURIComponent(sectionKey)}/pages/tag/${encodeURIComponent(tagId)}`,
-    { method: "DELETE" }
-  );
+  return request(API.cms.sections.tag(sectionKey, tagId), {
+    method: "DELETE",
+  });
 }
 
 /* ─── Page-section (flat tags + reorder) ─── */
 export function listPageSections(params?: QueryParams) {
   return request<ApiListResponse<Record<string, unknown>>>(
-    `/page-sections${toQuery(params)}`
+    `${API.cms.pageSections.root}${toQuery(params)}`
   );
 }
 
 export function tagSectionToPage(body: unknown) {
-  return request("/page-sections", { method: "POST", body });
+  return request(API.cms.pageSections.root, { method: "POST", body });
 }
 
 export function updatePageSectionTag(id: string, body: unknown) {
-  return request(`/page-sections/${encodeURIComponent(id)}`, {
+  return request(API.cms.pageSections.one(id), {
     method: "PUT",
     body,
   });
 }
 
 export function setPageSectionTagStatus(id: string, status: unknown) {
-  return request(`/page-sections/${encodeURIComponent(id)}/status`, {
+  return request(API.cms.pageSections.status(id), {
     method: "PATCH",
     body: { status },
   });
 }
 
 export function deletePageSectionTag(id: string) {
-  return request(`/page-sections/${encodeURIComponent(id)}`, {
+  return request(API.cms.pageSections.one(id), {
     method: "DELETE",
   });
 }
 
-export function reorderPageSections(
-  page_key: string,
-  items: unknown
-) {
-  return request("/page-sections/reorder", {
+export function reorderPageSections(page_key: string, items: unknown) {
+  return request(API.cms.pageSections.reorder, {
     method: "PUT",
     body: { page_key, items },
   });
@@ -283,7 +280,7 @@ export function reorderPageSections(
 
 /* ─── Per-entity placement overrides ─── */
 export function upsertEntityPageSection(body: unknown) {
-  return request("/page-sections/entity", { method: "PUT", body });
+  return request(API.cms.pageSections.entity, { method: "PUT", body });
 }
 
 /** Create page-only section placements for a content entity (in order). */
@@ -317,12 +314,12 @@ export function getEntityPageSections({
   entity_id: string | number;
 }) {
   return request<ApiListResponse<Record<string, unknown>>>(
-    `/page-sections/entity${toQuery({ page_key, entity_id })}`
+    `${API.cms.pageSections.entity}${toQuery({ page_key, entity_id })}`
   );
 }
 
 export function deleteEntityPageSection(id: string) {
-  return request(`/page-sections/entity/${encodeURIComponent(id)}`, {
+  return request(API.cms.pageSections.entityOne(id), {
     method: "DELETE",
   });
 }
@@ -337,8 +334,22 @@ export function mediaUrl(src?: string | null) {
 
 /** Upload a data-URL image; returns { data: { url, path } } */
 export async function uploadCmsImage(dataUrl: string, folder = "sections") {
-  return request<ApiItemResponse<{ url: string; path?: string }>>("/api/uploads", {
-    method: "POST",
-    body: { data_url: dataUrl, folder },
+  return request<ApiItemResponse<{ url: string; path?: string }>>(
+    API.site.uploads.api,
+    {
+      method: "POST",
+      body: { data_url: dataUrl, folder },
+    }
+  );
+}
+
+export async function fetchSectionLibraryShowcase(
+  showcaseKey: string,
+  options: ApiGetOptions = {}
+) {
+  const key = showcaseKey || "index";
+  return apiGet(API.cms.sectionLibrary.showcaseOne(key), {
+    notFoundMessage: "Section library showcase not found",
+    ...options,
   });
 }
