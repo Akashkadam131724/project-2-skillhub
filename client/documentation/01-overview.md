@@ -12,7 +12,7 @@ The client `src/` tree is fully **TypeScript** — see [00 — `src/` layout](./
 │  brand colors, page surface pattern                         │
 ├─────────────────────────────────────────────────────────────┤
 │ SectionSurface  (placement)                                 │
-│  band bg / image / data-section-theme="light"|"dark"        │
+│  surface pattern or built-in dark/own-band · data-theme     │
 ├─────────────────────────────────────────────────────────────┤
 │ SectionFrame / custom section                               │
 │  title · subtitle · children · SectionButtonsFooter         │
@@ -28,7 +28,7 @@ Source of truth for this model: `src/lib/sections/section-design-system.ts`.
 
 ## Rules (non-negotiable)
 
-1. **Never** paint the outer CMS placement `<section>` with hard `bg-white` / `dark:bg-slate-*`. Band color comes from `SectionSurface` + theme tokens.
+1. **Never** paint the outer CMS placement `<section>` with hard `bg-white` / `dark:bg-slate-*`. Band color comes from `SectionSurface` (page surface pattern or built-in own-band sections) + theme tokens.
 2. **Band copy** uses `section-theme-heading` | `muted` | `subtle` (or `DS_TEXT.*`) — not `text-ink` / `text-white` / `text-slate-*`.
 3. **Forms on dark bands** sit inside a light island (`SectionLightCard` or `data-section-surface="light-card"`).
 4. **Photos / gradients with light type** use `SectionMediaOverlay`.

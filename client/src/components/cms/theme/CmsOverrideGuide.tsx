@@ -148,10 +148,6 @@ function GuideBody({ showBandOnly = false }: { showBandOnly?: boolean }) {
             <li>
               <strong>Surface</strong> — repeating band colors on section rows
             </li>
-            <li>
-              <strong>Background</strong> — page bg color/image behind transparent
-              sections
-            </li>
           </ul>
         </div>
       </details>

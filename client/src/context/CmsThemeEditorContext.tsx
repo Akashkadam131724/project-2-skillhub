@@ -17,7 +17,7 @@ const CmsThemeEditorContext = createContext<CmsThemeEditorContextValue | null>(
 );
 
 /**
- * Shared resolved theme + helpers for Colors / Surface / Background tabs.
+ * Shared resolved theme + helpers for Colors / Surface tabs.
  */
 export function CmsThemeEditorProvider({
   mode = "site",

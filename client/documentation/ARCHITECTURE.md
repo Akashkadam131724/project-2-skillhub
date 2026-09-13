@@ -51,7 +51,6 @@ Details: [00-src-layout.md](./00-src-layout.md).
            ▼                     ▼                     ▼
    section-theme.ts       design/* primitives    many section *.tsx
    styles/section-theme   SectionLightCard       forms, stats, FAQ…
-                         SectionBand
                          SectionMediaOverlay
 
                     ┌──────────────────────────┐
@@ -125,11 +124,12 @@ Changing `BUTTON_VARIANTS`, action resolution, or `.section-btn` CSS affects thi
 | Band tokens | `styles/section-theme.css`, light-card / glass presets |
 | Button variant | `button-types.ts`, `styles/section-buttons.css`, server `button.schema.js` |
 | Item field shape | `section-items-config.ts`, Zod helpers, `ItemFieldControl` |
-| New section | `section-manifest.ts` + `section-registry-sync.ts`, items config, showcase sample |
+| New section | `section-manifest.ts` + `section-registry-sync.ts`, items config, `lib/static-demo.ts` + `demo-placements.ts` |
 | Live-edit state | `context/CmsLivePlacementsContext.tsx`, `components/cms/pages/types.ts` |
+| Dark / own-band sections | `theme/section-theme.data.ts` (`SECTION_DARK_BG_KEYS`) |
 
 ---
 
 ## Existing override docs
 
-Theme / band / content priority: [CMS-OVERRIDE-GUIDE.md](./CMS-OVERRIDE-GUIDE.md).
+Theme / surface / content priority: [CMS-OVERRIDE-GUIDE.md](./CMS-OVERRIDE-GUIDE.md).

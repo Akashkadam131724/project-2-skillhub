@@ -42,7 +42,7 @@ Standard section chrome used by FAQ, stats, tabs, benefits, directories, etc.
 
 `src/components/sections/SectionSurface.tsx`
 
-Placement-level band background + `data-section-theme`. Applied by CMS/public placement shells — section authors usually don’t call this directly.
+Placement-level band background + `data-section-theme`. Applied by CMS/public placement shells from the **page surface pattern** (and built-in dark/own-band section keys). Section authors usually don’t call this directly — there is no per-section band CMS editor.
 
 ---
 
@@ -52,10 +52,8 @@ Placement-level band background + `data-section-theme`. Applied by CMS/public pl
 
 | Component | Use when |
 |-----------|----------|
-| `SectionBand` | Transparent band content shell (inherits surface) |
 | `SectionLightCard` | White card / form island on any band |
 | `SectionMediaOverlay` | Text/CTA over photo or gradient |
-| `SectionBrandGlow` | Soft brand radial decoration |
 
 Helpers from `section-design-system.ts`:
 

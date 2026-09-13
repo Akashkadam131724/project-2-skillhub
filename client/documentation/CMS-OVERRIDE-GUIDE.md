@@ -1,8 +1,8 @@
 # CMS override guide — priority & how it works
 
-> **In the CMS UI:** open **Themes** (`/cms/site-theme`) for the full **How overrides work** panel, or click **Override guide** on any theme / section band screen.
+> **In the CMS UI:** open **Themes** (`/cms/site-theme`) for the **How overrides work** panel, or click **Override guide** on a theme screen.
 
-This guide explains **what wins when** you edit themes, section content, and section bands in SkillHub CMS. Use it when you are unsure whether to change the **site**, a **page template**, or a **single section**.
+This guide explains **what wins when** you edit themes and section content in SkillHub CMS. Use it when you are unsure whether to change the **site**, a **page template**, or a **single section’s content**.
 
 ---
 
@@ -10,17 +10,19 @@ This guide explains **what wins when** you edit themes, section content, and sec
 
 | Layer | What it controls | Wins over |
 |-------|------------------|-----------|
-| **1. Section band (per section)** | Background image, background color, light/dark band theme | Page surface pattern |
-| **2. Page template theme** | Colors, surface pattern, page background (for that template) | Site theme |
-| **3. Site theme (global)** | Default colors, surface pattern, page background | — (base layer) |
+| **1. Built-in section paint** | Dark / full-bleed heroes, CTAs, etc. (fixed in code) | Page surface stripes |
+| **2. Page template theme** | Colors + surface pattern for that template | Site theme |
+| **3. Site theme (global)** | Default colors + surface pattern | — (base layer) |
 
-For **section text, cards, buttons, and images**, priority depends on **content scope** (see below).
+For **section text, cards, buttons, and images**, priority depends on **content scope** (see Part 3).
+
+**Retired:** per-section band editors (`section_band`, `section_theme`, `section_bg_*`) and the theme **Background** tab. Do not look for those in CMS.
 
 ---
 
 ## Part 1 — Page theme overrides
 
-Page themes control **brand colors**, **section band patterns**, and **page-level background** (color/image behind transparent sections).
+Page themes control **brand colors** and **section row surface patterns** (e.g. white → grey stripes).
 
 ### Cascade (low → high)
 
@@ -28,7 +30,7 @@ Page themes control **brand colors**, **section band patterns**, and **page-leve
 Site theme (global)
     ↓  empty fields inherit
 Page template theme (home, product, course, …)
-    ↓  empty fields inherit (entity theme API exists for per-record pages)
+    ↓  empty fields inherit
 Live page appearance
 ```
 
@@ -44,66 +46,54 @@ Live page appearance
 
 ### Theme editor tabs
 
-The theme editor has three tabs. All tabs share one **Save** — you can switch tabs and save once.
+The theme editor has **two** tabs. Both share one **Save** — you can switch tabs and save once.
 
 | Tab | Fields | Inherit behavior (template level) |
 |-----|--------|-----------------------------------|
 | **Colors** | Preset, Brand, Brand hover, Ink | Empty = use site theme |
 | **Surface** | Band pattern (repeat sequence / one color / transparent) | “Inherit” = use site pattern |
-| **Background** | Page background color, Page background image URL | Empty = use site background |
 
 ### What each theme field does
 
 | Field | Effect on the live page |
 |-------|-------------------------|
 | **Brand / Brand hover / Ink** | CSS variables (`--brand`, `--ink`, etc.) used across buttons, links, and dark bands |
-| **Surface pattern** | Default **section row backgrounds** when a section has no own band override. Builds repeating colors (e.g. white → grey → white → grey) |
-| **Page background color / image** | Shows **behind** sections, especially when surface is **Transparent** or between sections |
+| **Surface pattern** | Default **section row backgrounds** for normal (non–full-bleed) sections. Builds repeating colors (e.g. white → grey → white → grey) |
 
 ### Template vs site — examples
 
 - Site: white/grey alternating bands. Product template: **inherit** surface → product pages still alternate white/grey.
 - Site: blue brand. Home template: set **Ink** only → home uses custom ink; brand colors still from site unless overridden.
-- Template: **Transparent** surface + site page background image → home shows the image between/behind sections.
 
 **Reset template:** Use **“Use site theme only”** / **“Clear template overrides”** to remove all template-level theme fields.
 
 ---
 
-## Part 2 — Section band overrides (visual priority)
+## Part 2 — How section rows get their background
 
-Each section row can override the page surface pattern for **that row only**.
+There is **no** per-section band CMS editor. What paints a row:
 
-### Band priority (highest → lowest)
+### Visual priority (highest → lowest)
 
 ```
-1. Section background IMAGE     ← wins everything for that row’s fill
-2. Section background COLOR     ← wins over page pattern
-3. Section band theme           ← Light / Dark / Inherit
-4. Page surface pattern         ← from Site + Template theme (Surface tab)
-5. Page background              ← only visible in gaps / transparent surface
+1. Built-in section UI          ← heroes, CTAs, galleries listed in SECTION_DARK_BG_KEYS / own-band keys
+2. Page surface pattern         ← Site + Template theme → Surface tab (white/grey, etc.)
+3. Site / template Colors       ← brand + ink tokens used by dark/light copy
 ```
 
-This matches what you see in the **Section band** editor:
+### Built-in dark / full-bleed sections
 
-1. **Background image** — full-bleed; replaces default band fill  
-2. **Background color** — overrides page surfaces for this section only  
-3. **Band theme** — Light or Dark (or Inherit)  
-4. **Otherwise** — follows page theme surface pattern  
+Some section types always paint their own background and **skip** page surface striping. The canonical list lives in code:
 
-### Section band theme values
+`client/src/lib/sections/theme/section-theme.data.ts` → `SECTION_DARK_BG_KEYS` (and related `SECTION_OWN_BAND_KEYS` / skip keys).
 
-| Value | Meaning |
-|-------|---------|
-| **Inherit** | Use the page surface pattern for this row (white, grey, custom colors, etc.) |
-| **Light** | Force a light band (dark text) regardless of pattern |
-| **Dark** | Force a dark band (light text) regardless of pattern |
+Examples: `cta_band`, `split_cta`, `hero_gradient_slider`, `vendor_link_grid`, `metric_rail`, …
 
-**Tip:** Use **Inherit** for most sections so the **Surface** tab pattern controls alternation. Use **Light/Dark** only when one row must break the pattern (e.g. a dark CTA between light bands).
+**Tip:** Use the **Surface** tab for normal content rows. If a section must always be dark, that belongs in the section component + `SECTION_DARK_BG_KEYS` — not a CMS band override.
 
-### Full-bleed sections
+### Full-bleed / skip-stripe sections
 
-Some section types (e.g. `cta_band`, `in_page_nav`) paint their own layout. The page band wrapper may be skipped or only affect text tokens. If a section looks “self-contained,” check its section type before fighting the surface pattern.
+Types such as `in_page_nav`, `promo_modal`, and keys in `SECTION_THEME_BAND_SKIP_KEYS` may skip the page band wrapper or only affect tokens. If a section looks “self-contained,” check its section type before fighting the surface pattern.
 
 ---
 
@@ -123,7 +113,7 @@ Legacy DB value `cascading` is treated as **Page**.
 
 ### Content resolution order (for `page` scope)
 
-For each field (title, items, buttons, band image, etc.):
+For each field (title, items, buttons, images, etc.):
 
 ```
 Entity page override   (highest — this vendor/product/course only)
@@ -173,25 +163,24 @@ flowchart TB
   end
 
   subgraph section [Each section row]
-  SB[Section band overrides]
+  OWN[Built-in dark / own-band UI]
   SP[Page surface pattern slot]
   SC[Section content]
-  SB -->|image/color/theme| VIS[What user sees]
-  SP -->|if band inherits| VIS
+  OWN -->|skips stripes| VIS[What user sees]
+  SP -->|normal sections| VIS
   RT --> SP
+  RT -->|brand colors ink| VIS
   SC --> VIS
   end
-
-  RT -->|brand colors ink| VIS
 ```
 
 **Example — Product detail page:**
 
 1. **Site theme:** Brand blue, surface = white + grey repeat.  
 2. **Product template theme:** Inherit everything → still white/grey.  
-3. **Hero section:** Band = Inherit → first band = white from pattern.  
-4. **Features section:** Band = Inherit → second band = grey.  
-5. **Pricing section:** Band background color = `#0f172a` → **dark row** (overrides pattern).  
+3. **Overview section:** Uses surface pattern → first band = white.  
+4. **Features section:** Uses surface pattern → second band = grey.  
+5. **CTA band:** Listed in `SECTION_DARK_BG_KEYS` → always dark (not from Surface tab).  
 6. **FAQ items:** `content_scope = template` → same FAQ on all products; edit on product template, not per product.
 
 ---
@@ -202,9 +191,8 @@ flowchart TB
 |------------|---------|
 | Change brand color site-wide | Site theme → **Colors** tab |
 | Home page only uses a different band pattern | Home template theme → **Surface** tab |
-| One section row is always dark | Section → **Section band** → Dark (or custom dark bg color) |
 | Alternate custom colors (no code) | Site or template theme → **Surface** → Repeat sequence → add colors |
-| Page shows a texture behind all sections | Site or template → **Background** tab |
+| One section type is always dark | Implement in the section UI + add key to `SECTION_DARK_BG_KEYS` |
 | Same testimonials on every page | Section catalog + `content_scope: global` |
 | Different hero per vendor | `content_scope: page` + edit in that vendor’s CMS mode |
 | Reset a template to site defaults | Clear template theme overrides |
@@ -216,9 +204,10 @@ flowchart TB
 | Mistake | Why it fails | Fix |
 |---------|--------------|-----|
 | Changed site theme but template has overrides | Template non-empty fields **win** | Clear template field or use Inherit |
-| Set surface pattern but section has bg color | Section color is **higher priority** | Remove section bg color or set band to Inherit |
+| Looking for “Section band” / bg image / bg color in CMS | Those editors are **retired** | Use **Surface** for stripes; dark sections are code-owned |
+| Looking for a theme **Background** tab | Page background tab was **removed** | Colors + Surface only |
 | Edited FAQ on entity page, scope = template | Entity editor is **locked** | Edit on page template placement |
-| Expected entity-only theme tab | Per-entity **theme** API exists; live CMS theme tab saves **template** theme | Use template theme for all pages of that type; section-level band for one-off visuals |
+| Expected entity-only theme tab | Live CMS theme tab saves **template** theme | Use template theme for all pages of that type |
 
 ---
 
@@ -229,10 +218,11 @@ flowchart TB
 | **Site theme** | Global defaults (`SiteTheme` in DB) |
 | **Template theme** | `Page.theme` for a page key (`home`, `product`, …) |
 | **Resolved theme** | `mergeTheme(site, template)` — what the page actually uses |
-| **Surface pattern** | `surface_pattern` — repeating band colors on section rows |
+| **Surface pattern** | `surface_pattern` — repeating band colors on normal section rows |
 | **Placement** | One section instance on a page template |
-| **Entity override** | `EntityPageSection` — per vendor/product/course changes |
+| **Entity override** | `EntityPageSection` — per vendor/product/course content changes |
 | **content_scope** | Whether content is global, template-only, or per-entity |
+| **SECTION_DARK_BG_KEYS** | Code list of sections that always paint their own dark/full-bleed band |
 
 ---
 
@@ -241,13 +231,15 @@ flowchart TB
 | Area | Code |
 |------|------|
 | Theme merge | `server/src/modules/cms/theme.utils.js` → `mergeTheme()` |
-| Section band priority | `client/src/lib/sections/section-band-cms.ts` |
+| Dark / own-band keys | `client/src/lib/sections/theme/section-theme.data.ts` |
+| Placement surface resolve | `client/src/lib/sections/theme/section-theme.runtime.ts` → `computePlacementSurface()` |
 | Surface pattern | `client/src/lib/theme/surface-patterns.ts` |
 | Content scope | `client/src/lib/cms/content-scope.ts` |
 | Placement merge | `client/src/components/cms/pages/live/merge-placements.ts` → `mergePlacements()` |
 | Live-edit placements | `client/src/context/CmsLivePlacementsContext.tsx` |
-| Theme editor UI | `client/src/context/CmsThemeEditorContext.tsx` |
+| Theme editor UI | `client/src/components/cms/theme/CmsThemeEditor.tsx` (Colors + Surface) |
+| In-app override copy | `client/src/components/cms/theme/CmsOverrideGuide.tsx` |
 
 ---
 
-*Last updated for the tabbed theme editor (Colors / Surface / Background) and custom `surface_pattern` builder.*
+*Last updated for Colors + Surface theme tabs; per-section band CMS and page Background tab removed.*

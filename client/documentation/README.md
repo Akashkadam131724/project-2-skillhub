@@ -17,7 +17,7 @@ Living docs for the **section design system**: bands, surfaces, typography, butt
 
 Related:
 
-- [CMS override guide](./CMS-OVERRIDE-GUIDE.md) — theme / band / content override priority
+- [CMS override guide](./CMS-OVERRIDE-GUIDE.md) — theme (Colors / Surface) + content override priority
 - Interactive graph: [`../graphify-out/graph.html`](../graphify-out/graph.html)
 
 ---
@@ -79,7 +79,7 @@ export default function MySection({
 | DS constants & helpers | `src/lib/sections/section-design-system.ts` |
 | Layout spacing + grids | `src/lib/layout/section-layout-system.ts` |
 | Layout primitives | `src/components/sections/layout/` |
-| Theme computation | `src/lib/sections/section-theme.ts`, `src/lib/theme/` |
+| Theme computation | `src/lib/sections/section-theme.ts`, `theme/section-theme.data.ts`, `src/lib/theme/` |
 | Global + band CSS | `src/styles/globals.css`, `section-theme.css` |
 | Button CSS | `src/styles/section-buttons.css` |
 | Tab strip CSS | `src/styles/section-tabs.css` |
@@ -87,7 +87,8 @@ export default function MySection({
 | Button UI | `src/components/ui/DsButton.tsx`, `SectionButtons.tsx` |
 | Section chrome | `src/components/sections/SectionFrame.tsx` |
 | Content width | `src/components/sections/SectionWrapper.tsx` |
-| Design primitives | `src/components/sections/shared/design/` |
+| Design primitives | `src/components/sections/shared/design/` (`SectionLightCard`, `SectionMediaOverlay`) |
+| Catalog demos | `src/lib/sections/showcase/demo-placements.ts` + per-section `lib/static-demo.ts` |
 | Items field schema | `src/lib/sections/section-items-config.ts`, `section-items-fields.ts` |
 | Live-edit context | `src/context/CmsLiveEditContext.tsx`, `CmsLivePlacementsContext.tsx` |
 | Shared hooks | `src/hooks/` |

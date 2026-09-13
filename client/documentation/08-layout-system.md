@@ -237,7 +237,7 @@ Standard band shell in `components/sections/layout/SectionLayoutRoot.tsx`.
 | `padding="none"` | Flush vertical padding (split CTA, sarder) |
 | `hasBodyContent` | Body-only bands without top `SectionHeader` |
 | `sectionStyle` | Inline band background (split CTA custom color) |
-| `decor` | `SectionBrandGlow`, vendor gradient, etc. |
+| `decor` | Optional absolute decoration (e.g. vendor gradient) |
 
 **Intentional layout exceptions:** hero variants (full-bleed), `in_page_nav` (sticky nav), tab wrapper shells (delegate to `NestedTabsCmsSection`), test templates.
 

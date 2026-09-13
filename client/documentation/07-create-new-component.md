@@ -100,7 +100,7 @@ export default function ValuePropsSection({
 - Mark `"use client"` if you use hooks, events, or CMS client helpers.
 - Prefer `SectionFrame` + `SectionWrapper` (inside Frame) — don’t invent a new max-width.
 - Band copy: `DS_TEXT.*` / `section-theme-*` — not raw `text-slate-*` / `text-white`.
-- Don’t put `bg-white` on the outer placement `<section>` — band color comes from `SectionSurface`.
+- Don’t put `bg-white` on the outer placement `<section>` — band color comes from `SectionSurface` (page surface pattern or built-in own-band keys).
 - Accept `cmsMode` / `onEditField` / `buttons` / `onFormOpen` and pass through.
 - Public: hide empty item sections (`!items.length && !cmsMode → null`).
 
@@ -189,8 +189,8 @@ Then create/seed a `Section` document with `key: "value_props"` (CMS UI or seed 
 
 | Task | Where |
 |------|--------|
-| Showcase / library sample | `src/lib/sections/showcase/static-samples.ts` |
-| Theme band exceptions | `section-theme.ts` (`SECTION_OWN_BAND_KEYS`, skip keys, fixed theme) |
+| Showcase / library sample | Prefer `components/sections/.../lib/static-demo.ts` + register in `src/lib/sections/showcase/demo-placements.ts` (legacy fallback: `static-samples.ts`) |
+| Dark / own-band exceptions | `theme/section-theme.data.ts` (`SECTION_DARK_BG_KEYS`, skip / own-band sets) |
 | Behavior alias | `BEHAVIOR_ALIASES` in `section-items-config.ts` (e.g. old key → new render) |
 | Item preview art | `GenericItemPreviewCard` + `preview` key |
 
@@ -200,8 +200,8 @@ Then create/seed a `Section` document with `key: "value_props"` (CMS UI or seed 
 2. CMS → Sections / library — new key appears.  
 3. Map it on a page template or entity.  
 4. **Public** page: content renders; empty items stay hidden.  
-5. **Live edit**: pencils, items editor, save, band theme.  
-6. Dark band: cards/forms still readable (use light island / glass card if needed).
+5. **Live edit**: pencils, items editor, save (title / body / items / buttons).  
+6. Dark band: if the section is always dark, add its key to `SECTION_DARK_BG_KEYS`; cards/forms still readable (use light island / glass card if needed).
 
 Optional: `npm run typecheck` before committing.
 

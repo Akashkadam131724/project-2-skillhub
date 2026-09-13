@@ -1,17 +1,29 @@
 # 04 — Theme & tokens
 
-CSS lives in `src/styles/section-theme.css` (imported via `src/styles/globals.css` in the root layout). Runtime theme merge lives in `src/lib/theme/` + `src/lib/sections/section-theme.ts`.
+CSS lives in `src/styles/section-theme.css` (imported via `src/styles/globals.css` in the root layout). Runtime theme merge lives in `src/lib/theme/` + `src/lib/sections/section-theme.ts` (data in `theme/section-theme.data.ts`, resolve in `theme/section-theme.runtime.ts`).
 
-Override priority (site → page → section band) is documented in [CMS-OVERRIDE-GUIDE.md](./CMS-OVERRIDE-GUIDE.md).
+Override priority (site → template → built-in section paint) is documented in [CMS-OVERRIDE-GUIDE.md](./CMS-OVERRIDE-GUIDE.md).
 
-## Band themes
+## What CMS controls
 
-Set on the placement surface:
+| Editor | Controls |
+|--------|----------|
+| Theme → **Colors** | Brand, brand hover, ink |
+| Theme → **Surface** | Repeating band colors for normal section rows |
+
+There is **no** theme Background tab and **no** per-section band / `section_theme` / `section_bg_*` CMS UI.
+
+## Band themes (runtime)
+
+`SectionSurface` / placement resolve sets:
 
 ```html
 <div data-section-theme="light">…</div>
 <div data-section-theme="dark">…</div>
 ```
+
+- **Light** rows usually come from the page **surface pattern** (white/grey stripes).
+- **Dark** rows for certain section keys are fixed in code via `SECTION_DARK_BG_KEYS` (component owns the fill; skips striping).
 
 | Token family | Role |
 |--------------|------|
@@ -50,14 +62,14 @@ Site / page theme sets `--brand`, `--brand-hover`, `--ink` (see `globals.css` `[
 
 `text-brand` and brand focus rings remain valid on any band.
 
-## Page background vs section band
+## Surface pattern vs own-band sections
 
 | Layer | What |
 |-------|------|
-| Page theme | Color / image **behind** transparent sections |
-| Section band | Per-placement bg color, gradient, or image |
+| Theme → Surface | Stripe / solid / transparent pattern for **normal** placements |
+| Own-band / dark keys | Section component paints full-bleed; listed in `SECTION_DARK_BG_KEYS` / `SECTION_OWN_BAND_KEYS` |
 
-Transparent sections show the page background; opaque bands cover it.
+Opaque own-band sections cover whatever sits behind them. Transparent surface mode leaves more of the page stack visible between normal rows.
 
 ## Tabs
 
