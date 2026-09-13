@@ -1,12 +1,19 @@
 /**
- * Static sample placements for /cms/section/* preview pages (no CMS / API).
+ * Legacy fallback sample placements for /cms/section/* previews.
+ * Prefer per-section `lib/static-demo.ts` via `demo-placements.ts`.
  */
-import {
-  SECTION_CATALOG,
-  SECTION_CATEGORIES,
-  getSectionCatalogMeta,
-} from "@/lib/sections/section-registry";
+import { getSectionCatalogMeta } from "@/lib/sections/section-registry";
 import { showcaseBtn as btn, showcaseItem as item, showcaseTabId } from "./helpers";
+import { SECTION_NAMES } from "./catalog-index";
+import { getStaticDemoPlacement } from "./demo-placements";
+
+export {
+  CATEGORY_SLUG,
+  SECTION_CATEGORIES,
+  SECTION_NAMES,
+  SECTIONS_BY_CATEGORY,
+  sectionsInCategory,
+} from "./catalog-index";
 
 const IMG = {
   team: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1200&q=80",
@@ -34,179 +41,6 @@ const IMG = {
 };
 
 const SHOWCASE_VIDEO = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
-
-/** Human-readable names (mirrors client SECTION_CATALOG). */
-export const SECTION_NAMES = {
-  overview: "Overview",
-  text_media: "Text + Media",
-  key_benefits: "Key Benefits",
-  team: "Team",
-  editorial_banner: "Editorial Banner",
-  feature_spotlight: "Feature Spotlight",
-  process_steps: "Process Steps",
-  cta_band: "CTA Band",
-  contact_us: "Contact Us",
-  contact_form: "Contact Form",
-  statement_band: "Statement Band",
-  bento_grid: "Bento Grid",
-  horizon_gallery: "Horizon Gallery",
-  split_narrative: "Split Narrative",
-  pillar_destinations: "Pillar Destinations",
-  orbit_hero: "Orbit Hero",
-  card_stack: "Card Stack",
-  feature_tabs: "Tabs — Vertical",
-  tabs_vertical: "Tabs — Vertical (alt)",
-  tabs_horizontal: "Tabs — Horizontal",
-  tabs_underline: "Tabs — Underline",
-  tabs_success_stories: "Tabs — Success Stories",
-  pricing_tiers: "Pricing Tiers",
-  masonry_quotes: "Masonry Quotes",
-  metric_rail: "Metric Rail",
-  site_builder_hero: "Site Builder Hero",
-  template_gallery: "Template Gallery",
-  builder_feature_cards: "Builder Feature Cards",
-  domain_search_band: "Domain Search Band",
-  website_build_steps: "Website Build Steps",
-  video_banner: "Video Banner",
-  cast_profiles: "Cast Profiles",
-  why_choose: "Why Choose",
-  stats: "Stats Strip",
-  related_courses: "Related Courses",
-  curriculum: "Curriculum",
-  partners: "Partners",
-  partners_marquee: "Partners — Logo Marquee",
-  training_options: "Training Options",
-  awards: "Awards & Recognition",
-  in_page_nav: "In-Page Navigation",
-  testimonials: "Testimonials",
-  customer_testimonials: "Customer Testimonials",
-  faq: "FAQ",
-  resources: "Resources",
-  products: "Products Grid",
-  catalog: "Course Catalog",
-  entity_directory: "Entity Directory",
-  latest_blogs: "Latest Blogs",
-  blog_directory: "Blog Directory",
-  hero_classic: "Hero — Classic",
-  hero_split: "Hero — Split",
-  hero_centered: "Hero — Centered",
-  hero_minimal: "Hero — Minimal",
-  hero_media: "Hero — Media Slider",
-  hero_stats: "Hero — Stats",
-  hero_asymmetric: "Hero — Asymmetric",
-  hero_dual_cta: "Hero — Dual CTA",
-  promo_modal: "Promo Modal",
-  newsletter_band: "Newsletter Band",
-  form_split: "Form — Split column",
-  comparison_table: "Comparison Table",
-  media_mosaic: "Media Mosaic",
-  timeline_vertical: "Timeline — Vertical",
-  trust_badges: "Trust Badges",
-  split_cta: "Split CTA",
-  learning_path: "Learning Path",
-  faq_two_column: "FAQ — Two column",
-};
-
-/** URL slug per category key */
-export const CATEGORY_SLUG = {
-  hero: "hero",
-  content: "content",
-  features: "features",
-  tabs: "tabs",
-  accordion: "accordion",
-  catalog: "catalog",
-  social_proof: "social-proof",
-  data: "data",
-  navigation: "navigation",
-  overlays: "overlays",
-  forms: "forms",
-  comparison: "comparison",
-  media: "media",
-  timeline: "timeline",
-  pricing: "pricing",
-  trust: "trust",
-  cta: "cta",
-  learning: "learning",
-};
-
-/** Preferred render order within each category */
-export const SECTIONS_BY_CATEGORY = {
-  hero: [
-    "hero_classic",
-    "hero_split",
-    "hero_centered",
-    "hero_minimal",
-    "hero_media",
-    "hero_stats",
-    "hero_asymmetric",
-    "hero_dual_cta",
-    "editorial_banner",
-    "statement_band",
-    "orbit_hero",
-    "site_builder_hero",
-    "video_banner",
-  ],
-  content: [
-    "overview",
-    "text_media",
-    "horizon_gallery",
-    "split_narrative",
-    "template_gallery",
-    "domain_search_band",
-    "website_build_steps",
-    "latest_blogs",
-    "contact_us",
-  ],
-  features: [
-    "key_benefits",
-    "why_choose",
-    "feature_spotlight",
-    "process_steps",
-    "training_options",
-    "team",
-    "bento_grid",
-    "pillar_destinations",
-    "card_stack",
-    "builder_feature_cards",
-    "cast_profiles",
-  ],
-  tabs: [
-    "feature_tabs",
-    "tabs_vertical",
-    "tabs_horizontal",
-    "tabs_underline",
-    "tabs_success_stories",
-  ],
-  accordion: ["faq", "faq_two_column"],
-  catalog: [
-    "related_courses",
-    "curriculum",
-    "resources",
-    "products",
-    "catalog",
-    "entity_directory",
-    "blog_directory",
-  ],
-  social_proof: [
-    "testimonials",
-    "customer_testimonials",
-    "masonry_quotes",
-    "partners",
-    "partners_marquee",
-    "awards",
-  ],
-  data: ["stats", "metric_rail"],
-  navigation: ["in_page_nav"],
-  overlays: ["promo_modal"],
-  forms: ["contact_form", "newsletter_band", "form_split"],
-  comparison: ["comparison_table"],
-  media: ["media_mosaic"],
-  timeline: ["timeline_vertical"],
-  pricing: ["pricing_tiers"],
-  trust: ["trust_badges"],
-  cta: ["cta_band", "split_cta"],
-  learning: ["learning_path"],
-};
 
 const RICH_CARD_TEMPLATES = [
   {
@@ -1335,12 +1169,13 @@ function sampleForKey(key: string) {
   }
 }
 
+
 export function buildShowcasePlacement(sectionKey: string, sortOrder: number) {
   const key = String(sectionKey).toLowerCase();
-  const name = (SECTION_NAMES as Record<string, string>)[key] || key;
-  const sample = sampleForKey(key);
+  const name = SECTION_NAMES[key] || key;
+  const sample = getStaticDemoPlacement(key) || sampleForKey(key);
   const nav =
-    sample.in_page_nav_title ??
+    (sample.in_page_nav_title as string | undefined) ??
     name.replace(/^Hero — /, "").replace(/^Tabs — /, "").slice(0, 22);
 
   return {
@@ -1354,160 +1189,3 @@ export function buildShowcasePlacement(sectionKey: string, sortOrder: number) {
     in_page_nav_title: nav || name.slice(0, 18),
   };
 }
-
-export function sectionsInCategory(categoryKey: string) {
-  const keys = (SECTIONS_BY_CATEGORY as Record<string, string[]>)[categoryKey];
-  if (keys?.length) return keys;
-  return SECTION_CATALOG.filter((entry) => entry.category === categoryKey)
-    .map((entry) => entry.key)
-    .sort();
-}
-
-export function buildCategoryPagePlacements(categoryKey: string) {
-  const cat = SECTION_CATEGORIES.find((c) => c.key === categoryKey);
-  const keys = sectionsInCategory(categoryKey);
-  const placements: Record<string, unknown>[] = [
-    { section_key: "in_page_nav", sort_order: 0 },
-    {
-      section_key: "hero_centered",
-      sort_order: 1,
-      in_page_nav_title: "About",
-      section_title: `${cat?.name || categoryKey} sections`,
-      sub_title: `${keys.length} registered layouts in the SkillHub section library. Scroll to preview each component with realistic sample content, imagery, and CTAs.`,
-      section_img_url: IMG.hero,
-      buttons: [
-        btn("All categories", { target_url: "/cms/section" }),
-        btn("Section admin", {
-          variant: "secondary",
-          target_url: `/cms/pages-content-sections?category=${categoryKey}`,
-        }),
-      ],
-    },
-  ];
-
-  keys.forEach((key, i) => {
-    placements.push(buildShowcasePlacement(key, i + 2));
-  });
-
-  placements.push({
-    section_key: "cta_band",
-    sort_order: placements.length,
-    in_page_nav_title: "More",
-    section_title: "Explore other categories",
-    sub_title: "Every section type has a dedicated showcase page under /cms/section.",
-    buttons: [
-      btn("Section library home", { target_url: "/cms/section" }),
-      btn("Section admin", {
-        variant: "secondary",
-        target_url: `/cms/pages-content-sections?category=${categoryKey}`,
-      }),
-    ],
-  });
-
-  return placements;
-}
-
-export function buildIndexPagePlacements() {
-  const categoryCards = SECTION_CATEGORIES.map((cat, i) => {
-    const count = sectionsInCategory(cat.key).length;
-    const slug = (CATEGORY_SLUG as Record<string, string>)[cat.key] || cat.key;
-    return item(
-      {
-        title: cat.name,
-        subtitle: `${count} section${count === 1 ? "" : "s"}`,
-        value: String(count),
-        href: `/cms/section/${slug}`,
-        body: `<p>Browse live previews for every <strong>${cat.name}</strong> layout.</p>`,
-      },
-      i
-    );
-  });
-
-  return [
-    { section_key: "in_page_nav", sort_order: 0 },
-    {
-      section_key: "hero_centered",
-      sort_order: 1,
-      in_page_nav_title: "Overview",
-      section_title: "SkillHub section library",
-      sub_title:
-        "CMS section components across 18 categories — each with a live preview on a content page. Pick a category below or open the admin library to map sections onto your pages.",
-      buttons: [
-        btn("Open CMS sections", { target_url: "/cms/pages-content-sections" }),
-        btn("Tabs showcase", {
-          variant: "secondary",
-          target_url: "/tabs-showcase",
-        }),
-      ],
-    },
-    {
-      section_key: "metric_rail",
-      sort_order: 2,
-      in_page_nav_title: "Counts",
-      section_title: "Library at a glance",
-      items: SECTION_CATEGORIES.map((cat, i) =>
-        item(
-          {
-            value: String(sectionsInCategory(cat.key).length),
-            title: cat.name,
-            subtitle: `/cms/section/${(CATEGORY_SLUG as Record<string, string>)[cat.key] || cat.key}`,
-          },
-          i
-        )
-      ),
-    },
-    {
-      section_key: "pillar_destinations",
-      sort_order: 3,
-      in_page_nav_title: "Categories",
-      section_title: "Browse by category",
-      sub_title: "Public previews under /cms/section/* — one page per CMS category.",
-      items: categoryCards,
-    },
-    {
-      section_key: "builder_feature_cards",
-      sort_order: 4,
-      in_page_nav_title: "How to",
-      section_title: "Using these pages",
-      items: [
-        item(
-          {
-            title: "Preview before mapping",
-            body: "<p>Stakeholders review layout and sample copy on these public URLs.</p>",
-          },
-          0
-        ),
-        item(
-          {
-            title: "Map on content pages",
-            body: "<p>Add any section to a free-form content page from the CMS section catalog.</p>",
-          },
-          1
-        ),
-        item(
-          {
-            title: "Browse by category",
-            body: "<p>Each category page shows every registered layout with sample copy.</p>",
-          },
-          2
-        ),
-      ],
-    },
-    {
-      section_key: "cta_band",
-      sort_order: 5,
-      in_page_nav_title: "Start",
-      section_title: "Ready to build a page?",
-      sub_title: "Create a content page in the CMS and attach sections from the library.",
-      buttons: [
-        btn("CMS dashboard", { target_url: "/cms" }),
-        btn("Content pages", {
-          variant: "secondary",
-          target_url: "/cms/contents",
-        }),
-      ],
-    },
-  ];
-}
-
-export { SECTION_CATEGORIES };

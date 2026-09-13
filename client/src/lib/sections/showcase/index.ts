@@ -2,10 +2,9 @@ import {
   CATEGORY_SLUG,
   SECTION_CATEGORIES,
   SECTION_NAMES,
-  buildCategoryPagePlacements,
-  buildShowcasePlacement,
   sectionsInCategory,
-} from "./static-samples";
+} from "./catalog-index";
+import { buildShowcasePlacement } from "./static-samples";
 import {
   sectionKeyFromSlug,
   sectionSlugFromKey,
@@ -24,10 +23,7 @@ export function categoryKeyFromSlug(slug?: string) {
 
 export function categorySlugFromKey(categoryKey?: string) {
   if (!categoryKey) return "";
-  return (
-    (CATEGORY_SLUG as Record<string, string>)[categoryKey] ||
-    String(categoryKey).replace(/_/g, "-")
-  );
+  return CATEGORY_SLUG[categoryKey] || String(categoryKey).replace(/_/g, "-");
 }
 
 export function getCategoryShowcaseTitle(categoryKey: string) {
@@ -36,7 +32,7 @@ export function getCategoryShowcaseTitle(categoryKey: string) {
 }
 
 function sectionDisplayName(sectionKey: string) {
-  return (SECTION_NAMES as Record<string, string>)[sectionKey] || sectionKey;
+  return SECTION_NAMES[sectionKey] || sectionKey;
 }
 
 /** Category page — cards only (no stacked previews). */
@@ -95,32 +91,17 @@ export function normalizeShowcasePlacements(
       section_key: key,
       placement_id: `showcase-${key}-${index}`,
       status: true,
-      name: (SECTION_NAMES as Record<string, string>)[key] || key,
+      name: SECTION_NAMES[key] || key,
     };
   });
-}
-
-/** @deprecated Prefer listCategoryLibrarySections + per-section pages. */
-export function getStaticCategoryShowcase(categorySlug: string) {
-  const categoryKey = categoryKeyFromSlug(categorySlug);
-  if (!categoryKey || !sectionsInCategory(categoryKey).length) {
-    return null;
-  }
-
-  return {
-    categoryKey,
-    title: getCategoryShowcaseTitle(categoryKey),
-    sections: normalizeShowcasePlacements(
-      buildCategoryPagePlacements(categoryKey)
-    ),
-  };
 }
 
 export {
   CATEGORY_SLUG,
   SECTION_CATEGORIES,
   SECTION_NAMES,
-  buildCategoryPagePlacements,
   buildShowcasePlacement,
   sectionsInCategory,
 } from "./static-samples";
+
+export { hasStaticDemoPlacement, getStaticDemoPlacement } from "./demo-placements";

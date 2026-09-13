@@ -12,6 +12,7 @@ export function heroLayoutPublicFooter(
     buttonsClassName?: string;
     inverted?: boolean;
     surface?: string;
+    spaced?: boolean;
   } = {}
 ) {
   const {
@@ -20,6 +21,7 @@ export function heroLayoutPublicFooter(
     buttonsClassName = "flex flex-wrap items-center gap-3",
     inverted,
     surface,
+    spaced,
   } = options;
 
   return publicSectionButtonsFooter({
@@ -29,6 +31,7 @@ export function heroLayoutPublicFooter(
     onFormOpen,
     inverted,
     surface,
+    spaced,
     className,
     buttonsClassName,
   });
