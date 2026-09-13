@@ -14,6 +14,8 @@ import type { SectionHeaderProps } from "./SectionHeader";
 export type SectionLayoutRootProps = {
   id?: string;
   className?: string;
+  /** Sets `data-section-theme` for band text / button tokens. */
+  sectionTheme?: "light" | "dark";
   /** Band vertical padding — `none` for flush bands (split CTA, sarder). */
   padding?: "sm" | "lg" | "none";
   /** `wrapper` = SectionWrapper only; `shell` = SectionShell + header (default). */
@@ -48,6 +50,7 @@ export type SectionLayoutRootProps = {
 export default function SectionLayoutRoot({
   id,
   className = "",
+  sectionTheme,
   padding = "sm",
   layout = "shell",
   sectionStyle,
@@ -111,8 +114,9 @@ export default function SectionLayoutRoot({
       id={id || undefined}
       style={sectionStyle}
       aria-labelledby={ariaLabelledBy}
+      data-section-theme={sectionTheme || undefined}
       className={sectionClassNames(
-        "relative w-full overflow-hidden bg-transparent",
+        "relative w-full overflow-hidden",
         pad,
         className
       )}

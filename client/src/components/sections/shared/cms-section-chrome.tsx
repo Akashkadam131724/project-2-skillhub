@@ -56,7 +56,7 @@ export function cmsSectionChrome({
       onEditField={onEditField}
       onFormOpen={onFormOpen}
       inverted={inverted || onDarkBand}
-      surface={onDarkBand ? "dark" : "inherit"}
+      surface={inverted || onDarkBand ? "dark" : "inherit"}
       editField={editField}
       className={footerClassName}
       buttonsClassName={buttonsClassName}

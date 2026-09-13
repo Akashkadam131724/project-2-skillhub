@@ -57,6 +57,7 @@ function SlideCopy({ item, cmsMode, onEditField, onFormOpen }: SlideCopyProps) {
         onEditField={onEditField}
         onFormOpen={onFormOpen}
         inverted
+        surface="dark"
         className="mt-2"
       />
     </div>

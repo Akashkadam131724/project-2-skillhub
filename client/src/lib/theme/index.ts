@@ -92,8 +92,6 @@ export const THEME_FIELD_KEYS = [
   "brand_primary",
   "brand_hover",
   "ink",
-  "page_bg_color",
-  "page_bg_img",
   "surface_mode",
   "surface_pattern",
 ];
@@ -102,8 +100,6 @@ export function defaultSiteTheme() {
   return {
     preset: "blue",
     ...THEME_PRESETS.blue,
-    page_bg_color: "",
-    page_bg_img: "",
     surface_mode: "custom",
     surface_pattern: defaultSurfacePattern(),
   };
@@ -115,8 +111,6 @@ export function emptyPageTheme() {
     brand_primary: null,
     brand_hover: null,
     ink: null,
-    page_bg_color: null,
-    page_bg_img: null,
     surface_mode: null,
     surface_pattern: null,
   };
@@ -214,28 +208,12 @@ export function themeCssVars(theme: unknown) {
   return vars;
 }
 
-/** Inline page background from theme (color or image) */
+/** Inline page background — page_bg_* retired; solid surface pattern only. */
 export function pageBgStyle(theme: unknown) {
   const t = applyPresetFill({
     ...defaultSiteTheme(),
     ...((theme as Record<string, unknown>) || {}),
   });
-  const img = String(t.page_bg_img || "").trim();
-  const color = String(t.page_bg_color || "").trim();
-  if (img) {
-    return {
-      backgroundImage: `url(${img})`,
-      backgroundSize: "cover",
-      backgroundPosition: "center",
-      backgroundRepeat: "no-repeat",
-    };
-  }
-  if (color) {
-    if (color.toLowerCase().includes("gradient(")) {
-      return { backgroundImage: color };
-    }
-    return { backgroundColor: color };
-  }
   const pattern = resolveSurfacePattern(t);
   if (isPageSurfaceTransparent(pattern)) {
     return undefined;

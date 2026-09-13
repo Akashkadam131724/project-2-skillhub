@@ -33,7 +33,14 @@ export const updateSiteTheme = async (req, res) => {
 
     const doc = await SiteTheme.findOneAndUpdate(
       { key: "default" },
-      { $set: { ...filled, key: "default" } },
+      {
+        $set: {
+          ...filled,
+          key: "default",
+          page_bg_color: "",
+          page_bg_img: "",
+        },
+      },
       { new: true, upsert: true, runValidators: true, setDefaultsOnInsert: true }
     );
 

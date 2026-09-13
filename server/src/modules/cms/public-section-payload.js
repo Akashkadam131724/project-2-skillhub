@@ -138,10 +138,10 @@ export function toPublicSectionPayload(section) {
     section_title: section.section_title || "",
     sub_title: section.sub_title || "",
     in_page_nav_title: section.in_page_nav_title || "",
-    section_bg_img: section.section_bg_img || "",
-    section_bg_color: section.section_bg_color || "",
+    section_bg_img: "",
+    section_bg_color: "",
     section_img_url: section.section_img_url || "",
-    section_theme: section.section_theme || "",
+    section_theme: "",
     data: section.data && typeof section.data === "object" ? section.data : {},
     buttons,
     items,
@@ -156,11 +156,19 @@ export function toPublicSectionPayload(section) {
 
 export function toPublicPagePayload(page) {
   if (!page) return null;
+  const theme = page.theme && typeof page.theme === "object" ? { ...page.theme } : null;
+  if (theme) {
+    delete theme.page_bg_color;
+    delete theme.page_bg_img;
+    if (theme.surface_mode === "dark" || theme.surface_mode === "dark_ink") {
+      theme.surface_mode = "custom";
+    }
+  }
   return {
     key: page.key,
     name: page.name,
     entity_type: page.entity_type,
-    theme: page.theme || null,
+    theme,
   };
 }
 

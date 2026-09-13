@@ -112,9 +112,10 @@ export function sectionCmsFieldAllowed(
   if (
     field === "section_band" ||
     field === "section_bg_img" ||
-    field === "section_bg_color"
+    field === "section_bg_color" ||
+    field === "section_theme"
   ) {
-    return Boolean(cap.toolbar.sectionBand);
+    return false;
   }
   if (cap.fields && field && field in cap.fields) {
     return Boolean(cap.fields[field]);

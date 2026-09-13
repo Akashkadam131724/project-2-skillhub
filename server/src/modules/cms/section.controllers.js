@@ -159,10 +159,7 @@ export const updateSection = async (req, res) => {
       "in_page_nav_title",
       "button_title",
       "target_url",
-      "section_bg_img",
-      "section_bg_color",
       "section_img_url",
-      "section_theme",
       "section_preview_img",
       "data",
       "buttons",
@@ -175,6 +172,10 @@ export const updateSection = async (req, res) => {
     for (const field of allowed) {
       if (req.body[field] !== undefined) patch[field] = req.body[field];
     }
+    // Retired band fields — clear on save
+    patch.section_bg_img = "";
+    patch.section_bg_color = "";
+    patch.section_theme = "";
     if (patch.render_key !== undefined) {
       patch.render_key = String(patch.render_key || "")
         .toLowerCase()

@@ -33,6 +33,7 @@ export default function WhyChooseSection({
     cmsMode: true,
   });
   const onDarkBand = isPlacementDarkBand({
+    section_key,
     section_theme: section_theme ?? sectionTheme,
     surfaceTone,
     surfaceBand,

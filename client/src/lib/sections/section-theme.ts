@@ -8,6 +8,7 @@
 export {
   SECTION_THEME_VALUES,
   SECTION_THEME_OPTIONS,
+  SECTION_DARK_BG_KEYS,
   SECTION_THEME_BAND_SKIP_KEYS,
   SECTION_FIXED_BAND_THEME_KEYS,
   SECTION_FIXED_DARK_BAND_KEYS,
@@ -28,6 +29,7 @@ export {
   isSectionThemeLightBand,
   isSectionThemeDarkBand,
   isSurfaceToneDark,
+  isSectionDarkBgKey,
   isPlacementDarkBand,
   sectionSoftLightGradientClass,
   sectionThemeFromProps,

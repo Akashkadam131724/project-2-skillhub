@@ -39,6 +39,10 @@ export function resolveFaqUiItems(
 }
 
 export function faqDarkBand(props: {
+  section_key?: unknown;
+  sectionKey?: unknown;
+  render_key?: unknown;
+  renderKey?: unknown;
   section_theme?: unknown;
   sectionTheme?: unknown;
   surfaceTone?: unknown;

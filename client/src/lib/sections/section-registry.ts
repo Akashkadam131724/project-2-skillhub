@@ -27,16 +27,15 @@ export {
 } from "./section-catalog";
 
 /**
- * Sections whose layout uses `section_bg_img` / `section_bg_color` on the global shell.
- * All sections participate — editors can set band bg on any block.
+ * Section band bg editors retired — always false.
  */
 export function sectionUsesBg(_key?: string) {
-  return true;
+  return false;
 }
 
-/** All sections can edit section_bg_color on the global shell */
+/** Section band color editors retired — always false. */
 export function sectionUsesBgColor(_key?: string) {
-  return true;
+  return false;
 }
 
 export function sectionUsesImage(

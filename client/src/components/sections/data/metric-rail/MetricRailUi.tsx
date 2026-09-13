@@ -41,7 +41,9 @@ export default function MetricRailUi({
     <div ref={ref}>
       <SectionLayoutRoot
         id={id}
-        className={className}
+        sectionTheme="dark"
+        className={`bg-ink text-white ${className}`.trim()}
+        sectionStyle={{ backgroundColor: "var(--ink)" }}
         eyebrow={eyebrow}
         title={title}
         subtitle={subtitle}

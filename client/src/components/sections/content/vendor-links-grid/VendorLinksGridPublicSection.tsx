@@ -39,6 +39,7 @@ export default function VendorLinksGridPublicSection({
   }
 
   const onDarkBand = isPlacementDarkBand({
+    section_key,
     section_theme: section_theme ?? sectionTheme,
     surfaceTone,
     surfaceBand,

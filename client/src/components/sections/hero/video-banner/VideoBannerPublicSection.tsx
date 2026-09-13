@@ -31,6 +31,7 @@ export default function VideoBannerPublicSection({
         buttons: item.buttons,
         onFormOpen,
         inverted: true,
+        surface: "dark",
         className: "",
         buttonsClassName:
           "flex shrink-0 flex-wrap items-center justify-start gap-3 sm:mt-0 sm:justify-end",

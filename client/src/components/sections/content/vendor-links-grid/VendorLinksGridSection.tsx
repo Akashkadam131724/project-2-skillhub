@@ -6,7 +6,8 @@ import CmsSectionItemsBar from "@/components/sections/CmsSectionItemsBar";
 import EmptyItemsHint from "@/components/sections/EmptyItemsHint";
 import { cmsSectionChrome } from "@/components/sections/shared/cms-section-chrome";
 import { DS_TEXT } from "@/lib/sections/section-design-system";
-import { isPlacementDarkBand } from "@/lib/sections/section-theme";import VendorLinksGridUi from "./VendorLinksGridUi";
+import { isPlacementDarkBand } from "@/lib/sections/section-theme";
+import VendorLinksGridUi from "./VendorLinksGridUi";
 import VendorLinksGridLinkCard from "./VendorLinksGridLinkCard";
 import { resolveVendorLinksGridLinks } from "./lib/map";
 import { isVendorLinkGridPlacementShowable } from "./lib/placement";
@@ -40,6 +41,7 @@ export default function VendorLinksGridSection({
   });
 
   const onDarkBand = isPlacementDarkBand({
+    section_key,
     section_theme: section_theme ?? sectionTheme,
     surfaceTone,
     surfaceBand,

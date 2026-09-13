@@ -1,16 +1,12 @@
 "use client";
 
-import { mediaUrl } from "@/lib/api/cms-api";
 import { pageBgStyle, themeCssVars } from "@/lib/theme";
 import type { CSSProperties } from "react";
 import type { PageThemeShellProps } from "./types";
 
 /**
- * Applies resolved page theme (CSS vars + optional page background)
- * around live / CMS section stacks.
- *
- * Page bg shows through when surface mode is transparent, or in any gaps
- * between sections. Sections with their own section_bg_* still paint over it.
+ * Applies resolved page theme (CSS vars). Optional solid surface fill only —
+ * page_bg_* and section bands are retired.
  */
 export default function PageThemeShell({
   theme,
@@ -18,10 +14,7 @@ export default function PageThemeShell({
   className = "",
 }: PageThemeShellProps) {
   const cssVars = themeCssVars(theme);
-  const bg = pageBgStyle({
-    ...theme,
-    page_bg_img: mediaUrl(String(theme?.page_bg_img || "")) || theme?.page_bg_img,
-  });
+  const bg = pageBgStyle(theme);
 
   return (
     <div

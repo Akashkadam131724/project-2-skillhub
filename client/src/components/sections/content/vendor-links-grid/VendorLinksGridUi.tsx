@@ -1,6 +1,9 @@
 import CmsRichText from "@/components/cms/primitives/CmsRichText";
 import { SectionLayoutRoot } from "@/components/sections/layout";
-import { DS_TEXT } from "@/lib/sections/section-design-system";
+import {
+  DS_TEXT,
+  sectionClassNames,
+} from "@/lib/sections/section-design-system";
 import { isRichTextEmpty } from "@/lib/utils/rich-text";
 import VendorLinksGridBandDecor from "./VendorLinksGridBandDecor";
 import VendorLinksGridLinkCard from "./VendorLinksGridLinkCard";
@@ -32,14 +35,21 @@ export default function VendorLinksGridUi({
 
   if (!showTitle && !showBody && !showLinks && !footer) return null;
 
-  const headingClass = `${titleClassName} ${DS_TEXT.heading}`;
-  const bodyClass = `mb-4 text-base leading-relaxed ${DS_TEXT.muted}`;
+  // Always a dark-bg section — force light title/body tokens on the band.
+  const dark = onDarkBand !== false;
+  const headingClass = sectionClassNames(titleClassName, DS_TEXT.heading);
+  const bodyClass = sectionClassNames(
+    "mb-4 text-base leading-relaxed",
+    DS_TEXT.muted
+  );
 
   return (
     <SectionLayoutRoot
       id={id}
-      className={className}
-      decor={<VendorLinksGridBandDecor darkBand={onDarkBand} />}
+      sectionTheme={dark ? "dark" : undefined}
+      className={sectionClassNames(dark ? "bg-ink text-white" : "", className)}
+      sectionStyle={dark ? { backgroundColor: "var(--ink)" } : undefined}
+      decor={<VendorLinksGridBandDecor darkBand={dark} />}
       hasBodyContent
     >
       <div className="flex flex-col gap-8 lg:flex-row lg:gap-12">

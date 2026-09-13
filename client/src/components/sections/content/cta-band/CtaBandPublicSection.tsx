@@ -33,6 +33,8 @@ export default function CtaBandPublicSection({
         button_title,
         target_url,
         onFormOpen,
+        inverted: true,
+        surface: "dark",
         className: "mt-8 flex flex-wrap items-center justify-center gap-3",
       })}
     />

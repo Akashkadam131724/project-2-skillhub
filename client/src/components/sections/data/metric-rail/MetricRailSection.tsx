@@ -48,7 +48,12 @@ export default function MetricRailSection({
     <MetricRailUi
       id={id}
       preview
-      {...cmsSectionHeaderSlots({ section_title, sub_title, onEditField })}
+      {...cmsSectionHeaderSlots({
+        section_title,
+        sub_title,
+        onEditField,
+        inverted: true,
+      })}
       items={items}
       {...cmsSectionChrome({
         section_key,
@@ -58,6 +63,8 @@ export default function MetricRailSection({
         button_title,
         target_url,
         onFormOpen,
+        inverted: true,
+        onDarkBand: true,
       })}
 
     />

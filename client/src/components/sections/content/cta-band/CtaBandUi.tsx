@@ -54,6 +54,8 @@ export default function CtaBandUi({
     <SectionLayoutRoot
       id={id}
       className="isolate bg-ink text-white"
+      sectionTheme="dark"
+      sectionStyle={{ backgroundColor: "var(--ink)" }}
       padding="lg"
       decor={decor}
       footer={footer}

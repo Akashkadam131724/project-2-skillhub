@@ -515,11 +515,8 @@ export const upsertEntityPageSection = async (req, res) => {
       "sort_order",
       "section_title",
       "sub_title",
-      "section_bg_img",
-      "section_bg_color",
       "in_page_nav_title",
       "section_img_url",
-      "section_theme",
       "buttons",
       "items",
       "data",
@@ -534,6 +531,10 @@ export const upsertEntityPageSection = async (req, res) => {
         if (key === "sort_order" && !allowSort) continue;
         $set[key] = source[key];
       }
+      // Retired band fields — clear if client still sends them
+      $set.section_bg_img = null;
+      $set.section_bg_color = null;
+      $set.section_theme = null;
       if (source.items !== undefined && source.items !== null) {
         $set.items = source.items;
         $set.items_override = true;

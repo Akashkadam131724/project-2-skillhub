@@ -80,6 +80,7 @@ export default function HeroStatsSection({
 
   const stats = resolveHeroStatsUiItems(items, true);
   const onDarkBand = isPlacementDarkBand({
+    section_key,
     section_theme,
     sectionTheme,
     surfaceTone,

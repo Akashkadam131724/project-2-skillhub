@@ -6,7 +6,7 @@ export const DEFAULT_SECTION_CMS_CAPABILITIES: SectionCmsCapabilities = {
   toolbar: {
     navTitle: true,
     sectionImage: "auto",
-    sectionBand: true,
+    sectionBand: false,
     visibility: true,
     removeExtra: true,
   },

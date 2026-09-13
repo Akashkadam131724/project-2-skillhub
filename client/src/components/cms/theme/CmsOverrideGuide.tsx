@@ -70,9 +70,9 @@ function ScopeTable() {
 function CheatSheet() {
   const rows = [
     ["Brand color site-wide", "Site theme → Colors"],
-    ["One template’s band pattern", "Template theme → Surface"],
-    ["One row always dark", "Section band → Dark or dark bg color"],
-    ["Custom alternating colors", "Surface → Repeat sequence"],
+    ["White / grey section stripes", "Site or template theme → Surface"],
+    ["One template’s stripe pattern", "Template theme → Surface"],
+    ["Dark CTA / hero blocks", "Built into the section — not editable"],
     ["Same block on every page", "Content scope: Global"],
     ["Per-vendor content", "Content scope: Page + entity CMS"],
     ["Reset template to site", "Clear template theme overrides"],
@@ -96,21 +96,18 @@ function GuideBody({ showBandOnly = false }: { showBandOnly?: boolean }) {
     return (
       <div className="space-y-3">
         <p className="m-0 text-xs text-slate-500">
-          What wins for <strong>this section row</strong> (highest first):
+          Per-section band editors are retired. What paints a section:
         </p>
         <PriorityList
           items={[
-            "Background image — replaces the default band fill",
-            "Background color — overrides page surface for this row only",
-            "Band theme — Light, Dark, or Inherit",
-            "Page surface pattern — from Site / Template theme (Surface tab)",
-            "Page background — visible in gaps or when surface is transparent",
+            "Built-in dark section UI (CTA, heroes, …) — skips page stripes",
+            "Page surface pattern — white/grey sequence from Site / Template → Surface",
+            "Site theme colors — brand and ink",
           ]}
         />
         <p className="m-0 text-[11px] text-slate-500">
-          Use <strong>Inherit</strong> on most sections so the template surface
-          pattern controls alternation. Use Light/Dark only to break the pattern
-          on one row.
+          Edit stripes under <strong>Surface</strong>. There is no page
+          background or section band tab.
         </p>
       </div>
     );
@@ -124,9 +121,9 @@ function GuideBody({ showBandOnly = false }: { showBandOnly?: boolean }) {
         </p>
         <PriorityList
           items={[
-            "Section band (image, color, light/dark) — per section row",
-            "Page template theme — overrides site for that template",
-            "Site theme — global defaults",
+            "Built-in dark section backgrounds (component design)",
+            "Page template theme — colors + surface override",
+            "Site theme — global colors + surface pattern",
           ]}
         />
       </div>

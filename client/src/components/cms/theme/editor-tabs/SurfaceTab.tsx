@@ -26,8 +26,8 @@ export default function SurfaceTab() {
 
   return (
     <Field
-      label="Section band pattern"
-      hint="Add solids or gradients to the repeating sequence. Use linear-gradient(…) in any band row."
+      label="Section stripe pattern"
+      hint="White / soft grey sequence for normal sections. Dark sections (CTA, heroes, …) skip this and use their built-in background."
     >
       <CmsSurfacePatternEditor
         value={(theme.surface_pattern as SurfacePattern | null) ?? null}

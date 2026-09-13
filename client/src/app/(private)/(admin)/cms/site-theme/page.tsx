@@ -128,31 +128,15 @@ export default function CmsSiteThemePage() {
                   Muted surface
                 </p>
                 <p className="mt-2 mb-0 text-sm text-slate-600 dark:text-slate-300">
-                  Alternating section band
-                </p>
-              </div>
-              <div className="px-4 py-6">
-                <p className="m-0 text-xs font-semibold tracking-wide text-slate-400 uppercase">
-                  Transparent surface
-                </p>
-                <p className="mt-2 mb-0 text-sm text-slate-600 dark:text-slate-300">
-                  No section bg — page background shows through
-                </p>
-              </div>
-              <div className="px-4 py-6" style={{ backgroundColor: "#0f172a", color: "rgb(255 255 255 / 0.92)" }}>
-                <p className="m-0 text-xs font-semibold tracking-wide text-white/50 uppercase">
-                  Dark / charcoal
-                </p>
-                <p className="mt-2 mb-0 text-sm text-white/90">
-                  True neutral dark surface (#0f172a)
+                  Alternating section stripe (from Surface pattern)
                 </p>
               </div>
               <div className="bg-ink px-4 py-6 text-white">
                 <p className="m-0 text-xs font-semibold tracking-wide text-white/50 uppercase">
-                  Dark / brand ink
+                  Built-in dark section
                 </p>
                 <p className="mt-2 mb-0 text-sm text-white/90">
-                  Uses your theme ink color
+                  CTA / hero style — not a page theme background
                 </p>
               </div>
             </div>

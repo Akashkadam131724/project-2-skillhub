@@ -54,6 +54,7 @@ export default function CtaBandSection({
         target_url,
         onFormOpen,
         inverted: true,
+        onDarkBand: true,
         footerClassName: "mt-8 justify-center",
         withItems: false,
       })}

@@ -46,6 +46,7 @@ export default function StatementBandPublicSection({
       footer={heroLayoutPublicFooter(props, {
         onFormOpen,
         inverted: true,
+        surface: "dark",
         className: "mt-10",
         buttonsClassName: "flex flex-wrap items-center gap-3",
       })}

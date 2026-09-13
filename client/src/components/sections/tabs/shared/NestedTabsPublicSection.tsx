@@ -47,6 +47,7 @@ export default function NestedTabsPublicSection({
   if (!tabs.length) return null;
 
   const onDarkBand = isPlacementDarkBand({
+    section_key,
     section_theme: section_theme ?? sectionTheme,
     surfaceTone,
     surfaceBand,

@@ -37,13 +37,17 @@ const LEGAL_LINKS = [
 ] as const;
 
 /**
- * Site-wide static footer — theme ink/brand, no CMS wiring.
+ * Site-wide static footer — always dark (theme ink), same token model as dark sections.
  */
 export default function SiteFooter() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="mt-auto border-t border-white/10 bg-ink text-white">
+    <footer
+      data-section-theme="dark"
+      className="mt-auto border-t border-white/10 bg-ink text-white"
+      style={{ backgroundColor: "var(--ink)" }}
+    >
       <SectionWrapper className="py-12 sm:py-14 lg:py-16">
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-[minmax(0,1.4fr)_repeat(3,minmax(0,1fr))] lg:gap-12">
           <div className="min-w-0 sm:col-span-2 lg:col-span-1">

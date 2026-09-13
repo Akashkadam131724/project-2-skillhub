@@ -43,6 +43,8 @@ export default function EditorialBannerPublicSection({
       body={data?.body}
       footer={heroLayoutPublicFooter(props, {
         onFormOpen,
+        inverted: true,
+        surface: "dark",
         className: "mt-8",
         buttonsClassName: "flex flex-wrap items-center gap-3",
       })}

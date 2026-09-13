@@ -11,6 +11,7 @@ import {
 import type { PlacementLike } from "../section-types";
 import {
   SECTION_ALTERNATION_SKIP_KEYS,
+  SECTION_DARK_BG_KEYS,
   SECTION_FIXED_DARK_BAND_KEYS,
   SECTION_FIXED_LIGHT_BAND_KEYS,
   SECTION_FIXED_BAND_THEME_KEYS,
@@ -24,6 +25,7 @@ export { isPageSurfaceTransparent };
 export {
   SECTION_THEME_VALUES,
   SECTION_THEME_OPTIONS,
+  SECTION_DARK_BG_KEYS,
   SECTION_THEME_BAND_SKIP_KEYS,
   SECTION_FIXED_BAND_THEME_KEYS,
   SECTION_FIXED_DARK_BAND_KEYS,
@@ -114,18 +116,47 @@ export function isSurfaceToneDark(surfaceTone: unknown) {
   return surfaceTone === "dark" || surfaceTone === "dark_ink";
 }
 
-/** Dark band from CMS theme and/or page alternation (surfaceBand / surfaceTone). */
+/** True when section key is in the canonical dark-bg list (component-owned dark UI). */
+export function isSectionDarkBgKey(sectionKey?: string, renderKey?: string) {
+  const key = String(renderKey || sectionKey || "")
+    .trim()
+    .toLowerCase();
+  return Boolean(key && SECTION_DARK_BG_KEYS.has(key));
+}
+
+/**
+ * Dark UI for buttons / text contrast.
+ * Order: canonical dark section keys → legacy section_theme → page surface band/tone.
+ * Dark-list sections skip striping, so key check must come first.
+ */
 export function isPlacementDarkBand({
+  section_key,
+  sectionKey,
+  render_key,
+  renderKey,
   section_theme,
   sectionTheme,
   surfaceTone,
   surfaceBand,
 }: {
+  section_key?: unknown;
+  sectionKey?: unknown;
+  render_key?: unknown;
+  renderKey?: unknown;
   section_theme?: unknown;
   sectionTheme?: unknown;
   surfaceTone?: unknown;
   surfaceBand?: unknown;
 } = {}) {
+  if (
+    isSectionDarkBgKey(
+      String(section_key ?? sectionKey ?? ""),
+      String(render_key ?? renderKey ?? "")
+    )
+  ) {
+    return true;
+  }
+
   const band =
     surfaceBand && typeof surfaceBand === "object"
       ? (surfaceBand as { theme?: string })
@@ -172,29 +203,22 @@ export function sectionThemeBandClass(themePref?: string) {
   return "";
 }
 
-/** True when band light/dark theme can be changed for this section type. */
-export function sectionSupportsBandTheme(sectionKey?: string, renderKey?: string) {
-  const key = String(renderKey || sectionKey || "")
-    .trim()
-    .toLowerCase();
-  if (!key) return true;
-  return !SECTION_FIXED_BAND_THEME_KEYS.has(key);
+/** Band theme / section bg editors retired — always false. */
+export function sectionSupportsBandTheme(_sectionKey?: string, _renderKey?: string) {
+  return false;
 }
 
 export function sectionFixedBandThemeHint(sectionKey?: string, renderKey?: string) {
   const key = String(renderKey || sectionKey || "")
     .trim()
     .toLowerCase();
-  if (!sectionSupportsBandTheme(sectionKey, renderKey)) {
-    if (SECTION_FIXED_DARK_BAND_KEYS.has(key)) {
-      return "This section uses a fixed dark band with light text — band theme does not apply.";
-    }
-    if (SECTION_FIXED_LIGHT_BAND_KEYS.has(key)) {
-      return "This section uses a fixed light palette — band theme does not apply.";
-    }
-    return "This section uses a fixed style — band theme does not apply.";
+  if (SECTION_DARK_BG_KEYS.has(key) || SECTION_FIXED_DARK_BAND_KEYS.has(key)) {
+    return "This section always uses a dark background (built into the layout).";
   }
-  return "";
+  if (SECTION_FIXED_LIGHT_BAND_KEYS.has(key)) {
+    return "This section uses a fixed light palette (built into the layout).";
+  }
+  return "Section bands are managed by the page surface pattern — not per section.";
 }
 
 /** True when SectionSurface should not paint inherited page band fill. */
@@ -222,8 +246,9 @@ export function placementAdvancesAlternationIndex(section: PlacementLike | null 
 }
 
 /**
- * Same surface / theme resolution as live page stack (one placement).
- * @param {{ current: number }} [altIndex] - mutable counter for alternating bands
+ * Same surface resolution as live page stack (one placement).
+ * Section band / section_theme / section_bg_* are ignored — only page surface pattern
+ * applies, and dark / own-band sections skip striping.
  */
 export function computePlacementSurface(
   section: PlacementLike | null | undefined,
@@ -237,31 +262,25 @@ export function computePlacementSurface(
     altIndex?: { current: number };
   } = {}
 ) {
-  const themePref = normalizeSectionTheme(section);
-  const themeTone = surfaceToneForSectionTheme(themePref);
-  const hasCustomBg = Boolean(
-    section?.section_bg_img ||
-      section?.section_bg_color ||
-      (section?.data as Record<string, unknown> | undefined)?.bg_color
-  );
+  const key = String(section?.section_key || "")
+    .trim()
+    .toLowerCase();
+  const isDarkSection = SECTION_DARK_BG_KEYS.has(key);
+  const skipStripe = sectionSkipsInheritedBandPaint(key) || isDarkSection;
+
   const resolvedTheme = (
     pageTheme && typeof pageTheme === "object"
       ? pageTheme
-      : { surface_mode: pageSurfaceMode || "alternating" }
+      : { surface_mode: pageSurfaceMode || "custom" }
   ) as Record<string, unknown>;
   const pattern = resolveSurfacePattern(resolvedTheme);
   const isTransparent = isPageSurfaceTransparent(pattern);
 
-  let surfaceBand;
-  let surfaceTone;
+  let surfaceBand = null;
+  let surfaceTone = null;
   let surfaceBandIndex;
-  if (isTransparent && !hasCustomBg) {
-    surfaceBand = null;
-    surfaceTone = null;
-  } else if (themeTone) {
-    surfaceTone = themeTone;
-    surfaceBand = null;
-  } else if (!hasCustomBg) {
+
+  if (!isTransparent && !skipStripe) {
     const index = altIndex.current;
     surfaceBand = surfaceBandAtIndex(pattern, index, {
       ink: String(resolvedTheme.ink || ""),
@@ -270,13 +289,14 @@ export function computePlacementSurface(
     if (placementAdvancesAlternationIndex(section)) {
       altIndex.current += 1;
     }
-    surfaceTone = undefined;
+  } else if (placementAdvancesAlternationIndex(section)) {
+    // Dark / own-band sections still must not consume a stripe slot
   }
 
   return {
-    sectionTheme: themePref,
-    surfaceBand: hasCustomBg && !themeTone ? undefined : surfaceBand,
-    surfaceTone: hasCustomBg && !themeTone ? undefined : surfaceTone,
+    sectionTheme: "inherit",
+    surfaceBand,
+    surfaceTone,
     surfaceBandIndex,
   };
 }

@@ -52,6 +52,8 @@ export default function MetricRailPublicSection({
         button_title,
         target_url,
         onFormOpen,
+        inverted: true,
+        surface: "dark",
       })}
     />
   );

@@ -68,8 +68,6 @@ export const SURFACE_MODES = [
   "alt_brand",
   "light",
   "muted",
-  "dark",
-  "dark_ink",
   "transparent",
 ];
 
@@ -78,11 +76,12 @@ export const THEME_FIELD_KEYS = [
   "brand_primary",
   "brand_hover",
   "ink",
-  "page_bg_color",
-  "page_bg_img",
   "surface_mode",
   "surface_pattern",
 ];
+
+/** Legacy fields no longer accepted on theme patches. */
+export const RETIRED_THEME_FIELD_KEYS = ["page_bg_color", "page_bg_img"];
 
 function newBandId() {
   return `band_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 7)}`;
@@ -148,8 +147,6 @@ export function defaultSiteTheme() {
   return {
     preset: "blue",
     ...THEME_PRESETS.blue,
-    page_bg_color: "",
-    page_bg_img: "",
     surface_mode: "custom",
     surface_pattern: defaultSurfacePattern(),
   };
@@ -162,8 +159,6 @@ export function emptyPageTheme() {
     brand_primary: null,
     brand_hover: null,
     ink: null,
-    page_bg_color: null,
-    page_bg_img: null,
     surface_mode: null,
     surface_pattern: null,
   };
@@ -242,16 +237,20 @@ export function themeSchemaFields({ nullable = false } = {}) {
     brand_primary: { type: String, trim: true, default: strDefault },
     brand_hover: { type: String, trim: true, default: strDefault },
     ink: { type: String, trim: true, default: strDefault },
+    /** @deprecated Kept for backcompat; ignored by theme merge / CMS. */
     page_bg_color: {
       type: String,
       trim: true,
       default: strDefault,
       maxlength: 400,
     },
+    /** @deprecated Kept for backcompat; ignored by theme merge / CMS. */
     page_bg_img: { type: String, trim: true, default: strDefault },
     surface_mode: {
       type: String,
-      enum: nullable ? [...SURFACE_MODES, null] : SURFACE_MODES,
+      enum: nullable
+        ? [...SURFACE_MODES, "dark", "dark_ink", null]
+        : [...SURFACE_MODES, "dark", "dark_ink"],
       default: nullable ? null : "custom",
     },
     surface_pattern: {
@@ -274,6 +273,15 @@ export function pickThemePatch(body = {}) {
           : normalizeSurfacePattern(body.surface_pattern);
       if (patch.surface_pattern) patch.surface_mode = "custom";
       continue;
+    }
+    if (key === "surface_mode") {
+      const mode = String(body.surface_mode || "").toLowerCase();
+      // Dark full-page modes retired — map to default light stripe pattern
+      if (mode === "dark" || mode === "dark_ink") {
+        patch.surface_mode = "custom";
+        patch.surface_pattern = defaultSurfacePattern();
+        continue;
+      }
     }
     patch[key] = body[key];
   }

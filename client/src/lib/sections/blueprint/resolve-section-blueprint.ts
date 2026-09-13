@@ -21,7 +21,7 @@ const ARCHETYPE_CMS: Record<SectionArchetype, Partial<SectionCmsCapabilities>> =
     toolbar: {
       navTitle: true,
       sectionImage: "auto",
-      sectionBand: true,
+      sectionBand: false,
       visibility: true,
       removeExtra: true,
     },
@@ -37,7 +37,7 @@ const ARCHETYPE_CMS: Record<SectionArchetype, Partial<SectionCmsCapabilities>> =
     toolbar: {
       navTitle: true,
       sectionImage: false,
-      sectionBand: true,
+      sectionBand: false,
       visibility: true,
       removeExtra: true,
     },
@@ -53,7 +53,7 @@ const ARCHETYPE_CMS: Record<SectionArchetype, Partial<SectionCmsCapabilities>> =
     toolbar: {
       navTitle: false,
       sectionImage: false,
-      sectionBand: true,
+      sectionBand: false,
       visibility: true,
       removeExtra: true,
     },
@@ -109,6 +109,8 @@ export function resolveBlueprintCmsCapabilities(
       ...DEFAULT_SECTION_CMS_CAPABILITIES.toolbar,
       ...base.toolbar,
       ...cms.toolbar,
+      // Section band editors retired site-wide
+      sectionBand: false,
     },
     fields: { ...base.fields, ...cms.fields },
   };

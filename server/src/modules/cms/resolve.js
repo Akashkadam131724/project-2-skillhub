@@ -15,24 +15,22 @@ const MAPPING_CONTENT_KEYS = [
   "section_title",
   "sub_title",
   "in_page_nav_title",
-  "section_bg_img",
-  "section_bg_color",
   "section_img_url",
-  "section_theme",
   "data",
 ];
 
 /** Legacy single-CTA — still exposed from Section defaults for fallback UI */
 const SECTION_ONLY_KEYS = ["button_title", "target_url"];
 
+/** Band / theme fields retired — always empty on resolved placements. */
+const RETIRED_BAND_KEYS = [
+  "section_bg_img",
+  "section_bg_color",
+  "section_theme",
+];
+
 function pickMappingField(source, fallback, key) {
   const value = source?.[key];
-  if (key === "section_theme") {
-    if (value !== null && value !== undefined && String(value).trim() !== "") {
-      return value;
-    }
-    return fallback?.[key] ?? "";
-  }
   if (value !== null && value !== undefined) {
     return value;
   }
@@ -43,6 +41,9 @@ function pickMappingContent(source, fallback) {
   const out = {};
   for (const key of MAPPING_CONTENT_KEYS) {
     out[key] = pickMappingField(source, fallback, key);
+  }
+  for (const key of RETIRED_BAND_KEYS) {
+    out[key] = "";
   }
   return out;
 }

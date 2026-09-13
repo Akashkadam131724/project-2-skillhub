@@ -56,6 +56,7 @@ export default function HeroStatsUi({
   surfaceBand,
 }: HeroStatsUiProps) {
   const onDarkBand = isPlacementDarkBand({
+    section_key: "hero_stats",
     section_theme: section_theme ?? sectionThemeProp,
     surfaceTone,
     surfaceBand,

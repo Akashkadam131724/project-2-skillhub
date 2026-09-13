@@ -29,6 +29,7 @@ export default function NestedTabsCmsSection({
 }: TabsSectionProps & { layout: TabsLayout }) {
   const tabs = resolveTabUiItems(mappingItems, { cmsMode: true });
   const onDarkBand = isPlacementDarkBand({
+    section_key,
     section_theme: section_theme ?? sectionTheme,
     surfaceTone,
     surfaceBand,

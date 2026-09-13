@@ -46,6 +46,7 @@ export default function SiteBuilderHeroPublicSection({
       footer={heroLayoutPublicFooter(props, {
         onFormOpen,
         inverted: true,
+        surface: "dark",
         className: "mt-9",
         buttonsClassName: "flex flex-wrap items-center gap-3",
       })}
