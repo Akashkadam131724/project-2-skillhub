@@ -211,7 +211,6 @@ export type SectionMetaForm = {
   category: string;
   content_scope: string;
   section_preview_img: string;
-  section_theme: string;
 };
 
 export type SectionCatalogDoc = ApiRecord & {

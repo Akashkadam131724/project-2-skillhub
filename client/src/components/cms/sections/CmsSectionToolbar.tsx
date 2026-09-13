@@ -71,12 +71,11 @@ export default function CmsSectionToolbar({
 
   const showNavTitle = toolbar.navTitle;
   const showImage = toolbar.sectionImage;
-  const showBand = toolbar.sectionBand;
   const showVisibility = toolbar.visibility;
   const showRemoveExtra =
     section?.is_entity_extra && toolbar.removeExtra;
 
-  const hasEditItems = showNavTitle || showImage || showBand;
+  const hasEditItems = showNavTitle || showImage;
   const hasMenuActions =
     hasEditItems ||
     (showVisibility && onToggleVisibility) ||
@@ -236,13 +235,6 @@ export default function CmsSectionToolbar({
                     {contentLocked
                       ? "Section image (view)"
                       : "Edit section image"}
-                  </MenuItem>
-                ) : null}
-                {showBand ? (
-                  <MenuItem
-                    onClick={() => runAction(() => editField("section_band"))}
-                  >
-                    {contentLocked ? "Section band (view)" : "Section band…"}
                   </MenuItem>
                 ) : null}
                 {showVisibility && onToggleVisibility ? (

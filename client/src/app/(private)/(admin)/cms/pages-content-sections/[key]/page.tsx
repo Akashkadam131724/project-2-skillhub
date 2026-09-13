@@ -12,11 +12,6 @@ import {
 import { isKnownSectionKey, SECTION_CATEGORIES } from "@/lib/sections/section-registry";
 import { ensureSectionRenderKeySaved } from "@/lib/sections/section-render-key";
 import {
-  SECTION_THEME_OPTIONS,
-  sectionFixedBandThemeHint,
-  sectionSupportsBandTheme,
-} from "@/lib/sections/section-theme";
-import {
   contentScopeLabel,
   normalizeContentScope,
 } from "@/lib/cms/content-scope";
@@ -43,7 +38,6 @@ const emptyMeta: SectionMetaForm = {
   category: "",
   content_scope: "page",
   section_preview_img: "",
-  section_theme: "inherit",
 };
 
 export default function CmsSectionDetailPage() {
@@ -70,7 +64,6 @@ export default function CmsSectionDetailPage() {
         category: String(data.category_key || data.category || ""),
         content_scope: normalizeContentScope(data.content_scope),
         section_preview_img: String(data.section_preview_img || ""),
-        section_theme: String(data.section_theme || "inherit"),
       });
     } catch (err) {
       setError(err);
@@ -97,7 +90,6 @@ export default function CmsSectionDetailPage() {
           category: String(data.category_key || data.category || ""),
           content_scope: normalizeContentScope(data.content_scope),
           section_preview_img: String(data.section_preview_img || ""),
-          section_theme: String(data.section_theme || "inherit"),
         });
       } catch (err) {
         if (alive) setError(err);
@@ -126,8 +118,6 @@ export default function CmsSectionDetailPage() {
         category_key: meta.category || "",
         content_scope: meta.content_scope,
         section_preview_img: meta.section_preview_img || "",
-        section_theme:
-          meta.section_theme === "inherit" ? "" : meta.section_theme || "",
       });
       await load();
     } catch (err) {
@@ -336,36 +326,6 @@ export default function CmsSectionDetailPage() {
                   : "Full cascade — entity pages can override template and global defaults."}
             </p>
           </Field>
-          {sectionSupportsBandTheme(sectionKey) ? (
-            <Field
-              label="Default band theme"
-              hint="Catalog default — template and page placements can override"
-            >
-              <select
-                className={inputClass}
-                value={meta.section_theme || "inherit"}
-                onChange={(e) =>
-                  setMeta((m) => ({ ...m, section_theme: e.target.value }))
-                }
-              >
-                {SECTION_THEME_OPTIONS.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
-            </Field>
-          ) : (
-            <Field
-              label="Default band theme"
-              hint={sectionFixedBandThemeHint(sectionKey) || "Fixed palette — not configurable"}
-              className="sm:col-span-2"
-            >
-              <p className="m-0 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-600 dark:border-slate-700 dark:bg-slate-900/50 dark:text-slate-300">
-                {sectionFixedBandThemeHint(sectionKey)}
-              </p>
-            </Field>
-          )}
           <Field
             label="Catalog preview image"
             hint="Shown in CMS lists; copied onto page mappings when tagged"
